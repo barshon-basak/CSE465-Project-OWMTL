@@ -1,0 +1,182 @@
+{
+  "entries": [
+    {
+      "model": "M6",
+      "label": "OpenMax + Weibull (cycle-level)",
+      "auc": 0.4516,
+      "n_pos": 549,
+      "n_neg": 1631,
+      "level": "cycle",
+      "source": "Barshon's/M6/result/results_M6.json:best_metrics.open_set",
+      "se": 0.0139,
+      "ci95_lo": 0.4243,
+      "ci95_hi": 0.4789,
+      "crosses_chance": false
+    },
+    {
+      "model": "M14v1",
+      "label": "Conformal-wrapped disagreement v1",
+      "auc": 0.4522,
+      "n_pos": 19,
+      "n_neg": 22,
+      "level": "patient",
+      "source": "Barshon's/M14/v1/results_M14.json:best_metrics.auroc",
+      "se": 0.0908,
+      "ci95_lo": 0.2742,
+      "ci95_hi": 0.6302,
+      "crosses_chance": true
+    },
+    {
+      "model": "M14v2",
+      "label": "Conformal-wrapped disagreement v2 (test)",
+      "auc": 0.4809,
+      "n_pos": 19,
+      "n_neg": 22,
+      "level": "patient",
+      "source": "Barshon's/M14/v2/results_M14.json:best_metrics.test_auroc",
+      "se": 0.0913,
+      "ci95_lo": 0.3019,
+      "ci95_hi": 0.6599,
+      "crosses_chance": true
+    },
+    {
+      "model": "M15v6-Disagreement",
+      "label": "Cross-task disagreement (v6, bug-fixed)",
+      "auc": 0.5747,
+      "n_pos": 19,
+      "n_neg": 42,
+      "level": "patient",
+      "source": "Barshon's/M15/v6/results_M15.json:best_metrics.open_set.auroc",
+      "note": "n_pos/n_neg not recorded in this file -- borrowed from M29's split (same 104 known / 19 unknown patient pool) since v6 doesn't state its own test-set size.",
+      "se": 0.0808,
+      "ci95_lo": 0.4163,
+      "ci95_hi": 0.7331,
+      "crosses_chance": true
+    },
+    {
+      "model": "M15v6-EnergyRecomputed",
+      "label": "Energy baseline, recomputed inside M15 v6",
+      "auc": 0.5948,
+      "n_pos": 19,
+      "n_neg": 42,
+      "level": "patient",
+      "source": "Barshon's/M15/v6/results_M15.json:best_metrics.open_set.baseline_energy_auroc",
+      "note": "Same n caveat as above. Sanity-check value: should be close to M29's own Energy AUROC (0.6466) since it's nominally the same method on the same backbone.",
+      "se": 0.0805,
+      "ci95_lo": 0.4369,
+      "ci95_hi": 0.7527,
+      "crosses_chance": true
+    },
+    {
+      "model": "M29-Energy",
+      "label": "Energy score on frozen M12 backbone (best M29 scorer)",
+      "auc": 0.6466,
+      "n_pos": 19,
+      "n_neg": 42,
+      "level": "patient",
+      "source": "Asif's/M29/results_M29.json:best_metrics.open_set",
+      "se": 0.079,
+      "ci95_lo": 0.4917,
+      "ci95_hi": 0.8015,
+      "crosses_chance": true
+    },
+    {
+      "model": "M29-Entropy",
+      "label": "Entropy score, M29 suite",
+      "auc": 0.5789,
+      "n_pos": 19,
+      "n_neg": 42,
+      "level": "patient",
+      "source": "Asif's/M29/results_M29.json:best_metrics.all_scores[Entropy]",
+      "se": 0.0808,
+      "ci95_lo": 0.4206,
+      "ci95_hi": 0.7372,
+      "crosses_chance": true
+    },
+    {
+      "model": "M29-Mahalanobis_patient",
+      "label": "Mahalanobis (patient-fit), M29 suite",
+      "auc": 0.5689,
+      "n_pos": 19,
+      "n_neg": 42,
+      "level": "patient",
+      "source": "Asif's/M29/results_M29.json:best_metrics.all_scores[Mahalanobis_patient]",
+      "se": 0.0809,
+      "ci95_lo": 0.4104,
+      "ci95_hi": 0.7274,
+      "crosses_chance": true
+    },
+    {
+      "model": "M29-Mahalanobis_class",
+      "label": "Mahalanobis (class-fit), M29 suite",
+      "auc": 0.5376,
+      "n_pos": 19,
+      "n_neg": 42,
+      "level": "patient",
+      "source": "Asif's/M29/results_M29.json:best_metrics.all_scores[Mahalanobis_class]",
+      "se": 0.0809,
+      "ci95_lo": 0.379,
+      "ci95_hi": 0.6962,
+      "crosses_chance": true
+    },
+    {
+      "model": "M29-MSP",
+      "label": "Max softmax probability, M29 suite",
+      "auc": 0.5025,
+      "n_pos": 19,
+      "n_neg": 42,
+      "level": "patient",
+      "source": "Asif's/M29/results_M29.json:best_metrics.all_scores[MSP]",
+      "se": 0.0805,
+      "ci95_lo": 0.3447,
+      "ci95_hi": 0.6603,
+      "crosses_chance": true
+    }
+  ],
+  "comparisons": [
+    {
+      "a": "M29-Energy",
+      "b": "M6",
+      "question": "Does the zero-training M29 baseline legitimately beat the M6 disease-head baseline?",
+      "auc_a": 0.6466,
+      "auc_b": 0.4516,
+      "diff": 0.195,
+      "z": 2.4305,
+      "p_value": 0.015077,
+      "significant_at_05": true
+    },
+    {
+      "a": "M29-Energy",
+      "b": "M15v6-Disagreement",
+      "question": "Headline question: does the selected novelty mechanism (cross-task disagreement) beat the trivial post-hoc baseline it's supposed to improve on?",
+      "auc_a": 0.6466,
+      "auc_b": 0.5747,
+      "diff": 0.0719,
+      "z": 0.6361,
+      "p_value": 0.524723,
+      "significant_at_05": false
+    },
+    {
+      "a": "M29-Energy",
+      "b": "M15v6-EnergyRecomputed",
+      "question": "Sanity check: M15 v6 recomputes its own Energy baseline on what should be the same backbone/split as M29 -- these two numbers should agree if both pipelines are correct.",
+      "auc_a": 0.6466,
+      "auc_b": 0.5948,
+      "diff": 0.0518,
+      "z": 0.4591,
+      "p_value": 0.646163,
+      "significant_at_05": false
+    },
+    {
+      "a": "M29-Energy",
+      "b": "M14v2",
+      "question": "Does the conformal-calibrated score (selected novelty item 2) beat the trivial baseline?",
+      "auc_a": 0.6466,
+      "auc_b": 0.4809,
+      "diff": 0.1657,
+      "z": 1.372,
+      "p_value": 0.170061,
+      "significant_at_05": false
+    }
+  ]
+}
