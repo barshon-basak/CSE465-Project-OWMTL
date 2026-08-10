@@ -1,0 +1,15 @@
+{
+  "mmd_results": {
+    "Coswara (OOD)": {
+      "M2 (Baseline)": 0.851380467414856,
+      "M30 (Gated Fusion)": 0.8137382864952087,
+      "M35 (Physics-Informed)": 0.8389776349067688
+    },
+    "SPRSound (OOD)": {
+      "M2 (Baseline)": 0.4235617518424988,
+      "M30 (Gated Fusion)": 0.40929198265075684,
+      "M35 (Physics-Informed)": 0.44335705041885376
+    }
+  },
+  "conclusion": "Lower MMD means the features of the OOD dataset are closer to the Known ICBHI dataset (better generalization)."
+}
