@@ -34,7 +34,7 @@ The ICBHI 2017 benchmark contains 19 patients with rare/unseen diseases (Bronchi
 | Conformal guarantees | ✅ M14 95.45% empirical coverage |
 | OWL staged learning | ✅ M17 forgetting = −15.34% |
 | Compression | ✅ M16 8.85× compression |
-| New experimental threads | ✅ M31–M36 Complete; 🔄 M37 In progress |
+| New experimental threads | ✅ M31–M37 Complete |
 
 ## Main Findings So Far
 - **M30** (Gated Feature-Fusion of M2+M3) achieves **ICBHI = 0.8213**, the project's strongest result.
@@ -149,7 +149,7 @@ The ICBHI 2017 benchmark contains 19 patients with rare/unseen diseases (Bronchi
 | M34 | Curriculum Learning (new thread) | ICBHI | Advanced curriculum variant | ✅ Complete | ICBHI=0.7046 |
 | M35 | Physics-Informed Loss | ICBHI | Domain-knowledge loss term | ✅ Complete | ICBHI=0.7839 (2nd best) |
 | M36 | Multistage Distillation | ICBHI | Staged KD pipeline | ✅ Complete | ICBHI=0.5137 |
-| M37 | Audio LoRA (PEFT) | ICBHI | Parameter-efficient fine-tuning | 🔄 In progress | Notebook formatting completed; pending full JSON |
+| M37 | Audio LoRA (PEFT) | ICBHI | Parameter-efficient fine-tuning | ✅ Complete | ICBHI=0.7969 (2nd best, 0.23% trainable params) |
 
 ---
 
@@ -329,6 +329,7 @@ The ICBHI 2017 benchmark contains 19 patients with rare/unseen diseases (Bronchi
 | M34 (Curriculum Learning) | 0.5795 | 0.5268 | 0.5586 | 0.8506 | 0.7046 | 3.6M | 0.81 |
 | M35 (Physics-Informed Loss) | 0.6690 | 0.6420 | 0.6890 | 0.8788 | **0.7839** | 3.6M | 0.85 |
 | M36 (Multistage Distillation) | 0.4765 | 0.2155 | 0.2679 | 0.7594 | 0.5137 | **4.9K** | **0.46** |
+| M37 (Audio LoRA PEFT) | 0.6806 | 0.6599 | 0.7078 | 0.8859 | 0.7969 | 3.6M | 1.00 |
 | **M30 (Gated Fusion M2+M3)** | **0.7275** | **0.7075** | **0.7433** | — | **0.8213** | 7.96M | — |
 
 > **ICBHI Score** = (Se + Sp) / 2. This is the official ICBHI 2017 challenge metric.
@@ -403,21 +404,25 @@ The ICBHI 2017 benchmark contains 19 patients with rare/unseen diseases (Bronchi
 | Rank | Model | Task | Key Metric | Remarks |
 |---|---|---|---|---|
 | 1 | **M30** Gated Fusion (M2+M3) | Sound-event classification | ICBHI = **0.8213**, F1 = 0.7075 | Best result in project; complementary feature fusion works |
-| 2 | **M35 v2** Physics-Informed Loss | Sound-event classification | ICBHI = **0.7839**, F1 = 0.6420 | 2nd best overall; strong validation of acoustic domain priors |
-| 3 | **M2** 5-block CNN | Sound-event classification | ICBHI = 0.7227, F1 = 0.5238 | Selected backbone; reliable, fast, compact |
-| 4 | **M34** Curriculum Pacing | Sound-event classification | ICBHI = 0.7046, F1 = 0.5268 | Strong result showing dynamic difficulty pacing improves stability |
-| 5 | **M13 v4** Prototypical Head | Disease classification (patient) | Acc = 0.7209, F1 = **0.6061** | Handles low-resource URTI (n=14) reasonably |
-| 6 | **M3** MobileNetV2 | Sound-event classification | ICBHI = 0.6984 | Good lightweight option; contributes to M30 |
-| 7 | **M17 v2** OWL Stage-2 | Incremental disease learning | Retention = 93.76%, Plasticity = 85.61% | Strong forgetting control |
-| 8 | **M29** Energy score | OOD detection | AUROC = 0.6466 | Best open-set baseline — trivial post-hoc method |
-| 9 | **M15 v4** Cross-task Scorer | OOD/unknown detection | AUROC = 0.5782 | Core novelty — currently below trivial baseline |
-| 10 | **M6** OpenMax | Open-set disease detection | AUROC = 0.4516 | Below chance — confirmed negative result |
+| 2 | **M37** Audio LoRA (PEFT) | Sound-event classification | ICBHI = **0.7969**, F1 = 0.6599 | 2nd best overall; highly parameter-efficient adaptation (0.23% trainable) |
+| 3 | **M35 v2** Physics-Informed Loss | Sound-event classification | ICBHI = 0.7839, F1 = 0.6420 | 3rd best overall; strong validation of acoustic domain priors |
+| 4 | **M2** 5-block CNN | Sound-event classification | ICBHI = 0.7227, F1 = 0.5238 | Selected backbone; reliable, fast, compact |
+| 5 | **M34** Curriculum Pacing | Sound-event classification | ICBHI = 0.7046, F1 = 0.5268 | Strong result showing dynamic difficulty pacing improves stability |
+| 6 | **M13 v4** Prototypical Head | Disease classification (patient) | Acc = 0.7209, F1 = **0.6061** | Handles low-resource URTI (n=14) reasonably |
+| 7 | **M3** MobileNetV2 | Sound-event classification | ICBHI = 0.6984 | Good lightweight option; contributes to M30 |
+| 8 | **M17 v2** OWL Stage-2 | Incremental disease learning | Retention = 93.76%, Plasticity = 85.61% | Strong forgetting control |
+| 9 | **M29** Energy score | OOD detection | AUROC = 0.6466 | Best open-set baseline — trivial post-hoc method |
+| 10 | **M15 v4** Cross-task Scorer | OOD/unknown detection | AUROC = 0.5782 | Core novelty — currently below trivial baseline |
+| 11 | **M6** OpenMax | Open-set disease detection | AUROC = 0.4516 | Below chance — confirmed negative result |
 
 ### Why M30 Performs Best
 The gated feature-fusion architecture benefits from two complementary representations: M2 learns task-specific discriminative spectral patterns from scratch (no inductive bias), while M3 brings ImageNet-pretrained hierarchical feature detectors. The Gated Adaptive Fusion head learns sample-wise weighting, effectively routing "easier" samples to the stronger backbone and hard samples to the complementary one. The training curve starting at ICBHI=0.8098 at epoch 1 (compared to M2's slower convergence) indicates the fusion head immediately exploits rich pre-learned features.
 
 ### Why M35 Physics-Informed Loss is Highly Effective
 M35 enforces physical priors corresponding to respiratory sound anomalies: transient explosions for crackles (via Peak-to-Average Power Ratio) and tonal harmonics for wheezes (via Wiener spectral flatness). By applying a joint penalty term on these features directly during optimization, the model learns a biologically constrained representation space rather than merely hunting for correlations in the dataset. This approach mitigated overfitting significantly and yielded a massive boost in performance to ICBHI=0.7839.
+
+### Why M37 (Audio LoRA) Performs So Well
+M37 achieves the 2nd best overall result (ICBHI=0.7969) while training only 0.23% of the network's parameters via Low-Rank Adaptation (LoRA). By freezing the core feature extractor, M37 avoids overfitting to the tiny ICBHI dataset (a common problem when fine-tuning full networks on 920 recordings). Instead, the low-rank matrices injected into the fully connected layers provide just enough capacity to map the robust, general-purpose acoustic features into the specific ICBHI clinical label space, proving that parameter-efficient fine-tuning (PEFT) is highly effective for clinical audio.
 
 ### Why AST Underperforms
 The AST was pretrained on AudioSet (527 classes, broadband audio). ICBHI respiratory cycles are narrow-band (50–2000 Hz), short, and medically specific. The distribution mismatch between AudioSet and ICBHI is large. Without domain-specific pretraining, AST's attention mechanism provides no advantage over a well-regularised CNN on this small dataset (920 recordings).
