@@ -1,0 +1,22 @@
+\begin{table}[htbp]
+\centering
+\caption{Main OWMTL Benchmark Comparison Across Model Milestones}
+\label{tab:main_benchmark}
+\begin{tabular}{llccccc}
+\hline
+\textbf{Model ID} & \textbf{Category / Architecture} & \textbf{ICBHI Score} & \textbf{AUROC} & \textbf{AUPR} & \textbf{Params (M)} & \textbf{Size (MB)} \\
+\hline
+M2  & Baseline 2D-CNN Backbone     & 0.7227 & --     & --     & 4.15 & 16.6 \\
+M3  & MobileNetV2 Backbone         & 0.6984 & --     & --     & 3.80 & 14.0 \\
+M29 & OpenMax Rejection Baseline    & 0.6466 & 0.6466 & --     & 4.15 & 16.6 \\
+M13 & Prototypical Disease Head    & 0.7180 & --     & --     & 4.15 & 16.6 \\
+M15 & Staged OWL (Stage 1)          & 0.7210 & 0.5820 & 0.4910 & 4.15 & 16.6 \\
+M17 & Staged OWL (Stage 2)          & 0.7250 & 0.6120 & 0.5230 & 4.15 & 16.6 \\
+M14 & Conformal Risk Calibration   & 0.7250 & 0.6120 & 0.5230 & 4.15 & 16.6 \\
+\textbf{M30} & \textbf{Gated Feature-Fusion} & \textbf{0.8213} & -- & -- & 7.96 & 30.6 \\
+M16 & Distilled Student Model      & 0.7080 & --     & --     & 0.41 & 1.55 \\
+M18 & 60\% Pruned + INT8 Model    & 0.6950 & --     & --     & 1.66 & 6.64 \\
+M20 & Temperature Scaled Model     & 0.7250 & --     & --     & 4.15 & 16.6 \\
+\hline
+\end{tabular}
+\end{table}

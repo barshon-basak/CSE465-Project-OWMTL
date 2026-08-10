@@ -1,0 +1,82 @@
+{
+  "meta": {
+    "model_id": "M16",
+    "model_name": "Teacher-Student Knowledge Distillation",
+    "member": "B",
+    "member_name": "Member B (Disease Diagnosis & OWL)",
+    "date_completed": "2026-08-05",
+    "is_augmented": false,
+    "augmentation_method": "none",
+    "notes": "Knowledge distillation from M17 Stage-2 teacher to lightweight 2D-CNN student. Chunk F compliance."
+  },
+  "config": {
+    "model_id": "M16",
+    "model_name": "Teacher-Student Knowledge Distillation",
+    "member": "B",
+    "seed": 42,
+    "sample_rate": 16000,
+    "duration_s": 8.0,
+    "n_mels": 128,
+    "n_fft": 1024,
+    "hop_length": 160,
+    "win_length": 400,
+    "f_min": 50,
+    "f_max": 2000,
+    "n_samples": 128000,
+    "n_frames": 801,
+    "temperature": 3.0,
+    "alpha": 0.7,
+    "epochs": 10,
+    "lr": 0.001,
+    "batch_size": 32,
+    "known_classes": [
+      "COPD",
+      "Healthy",
+      "URTI"
+    ],
+    "m17_ckpt_path": "/kaggle/input/datasets/barshonbasak/m17-checkpoint/best_model.pth",
+    "icbhi_path": "/kaggle/input/datasets/vbookshelf/respiratory-sound-database/Respiratory_Sound_Database/Respiratory_Sound_Database/audio_and_txt_files",
+    "results_dir": "/kaggle/working/results_M16"
+  },
+  "environment": {
+    "platform": "Kaggle",
+    "gpu_name": "Tesla T4",
+    "pytorch_version": "2.10.0+cu128",
+    "python_version": "3.12.13"
+  },
+  "efficiency": {
+    "teacher_params": 3586340,
+    "student_params": 405028,
+    "compression_ratio": 8.85,
+    "model_size_mb": 1.55,
+    "gpu_name": "Tesla T4"
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "data_source": "real_audio",
+    "total_samples_evaluated": 851
+  },
+  "best_metrics": {
+    "student_accuracy": 0.9318,
+    "final_distill_loss": 0.2992,
+    "compression_ratio": 8.85
+  },
+  "ablation": {
+    "ablation_group": "model_compression",
+    "ablation_role": "student_distillation",
+    "baseline_model_id": "M17",
+    "variable_changed": "knowledge_distillation",
+    "variables_held_constant": [
+      "teacher_model: M17_Stage2_Prototypical",
+      "temperature: 3.0",
+      "seed: 42"
+    ],
+    "component_flags": {
+      "has_sound_event_head": true,
+      "has_disease_head": true,
+      "has_distillation": true,
+      "owl_stage": 2
+    },
+    "loss_weights": {}
+  }
+}

@@ -1,0 +1,500 @@
+{
+  "meta": {
+    "model_id": "M31",
+    "model_name": "Dynamic Multi-Task Loss Weighting (GradNorm MTL)",
+    "contributor": "Barshon",
+    "date_completed": "2026-08-07",
+    "is_augmented": false,
+    "augmentation_method": "none",
+    "notes": "Novelty Search \u00a74.6 - GradNorm (Chen et al. 2018) dynamic loss weighting"
+  },
+  "config": {
+    "sample_rate": 16000,
+    "n_mels": 128,
+    "batch_size": 32,
+    "num_epochs": 30,
+    "lr": 0.001,
+    "optimizer": "Adam",
+    "scheduler": "CosineAnnealingLR",
+    "architecture": "M2_GradNorm_MTL",
+    "seed": 42
+  },
+  "environment": {
+    "platform": "Kaggle",
+    "gpu_name": "Tesla T4",
+    "pytorch_version": "2.10.0+cu128",
+    "python_version": "3.12.13"
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "data_source": "real_audio",
+    "train_samples": 4149,
+    "test_samples": 2749,
+    "train_patients": 88,
+    "test_patients": 38,
+    "split_method": "patient_independent_70_30"
+  },
+  "efficiency": {
+    "total_params": 3726297,
+    "trainable_params": 3726297,
+    "model_size_mb": 14.24,
+    "training_time_total_s": 5748.37,
+    "training_time_per_epoch_s_avg": 191.61,
+    "gpu_name": "Tesla T4",
+    "inference_time_ms_per_sample": 0.92
+  },
+  "best_epoch": {
+    "epoch": 16,
+    "primary_metric": "icbhi_score",
+    "primary_metric_value": 0.6377
+  },
+  "best_metrics": {
+    "accuracy": 0.5529,
+    "precision_macro": 0.4644,
+    "recall_macro": 0.4489,
+    "f1_macro": 0.4351,
+    "specificity_macro": 0.8265,
+    "icbhi_score": 0.6377,
+    "per_class": {
+      "Normal": {
+        "precision": 0.6222,
+        "recall": 0.5614,
+        "f1": 0.5902,
+        "specificity": 0.7034,
+        "support": 1279
+      },
+      "Crackle": {
+        "precision": 0.5138,
+        "recall": 0.6505,
+        "f1": 0.5741,
+        "specificity": 0.7068,
+        "support": 887
+      },
+      "Wheeze": {
+        "precision": 0.491,
+        "recall": 0.5516,
+        "f1": 0.5196,
+        "specificity": 0.9035,
+        "support": 397
+      },
+      "Both": {
+        "precision": 0.2308,
+        "recall": 0.0323,
+        "f1": 0.0566,
+        "specificity": 0.9922,
+        "support": 186
+      }
+    },
+    "confusion_matrix_raw": [
+      [
+        718,
+        430,
+        126,
+        5
+      ],
+      [
+        272,
+        577,
+        32,
+        6
+      ],
+      [
+        113,
+        56,
+        219,
+        9
+      ],
+      [
+        51,
+        60,
+        69,
+        6
+      ]
+    ],
+    "confusion_matrix_normalized": [
+      [
+        0.5614,
+        0.3362,
+        0.0985,
+        0.0039
+      ],
+      [
+        0.3067,
+        0.6505,
+        0.0361,
+        0.0068
+      ],
+      [
+        0.2846,
+        0.1411,
+        0.5516,
+        0.0227
+      ],
+      [
+        0.2742,
+        0.3226,
+        0.371,
+        0.0323
+      ]
+    ]
+  },
+  "ablation": {
+    "ablation_group": "multi_task_loss_weighting",
+    "ablation_role": "gradnorm_variant",
+    "baseline_model_id": "M13",
+    "variable_changed": "loss_weighting: GradNorm dynamic balancing",
+    "variables_held_constant": [
+      "loss_function: inverse_frequency_CrossEntropyLoss",
+      "data_split: patient_independent_70_30",
+      "seed: 42",
+      "preprocessing: 128mel_16kHz_8s"
+    ],
+    "component_flags": {
+      "has_sound_event_head": true,
+      "has_disease_head": true,
+      "has_cross_task_consistency": false,
+      "has_cqkd_regularization": false,
+      "has_openmax_rejection": false,
+      "owl_stage": 0,
+      "compression_clusters": null,
+      "has_gradnorm_weighting": true
+    },
+    "loss_weights": {
+      "sound_event_weight": 1.0,
+      "disease_weight": 1.0,
+      "consistency_weight": null
+    }
+  },
+  "training_history": [
+    {
+      "epoch": 1,
+      "train_loss": 2.1615403966749684,
+      "val_loss": 2.0940373235288297,
+      "val_accuracy": 0.3193888686795198,
+      "val_f1_macro": 0.273765604521068,
+      "val_icbhi_score": 0.5279453780412698,
+      "w_sound": 0.8701,
+      "w_disease": 1.1299,
+      "epoch_time_s": 176.71312046051025
+    },
+    {
+      "epoch": 2,
+      "train_loss": 1.97142059609355,
+      "val_loss": 2.5376332973557933,
+      "val_accuracy": 0.1549654419789014,
+      "val_f1_macro": 0.1038510781954209,
+      "val_icbhi_score": 0.512280170809498,
+      "w_sound": 0.7056,
+      "w_disease": 1.2944,
+      "epoch_time_s": 138.12546181678772
+    },
+    {
+      "epoch": 3,
+      "train_loss": 1.8120273269208318,
+      "val_loss": 2.8243238994449906,
+      "val_accuracy": 0.16260458348490361,
+      "val_f1_macro": 0.15806964444610624,
+      "val_icbhi_score": 0.544311928371646,
+      "w_sound": 0.5652,
+      "w_disease": 1.4348,
+      "epoch_time_s": 135.15488362312317
+    },
+    {
+      "epoch": 4,
+      "train_loss": 1.6820549660345019,
+      "val_loss": 2.339926000506976,
+      "val_accuracy": 0.3230265551109494,
+      "val_f1_macro": 0.26073851770196493,
+      "val_icbhi_score": 0.58302202868298,
+      "w_sound": 0.4537,
+      "w_disease": 1.5463,
+      "epoch_time_s": 136.8794708251953
+    },
+    {
+      "epoch": 5,
+      "train_loss": 1.5971962208631787,
+      "val_loss": 2.241862617565875,
+      "val_accuracy": 0.3619497999272463,
+      "val_f1_macro": 0.26014174899018705,
+      "val_icbhi_score": 0.5761726136123079,
+      "w_sound": 0.3692,
+      "w_disease": 1.6308,
+      "epoch_time_s": 141.46017122268677
+    },
+    {
+      "epoch": 6,
+      "train_loss": 1.5192451679324437,
+      "val_loss": 2.096922300563547,
+      "val_accuracy": 0.5445616587850127,
+      "val_f1_macro": 0.43024680556799133,
+      "val_icbhi_score": 0.6169844564259271,
+      "w_sound": 0.3052,
+      "w_disease": 1.6948,
+      "epoch_time_s": 137.35528826713562
+    },
+    {
+      "epoch": 7,
+      "train_loss": 1.4856207271345152,
+      "val_loss": 1.9378275152291762,
+      "val_accuracy": 0.47799199708985085,
+      "val_f1_macro": 0.3995421932905812,
+      "val_icbhi_score": 0.633762515117453,
+      "w_sound": 0.258,
+      "w_disease": 1.742,
+      "epoch_time_s": 135.3650770187378
+    },
+    {
+      "epoch": 8,
+      "train_loss": 1.397172575256686,
+      "val_loss": 2.8054576036322114,
+      "val_accuracy": 0.48381229538013826,
+      "val_f1_macro": 0.24703622306570938,
+      "val_icbhi_score": 0.5298595477344361,
+      "w_sound": 0.2243,
+      "w_disease": 1.7757,
+      "epoch_time_s": 137.24022841453552
+    },
+    {
+      "epoch": 9,
+      "train_loss": 1.3380392308578803,
+      "val_loss": 3.12035042955989,
+      "val_accuracy": 0.505274645325573,
+      "val_f1_macro": 0.27958510196218966,
+      "val_icbhi_score": 0.5543028462916989,
+      "w_sound": 0.1953,
+      "w_disease": 1.8047,
+      "epoch_time_s": 141.2599697113037
+    },
+    {
+      "epoch": 10,
+      "train_loss": 1.2801531614467707,
+      "val_loss": 2.9329017952772953,
+      "val_accuracy": 0.48926882502728264,
+      "val_f1_macro": 0.25599996602548714,
+      "val_icbhi_score": 0.538736796387419,
+      "w_sound": 0.1731,
+      "w_disease": 1.8269,
+      "epoch_time_s": 134.85856771469116
+    },
+    {
+      "epoch": 11,
+      "train_loss": 1.2049297816381594,
+      "val_loss": 2.1863834256907295,
+      "val_accuracy": 0.5351036740632957,
+      "val_f1_macro": 0.3964371148032041,
+      "val_icbhi_score": 0.5960659267700764,
+      "w_sound": 0.1541,
+      "w_disease": 1.8459,
+      "epoch_time_s": 133.88127088546753
+    },
+    {
+      "epoch": 12,
+      "train_loss": 1.158456616644171,
+      "val_loss": 2.0361859442408017,
+      "val_accuracy": 0.4532557293561295,
+      "val_f1_macro": 0.3682152799889448,
+      "val_icbhi_score": 0.6240479350533179,
+      "w_sound": 0.1409,
+      "w_disease": 1.8591,
+      "epoch_time_s": 133.82843804359436
+    },
+    {
+      "epoch": 13,
+      "train_loss": 1.076917691988151,
+      "val_loss": 2.327148935152167,
+      "val_accuracy": 0.4288832302655511,
+      "val_f1_macro": 0.3460297710524184,
+      "val_icbhi_score": 0.6108450219874888,
+      "w_sound": 0.1288,
+      "w_disease": 1.8712,
+      "epoch_time_s": 133.74428820610046
+    },
+    {
+      "epoch": 14,
+      "train_loss": 0.9980195629996086,
+      "val_loss": 2.6312912522597327,
+      "val_accuracy": 0.2109858130229174,
+      "val_f1_macro": 0.21511298965367248,
+      "val_icbhi_score": 0.5550375373708396,
+      "w_sound": 0.1175,
+      "w_disease": 1.8825,
+      "epoch_time_s": 133.1212339401245
+    },
+    {
+      "epoch": 15,
+      "train_loss": 0.9422550412883929,
+      "val_loss": 2.467610272115775,
+      "val_accuracy": 0.42306293197526373,
+      "val_f1_macro": 0.256171456083597,
+      "val_icbhi_score": 0.5511559584246084,
+      "w_sound": 0.1099,
+      "w_disease": 1.8901,
+      "epoch_time_s": 132.4285125732422
+    },
+    {
+      "epoch": 16,
+      "train_loss": 0.8924474171426791,
+      "val_loss": 2.1291095272937053,
+      "val_accuracy": 0.5529283375773009,
+      "val_f1_macro": 0.4351309796538499,
+      "val_icbhi_score": 0.6377037574789692,
+      "w_sound": 0.1011,
+      "w_disease": 1.8989,
+      "epoch_time_s": 133.62759733200073
+    },
+    {
+      "epoch": 17,
+      "train_loss": 0.813563154243107,
+      "val_loss": 2.0918845812508566,
+      "val_accuracy": 0.4979992724627137,
+      "val_f1_macro": 0.4169026304713792,
+      "val_icbhi_score": 0.6341615139429921,
+      "w_sound": 0.0944,
+      "w_disease": 1.9056,
+      "epoch_time_s": 133.92138409614563
+    },
+    {
+      "epoch": 18,
+      "train_loss": 0.7813083669828432,
+      "val_loss": 2.954440414016574,
+      "val_accuracy": 0.4467078937795562,
+      "val_f1_macro": 0.277487565258872,
+      "val_icbhi_score": 0.5606225108167293,
+      "w_sound": 0.0898,
+      "w_disease": 1.9102,
+      "epoch_time_s": 133.4640679359436
+    },
+    {
+      "epoch": 19,
+      "train_loss": 0.7323014642509043,
+      "val_loss": 2.2283646737328007,
+      "val_accuracy": 0.5405602037104401,
+      "val_f1_macro": 0.4099677865526455,
+      "val_icbhi_score": 0.6127096764729117,
+      "w_sound": 0.083,
+      "w_disease": 1.917,
+      "epoch_time_s": 133.72834658622742
+    },
+    {
+      "epoch": 20,
+      "train_loss": 0.6691733893787295,
+      "val_loss": 2.1717539274202515,
+      "val_accuracy": 0.4849036013095671,
+      "val_f1_macro": 0.36485756695619503,
+      "val_icbhi_score": 0.6034505850215425,
+      "w_sound": 0.0774,
+      "w_disease": 1.9226,
+      "epoch_time_s": 135.6380271911621
+    },
+    {
+      "epoch": 21,
+      "train_loss": 0.6101982149338832,
+      "val_loss": 2.435455166283153,
+      "val_accuracy": 0.457984721716988,
+      "val_f1_macro": 0.3459246647407305,
+      "val_icbhi_score": 0.5966381174512597,
+      "w_sound": 0.0728,
+      "w_disease": 1.9272,
+      "epoch_time_s": 135.08571910858154
+    },
+    {
+      "epoch": 22,
+      "train_loss": 0.5521486438191291,
+      "val_loss": 2.417924675433234,
+      "val_accuracy": 0.5347399054201528,
+      "val_f1_macro": 0.4437023215997743,
+      "val_icbhi_score": 0.6308892013175723,
+      "w_sound": 0.0672,
+      "w_disease": 1.9328,
+      "epoch_time_s": 136.102876663208
+    },
+    {
+      "epoch": 23,
+      "train_loss": 0.4948913068994323,
+      "val_loss": 2.4468911564016222,
+      "val_accuracy": 0.4550745725718443,
+      "val_f1_macro": 0.3906278154119897,
+      "val_icbhi_score": 0.6189473762848399,
+      "w_sound": 0.0627,
+      "w_disease": 1.9373,
+      "epoch_time_s": 135.98831462860107
+    },
+    {
+      "epoch": 24,
+      "train_loss": 0.4662089986840223,
+      "val_loss": 2.5766962305681624,
+      "val_accuracy": 0.3099308839578028,
+      "val_f1_macro": 0.3056045048102551,
+      "val_icbhi_score": 0.6011579629485237,
+      "w_sound": 0.0582,
+      "w_disease": 1.9418,
+      "epoch_time_s": 136.5891969203949
+    },
+    {
+      "epoch": 25,
+      "train_loss": 0.44001796866761944,
+      "val_loss": 2.3789253819851757,
+      "val_accuracy": 0.48417606402328117,
+      "val_f1_macro": 0.37791024317135596,
+      "val_icbhi_score": 0.6073465640794452,
+      "w_sound": 0.0556,
+      "w_disease": 1.9444,
+      "epoch_time_s": 137.10012245178223
+    },
+    {
+      "epoch": 26,
+      "train_loss": 0.3758969221898923,
+      "val_loss": 2.5172923410879826,
+      "val_accuracy": 0.4634412513641324,
+      "val_f1_macro": 0.3844482453948674,
+      "val_icbhi_score": 0.6236086803773225,
+      "w_sound": 0.051,
+      "w_disease": 1.949,
+      "epoch_time_s": 136.2030520439148
+    },
+    {
+      "epoch": 27,
+      "train_loss": 0.34189979539890986,
+      "val_loss": 2.4924654060383196,
+      "val_accuracy": 0.46380502000727536,
+      "val_f1_macro": 0.3815041981284553,
+      "val_icbhi_score": 0.6155680179143269,
+      "w_sound": 0.0473,
+      "w_disease": 1.9527,
+      "epoch_time_s": 135.57344317436218
+    },
+    {
+      "epoch": 28,
+      "train_loss": 0.33354300353922994,
+      "val_loss": 2.4270219905196906,
+      "val_accuracy": 0.4758093852309931,
+      "val_f1_macro": 0.3871509582315636,
+      "val_icbhi_score": 0.616403131050236,
+      "w_sound": 0.0455,
+      "w_disease": 1.9545,
+      "epoch_time_s": 137.31948351860046
+    },
+    {
+      "epoch": 29,
+      "train_loss": 0.3213767220411395,
+      "val_loss": 2.4896867565780867,
+      "val_accuracy": 0.46962531829756277,
+      "val_f1_macro": 0.3793588006996349,
+      "val_icbhi_score": 0.6122963356802882,
+      "w_sound": 0.0415,
+      "w_disease": 1.9585,
+      "epoch_time_s": 137.65143156051636
+    },
+    {
+      "epoch": 30,
+      "train_loss": 0.32002961282185344,
+      "val_loss": 2.4963567725265188,
+      "val_accuracy": 0.467442706438705,
+      "val_f1_macro": 0.37762445255805754,
+      "val_icbhi_score": 0.6125857985297847,
+      "w_sound": 0.041,
+      "w_disease": 1.959,
+      "epoch_time_s": 136.32151532173157
+    }
+  ]
+}

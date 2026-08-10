@@ -1,0 +1,8 @@
+{
+  "ECE_Uncalibrated": 0.2701,
+  "ECE_Calibrated": 0.2635,
+  "Optimal_Temperature": 1.4875,
+  "NLL_Uncalibrated": 1.3293,
+  "NLL_Calibrated": 1.3474,
+  "ECE_Improvement": 0.0066
+}

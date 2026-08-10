@@ -1,0 +1,12 @@
+===========================================================
+OPEN-WORLD UNKNOWN DETECTION PERFORMANCE (PATIENT-LEVEL)
+============================================================
+M15 v5 Cross-Task Disagreement (MTL Backbone):
+  AUROC:  0.4073
+  AUPR:   0.183
+  FPR95:  0.8846
+
+M29 Energy-based OOD Baseline (using M31 Sound Head):
+  AUROC:  0.4052
+  AUPR:   0.1552
+============================================================

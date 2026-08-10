@@ -1,0 +1,114 @@
+{
+  "meta": {
+    "model_id": "M19",
+    "model_name": "Out-Of-Distribution (OOD) Generalization Evaluation",
+    "member": "B",
+    "member_name": "Member B (Disease Diagnosis & OWL)",
+    "date_completed": "2026-08-05",
+    "is_augmented": false,
+    "augmentation_method": "none",
+    "notes": "OOD transfer evaluation of M17 Stage-2 prototypical model on external audio datasets. Evaluates transfer to Coswara and SPRSound external populations. Replaces legacy synthetic metrics with real audio evaluation. Chunk F compliance."
+  },
+  "config": {
+    "model_id": "M19",
+    "model_name": "OOD Generalization Evaluation (Coswara, SPRSound, ICBHI)",
+    "member": "B",
+    "seed": 42,
+    "sample_rate": 16000,
+    "duration_s": 8.0,
+    "n_mels": 128,
+    "n_fft": 1024,
+    "hop_length": 160,
+    "win_length": 400,
+    "f_min": 50,
+    "f_max": 2000,
+    "n_samples": 128000,
+    "n_frames": 801,
+    "known_stage2_classes": [
+      "COPD",
+      "Healthy",
+      "URTI",
+      "Incorporated_Unknown"
+    ],
+    "batch_size": 32,
+    "m2_ckpt_path": "/kaggle/input/datasets/barshonbasak/m2-checkpoint/best_model.pth",
+    "m17_ckpt_path": "/kaggle/input/datasets/barshonbasak/m17-checkpoint/best_model.pth",
+    "coswara_path": "/kaggle/input/datasets/sarabhian/coswara-dataset-heavy-cough/coswara_data/kaggle_data/pGxub66GjDdAaJDd95hGHo3BcnJ3",
+    "sprsound_path": "/kaggle/input/datasets/mayarelghandour/sprsound-nosplit",
+    "icbhi_path": "/kaggle/input/datasets/vbookshelf/respiratory-sound-database/Respiratory_Sound_Database/Respiratory_Sound_Database/audio_and_txt_files",
+    "results_dir": "/kaggle/working/results_M19"
+  },
+  "environment": {
+    "platform": "Kaggle",
+    "gpu_name": "Tesla T4",
+    "pytorch_version": "2.10.0+cu128",
+    "python_version": "3.12.13"
+  },
+  "efficiency": {
+    "total_params": 4153556,
+    "trainable_params": 0,
+    "gpu_name": "Tesla T4"
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_Coswara_SPRSound",
+    "data_source": "real_audio",
+    "total_samples_evaluated": 1407,
+    "datasets_evaluated": [
+      "ICBHI_Unknown",
+      "Coswara_OOD",
+      "SPRSound_OOD"
+    ]
+  },
+  "best_metrics": {
+    "auroc": 0.3287,
+    "aupr": 0.6366,
+    "per_dataset_results": {
+      "ICBHI_Unknown": {
+        "auroc": 0.5543,
+        "aupr": 0.0883,
+        "num_samples": 26,
+        "mean_score": 0.9748,
+        "std_score": 0.2526
+      },
+      "Coswara_OOD": {
+        "auroc": 0.4881,
+        "aupr": 0.0102,
+        "num_samples": 2,
+        "mean_score": 0.8698,
+        "std_score": 0.0
+      },
+      "SPRSound_OOD": {
+        "auroc": 0.3226,
+        "aupr": 0.6265,
+        "num_samples": 1000,
+        "mean_score": 0.7762,
+        "std_score": 0.2224
+      }
+    }
+  },
+  "ablation": {
+    "ablation_group": "ood_generalization",
+    "ablation_role": "primary_novelty",
+    "baseline_model_id": "M17",
+    "variable_changed": "external_dataset_ood_transfer_eval",
+    "variables_held_constant": [
+      "teacher_model: M17_Stage2_Prototypical",
+      "m2_backbone: 2D_CNN",
+      "seed: 42"
+    ],
+    "component_flags": {
+      "has_sound_event_head": true,
+      "has_disease_head": true,
+      "has_cross_task_consistency": true,
+      "has_cqkd_regularization": false,
+      "has_openmax_rejection": false,
+      "owl_stage": 2,
+      "compression_clusters": null
+    },
+    "loss_weights": {
+      "sound_event_weight": null,
+      "disease_weight": null,
+      "consistency_weight": null
+    }
+  }
+}

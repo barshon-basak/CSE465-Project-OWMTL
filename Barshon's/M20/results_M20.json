@@ -1,0 +1,79 @@
+{
+  "meta": {
+    "model_id": "M20",
+    "model_name": "Temperature Scaling Calibration & ECE",
+    "member": "B",
+    "member_name": "Member B (Disease Diagnosis & OWL)",
+    "date_completed": "2026-08-05",
+    "is_augmented": false,
+    "augmentation_method": "none",
+    "notes": "Post-hoc temperature scaling calibration on real ICBHI validation audio logits. Chunk G compliance."
+  },
+  "config": {
+    "model_id": "M20",
+    "model_name": "Temperature Scaling Calibration & ECE",
+    "member": "B",
+    "seed": 42,
+    "sample_rate": 16000,
+    "duration_s": 8.0,
+    "n_mels": 128,
+    "n_fft": 1024,
+    "hop_length": 160,
+    "win_length": 400,
+    "f_min": 50,
+    "f_max": 2000,
+    "n_samples": 128000,
+    "n_frames": 801,
+    "known_classes": [
+      "COPD",
+      "Healthy",
+      "URTI"
+    ],
+    "batch_size": 32,
+    "m2_ckpt_path": "/kaggle/input/datasets/barshonbasak/m2-checkpoint/best_model.pth",
+    "m17_ckpt_path": "/kaggle/input/datasets/barshonbasak/m17-checkpoint/best_model.pth",
+    "icbhi_path": "/kaggle/input/datasets/vbookshelf/respiratory-sound-database/Respiratory_Sound_Database/Respiratory_Sound_Database/audio_and_txt_files",
+    "results_dir": "/kaggle/working/results_M20"
+  },
+  "environment": {
+    "platform": "Kaggle",
+    "gpu_name": "Tesla T4",
+    "pytorch_version": "2.10.0+cu128",
+    "python_version": "3.12.13"
+  },
+  "efficiency": {
+    "total_params": 4153556,
+    "trainable_params": 1,
+    "gpu_name": "Tesla T4"
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "data_source": "real_audio",
+    "total_samples_evaluated": 851
+  },
+  "best_metrics": {
+    "ece_uncalibrated": 0.2701,
+    "ece_calibrated": 0.2635,
+    "optimal_temperature": 1.4875,
+    "nll_uncalibrated": 1.3293,
+    "nll_calibrated": 1.3474,
+    "ece_improvement": 0.0066
+  },
+  "ablation": {
+    "ablation_group": "trust_calibration",
+    "ablation_role": "calibration_wrapper",
+    "baseline_model_id": "M17",
+    "variable_changed": "temperature_scaling",
+    "variables_held_constant": [
+      "backbone: M2_CNN",
+      "seed: 42"
+    ],
+    "component_flags": {
+      "has_sound_event_head": true,
+      "has_disease_head": true,
+      "has_temperature_scaling": true,
+      "owl_stage": 2
+    },
+    "loss_weights": {}
+  }
+}

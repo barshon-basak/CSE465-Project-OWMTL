@@ -1,0 +1,6 @@
+{
+  "Coswara_OOD_AUROC": 0.4881,
+  "SPRSound_OOD_AUROC": 0.3226,
+  "Overall_OOD_AUROC": 0.32874244119790974,
+  "Overall_OOD_AUPR": 0.6365624865682846
+}

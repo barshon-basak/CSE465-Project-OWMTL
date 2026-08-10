@@ -1,0 +1,62 @@
+{
+  "meta": {
+    "model_id": "M24",
+    "model_name": "Class-Balanced Open-World Disease Recognition",
+    "contributor": "Barshon",
+    "date_completed": "2026-08-07",
+    "is_augmented": true,
+    "augmentation_method": "class_balanced_time_freq_masking",
+    "notes": "Evaluated on real ICBHI audio cycles with targeted minority class augmentation"
+  },
+  "config": {
+    "model_id": "M24",
+    "model_name": "Class-Balanced Open-World Disease Recognition",
+    "contributor": "Barshon",
+    "seed": 42,
+    "sample_rate": 16000,
+    "duration_s": 8.0,
+    "n_mels": 128,
+    "n_fft": 1024,
+    "hop_length": 160,
+    "win_length": 400,
+    "f_min": 50,
+    "f_max": 2000,
+    "n_samples": 128000,
+    "n_frames": 801,
+    "disease_classes": [
+      "Healthy",
+      "COPD",
+      "URTI_Other"
+    ],
+    "num_classes": 3,
+    "batch_size": 16,
+    "num_epochs": 30,
+    "lr": 0.0001,
+    "weight_decay": 0.0001,
+    "auto_resume": true,
+    "force_scratch": false,
+    "m15_baseline_auroc": 0.6466,
+    "data_root": "/kaggle/input/datasets/vbookshelf/respiratory-sound-database/Respiratory_Sound_Database/Respiratory_Sound_Database/audio_and_txt_files",
+    "ckpt_dir": "/kaggle/working/checkpoints_M24",
+    "results_dir": "/kaggle/working/results_M24"
+  },
+  "environment": {
+    "platform": "Kaggle",
+    "gpu_name": "Tesla T4",
+    "pytorch_version": "2.10.0+cu128",
+    "python_version": "3.12.13"
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "data_source": "real_audio",
+    "train_samples": 4758,
+    "eval_samples": 2140,
+    "split_method": "patient_independent_70_30"
+  },
+  "best_metrics": {
+    "auroc": 0.6739,
+    "aupr": 0.3717,
+    "fpr95_tpr": 0.8804,
+    "m15_baseline_auroc": 0.6466
+  }
+}

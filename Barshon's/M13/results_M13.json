@@ -1,0 +1,460 @@
+{
+  "meta": {
+    "model_id": "M13",
+    "model_name": "Prototypical Disease Head on M12 Backbone \u2014 v4",
+    "member": "B",
+    "member_name": "Member B (Disease Diagnosis & OWL)",
+    "date_completed": "2026-08-05",
+    "is_augmented": false,
+    "augmentation_method": "none",
+    "notes": "v4: Prototypical network disease head replacing broken v1-v3 softmax classifiers. Loads REAL ICBHI audio (no synthetic data). Uses M2/M12 frozen backbone embeddings. Patient-level evaluation. Answers Attack 5 (URTI n=14) from Novelty Search.md. Previous versions used SyntheticICBHIDataset (torch.randn) \u2014 all were flagged by audit.",
+    "v4_method": "prototypical_network",
+    "v4_vs_v3": {
+      "v3_urti_recall": 0.026,
+      "v3_data": "synthetic (torch.randn)",
+      "v4_data": "real ICBHI audio",
+      "v4_method": "prototypical nearest-class-mean"
+    }
+  },
+  "config": {
+    "sample_rate": 16000,
+    "n_mels": 128,
+    "n_fft": 1024,
+    "hop_length": 160,
+    "win_length": 400,
+    "f_min": 50,
+    "f_max": 2000,
+    "batch_size": 32,
+    "proto_episodes": 200,
+    "proto_n_support": 5,
+    "proto_n_query": 10,
+    "proto_lr": 0.0001,
+    "proto_embed_dim": 256,
+    "proto_temperature": 0.1,
+    "optimizer": "AdamW",
+    "scheduler": "CosineAnnealingLR",
+    "architecture": "PrototypicalDiseaseHead on frozen M2_CNN",
+    "backbone": "M2_CNN(depth=5, base_width=48)",
+    "seed": 42,
+    "freeze_backbone": true
+  },
+  "environment": {
+    "platform": "Colab",
+    "gpu_name": "Tesla T4",
+    "pytorch_version": "2.10.0+cu128",
+    "python_version": "3.12.13"
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "data_source": "real_audio",
+    "train_cycles": 3216,
+    "test_cycles": 3095,
+    "train_patients": 61,
+    "test_patients": 43,
+    "split_method": "patient_independent_stratified_60_40",
+    "patient_leakage_verified": true,
+    "disease_classes": [
+      "COPD",
+      "Healthy",
+      "URTI"
+    ]
+  },
+  "efficiency": {
+    "total_params": 4153556,
+    "trainable_params": 526080,
+    "frozen_params": 3627476,
+    "model_size_mb": 16.61,
+    "training_time_total_s": 1.53,
+    "gpu_name": "Tesla T4"
+  },
+  "best_epoch": {
+    "episode": 180,
+    "primary_metric": "f1_macro",
+    "primary_metric_value": 0.4644
+  },
+  "best_metrics": {
+    "accuracy": 0.7209,
+    "precision_macro": 0.624,
+    "recall_macro": 0.5956,
+    "f1_macro": 0.6061,
+    "specificity_macro": 0.8319,
+    "icbhi_score": 0.7137,
+    "per_class": {
+      "COPD": {
+        "precision": 0.8276,
+        "recall": 0.9231,
+        "specificity": 0.7059,
+        "f1": 0.8727,
+        "support": 26
+      },
+      "Healthy": {
+        "precision": 0.4444,
+        "recall": 0.3636,
+        "specificity": 0.8438,
+        "f1": 0.4,
+        "support": 11
+      },
+      "URTI": {
+        "precision": 0.6,
+        "recall": 0.5,
+        "specificity": 0.9459,
+        "f1": 0.5455,
+        "support": 6
+      }
+    },
+    "confusion_matrix_raw": [
+      [
+        24,
+        2,
+        0
+      ],
+      [
+        5,
+        4,
+        2
+      ],
+      [
+        0,
+        3,
+        3
+      ]
+    ],
+    "confusion_matrix_normalized": [
+      [
+        0.9231,
+        0.0769,
+        0.0
+      ],
+      [
+        0.4545,
+        0.3636,
+        0.1818
+      ],
+      [
+        0.0,
+        0.5,
+        0.5
+      ]
+    ]
+  },
+  "cycle_level_metrics": {
+    "accuracy": 0.7703,
+    "precision_macro": 0.4462,
+    "recall_macro": 0.5703,
+    "f1_macro": 0.4644,
+    "specificity_macro": 0.8608,
+    "icbhi_score": 0.7155,
+    "per_class": {
+      "COPD": {
+        "precision": 0.9753,
+        "recall": 0.8031,
+        "specificity": 0.8041,
+        "f1": 0.8809,
+        "support": 2804
+      },
+      "Healthy": {
+        "precision": 0.1329,
+        "recall": 0.4467,
+        "specificity": 0.8516,
+        "f1": 0.2049,
+        "support": 150
+      },
+      "URTI": {
+        "precision": 0.2305,
+        "recall": 0.461,
+        "specificity": 0.9265,
+        "f1": 0.3073,
+        "support": 141
+      }
+    },
+    "confusion_matrix_raw": [
+      [
+        2252,
+        376,
+        176
+      ],
+      [
+        42,
+        67,
+        41
+      ],
+      [
+        15,
+        61,
+        65
+      ]
+    ],
+    "confusion_matrix_normalized": [
+      [
+        0.8031,
+        0.1341,
+        0.0628
+      ],
+      [
+        0.28,
+        0.4467,
+        0.2733
+      ],
+      [
+        0.1064,
+        0.4326,
+        0.461
+      ]
+    ]
+  },
+  "ablation": {
+    "ablation_group": "disease_head_architecture",
+    "ablation_role": "variant",
+    "baseline_model_id": "M12",
+    "variable_changed": "disease_head: prototypical network (v4) replacing softmax classifier (v1-v3)",
+    "variables_held_constant": [
+      "backbone: M2_CNN (FROZEN)",
+      "data_split: patient_independent_stratified_60_40",
+      "augmentation: none",
+      "seed: 42"
+    ],
+    "component_flags": {
+      "has_sound_event_head": false,
+      "has_disease_head": true,
+      "has_prototypical_head": true,
+      "has_cross_task_consistency": false,
+      "has_cqkd_regularization": false,
+      "has_openmax_rejection": false,
+      "owl_stage": 0,
+      "compression_clusters": null
+    }
+  },
+  "training_history": [
+    {
+      "episode": 1,
+      "train_loss": 4.060669898986816,
+      "train_acc": 0.36666667461395264,
+      "val_acc": 0.5402261712439418,
+      "val_f1_macro": 0.29150200790132347,
+      "lr": 9.999383162408304e-05,
+      "val_recall_COPD": 0.5723965763195435,
+      "val_recall_Healthy": 0.25333333333333335,
+      "val_recall_URTI": 0.20567375886524822
+    },
+    {
+      "episode": 10,
+      "train_loss": 1.1580528020858765,
+      "train_acc": 0.30000001192092896,
+      "val_acc": 0.5660743134087237,
+      "val_f1_macro": 0.3052338625393411,
+      "lr": 9.938441702975689e-05,
+      "val_recall_COPD": 0.6002139800285307,
+      "val_recall_Healthy": 0.26666666666666666,
+      "val_recall_URTI": 0.20567375886524822
+    },
+    {
+      "episode": 20,
+      "train_loss": 1.1467325687408447,
+      "train_acc": 0.3333333432674408,
+      "val_acc": 0.5938610662358643,
+      "val_f1_macro": 0.3261870044885979,
+      "lr": 9.75528258147577e-05,
+      "val_recall_COPD": 0.6273181169757489,
+      "val_recall_Healthy": 0.23333333333333334,
+      "val_recall_URTI": 0.3120567375886525
+    },
+    {
+      "episode": 30,
+      "train_loss": 0.9832642674446106,
+      "train_acc": 0.5333333611488342,
+      "val_acc": 0.6772213247172859,
+      "val_f1_macro": 0.3558722137307286,
+      "lr": 9.455032620941841e-05,
+      "val_recall_COPD": 0.7221825962910129,
+      "val_recall_Healthy": 0.18,
+      "val_recall_URTI": 0.3120567375886525
+    },
+    {
+      "episode": 40,
+      "train_loss": 1.0039479732513428,
+      "train_acc": 0.36666667461395264,
+      "val_acc": 0.678513731825525,
+      "val_f1_macro": 0.3632555740412899,
+      "lr": 9.04508497187474e-05,
+      "val_recall_COPD": 0.7203994293865906,
+      "val_recall_Healthy": 0.16666666666666666,
+      "val_recall_URTI": 0.3900709219858156
+    },
+    {
+      "episode": 50,
+      "train_loss": 1.051318883895874,
+      "train_acc": 0.4000000059604645,
+      "val_acc": 0.6736672051696284,
+      "val_f1_macro": 0.3798082317395541,
+      "lr": 8.53553390593274e-05,
+      "val_recall_COPD": 0.7079172610556348,
+      "val_recall_Healthy": 0.31333333333333335,
+      "val_recall_URTI": 0.375886524822695
+    },
+    {
+      "episode": 60,
+      "train_loss": 1.0379383563995361,
+      "train_acc": 0.4333333373069763,
+      "val_acc": 0.6707592891760905,
+      "val_f1_macro": 0.393155157585139,
+      "lr": 7.93892626146237e-05,
+      "val_recall_COPD": 0.699358059914408,
+      "val_recall_Healthy": 0.36,
+      "val_recall_URTI": 0.4326241134751773
+    },
+    {
+      "episode": 70,
+      "train_loss": 1.019477367401123,
+      "train_acc": 0.5666666626930237,
+      "val_acc": 0.6804523424878837,
+      "val_f1_macro": 0.39221391773924547,
+      "lr": 7.269952498697738e-05,
+      "val_recall_COPD": 0.7129101283880172,
+      "val_recall_Healthy": 0.3466666666666667,
+      "val_recall_URTI": 0.3900709219858156
+    },
+    {
+      "episode": 80,
+      "train_loss": 1.0479763746261597,
+      "train_acc": 0.4000000059604645,
+      "val_acc": 0.7117932148626818,
+      "val_f1_macro": 0.42590371944620936,
+      "lr": 6.545084971874741e-05,
+      "val_recall_COPD": 0.7403708987161198,
+      "val_recall_Healthy": 0.41333333333333333,
+      "val_recall_URTI": 0.46099290780141844
+    },
+    {
+      "episode": 90,
+      "train_loss": 0.9039229154586792,
+      "train_acc": 0.6333333253860474,
+      "val_acc": 0.7137318255250404,
+      "val_f1_macro": 0.42102991005972173,
+      "lr": 5.7821723252011586e-05,
+      "val_recall_COPD": 0.7450071326676176,
+      "val_recall_Healthy": 0.36,
+      "val_recall_URTI": 0.46808510638297873
+    },
+    {
+      "episode": 100,
+      "train_loss": 0.8550212979316711,
+      "train_acc": 0.5333333611488342,
+      "val_acc": 0.7053311793214863,
+      "val_f1_macro": 0.4122359869050429,
+      "lr": 5.0000000000000036e-05,
+      "val_recall_COPD": 0.7364479315263909,
+      "val_recall_Healthy": 0.4066666666666667,
+      "val_recall_URTI": 0.40425531914893614
+    },
+    {
+      "episode": 110,
+      "train_loss": 0.7847972512245178,
+      "train_acc": 0.6000000238418579,
+      "val_acc": 0.7169628432956381,
+      "val_f1_macro": 0.42971934483307467,
+      "lr": 4.2178276747988494e-05,
+      "val_recall_COPD": 0.7457203994293866,
+      "val_recall_Healthy": 0.41333333333333333,
+      "val_recall_URTI": 0.46808510638297873
+    },
+    {
+      "episode": 120,
+      "train_loss": 0.9291388392448425,
+      "train_acc": 0.5333333611488342,
+      "val_acc": 0.72859450726979,
+      "val_f1_macro": 0.44052302135756277,
+      "lr": 3.454915028125268e-05,
+      "val_recall_COPD": 0.757132667617689,
+      "val_recall_Healthy": 0.43333333333333335,
+      "val_recall_URTI": 0.475177304964539
+    },
+    {
+      "episode": 130,
+      "train_loss": 1.056423544883728,
+      "train_acc": 0.5333333611488342,
+      "val_acc": 0.715670436187399,
+      "val_f1_macro": 0.43585017036967716,
+      "lr": 2.7300475013022693e-05,
+      "val_recall_COPD": 0.7407275320970043,
+      "val_recall_Healthy": 0.47333333333333333,
+      "val_recall_URTI": 0.475177304964539
+    },
+    {
+      "episode": 140,
+      "train_loss": 0.842313826084137,
+      "train_acc": 0.5333333611488342,
+      "val_acc": 0.7376413570274637,
+      "val_f1_macro": 0.4417987211565193,
+      "lr": 2.0610737385376373e-05,
+      "val_recall_COPD": 0.7678316690442225,
+      "val_recall_Healthy": 0.4533333333333333,
+      "val_recall_URTI": 0.4397163120567376
+    },
+    {
+      "episode": 150,
+      "train_loss": 0.9377337694168091,
+      "train_acc": 0.5333333611488342,
+      "val_acc": 0.7453957996768982,
+      "val_f1_macro": 0.4478561427603988,
+      "lr": 1.4644660940672642e-05,
+      "val_recall_COPD": 0.776034236804565,
+      "val_recall_Healthy": 0.42,
+      "val_recall_URTI": 0.48226950354609927
+    },
+    {
+      "episode": 160,
+      "train_loss": 0.8858124613761902,
+      "train_acc": 0.6333333253860474,
+      "val_acc": 0.7576736672051696,
+      "val_f1_macro": 0.45338536469269425,
+      "lr": 9.549150281252641e-06,
+      "val_recall_COPD": 0.7902995720399429,
+      "val_recall_Healthy": 0.42,
+      "val_recall_URTI": 0.46808510638297873
+    },
+    {
+      "episode": 170,
+      "train_loss": 0.8143670558929443,
+      "train_acc": 0.5,
+      "val_acc": 0.7463651050080775,
+      "val_f1_macro": 0.4514560605404994,
+      "lr": 5.449673790581615e-06,
+      "val_recall_COPD": 0.775320970042796,
+      "val_recall_Healthy": 0.46,
+      "val_recall_URTI": 0.475177304964539
+    },
+    {
+      "episode": 180,
+      "train_loss": 0.9829460382461548,
+      "train_acc": 0.6000000238418579,
+      "val_acc": 0.7702746365105008,
+      "val_f1_macro": 0.4643711386267353,
+      "lr": 2.4471741852423254e-06,
+      "val_recall_COPD": 0.8031383737517832,
+      "val_recall_Healthy": 0.44666666666666666,
+      "val_recall_URTI": 0.46099290780141844
+    },
+    {
+      "episode": 190,
+      "train_loss": 0.6820459365844727,
+      "train_acc": 0.699999988079071,
+      "val_acc": 0.7483037156704362,
+      "val_f1_macro": 0.45133629902184147,
+      "lr": 6.155829702431178e-07,
+      "val_recall_COPD": 0.7778174037089871,
+      "val_recall_Healthy": 0.44,
+      "val_recall_URTI": 0.48936170212765956
+    },
+    {
+      "episode": 200,
+      "train_loss": 0.666909396648407,
+      "train_acc": 0.7333333492279053,
+      "val_acc": 0.7512116316639742,
+      "val_f1_macro": 0.45335178722591674,
+      "lr": 0.0,
+      "val_recall_COPD": 0.7810271041369472,
+      "val_recall_Healthy": 0.4666666666666667,
+      "val_recall_URTI": 0.46099290780141844
+    }
+  ]
+}

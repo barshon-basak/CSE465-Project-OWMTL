@@ -1,0 +1,152 @@
+{
+  "meta": {
+    "model_id": "M28",
+    "model_name": "Master Experiment Merge & Manuscript Synthesis",
+    "member": "B / Team",
+    "date_completed": "2026-08-06",
+    "notes": "Complete empirical merge across all project milestones. Protocol \u00a74 schema compliant."
+  },
+  "summary_table": [
+    {
+      "Model ID": "M2",
+      "Category": "Backbone (2D-CNN)",
+      "ICBHI Score": 0.7227,
+      "AUROC": NaN,
+      "AUPR": NaN,
+      "Params (M)": 4.15,
+      "Size (MB)": 16.6,
+      "Key Attribute": "Single 2D-CNN Backbone Baseline"
+    },
+    {
+      "Model ID": "M3",
+      "Category": "Backbone (MobileNetV2)",
+      "ICBHI Score": 0.6984,
+      "AUROC": NaN,
+      "AUPR": NaN,
+      "Params (M)": 3.8,
+      "Size (MB)": 14.0,
+      "Key Attribute": "Lightweight Depthwise Separable"
+    },
+    {
+      "Model ID": "M29",
+      "Category": "Open-Set Baseline",
+      "ICBHI Score": 0.6466,
+      "AUROC": 0.6466,
+      "AUPR": NaN,
+      "Params (M)": 4.15,
+      "Size (MB)": 16.6,
+      "Key Attribute": "OpenMax Rejection Baseline"
+    },
+    {
+      "Model ID": "M13",
+      "Category": "Core OWL Head",
+      "ICBHI Score": 0.718,
+      "AUROC": NaN,
+      "AUPR": NaN,
+      "Params (M)": 4.15,
+      "Size (MB)": 16.6,
+      "Key Attribute": "Prototypical Few-Shot Head"
+    },
+    {
+      "Model ID": "M15",
+      "Category": "Core OWL Stage 1",
+      "ICBHI Score": 0.721,
+      "AUROC": 0.582,
+      "AUPR": 0.491,
+      "Params (M)": 4.15,
+      "Size (MB)": 16.6,
+      "Key Attribute": "Stage-1 Unknown Discovery"
+    },
+    {
+      "Model ID": "M17",
+      "Category": "Core OWL Stage 2",
+      "ICBHI Score": 0.725,
+      "AUROC": 0.612,
+      "AUPR": 0.523,
+      "Params (M)": 4.15,
+      "Size (MB)": 16.6,
+      "Key Attribute": "Stage-2 Prototypical Model"
+    },
+    {
+      "Model ID": "M14",
+      "Category": "Novelty: Conformal Risk",
+      "ICBHI Score": 0.725,
+      "AUROC": 0.612,
+      "AUPR": 0.523,
+      "Params (M)": 4.15,
+      "Size (MB)": 16.6,
+      "Key Attribute": "Empirical Coverage Guarantee (95%)"
+    },
+    {
+      "Model ID": "M30",
+      "Category": "Novelty: GAF Ensemble",
+      "ICBHI Score": 0.8213,
+      "AUROC": NaN,
+      "AUPR": NaN,
+      "Params (M)": 7.96,
+      "Size (MB)": 30.6,
+      "Key Attribute": "Gated Feature Fusion (ICBHI 0.8213)"
+    },
+    {
+      "Model ID": "M16",
+      "Category": "Compression: Student",
+      "ICBHI Score": 0.708,
+      "AUROC": NaN,
+      "AUPR": NaN,
+      "Params (M)": 0.41,
+      "Size (MB)": 1.55,
+      "Key Attribute": "8.85x Compression (93.18% Acc)"
+    },
+    {
+      "Model ID": "M18",
+      "Category": "Compression: Pruned",
+      "ICBHI Score": 0.708,
+      "AUROC": NaN,
+      "AUPR": NaN,
+      "Params (M)": 1.49,
+      "Size (MB)": 1.42,
+      "Key Attribute": "60% Pruned + INT8 (93.18% Acc, 1.42 MB)"
+    },
+    {
+      "Model ID": "M21",
+      "Category": "Novelty: Curriculum",
+      "ICBHI Score": 0.705,
+      "AUROC": NaN,
+      "AUPR": NaN,
+      "Params (M)": 3.59,
+      "Size (MB)": 14.3,
+      "Key Attribute": "Acoustic Difficulty SNR Pacing"
+    },
+    {
+      "Model ID": "M20",
+      "Category": "Trust: Temp Scaling",
+      "ICBHI Score": 0.725,
+      "AUROC": NaN,
+      "AUPR": NaN,
+      "Params (M)": 4.15,
+      "Size (MB)": 16.6,
+      "Key Attribute": "T*=1.4875 (ECE 27.0% -> 26.3%)"
+    },
+    {
+      "Model ID": "M19",
+      "Category": "OOD: Coswara/SPRSound",
+      "ICBHI Score": NaN,
+      "AUROC": 0.3287,
+      "AUPR": 0.6366,
+      "Params (M)": 4.15,
+      "Size (MB)": 16.6,
+      "Key Attribute": "SPRSound Pediatric AUPR 0.6265"
+    }
+  ],
+  "novelty_highlights": {
+    "peak_icbhi_score": 0.8213,
+    "peak_novelty_model": "M30 (Gated Feature-Fusion Ensemble)",
+    "openmax_baseline_auroc": 0.6466,
+    "m17_stage2_auroc": 0.612,
+    "m14_conformal_coverage": "95.0% Guaranteed Empirical Coverage",
+    "m20_optimal_temperature": 1.4875,
+    "m20_ece_reduction": "27.01% -> 26.35%",
+    "m16_student_compression": "8.85x Parameter Reduction (0.41M Params, 93.18% Acc)",
+    "m19_sprsound_pediatric_aupr": 0.6265
+  }
+}

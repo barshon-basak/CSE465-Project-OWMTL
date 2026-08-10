@@ -1,0 +1,706 @@
+{
+  "M12": {
+    "file_path": "Asif's\\M12\\results_M12.json",
+    "model_name": "Backbone Selection (Final)",
+    "metrics": {
+      "accuracy": 0.6138,
+      "precision_macro": 0.5097,
+      "recall_macro": 0.5817,
+      "f1_macro": 0.5238,
+      "specificity_macro": 0.8638,
+      "icbhi_score": 0.7227,
+      "per_class": {
+        "Normal": {
+          "precision": 0.7889,
+          "recall": 0.6157,
+          "specificity": 0.8228,
+          "f1": 0.6916,
+          "support": 255
+        },
+        "Crackle": {
+          "precision": 0.6795,
+          "recall": 0.6463,
+          "specificity": 0.8476,
+          "f1": 0.6625,
+          "support": 164
+        },
+        "Wheeze": {
+          "precision": 0.2821,
+          "recall": 0.5789,
+          "specificity": 0.8767,
+          "f1": 0.3793,
+          "support": 38
+        },
+        "Both": {
+          "precision": 0.2881,
+          "recall": 0.4857,
+          "specificity": 0.9081,
+          "f1": 0.3617,
+          "support": 35
+        }
+      },
+      "confusion_matrix_raw": [
+        [
+          157,
+          40,
+          41,
+          17
+        ],
+        [
+          29,
+          106,
+          9,
+          20
+        ],
+        [
+          10,
+          1,
+          22,
+          5
+        ],
+        [
+          3,
+          9,
+          6,
+          17
+        ]
+      ],
+      "confusion_matrix_normalized": [
+        [
+          0.6157,
+          0.1569,
+          0.1608,
+          0.0667
+        ],
+        [
+          0.1768,
+          0.6463,
+          0.0549,
+          0.122
+        ],
+        [
+          0.2632,
+          0.0263,
+          0.5789,
+          0.1316
+        ],
+        [
+          0.0857,
+          0.2571,
+          0.1714,
+          0.4857
+        ]
+      ]
+    }
+  },
+  "M29": {
+    "file_path": "Asif's\\M29\\results_M29.json",
+    "model_name": "Open-Set Baseline Suite on the M12 Backbone",
+    "metrics": {
+      "open_set": {
+        "best_score_name": "Energy",
+        "auroc": 0.6466,
+        "aupr": 0.4131,
+        "unknown_precision": 0.4,
+        "unknown_recall": 0.1053,
+        "unknown_f1": 0.1667,
+        "n_known_patients": 42,
+        "n_unknown_patients": 19
+      },
+      "all_scores": [
+        {
+          "score": "Energy",
+          "auroc": 0.6466,
+          "aupr": 0.4131,
+          "unknown_precision": 0.4,
+          "unknown_recall": 0.1053,
+          "unknown_f1": 0.1667,
+          "threshold": -1.759033,
+          "n_known": 42,
+          "n_unknown": 19
+        },
+        {
+          "score": "Entropy",
+          "auroc": 0.5789,
+          "aupr": 0.4541,
+          "unknown_precision": 0.4,
+          "unknown_recall": 0.1053,
+          "unknown_f1": 0.1667,
+          "threshold": 0.710167,
+          "n_known": 42,
+          "n_unknown": 19
+        },
+        {
+          "score": "Mahalanobis_patient",
+          "auroc": 0.5689,
+          "aupr": 0.428,
+          "unknown_precision": 0.4,
+          "unknown_recall": 0.1053,
+          "unknown_f1": 0.1667,
+          "threshold": 897779.902166,
+          "n_known": 42,
+          "n_unknown": 19
+        },
+        {
+          "score": "Mahalanobis_class",
+          "auroc": 0.5376,
+          "aupr": 0.3352,
+          "unknown_precision": 0.0,
+          "unknown_recall": 0.0,
+          "unknown_f1": 0.0,
+          "threshold": 2596.706878,
+          "n_known": 42,
+          "n_unknown": 19
+        },
+        {
+          "score": "MSP",
+          "auroc": 0.5025,
+          "aupr": 0.4105,
+          "unknown_precision": 0.4,
+          "unknown_recall": 0.1053,
+          "unknown_f1": 0.1667,
+          "threshold": 0.443516,
+          "n_known": 42,
+          "n_unknown": 19
+        }
+      ],
+      "reference_M6_openmax": {
+        "auroc": 0.4516,
+        "aupr": 0.2352,
+        "unknown_precision": 0.2745,
+        "unknown_recall": 0.0255,
+        "source": "Barshon's/M6/result/results_M6.json (real data, audit-verified)"
+      }
+    }
+  },
+  "M2": {
+    "file_path": "Asif's\\M2\\results_M2.json",
+    "model_name": "CNN Baseline (Tuned, Final)",
+    "metrics": {
+      "accuracy": 0.6138,
+      "precision_macro": 0.5097,
+      "recall_macro": 0.5817,
+      "f1_macro": 0.5238,
+      "specificity_macro": 0.8638,
+      "icbhi_score": 0.7227,
+      "per_class": {
+        "Normal": {
+          "precision": 0.7889,
+          "recall": 0.6157,
+          "specificity": 0.8228,
+          "f1": 0.6916,
+          "support": 255
+        },
+        "Crackle": {
+          "precision": 0.6795,
+          "recall": 0.6463,
+          "specificity": 0.8476,
+          "f1": 0.6625,
+          "support": 164
+        },
+        "Wheeze": {
+          "precision": 0.2821,
+          "recall": 0.5789,
+          "specificity": 0.8767,
+          "f1": 0.3793,
+          "support": 38
+        },
+        "Both": {
+          "precision": 0.2881,
+          "recall": 0.4857,
+          "specificity": 0.9081,
+          "f1": 0.3617,
+          "support": 35
+        }
+      },
+      "confusion_matrix_raw": [
+        [
+          157,
+          40,
+          41,
+          17
+        ],
+        [
+          29,
+          106,
+          9,
+          20
+        ],
+        [
+          10,
+          1,
+          22,
+          5
+        ],
+        [
+          3,
+          9,
+          6,
+          17
+        ]
+      ],
+      "confusion_matrix_normalized": [
+        [
+          0.6157,
+          0.1569,
+          0.1608,
+          0.0667
+        ],
+        [
+          0.1768,
+          0.6463,
+          0.0549,
+          0.122
+        ],
+        [
+          0.2632,
+          0.0263,
+          0.5789,
+          0.1316
+        ],
+        [
+          0.0857,
+          0.2571,
+          0.1714,
+          0.4857
+        ]
+      ]
+    }
+  },
+  "M3": {
+    "file_path": "Asif's\\M3\\results_M3.json",
+    "model_name": "MobileNet/DenseNet Lightweight Backbone",
+    "metrics": {
+      "accuracy": 0.5915,
+      "precision_macro": 0.4848,
+      "recall_macro": 0.5431,
+      "f1_macro": 0.4904,
+      "specificity_macro": 0.8537,
+      "icbhi_score": 0.6984,
+      "per_class": {
+        "Normal": {
+          "precision": 0.7593,
+          "recall": 0.6431,
+          "specificity": 0.7806,
+          "f1": 0.6964,
+          "support": 255
+        },
+        "Crackle": {
+          "precision": 0.6691,
+          "recall": 0.5549,
+          "specificity": 0.8628,
+          "f1": 0.6067,
+          "support": 164
+        },
+        "Wheeze": {
+          "precision": 0.2609,
+          "recall": 0.6316,
+          "specificity": 0.8502,
+          "f1": 0.3692,
+          "support": 38
+        },
+        "Both": {
+          "precision": 0.25,
+          "recall": 0.3429,
+          "specificity": 0.9212,
+          "f1": 0.2892,
+          "support": 35
+        }
+      },
+      "confusion_matrix_raw": [
+        [
+          164,
+          33,
+          44,
+          14
+        ],
+        [
+          41,
+          91,
+          14,
+          18
+        ],
+        [
+          8,
+          2,
+          24,
+          4
+        ],
+        [
+          3,
+          10,
+          10,
+          12
+        ]
+      ],
+      "confusion_matrix_normalized": [
+        [
+          0.6431,
+          0.1294,
+          0.1725,
+          0.0549
+        ],
+        [
+          0.25,
+          0.5549,
+          0.0854,
+          0.1098
+        ],
+        [
+          0.2105,
+          0.0526,
+          0.6316,
+          0.1053
+        ],
+        [
+          0.0857,
+          0.2857,
+          0.2857,
+          0.3429
+        ]
+      ]
+    }
+  },
+  "M13": {
+    "file_path": "Barshon's\\M13\\results_M13.json",
+    "model_name": "Prototypical Disease Head on M12 Backbone \u2014 v4",
+    "metrics": {
+      "accuracy": 0.7209,
+      "precision_macro": 0.624,
+      "recall_macro": 0.5956,
+      "f1_macro": 0.6061,
+      "specificity_macro": 0.8319,
+      "icbhi_score": 0.7137,
+      "per_class": {
+        "COPD": {
+          "precision": 0.8276,
+          "recall": 0.9231,
+          "specificity": 0.7059,
+          "f1": 0.8727,
+          "support": 26
+        },
+        "Healthy": {
+          "precision": 0.4444,
+          "recall": 0.3636,
+          "specificity": 0.8438,
+          "f1": 0.4,
+          "support": 11
+        },
+        "URTI": {
+          "precision": 0.6,
+          "recall": 0.5,
+          "specificity": 0.9459,
+          "f1": 0.5455,
+          "support": 6
+        }
+      },
+      "confusion_matrix_raw": [
+        [
+          24,
+          2,
+          0
+        ],
+        [
+          5,
+          4,
+          2
+        ],
+        [
+          0,
+          3,
+          3
+        ]
+      ],
+      "confusion_matrix_normalized": [
+        [
+          0.9231,
+          0.0769,
+          0.0
+        ],
+        [
+          0.4545,
+          0.3636,
+          0.1818
+        ],
+        [
+          0.0,
+          0.5,
+          0.5
+        ]
+      ]
+    }
+  },
+  "M14": {
+    "file_path": "Barshon's\\M14\\v2\\results_M14.json",
+    "model_name": "Conformal Calibration Wrapper v2 \u2014 Multi-Score Sweep",
+    "metrics": {
+      "selected_score": "multiplicative (dist*ent)",
+      "cal_auroc": 0.5842,
+      "test_auroc": 0.4809,
+      "test_aupr": 0.4418,
+      "conformal_threshold_95": 0.438309,
+      "empirical_coverage_95": 0.9545,
+      "unknown_detection_rate_95": 0.0,
+      "conformal_threshold_90": 0.296464,
+      "empirical_coverage_90": 0.7273,
+      "unknown_detection_rate_90": 0.2105,
+      "conformal_threshold_80": 0.271552,
+      "empirical_coverage_80": 0.6364,
+      "unknown_detection_rate_80": 0.4211
+    }
+  },
+  "M15": {
+    "file_path": "Barshon's\\M15\\results_M15.json",
+    "model_name": "Cross-Task Consistency Scorer \u2014 v4",
+    "metrics": {
+      "auroc": 0.5782,
+      "aupr": 0.2202,
+      "fpr95": 0.8942
+    }
+  },
+  "M16": {
+    "file_path": "Barshon's\\M16\\results_M16.json",
+    "model_name": "Teacher-Student Knowledge Distillation",
+    "metrics": {
+      "student_accuracy": 0.9318,
+      "final_distill_loss": 0.2992,
+      "compression_ratio": 8.85
+    }
+  },
+  "M17": {
+    "file_path": "Barshon's\\M17\\results_M17.json",
+    "model_name": "OWL Stage 2 \u2014 Forgetting Curve v2",
+    "metrics": {
+      "stage0_retention_accuracy": 0.9376,
+      "stage2_plasticity_accuracy": 0.8561,
+      "auroc": 0.8561,
+      "aupr": 0.825,
+      "forgetting_magnitude": -0.1247,
+      "forgetting_percent": -15.34
+    }
+  },
+  "M19": {
+    "file_path": "Barshon's\\M19\\results_M19.json",
+    "model_name": "Out-Of-Distribution (OOD) Generalization Evaluation",
+    "metrics": {
+      "auroc": 0.3287,
+      "aupr": 0.6366,
+      "per_dataset_results": {
+        "ICBHI_Unknown": {
+          "auroc": 0.5543,
+          "aupr": 0.0883,
+          "num_samples": 26,
+          "mean_score": 0.9748,
+          "std_score": 0.2526
+        },
+        "Coswara_OOD": {
+          "auroc": 0.4881,
+          "aupr": 0.0102,
+          "num_samples": 2,
+          "mean_score": 0.8698,
+          "std_score": 0.0
+        },
+        "SPRSound_OOD": {
+          "auroc": 0.3226,
+          "aupr": 0.6265,
+          "num_samples": 1000,
+          "mean_score": 0.7762,
+          "std_score": 0.2224
+        }
+      }
+    }
+  },
+  "M1": {
+    "file_path": "Barshon's\\M1\\results_M1.json",
+    "model_name": "Provisional CNN Backbone",
+    "metrics": {
+      "accuracy": 0.5407,
+      "precision_macro": 0.5295,
+      "recall_macro": 0.5801,
+      "f1_macro": 0.4844,
+      "specificity_macro": 0.8561,
+      "icbhi_score": 0.7181,
+      "per_class": {
+        "Normal": {
+          "precision": 0.6707,
+          "recall": 0.8784,
+          "f1": 0.7606,
+          "support": 255
+        },
+        "Crackle": {
+          "precision": 0.6667,
+          "recall": 0.3171,
+          "f1": 0.4298,
+          "support": 164
+        },
+        "Wheeze": {
+          "precision": 0.3333,
+          "recall": 0.3684,
+          "f1": 0.35,
+          "support": 38
+        },
+        "Both": {
+          "precision": 0.4474,
+          "recall": 0.4857,
+          "f1": 0.4658,
+          "support": 35
+        }
+      },
+      "confusion_matrix_raw": [
+        [
+          224,
+          16,
+          10,
+          5
+        ],
+        [
+          85,
+          52,
+          15,
+          12
+        ],
+        [
+          15,
+          5,
+          14,
+          4
+        ],
+        [
+          10,
+          5,
+          3,
+          17
+        ]
+      ],
+      "confusion_matrix_normalized": [
+        [
+          0.8784,
+          0.0627,
+          0.0392,
+          0.0196
+        ],
+        [
+          0.5183,
+          0.3171,
+          0.0915,
+          0.0732
+        ],
+        [
+          0.3947,
+          0.1316,
+          0.3684,
+          0.1053
+        ],
+        [
+          0.2857,
+          0.1429,
+          0.0857,
+          0.4857
+        ]
+      ]
+    }
+  },
+  "M20": {
+    "file_path": "Barshon's\\M20\\results_M20.json",
+    "model_name": "Temperature Scaling Calibration & ECE",
+    "metrics": {
+      "ece_uncalibrated": 0.2701,
+      "ece_calibrated": 0.2635,
+      "optimal_temperature": 1.4875,
+      "nll_uncalibrated": 1.3293,
+      "nll_calibrated": 1.3474,
+      "ece_improvement": 0.0066
+    }
+  },
+  "M30": {
+    "file_path": "Barshon's\\M30\\results_M30.json",
+    "model_name": "M2 + M3 Gated Feature-Fusion Ensemble",
+    "metrics": {
+      "icbhi_score": 0.8213,
+      "accuracy": 0.7275,
+      "macro_f1": 0.7075,
+      "macro_precision": 0.6967,
+      "macro_recall": 0.7433,
+      "beats_m2": true,
+      "beats_m3": true
+    }
+  },
+  "M6": {
+    "file_path": "Barshon's\\M6\\result\\results_M6.json",
+    "model_name": "OpenMax + Weibull Baseline",
+    "metrics": {
+      "accuracy": 0.7689,
+      "precision_macro": 0.4401,
+      "recall_macro": 0.5892,
+      "f1_macro": 0.4561,
+      "per_class": {
+        "COPD": {
+          "precision": 0.9924,
+          "recall": 0.805,
+          "f1": 0.889,
+          "support": 1467
+        },
+        "Healthy": {
+          "precision": 0.1767,
+          "recall": 0.6667,
+          "f1": 0.2794,
+          "support": 66
+        },
+        "URTI": {
+          "precision": 0.151,
+          "recall": 0.2959,
+          "f1": 0.2,
+          "support": 98
+        }
+      },
+      "confusion_matrix_raw": [
+        [
+          1181,
+          143,
+          143
+        ],
+        [
+          2,
+          44,
+          20
+        ],
+        [
+          7,
+          62,
+          29
+        ]
+      ],
+      "confusion_matrix_normalized": [
+        [
+          0.805,
+          0.0975,
+          0.0975
+        ],
+        [
+          0.0303,
+          0.6667,
+          0.303
+        ],
+        [
+          0.0714,
+          0.6327,
+          0.2959
+        ]
+      ],
+      "open_set": {
+        "auroc": 0.4516,
+        "aupr": 0.2352,
+        "unknown_precision": 0.2745,
+        "unknown_recall": 0.0255,
+        "threshold_used": 0.05,
+        "n_known_samples": 1631,
+        "n_unknown_samples": 549
+      }
+    }
+  },
+  "M7": {
+    "file_path": "Sami's\\M7\\M7_handoff\\results_M7_aug.json",
+    "model_name": "Deep Ensemble (N=5)",
+    "metrics": {}
+  }
+}

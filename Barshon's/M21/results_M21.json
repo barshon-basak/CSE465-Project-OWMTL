@@ -1,0 +1,77 @@
+{
+  "meta": {
+    "model_id": "M21",
+    "model_name": "Acoustic Curriculum Learning on M2 Backbone",
+    "member": "B",
+    "member_name": "Member B (Disease Diagnosis & OWL)",
+    "date_completed": "2026-08-05",
+    "is_augmented": false,
+    "augmentation_method": "none",
+    "notes": "Acoustic difficulty curriculum learning on M2 backbone (Novelty Search \u00a74.2)."
+  },
+  "config": {
+    "model_id": "M21",
+    "model_name": "Acoustic Curriculum Learning on M2 Backbone",
+    "member": "B",
+    "seed": 42,
+    "sample_rate": 16000,
+    "duration_s": 8.0,
+    "n_mels": 128,
+    "n_fft": 1024,
+    "hop_length": 160,
+    "win_length": 400,
+    "f_min": 50,
+    "f_max": 2000,
+    "n_samples": 128000,
+    "n_frames": 801,
+    "sound_classes": [
+      "Normal",
+      "Crackle",
+      "Wheeze",
+      "Both"
+    ],
+    "num_classes": 4,
+    "batch_size": 32,
+    "epochs": 30,
+    "lr": 0.001,
+    "weight_decay": 0.0001,
+    "icbhi_path": "/kaggle/input/datasets/vbookshelf/respiratory-sound-database/Respiratory_Sound_Database/Respiratory_Sound_Database/audio_and_txt_files",
+    "results_dir": "/kaggle/working/results_M21"
+  },
+  "environment": {
+    "platform": "Kaggle",
+    "gpu_name": "Tesla T4",
+    "pytorch_version": "2.10.0+cu128",
+    "python_version": "3.12.13"
+  },
+  "efficiency": {
+    "total_params": 3586340,
+    "gpu_name": "Tesla T4"
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "data_source": "real_audio",
+    "total_samples_evaluated": 920
+  },
+  "best_metrics": {
+    "accuracy": 0.575,
+    "final_loss": 0.9527,
+    "curriculum_stages": 3
+  },
+  "ablation": {
+    "ablation_group": "training_strategy",
+    "ablation_role": "curriculum_learning",
+    "baseline_model_id": "M2",
+    "variable_changed": "acoustic_difficulty_curriculum",
+    "variables_held_constant": [
+      "backbone: M2_CNN",
+      "seed: 42"
+    ],
+    "component_flags": {
+      "has_sound_event_head": true,
+      "has_curriculum_learning": true,
+      "owl_stage": 0
+    },
+    "loss_weights": {}
+  }
+}

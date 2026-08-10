@@ -1,0 +1,243 @@
+{
+  "meta": {
+    "model_id": "M17",
+    "model_name": "OWL Stage 2 \u2014 Forgetting Curve v2",
+    "member": "B",
+    "member_name": "Member B (Disease Diagnosis & OWL)",
+    "date_completed": "2026-08-05",
+    "is_augmented": false,
+    "augmentation_method": "none",
+    "notes": "v2: Real ICBHI audio. Prototypical network expansion (3\u21924 classes). Replay buffer mixes known-class training cycles with Pneumonia cycles. Forgetting curve measures Stage 0 retention per epoch. Replaces v1 which used synthetic torch.randn data."
+  },
+  "config": {
+    "model_id": "M17",
+    "model_name": "OWL Stage 2 \u2014 Forgetting Curve v2",
+    "member": "B",
+    "seed": 42,
+    "sample_rate": 16000,
+    "duration_s": 8.0,
+    "n_mels": 128,
+    "n_fft": 1024,
+    "hop_length": 160,
+    "win_length": 400,
+    "f_min": 50,
+    "f_max": 2000,
+    "n_samples": 128000,
+    "n_frames": 801,
+    "disease_classes_stage0": [
+      "COPD",
+      "Healthy",
+      "URTI"
+    ],
+    "disease_classes_stage2": [
+      "COPD",
+      "Healthy",
+      "URTI",
+      "Pneumonia"
+    ],
+    "new_class_name": "Pneumonia",
+    "sound_classes": [
+      "Normal",
+      "Crackle",
+      "Wheeze",
+      "Both"
+    ],
+    "m2_depth": 5,
+    "m2_base_width": 48,
+    "proto_embed_dim": 256,
+    "proto_temperature": 0.1,
+    "batch_size": 32,
+    "num_epochs": 20,
+    "lr": 0.0001,
+    "weight_decay": 0.0001,
+    "replay_ratio": 0.5,
+    "data_root": "/kaggle/input/datasets/vbookshelf/respiratory-sound-database/Respiratory_Sound_Database/Respiratory_Sound_Database/audio_and_txt_files",
+    "m2_ckpt_path": "/kaggle/input/datasets/barshonbasak/m2-checkpoint/best_model.pth",
+    "m13_ckpt_path": "/kaggle/input/datasets/barshonbasak/m13-checkpoint/best_model.pth",
+    "results_dir": "/kaggle/working/results_M17"
+  },
+  "environment": {
+    "platform": "Kaggle",
+    "gpu_name": "Tesla T4",
+    "pytorch_version": "2.10.0+cu128",
+    "python_version": "3.12.13"
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "data_source": "real_audio",
+    "known_train_patients": 62,
+    "known_test_patients": 42,
+    "pneumonia_patients": 6,
+    "known_train_cycles": 2927,
+    "known_test_cycles": 3384,
+    "pneumonia_cycles": 285,
+    "stage0_classes": [
+      "COPD",
+      "Healthy",
+      "URTI"
+    ],
+    "stage2_classes": [
+      "COPD",
+      "Healthy",
+      "URTI",
+      "Pneumonia"
+    ]
+  },
+  "stage0_baseline": {
+    "accuracy": 0.8129,
+    "f1_macro": 0.3844
+  },
+  "best_metrics": {
+    "stage0_retention_accuracy": 0.9376,
+    "stage2_plasticity_accuracy": 0.8561,
+    "auroc": 0.8561,
+    "aupr": 0.8250,
+    "forgetting_magnitude": -0.1247,
+    "forgetting_percent": -15.34
+  },
+  "forgetting_history": [
+    {
+      "epoch": 2,
+      "train_loss": 0.0758,
+      "stage0_retention_acc": 0.9359,
+      "stage0_retention_f1": 0.4732,
+      "stage2_plasticity_acc": 0.7368
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.0612,
+      "stage0_retention_acc": 0.9134,
+      "stage0_retention_f1": 0.4374,
+      "stage2_plasticity_acc": 0.7579
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.0555,
+      "stage0_retention_acc": 0.9249,
+      "stage0_retention_f1": 0.4554,
+      "stage2_plasticity_acc": 0.7579
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.042,
+      "stage0_retention_acc": 0.9297,
+      "stage0_retention_f1": 0.4685,
+      "stage2_plasticity_acc": 0.7053
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.0437,
+      "stage0_retention_acc": 0.9294,
+      "stage0_retention_f1": 0.4614,
+      "stage2_plasticity_acc": 0.7544
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.0445,
+      "stage0_retention_acc": 0.9385,
+      "stage0_retention_f1": 0.4736,
+      "stage2_plasticity_acc": 0.7719
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.0382,
+      "stage0_retention_acc": 0.935,
+      "stage0_retention_f1": 0.4718,
+      "stage2_plasticity_acc": 0.8281
+    },
+    {
+      "epoch": 9,
+      "train_loss": 0.0423,
+      "stage0_retention_acc": 0.927,
+      "stage0_retention_f1": 0.4427,
+      "stage2_plasticity_acc": 0.8281
+    },
+    {
+      "epoch": 10,
+      "train_loss": 0.0381,
+      "stage0_retention_acc": 0.9285,
+      "stage0_retention_f1": 0.4344,
+      "stage2_plasticity_acc": 0.8386
+    },
+    {
+      "epoch": 11,
+      "train_loss": 0.0334,
+      "stage0_retention_acc": 0.9382,
+      "stage0_retention_f1": 0.4775,
+      "stage2_plasticity_acc": 0.8561
+    },
+    {
+      "epoch": 12,
+      "train_loss": 0.0302,
+      "stage0_retention_acc": 0.9382,
+      "stage0_retention_f1": 0.478,
+      "stage2_plasticity_acc": 0.8596
+    },
+    {
+      "epoch": 13,
+      "train_loss": 0.0289,
+      "stage0_retention_acc": 0.9344,
+      "stage0_retention_f1": 0.4775,
+      "stage2_plasticity_acc": 0.8772
+    },
+    {
+      "epoch": 14,
+      "train_loss": 0.0342,
+      "stage0_retention_acc": 0.9353,
+      "stage0_retention_f1": 0.458,
+      "stage2_plasticity_acc": 0.8561
+    },
+    {
+      "epoch": 15,
+      "train_loss": 0.0272,
+      "stage0_retention_acc": 0.932,
+      "stage0_retention_f1": 0.4517,
+      "stage2_plasticity_acc": 0.8105
+    },
+    {
+      "epoch": 16,
+      "train_loss": 0.03,
+      "stage0_retention_acc": 0.9368,
+      "stage0_retention_f1": 0.4827,
+      "stage2_plasticity_acc": 0.8456
+    },
+    {
+      "epoch": 17,
+      "train_loss": 0.0262,
+      "stage0_retention_acc": 0.9371,
+      "stage0_retention_f1": 0.4845,
+      "stage2_plasticity_acc": 0.8596
+    },
+    {
+      "epoch": 18,
+      "train_loss": 0.026,
+      "stage0_retention_acc": 0.9374,
+      "stage0_retention_f1": 0.4754,
+      "stage2_plasticity_acc": 0.8561
+    },
+    {
+      "epoch": 19,
+      "train_loss": 0.027,
+      "stage0_retention_acc": 0.9394,
+      "stage0_retention_f1": 0.4883,
+      "stage2_plasticity_acc": 0.8737
+    },
+    {
+      "epoch": 20,
+      "train_loss": 0.0237,
+      "stage0_retention_acc": 0.9376,
+      "stage0_retention_f1": 0.4856,
+      "stage2_plasticity_acc": 0.8561
+    }
+  ],
+  "ablation": {
+    "ablation_group": "incremental_learning_stage2",
+    "ablation_role": "primary",
+    "variable_changed": "prototypical_expansion_with_replay_buffer",
+    "variables_held_constant": [
+      "backbone: M2_CNN (FROZEN)",
+      "data_split: patient_independent",
+      "seed: 42"
+    ]
+  }
+}

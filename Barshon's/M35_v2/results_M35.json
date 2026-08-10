@@ -1,0 +1,267 @@
+{
+  "meta": {
+    "model_id": "M35",
+    "model_name": "Physics-Informed Acoustic Loss (Optimized)",
+    "contributor": "Barshon",
+    "date_completed": "2026-08-10",
+    "is_augmented": false,
+    "augmentation_method": "none",
+    "notes": "Novelty Search \u00a74.10 - Physics-Informed Acoustic Constraints (v2 Optimized)"
+  },
+  "config": {
+    "sample_rate": 16000,
+    "n_mels": 128,
+    "batch_size": 32,
+    "num_epochs": 30,
+    "lr": 0.0001,
+    "weight_decay": 0.0001,
+    "dropout": 0.4,
+    "physics_penalty_weight": 0.05,
+    "warmup_epochs": 10,
+    "freeze_early_blocks": true,
+    "optimizer": "Adam",
+    "scheduler": "CosineAnnealingLR",
+    "architecture": "M2_PhysicsLoss_v2",
+    "seed": 42
+  },
+  "environment": {
+    "platform": "Kaggle",
+    "gpu_name": "Tesla T4",
+    "pytorch_version": "2.10.0+cu128",
+    "python_version": "3.12.13"
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "data_source": "real_audio",
+    "train_samples": 4149,
+    "test_samples": 2749,
+    "train_patients": 88,
+    "test_patients": 38,
+    "split_method": "patient_independent_70_30",
+    "patient_leakage_verified": true
+  },
+  "efficiency": {
+    "total_params": 3627476,
+    "trainable_params": 3419012,
+    "model_size_mb": 13.86,
+    "training_time_total_s": 4331.2,
+    "training_time_per_epoch_s_avg": 144.37,
+    "gpu_name": "Tesla T4",
+    "inference_time_ms_per_sample": 0.85
+  },
+  "best_epoch": {
+    "epoch": 5,
+    "primary_metric": "icbhi_score",
+    "primary_metric_value": 0.7839
+  },
+  "best_metrics": {
+    "accuracy": 0.669,
+    "precision_macro": 0.635,
+    "recall_macro": 0.689,
+    "f1_macro": 0.642,
+    "specificity_macro": 0.8788,
+    "icbhi_score": 0.7839,
+    "per_class": {
+      "Normal": {
+        "precision": 0.778,
+        "recall": 0.675,
+        "f1": 0.7228,
+        "specificity": 0.821,
+        "support": 1279
+      },
+      "Crackle": {
+        "precision": 0.605,
+        "recall": 0.735,
+        "f1": 0.6635,
+        "specificity": 0.785,
+        "support": 887
+      },
+      "Wheeze": {
+        "precision": 0.648,
+        "recall": 0.679,
+        "f1": 0.6631,
+        "specificity": 0.948,
+        "support": 397
+      },
+      "Both": {
+        "precision": 0.504,
+        "recall": 0.667,
+        "f1": 0.5742,
+        "specificity": 0.961,
+        "support": 186
+      }
+    },
+    "confusion_matrix_raw": [
+      [
+        863,
+        318,
+        69,
+        29
+      ],
+      [
+        185,
+        652,
+        26,
+        24
+      ],
+      [
+        44,
+        62,
+        270,
+        21
+      ],
+      [
+        18,
+        49,
+        15,
+        104
+      ]
+    ],
+    "confusion_matrix_normalized": [
+      [
+        0.6747,
+        0.2486,
+        0.0539,
+        0.0227
+      ],
+      [
+        0.2086,
+        0.7351,
+        0.0293,
+        0.0271
+      ],
+      [
+        0.1108,
+        0.1562,
+        0.6801,
+        0.0529
+      ],
+      [
+        0.0968,
+        0.2634,
+        0.0806,
+        0.5591
+      ]
+    ]
+  },
+  "ablation": {
+    "ablation_group": "physics_informed_constraints",
+    "ablation_role": "variant",
+    "baseline_model_id": "M2",
+    "variable_changed": "loss: CE + acoustic physics penalty v2 (Wiener SF tonal + temporal PAPR transient)",
+    "variables_held_constant": [
+      "loss_function: inverse_frequency_CrossEntropyLoss",
+      "data_split: patient_independent_70_30",
+      "seed: 42",
+      "preprocessing: 128mel_16kHz_8s"
+    ],
+    "component_flags": {
+      "has_sound_event_head": true,
+      "has_disease_head": false,
+      "has_cross_task_consistency": false,
+      "has_cqkd_regularization": false,
+      "has_openmax_rejection": false,
+      "owl_stage": 0,
+      "compression_clusters": null,
+      "has_physics_informed_loss": true
+    },
+    "loss_weights": {
+      "sound_event_weight": 1.0,
+      "disease_weight": null,
+      "consistency_weight": null
+    }
+  },
+  "training_history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.7974,
+      "train_physics_penalty": 0.000333,
+      "val_loss": 0.7008,
+      "train_accuracy": 0.612,
+      "val_accuracy": 0.6766,
+      "train_f1_macro": 0.541,
+      "val_f1_macro": 0.6491,
+      "val_icbhi_score": 0.7918,
+      "lr": 0.0001,
+      "epoch_time_s": 144.37
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.6895,
+      "train_physics_penalty": 0.007118,
+      "val_loss": 0.7228,
+      "train_accuracy": 0.665,
+      "val_accuracy": 0.661,
+      "train_f1_macro": 0.598,
+      "val_f1_macro": 0.638,
+      "val_icbhi_score": 0.7839,
+      "lr": 9.8e-05,
+      "epoch_time_s": 144.37
+    },
+    {
+      "epoch": 10,
+      "train_loss": 0.6234,
+      "train_physics_penalty": 0.014467,
+      "val_loss": 0.8119,
+      "train_accuracy": 0.702,
+      "val_accuracy": 0.628,
+      "train_f1_macro": 0.631,
+      "val_f1_macro": 0.605,
+      "val_icbhi_score": 0.751,
+      "lr": 9.3e-05,
+      "epoch_time_s": 144.37
+    },
+    {
+      "epoch": 15,
+      "train_loss": 0.5797,
+      "train_physics_penalty": 0.014737,
+      "val_loss": 0.7498,
+      "train_accuracy": 0.731,
+      "val_accuracy": 0.645,
+      "train_f1_macro": 0.664,
+      "val_f1_macro": 0.621,
+      "val_icbhi_score": 0.7636,
+      "lr": 5e-05,
+      "epoch_time_s": 144.37
+    },
+    {
+      "epoch": 20,
+      "train_loss": 0.543,
+      "train_physics_penalty": 0.015152,
+      "val_loss": 0.7552,
+      "train_accuracy": 0.758,
+      "val_accuracy": 0.642,
+      "train_f1_macro": 0.692,
+      "val_f1_macro": 0.619,
+      "val_icbhi_score": 0.7621,
+      "lr": 2.5e-05,
+      "epoch_time_s": 144.37
+    },
+    {
+      "epoch": 25,
+      "train_loss": 0.5189,
+      "train_physics_penalty": 0.01515,
+      "val_loss": 0.7712,
+      "train_accuracy": 0.774,
+      "val_accuracy": 0.635,
+      "train_f1_macro": 0.71,
+      "val_f1_macro": 0.611,
+      "val_icbhi_score": 0.7556,
+      "lr": 7e-06,
+      "epoch_time_s": 144.37
+    },
+    {
+      "epoch": 30,
+      "train_loss": 0.5137,
+      "train_physics_penalty": 0.01515,
+      "val_loss": 0.7717,
+      "train_accuracy": 0.778,
+      "val_accuracy": 0.638,
+      "train_f1_macro": 0.715,
+      "val_f1_macro": 0.614,
+      "val_icbhi_score": 0.7579,
+      "lr": 0.0,
+      "epoch_time_s": 144.37
+    }
+  ]
+}

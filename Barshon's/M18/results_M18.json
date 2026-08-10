@@ -1,0 +1,144 @@
+{
+  "meta": {
+    "model_id": "M18",
+    "model_name": "Model Pruning & Quantization Sweep",
+    "member": "B",
+    "member_name": "Member B (Disease Diagnosis & OWL)",
+    "date_completed": "2026-08-05",
+    "is_augmented": false,
+    "augmentation_method": "none",
+    "notes": "Structured L1 pruning and dynamic INT8 quantization sweep across M17 backbone. Chunk F compliance."
+  },
+  "config": {
+    "model_id": "M18",
+    "model_name": "Model Pruning & Quantization Sweep",
+    "member": "B",
+    "seed": 42,
+    "sample_rate": 16000,
+    "duration_s": 8.0,
+    "n_mels": 128,
+    "n_fft": 1024,
+    "hop_length": 160,
+    "win_length": 400,
+    "f_min": 50,
+    "f_max": 2000,
+    "n_samples": 128000,
+    "n_frames": 801,
+    "known_classes": [
+      "COPD",
+      "Healthy",
+      "URTI"
+    ],
+    "batch_size": 32,
+    "m17_ckpt_path": "/kaggle/input/datasets/sudamchandrabasak/m17-checkpoint/best_model.pth",
+    "icbhi_path": "/kaggle/input/datasets/vbookshelf/respiratory-sound-database/Respiratory_Sound_Database/Respiratory_Sound_Database/audio_and_txt_files",
+    "results_dir": "/kaggle/working/results_M18"
+  },
+  "environment": {
+    "platform": "Kaggle",
+    "gpu_name": "Tesla T4",
+    "pytorch_version": "2.10.0+cu128",
+    "python_version": "3.12.13"
+  },
+  "efficiency": {
+    "base_params": 3586340,
+    "best_compressed_params": 1494193,
+    "best_model_size_mb": 5.7,
+    "best_latency_ms": 0.05,
+    "gpu_name": "Tesla T4"
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "data_source": "real_audio",
+    "total_samples_evaluated": 851
+  },
+  "best_metrics": {
+    "best_accuracy": 0.9318,
+    "best_pruning_ratio": 0.6,
+    "best_quantization_mode": "FP32",
+    "sweep_summary": [
+      {
+        "pruning_ratio": 0.0,
+        "quantization_mode": "FP32",
+        "remaining_params": 3584900,
+        "model_size_mb": 13.68,
+        "accuracy": 0.0411,
+        "latency_ms_per_sample": 1.061
+      },
+      {
+        "pruning_ratio": 0.0,
+        "quantization_mode": "INT8_Dynamic",
+        "remaining_params": 3584900,
+        "model_size_mb": 3.42,
+        "accuracy": 0.027,
+        "latency_ms_per_sample": 305.966
+      },
+      {
+        "pruning_ratio": 0.2,
+        "quantization_mode": "FP32",
+        "remaining_params": 2887997,
+        "model_size_mb": 11.02,
+        "accuracy": 0.0411,
+        "latency_ms_per_sample": 0.048
+      },
+      {
+        "pruning_ratio": 0.2,
+        "quantization_mode": "INT8_Dynamic",
+        "remaining_params": 2887997,
+        "model_size_mb": 2.75,
+        "accuracy": 0.027,
+        "latency_ms_per_sample": 312.573
+      },
+      {
+        "pruning_ratio": 0.4,
+        "quantization_mode": "FP32",
+        "remaining_params": 2191095,
+        "model_size_mb": 8.36,
+        "accuracy": 0.027,
+        "latency_ms_per_sample": 0.049
+      },
+      {
+        "pruning_ratio": 0.4,
+        "quantization_mode": "INT8_Dynamic",
+        "remaining_params": 2191095,
+        "model_size_mb": 2.09,
+        "accuracy": 0.0,
+        "latency_ms_per_sample": 306.72
+      },
+      {
+        "pruning_ratio": 0.6,
+        "quantization_mode": "FP32",
+        "remaining_params": 1494193,
+        "model_size_mb": 5.7,
+        "accuracy": 0.9318,
+        "latency_ms_per_sample": 0.05
+      },
+      {
+        "pruning_ratio": 0.6,
+        "quantization_mode": "INT8_Dynamic",
+        "remaining_params": 1494193,
+        "model_size_mb": 1.42,
+        "accuracy": 0.9318,
+        "latency_ms_per_sample": 313.295
+      }
+    ]
+  },
+  "ablation": {
+    "ablation_group": "model_compression",
+    "ablation_role": "pruning_quantization_sweep",
+    "baseline_model_id": "M17",
+    "variable_changed": "pruning_and_quantization",
+    "variables_held_constant": [
+      "backbone: M2_CNN",
+      "seed: 42"
+    ],
+    "component_flags": {
+      "has_sound_event_head": true,
+      "has_disease_head": true,
+      "has_pruning": true,
+      "has_quantization": true,
+      "owl_stage": 2
+    },
+    "loss_weights": {}
+  }
+}

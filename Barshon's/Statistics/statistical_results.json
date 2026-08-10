@@ -1,0 +1,8 @@
+{
+  "mcnemar_pvalue": 8.354067200689185e-17,
+  "mcnemar_significant": true,
+  "bootstrap_mean_diff": 0.04559524257793136,
+  "bootstrap_95ci_lower": 0.032474060638855495,
+  "bootstrap_95ci_upper": 0.058605552816944184,
+  "bootstrap_significant": true
+}

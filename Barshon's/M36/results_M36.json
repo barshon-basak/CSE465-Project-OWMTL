@@ -1,0 +1,560 @@
+{
+  "meta": {
+    "model_id": "M36",
+    "model_name": "Multistage Teacher-Assistant Distillation",
+    "contributor": "Barshon",
+    "date_completed": "2026-08-09",
+    "is_augmented": false,
+    "augmentation_method": "none",
+    "notes": "Novelty Search \u00a74.5 - Multistage Knowledge Distillation. Answers Attack 2."
+  },
+  "config": {
+    "sample_rate": 16000,
+    "n_mels": 128,
+    "batch_size": 32,
+    "num_epochs": 30,
+    "lr": 0.001,
+    "optimizer": "Adam",
+    "scheduler": "CosineAnnealingLR",
+    "architecture": "M2_TA_Distillation",
+    "seed": 42
+  },
+  "environment": {
+    "platform": "Kaggle",
+    "gpu_name": "Tesla T4",
+    "pytorch_version": "2.10.0+cu128",
+    "python_version": "3.12.13"
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "data_source": "real_audio",
+    "train_samples": 4149,
+    "test_samples": 2749,
+    "train_patients": 88,
+    "test_patients": 38,
+    "split_method": "patient_independent_70_30"
+  },
+  "efficiency": {
+    "total_params": 4980,
+    "trainable_params": 4980,
+    "model_size_mb": 0.02,
+    "training_time_total_s": 4479.27,
+    "training_time_per_epoch_s_avg": 149.31,
+    "gpu_name": "Tesla T4",
+    "inference_time_ms_per_sample": 0.46
+  },
+  "best_epoch": {
+    "epoch": 18,
+    "primary_metric": "icbhi_score",
+    "primary_metric_value": 0.5137
+  },
+  "best_metrics": {
+    "accuracy": 0.4765,
+    "precision_macro": 0.2529,
+    "recall_macro": 0.2679,
+    "f1_macro": 0.2155,
+    "specificity_macro": 0.7594,
+    "icbhi_score": 0.5137,
+    "per_class": {
+      "Normal": {
+        "precision": 0.47,
+        "recall": 0.9171,
+        "f1": 0.6215,
+        "specificity": 0.1,
+        "support": 1279
+      },
+      "Crackle": {
+        "precision": 0.5415,
+        "recall": 0.1545,
+        "f1": 0.2404,
+        "specificity": 0.9377,
+        "support": 887
+      },
+      "Wheeze": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "specificity": 1.0,
+        "support": 397
+      },
+      "Both": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "specificity": 1.0,
+        "support": 186
+      }
+    },
+    "confusion_matrix_raw": [
+      [
+        1173,
+        106,
+        0,
+        0
+      ],
+      [
+        750,
+        137,
+        0,
+        0
+      ],
+      [
+        394,
+        3,
+        0,
+        0
+      ],
+      [
+        179,
+        7,
+        0,
+        0
+      ]
+    ],
+    "confusion_matrix_normalized": [
+      [
+        0.9171,
+        0.0829,
+        0.0,
+        0.0
+      ],
+      [
+        0.8455,
+        0.1545,
+        0.0,
+        0.0
+      ],
+      [
+        0.9924,
+        0.0076,
+        0.0,
+        0.0
+      ],
+      [
+        0.9624,
+        0.0376,
+        0.0,
+        0.0
+      ]
+    ]
+  },
+  "ablation": {
+    "ablation_group": "compression_level",
+    "ablation_role": "variant",
+    "baseline_model_id": "M16",
+    "variable_changed": "distillation: staged Teacher\u2192Assistant\u2192Student (Mirzadeh 2020)",
+    "variables_held_constant": [
+      "loss_function: inverse_frequency_CrossEntropyLoss",
+      "data_split: patient_independent_70_30",
+      "seed: 42",
+      "preprocessing: 128mel_16kHz_8s"
+    ],
+    "component_flags": {
+      "has_sound_event_head": true,
+      "has_disease_head": false,
+      "has_cross_task_consistency": false,
+      "has_cqkd_regularization": false,
+      "has_openmax_rejection": false,
+      "owl_stage": 0,
+      "compression_clusters": null,
+      "has_multistage_distillation": true
+    },
+    "loss_weights": {
+      "sound_event_weight": 1.0,
+      "disease_weight": null,
+      "consistency_weight": null
+    }
+  },
+  "training_history": [
+    {
+      "epoch": 1,
+      "stage": "teacher_to_assistant",
+      "train_loss": 1.172586728360573,
+      "val_loss": 2.364039563816129,
+      "train_accuracy": 0.5419089147286822,
+      "val_accuracy": 0.46526009457984724,
+      "train_f1_macro": 0.15876365441906654,
+      "val_f1_macro": 0.15876365441906654,
+      "val_icbhi_score": 0.49999999973321807,
+      "lr": 0.0009890738003669028,
+      "epoch_time_s": 210.5836305618286
+    },
+    {
+      "epoch": 2,
+      "stage": "teacher_to_assistant",
+      "train_loss": 1.0826933532773686,
+      "val_loss": 1.9040595012476071,
+      "train_accuracy": 0.5259205426356589,
+      "val_accuracy": 0.4634412513641324,
+      "train_f1_macro": 0.1953621534820825,
+      "val_f1_macro": 0.1953621534820825,
+      "val_icbhi_score": 0.5086046729743565,
+      "lr": 0.0009567727288213003,
+      "epoch_time_s": 151.7338342666626
+    },
+    {
+      "epoch": 3,
+      "stage": "teacher_to_assistant",
+      "train_loss": 0.9904521510928015,
+      "val_loss": 1.4589061649030406,
+      "train_accuracy": 0.53125,
+      "val_accuracy": 0.5365587486358676,
+      "train_f1_macro": 0.33948537939094403,
+      "val_f1_macro": 0.33948537939094403,
+      "val_icbhi_score": 0.5847708594993991,
+      "lr": 0.0009045084971874737,
+      "epoch_time_s": 150.54349398612976
+    },
+    {
+      "epoch": 4,
+      "stage": "teacher_to_assistant",
+      "train_loss": 0.9331625030252784,
+      "val_loss": 1.5475917924053237,
+      "train_accuracy": 0.5382751937984496,
+      "val_accuracy": 0.16987995634776282,
+      "train_f1_macro": 0.13558354198321693,
+      "val_f1_macro": 0.13558354198321693,
+      "val_icbhi_score": 0.5468318168331779,
+      "lr": 0.0008345653031794292,
+      "epoch_time_s": 148.796311378479
+    },
+    {
+      "epoch": 5,
+      "stage": "teacher_to_assistant",
+      "train_loss": 0.8912201336878816,
+      "val_loss": 1.3937841064498917,
+      "train_accuracy": 0.532218992248062,
+      "val_accuracy": 0.14150600218261186,
+      "train_f1_macro": 0.15184198987956354,
+      "val_f1_macro": 0.15184198987956354,
+      "val_icbhi_score": 0.5346974923449437,
+      "lr": 0.00075,
+      "epoch_time_s": 145.37925601005554
+    },
+    {
+      "epoch": 6,
+      "stage": "teacher_to_assistant",
+      "train_loss": 0.8377752972959351,
+      "val_loss": 1.1366562630185737,
+      "train_accuracy": 0.5360949612403101,
+      "val_accuracy": 0.5340123681338669,
+      "train_f1_macro": 0.44725324121659615,
+      "val_f1_macro": 0.44725324121659615,
+      "val_icbhi_score": 0.6308140386253632,
+      "lr": 0.0006545084971874737,
+      "epoch_time_s": 147.76831436157227
+    },
+    {
+      "epoch": 7,
+      "stage": "teacher_to_assistant",
+      "train_loss": 0.7953236346131033,
+      "val_loss": 1.2404238097274811,
+      "train_accuracy": 0.5385174418604651,
+      "val_accuracy": 0.5525645689341578,
+      "train_f1_macro": 0.4208184427647362,
+      "val_f1_macro": 0.4208184427647362,
+      "val_icbhi_score": 0.6191348469641418,
+      "lr": 0.0005522642316338268,
+      "epoch_time_s": 149.4749834537506
+    },
+    {
+      "epoch": 8,
+      "stage": "teacher_to_assistant",
+      "train_loss": 0.7763654493256976,
+      "val_loss": 1.5704474558219688,
+      "train_accuracy": 0.5351259689922481,
+      "val_accuracy": 0.5431065842124408,
+      "train_f1_macro": 0.36767950781851455,
+      "val_f1_macro": 0.36767950781851455,
+      "val_icbhi_score": 0.5887219985931902,
+      "lr": 0.0004477357683661734,
+      "epoch_time_s": 148.52476167678833
+    },
+    {
+      "epoch": 9,
+      "stage": "teacher_to_assistant",
+      "train_loss": 0.7613093095045258,
+      "val_loss": 1.4557516265236365,
+      "train_accuracy": 0.5513565891472868,
+      "val_accuracy": 0.5485631138595853,
+      "train_f1_macro": 0.38715132410543024,
+      "val_f1_macro": 0.38715132410543024,
+      "val_icbhi_score": 0.5896126583423902,
+      "lr": 0.0003454915028125264,
+      "epoch_time_s": 150.85020875930786
+    },
+    {
+      "epoch": 10,
+      "stage": "teacher_to_assistant",
+      "train_loss": 0.7548975430789928,
+      "val_loss": 1.1986114239857473,
+      "train_accuracy": 0.5443313953488372,
+      "val_accuracy": 0.5762095307384504,
+      "train_f1_macro": 0.4601149489087276,
+      "val_f1_macro": 0.4601149489087276,
+      "val_icbhi_score": 0.6346632992291656,
+      "lr": 0.0002500000000000001,
+      "epoch_time_s": 151.29407572746277
+    },
+    {
+      "epoch": 11,
+      "stage": "teacher_to_assistant",
+      "train_loss": 0.7251311385163228,
+      "val_loss": 1.4265764306007016,
+      "train_accuracy": 0.5535368217054264,
+      "val_accuracy": 0.5714805383775918,
+      "train_f1_macro": 0.42452992541438195,
+      "val_f1_macro": 0.42452992541438195,
+      "val_icbhi_score": 0.6156365982054667,
+      "lr": 0.00016543469682057103,
+      "epoch_time_s": 154.12831163406372
+    },
+    {
+      "epoch": 12,
+      "stage": "teacher_to_assistant",
+      "train_loss": 0.7164988355712449,
+      "val_loss": 1.1089290806968761,
+      "train_accuracy": 0.5494186046511628,
+      "val_accuracy": 0.5729356129501637,
+      "train_f1_macro": 0.4844888878668706,
+      "val_f1_macro": 0.4844888878668706,
+      "val_icbhi_score": 0.6632877702536437,
+      "lr": 9.549150281252631e-05,
+      "epoch_time_s": 162.49815821647644
+    },
+    {
+      "epoch": 13,
+      "stage": "teacher_to_assistant",
+      "train_loss": 0.6991709189462099,
+      "val_loss": 1.1337704053355286,
+      "train_accuracy": 0.5474806201550387,
+      "val_accuracy": 0.5780283739541652,
+      "train_f1_macro": 0.4692179988594196,
+      "val_f1_macro": 0.4692179988594196,
+      "val_icbhi_score": 0.6484896143793635,
+      "lr": 4.322727117869951e-05,
+      "epoch_time_s": 160.76796293258667
+    },
+    {
+      "epoch": 14,
+      "stage": "teacher_to_assistant",
+      "train_loss": 0.7016401325372019,
+      "val_loss": 1.1872683299285969,
+      "train_accuracy": 0.561531007751938,
+      "val_accuracy": 0.5736631502364496,
+      "train_f1_macro": 0.4554819720275245,
+      "val_f1_macro": 0.4554819720275245,
+      "val_icbhi_score": 0.6383608626174039,
+      "lr": 1.0926199633097156e-05,
+      "epoch_time_s": 159.81054139137268
+    },
+    {
+      "epoch": 15,
+      "stage": "teacher_to_assistant",
+      "train_loss": 0.6789624100853144,
+      "val_loss": 1.167476283892496,
+      "train_accuracy": 0.5566860465116279,
+      "val_accuracy": 0.5671153146598763,
+      "train_f1_macro": 0.45304327663889055,
+      "val_f1_macro": 0.45304327663889055,
+      "val_icbhi_score": 0.6410286153211069,
+      "lr": 0.0,
+      "epoch_time_s": 159.09898591041565
+    },
+    {
+      "epoch": 16,
+      "stage": "assistant_to_student",
+      "train_loss": 0.7129222256616099,
+      "val_loss": 1.4241136488545023,
+      "train_accuracy": 0.5188953488372093,
+      "val_accuracy": 0.47326300472899235,
+      "train_f1_macro": 0.20255692829457367,
+      "val_f1_macro": 0.20255692829457367,
+      "val_icbhi_score": 0.509890128413264,
+      "lr": 0.0009890738003669028,
+      "epoch_time_s": 147.89551615715027
+    },
+    {
+      "epoch": 17,
+      "stage": "assistant_to_student",
+      "train_loss": 0.6391857243296784,
+      "val_loss": 1.4265337477774567,
+      "train_accuracy": 0.5525678294573644,
+      "val_accuracy": 0.4758093852309931,
+      "train_f1_macro": 0.20738801942795465,
+      "val_f1_macro": 0.20738801942795465,
+      "val_icbhi_score": 0.5117415027551723,
+      "lr": 0.0009567727288213003,
+      "epoch_time_s": 149.65471005439758
+    },
+    {
+      "epoch": 18,
+      "stage": "assistant_to_student",
+      "train_loss": 0.6262743601197936,
+      "val_loss": 1.5038851798339599,
+      "train_accuracy": 0.5508720930232558,
+      "val_accuracy": 0.476536922517279,
+      "train_f1_macro": 0.21545195770884162,
+      "val_f1_macro": 0.21545195770884162,
+      "val_icbhi_score": 0.5136596699122206,
+      "lr": 0.0009045084971874737,
+      "epoch_time_s": 143.08861827850342
+    },
+    {
+      "epoch": 19,
+      "stage": "assistant_to_student",
+      "train_loss": 0.621541765460798,
+      "val_loss": 1.3963633363747345,
+      "train_accuracy": 0.5523255813953488,
+      "val_accuracy": 0.4747180793015642,
+      "train_f1_macro": 0.2080542549620017,
+      "val_f1_macro": 0.2080542549620017,
+      "val_icbhi_score": 0.5114900493419108,
+      "lr": 0.0008345653031794292,
+      "epoch_time_s": 147.07293343544006
+    },
+    {
+      "epoch": 20,
+      "stage": "assistant_to_student",
+      "train_loss": 0.6199688671238022,
+      "val_loss": 1.421280866885194,
+      "train_accuracy": 0.5537790697674418,
+      "val_accuracy": 0.4630774827209895,
+      "train_f1_macro": 0.15877201828694365,
+      "val_f1_macro": 0.15877201828694365,
+      "val_icbhi_score": 0.49916980617708717,
+      "lr": 0.00075,
+      "epoch_time_s": 147.10089945793152
+    },
+    {
+      "epoch": 21,
+      "stage": "assistant_to_student",
+      "train_loss": 0.6188657955538367,
+      "val_loss": 1.5028648390775163,
+      "train_accuracy": 0.5515988372093024,
+      "val_accuracy": 0.46562386322299015,
+      "train_f1_macro": 0.16090663991647436,
+      "val_f1_macro": 0.16090663991647436,
+      "val_icbhi_score": 0.5004232253437433,
+      "lr": 0.0006545084971874737,
+      "epoch_time_s": 153.2519235610962
+    },
+    {
+      "epoch": 22,
+      "stage": "assistant_to_student",
+      "train_loss": 0.6114872952891304,
+      "val_loss": 1.4070704816774526,
+      "train_accuracy": 0.561046511627907,
+      "val_accuracy": 0.4659876318661331,
+      "train_f1_macro": 0.1731478801134323,
+      "val_f1_macro": 0.1731478801134323,
+      "val_icbhi_score": 0.5022390690030911,
+      "lr": 0.0005522642316338268,
+      "epoch_time_s": 151.4919011592865
+    },
+    {
+      "epoch": 23,
+      "stage": "assistant_to_student",
+      "train_loss": 0.6117306325659174,
+      "val_loss": 1.4228431617359372,
+      "train_accuracy": 0.5547480620155039,
+      "val_accuracy": 0.46998908694070574,
+      "train_f1_macro": 0.18423739266076916,
+      "val_f1_macro": 0.18423739266076916,
+      "val_icbhi_score": 0.5054873873782277,
+      "lr": 0.0004477357683661734,
+      "epoch_time_s": 144.408456325531
+    },
+    {
+      "epoch": 24,
+      "stage": "assistant_to_student",
+      "train_loss": 0.6067876342291658,
+      "val_loss": 1.400955732929442,
+      "train_accuracy": 0.5598352713178295,
+      "val_accuracy": 0.46707893779556203,
+      "train_f1_macro": 0.17382942578882848,
+      "val_f1_macro": 0.17382942578882848,
+      "val_icbhi_score": 0.50273098140981,
+      "lr": 0.0003454915028125264,
+      "epoch_time_s": 137.45880007743835
+    },
+    {
+      "epoch": 25,
+      "stage": "assistant_to_student",
+      "train_loss": 0.6036162455704276,
+      "val_loss": 1.3992460339058093,
+      "train_accuracy": 0.5566860465116279,
+      "val_accuracy": 0.46526009457984724,
+      "train_f1_macro": 0.17063195048599736,
+      "val_f1_macro": 0.17063195048599736,
+      "val_icbhi_score": 0.5015859688745982,
+      "lr": 0.0002500000000000001,
+      "epoch_time_s": 135.04005646705627
+    },
+    {
+      "epoch": 26,
+      "stage": "assistant_to_student",
+      "train_loss": 0.6029879829055518,
+      "val_loss": 1.3760986943902342,
+      "train_accuracy": 0.5569282945736435,
+      "val_accuracy": 0.46416878865041833,
+      "train_f1_macro": 0.17249747913990868,
+      "val_f1_macro": 0.17249747913990868,
+      "val_icbhi_score": 0.5015325081320556,
+      "lr": 0.00016543469682057103,
+      "epoch_time_s": 135.12228393554688
+    },
+    {
+      "epoch": 27,
+      "stage": "assistant_to_student",
+      "train_loss": 0.601919022489094,
+      "val_loss": 1.4020772052270882,
+      "train_accuracy": 0.5617732558139535,
+      "val_accuracy": 0.467442706438705,
+      "train_f1_macro": 0.1765175287591187,
+      "val_f1_macro": 0.1765175287591187,
+      "val_icbhi_score": 0.5033639478113299,
+      "lr": 9.549150281252631e-05,
+      "epoch_time_s": 133.27605652809143
+    },
+    {
+      "epoch": 28,
+      "stage": "assistant_to_student",
+      "train_loss": 0.6017386162243684,
+      "val_loss": 1.415450634285076,
+      "train_accuracy": 0.562984496124031,
+      "val_accuracy": 0.46671516915241906,
+      "train_f1_macro": 0.16814823114045394,
+      "val_f1_macro": 0.16814823114045394,
+      "val_icbhi_score": 0.5018329915896732,
+      "lr": 4.322727117869951e-05,
+      "epoch_time_s": 134.43601274490356
+    },
+    {
+      "epoch": 29,
+      "stage": "assistant_to_student",
+      "train_loss": 0.6031018202205427,
+      "val_loss": 1.4178676798630732,
+      "train_accuracy": 0.560562015503876,
+      "val_accuracy": 0.4659876318661331,
+      "train_f1_macro": 0.16770806176167977,
+      "val_f1_macro": 0.16770806176167977,
+      "val_icbhi_score": 0.5015689974872451,
+      "lr": 1.0926199633097156e-05,
+      "epoch_time_s": 134.34819102287292
+    },
+    {
+      "epoch": 30,
+      "stage": "assistant_to_student",
+      "train_loss": 0.6009671422021019,
+      "val_loss": 1.4094895146117725,
+      "train_accuracy": 0.5532945736434108,
+      "val_accuracy": 0.46671516915241906,
+      "train_f1_macro": 0.16838140119608014,
+      "val_f1_macro": 0.16838140119608014,
+      "val_icbhi_score": 0.5019598206846093,
+      "lr": 0.0,
+      "epoch_time_s": 131.0832235813141
+    }
+  ]
+}

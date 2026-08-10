@@ -1,0 +1,97 @@
+{
+  "meta": {
+    "model_id": "M15",
+    "model_name": "Cross-Task Consistency Scorer (v6)",
+    "contributor": "System",
+    "date_completed": "2026-08-10",
+    "is_augmented": false,
+    "augmentation_method": "none",
+    "notes": "v6 explicitly fixes prototype bug by caching correct class means on Known set before inference."
+  },
+  "config": {
+    "sample_rate": 16000,
+    "duration_s": 8.0,
+    "n_mels": 128,
+    "n_fft": 1024,
+    "hop_length": 160,
+    "win_length": 400,
+    "f_min": 50,
+    "f_max": 2000,
+    "n_samples": 128000,
+    "n_frames": 801,
+    "batch_size": 32,
+    "m2_ckpt": "/kaggle/input/datasets/barshonbasak/m2-checkpoint/best_model.pth",
+    "m13_ckpt": "/kaggle/input/datasets/adharabasak/m13-checkpoint/best_model.pth",
+    "ckpt_dir": "/kaggle/working/checkpoints",
+    "results_dir": "/kaggle/working/results",
+    "data_root": "/kaggle/input/datasets/vbookshelf/respiratory-sound-database/Respiratory_Sound_Database/Respiratory_Sound_Database/audio_and_txt_files"
+  },
+  "environment": {
+    "platform": "Kaggle",
+    "gpu_name": "Tesla T4",
+    "pytorch_version": "2.10.0+cu128"
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "train_samples": 6311,
+    "test_samples": 587,
+    "split_method": "patient_independent"
+  },
+  "efficiency": {
+    "total_params": 4153556,
+    "trainable_params": 0,
+    "model_size_mb": 15.87,
+    "training_time_total_s": 0,
+    "training_time_per_epoch_s_avg": 0,
+    "gpu_name": "Tesla T4",
+    "inference_time_ms_per_sample": 4.38
+  },
+  "best_epoch": {
+    "epoch": null,
+    "primary_metric": "auroc",
+    "primary_metric_value": 0.5747
+  },
+  "best_metrics": {
+    "accuracy": 0.0,
+    "precision_macro": 0.0,
+    "recall_macro": 0.0,
+    "f1_macro": 0.0,
+    "specificity_macro": 0.0,
+    "icbhi_score": 0.0,
+    "per_class": {},
+    "confusion_matrix_raw": [],
+    "confusion_matrix_normalized": [],
+    "open_set": {
+      "best_score_name": "Disagreement",
+      "auroc": 0.5747,
+      "aupr": 0.2063,
+      "baseline_energy_auroc": 0.5948
+    }
+  },
+  "ablation": {
+    "ablation_group": "rejection_method",
+    "ablation_role": "variant",
+    "baseline_model_id": "M29",
+    "variable_changed": "rejection signal: cross-task disagreement (M15) instead of Energy (M29)",
+    "variables_held_constant": [
+      "backbone",
+      "preprocessing",
+      "data_split"
+    ],
+    "component_flags": {
+      "has_sound_event_head": true,
+      "has_disease_head": true,
+      "has_cross_task_consistency": true,
+      "has_cqkd_regularization": false,
+      "has_openmax_rejection": false,
+      "owl_stage": 1,
+      "compression_clusters": null
+    },
+    "loss_weights": {
+      "sound_event_weight": 1.0,
+      "disease_weight": 1.0,
+      "consistency_weight": 1.0
+    }
+  },
+  "training_history": []
+}

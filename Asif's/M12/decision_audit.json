@@ -1,0 +1,145 @@
+{
+  "audit": {
+    "rule_version": "1.0",
+    "primary_metric": "icbhi_score",
+    "steps": [
+      {
+        "step": 1,
+        "name": "eligibility",
+        "eligible": [
+          "M2",
+          "M3",
+          "M4"
+        ],
+        "excluded": [
+          "M1"
+        ],
+        "rationale": "Model_Training_Reference.md:114 requires M2, M3, M4. M1 excluded by :144 (throwaway checkpoint superseded by M2)."
+      },
+      {
+        "step": 2,
+        "name": "rank_by_primary_metric",
+        "ranking": [
+          {
+            "model": "M2",
+            "icbhi_score": 0.7227
+          },
+          {
+            "model": "M3",
+            "icbhi_score": 0.6984
+          },
+          {
+            "model": "M4",
+            "icbhi_score": 0.6359
+          }
+        ]
+      },
+      {
+        "step": 3,
+        "name": "statistical_separation",
+        "leader": "M2",
+        "runner_up": "M3",
+        "margin": 0.0243,
+        "leader_cv_std": 0.0129,
+        "threshold": 0.0129,
+        "separated": true,
+        "interpretation": "M2 leads M3 by 0.0243, which exceeds the 0.0129 cross-validation tolerance."
+      },
+      {
+        "step": 4,
+        "name": "efficiency_tiebreak",
+        "applied": false,
+        "rationale": "Leader is statistically separated; no tiebreak needed."
+      },
+      {
+        "step": 5,
+        "name": "sanity_gate",
+        "secondary_metrics": [
+          "accuracy",
+          "f1_macro"
+        ],
+        "models_beating_winner_on_all_secondaries": [],
+        "passed": true,
+        "rationale": "Guards against selecting a model that wins on ICBHI alone while losing on both accuracy and macro-F1."
+      }
+    ],
+    "winner": "M2",
+    "sanity_gate_passed": true,
+    "tied_group": [
+      "M2"
+    ]
+  },
+  "candidates": {
+    "M1": {
+      "model_name": "Provisional CNN Backbone",
+      "architecture": "2D_CNN_4Block",
+      "accuracy": 0.5407,
+      "precision_macro": 0.5295,
+      "recall_macro": 0.5801,
+      "f1_macro": 0.4844,
+      "specificity_macro": 0.8561,
+      "icbhi_score": 0.7181,
+      "total_params": 421732,
+      "model_size_mb": 4.85,
+      "inference_time_ms_per_sample": 1.85,
+      "best_epoch": 29,
+      "cv_std": null,
+      "source": "loaded from /home/asif/Desktop/CSE465-Project-OWMTL/Barshon's/M1/results_M1.json",
+      "schema_problems": []
+    },
+    "M2": {
+      "model_name": "CNN Baseline (Tuned, Final)",
+      "architecture": "2D_CNN_5Block_w48_do0.4",
+      "accuracy": 0.6138,
+      "precision_macro": 0.5097,
+      "recall_macro": 0.5817,
+      "f1_macro": 0.5238,
+      "specificity_macro": 0.8638,
+      "icbhi_score": 0.7227,
+      "total_params": 3627476,
+      "model_size_mb": 13.86,
+      "inference_time_ms_per_sample": 2.937,
+      "best_epoch": 19,
+      "cv_std": 0.0129,
+      "source": "loaded from /home/asif/Desktop/CSE465-Project-OWMTL/Asif's/M2/results_M2.json",
+      "schema_problems": []
+    },
+    "M3": {
+      "model_name": "MobileNet/DenseNet Lightweight Backbone",
+      "architecture": "mobilenet_v2",
+      "accuracy": 0.5915,
+      "precision_macro": 0.4848,
+      "recall_macro": 0.5431,
+      "f1_macro": 0.4904,
+      "specificity_macro": 0.8537,
+      "icbhi_score": 0.6984,
+      "total_params": 2228996,
+      "model_size_mb": 8.74,
+      "inference_time_ms_per_sample": 5.42,
+      "best_epoch": 4,
+      "cv_std": 0.0068,
+      "source": "loaded from /home/asif/Desktop/CSE465-Project-OWMTL/Asif's/M3/results_M3.json",
+      "schema_problems": []
+    },
+    "M4": {
+      "model_name": "AST (Audio Spectrogram Transformer)",
+      "architecture": "AST_pretrained",
+      "accuracy": 0.5528,
+      "precision_macro": 0.5347,
+      "recall_macro": 0.4385,
+      "f1_macro": 0.4109,
+      "specificity_macro": 0.8334,
+      "icbhi_score": 0.6359,
+      "total_params": 86385668,
+      "model_size_mb": 329.54,
+      "model_size_mb_note": "state_dict estimate at fp32; M4's handoff cell reported 988.85 MB for the full checkpoint incl. optimiser state",
+      "inference_time_ms_per_sample": 86.74,
+      "best_epoch": 10,
+      "cv_std": null,
+      "source": "TRANSCRIBED from executed output of Barshon's/M4/M4_ast_backbone.ipynb (results_M4.json is not in the repo -- it lives in Barshon's Drive)",
+      "schema_problems": [
+        "results JSON not found on disk \u2014 using recorded values"
+      ]
+    }
+  }
+}

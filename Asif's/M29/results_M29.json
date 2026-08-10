@@ -1,0 +1,181 @@
+{
+  "meta": {
+    "model_id": "M29",
+    "model_name": "Open-Set Baseline Suite on the M12 Backbone",
+    "member": "A",
+    "member_name": "Asif",
+    "date_completed": "2026-08-03",
+    "is_augmented": false,
+    "augmentation_method": "none",
+    "notes": "Four standard OOD scores (MSP, entropy, energy, Mahalanobis) computed on the frozen M12 backbone's embeddings and evaluated at PATIENT level on ICBHI's real known-vs-pooled-unknown split. No training occurs; the backbone is frozen. All scorers are fit on known-fit patients only -- the 19-patient unknown group is used for evaluation exclusively (Model_Training_Reference.md:190). Exists to supply the trivial-baseline ablation demanded by Novelty Search v2 Attack 1, and to establish the real floor M15 must clear. NOTE: M29 is a new model ID not yet in Model_Training_Reference.md -- add it to the Quick Index under the rejection_method ablation group."
+  },
+  "config": {
+    "sample_rate": 16000,
+    "n_mels": 128,
+    "n_fft": 1024,
+    "hop_length": 160,
+    "win_length": 400,
+    "f_min": 50,
+    "f_max": 2000,
+    "duration_s": 8.0,
+    "architecture": "frozen M12 backbone ({'depth': 5, 'base_width': 48, 'dropout': 0.4, 'lr': 0.0005, 'scheduler': 'cosine'}) + post-hoc OOD scoring",
+    "backbone_checkpoint": "/content/drive/MyDrive/OWMTL/M2/checkpoints/best_model.pth",
+    "aggregation": "cycle scores averaged to patient level",
+    "operating_point": "threshold retains 95% of known patients",
+    "seed": 42
+  },
+  "environment": {
+    "platform": "Google Colab",
+    "gpu_name": "Tesla T4",
+    "pytorch_version": "2.11.0+cu128",
+    "python_version": "3.12.13"
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "known_classes": [
+      "COPD",
+      "Healthy",
+      "URTI"
+    ],
+    "unknown_classes": [
+      "Bronchiectasis",
+      "Pneumonia",
+      "Bronchiolitis"
+    ],
+    "excluded_classes": [
+      "Asthma",
+      "LRTI"
+    ],
+    "excluded_rationale": "Asthma (n=1) and LRTI (n=2) are too few to place in either group without distorting it, and the reference's open-set protocol names neither.",
+    "n_known_patients": 104,
+    "n_unknown_patients": 19,
+    "n_fit_patients": 62,
+    "n_known_test_patients": 42,
+    "total_cycles": 6860,
+    "split_method": "patient_independent_known_60_40; unknown group evaluation-only",
+    "patient_leakage_verified": true,
+    "unknown_group_never_fitted": true,
+    "evaluation_level": "patient"
+  },
+  "efficiency": {
+    "total_params": 3627476,
+    "trainable_params": 0,
+    "model_size_mb": null,
+    "training_time_total_s": 0,
+    "training_time_per_epoch_s_avg": 0,
+    "gpu_name": "Tesla T4",
+    "inference_time_ms_per_sample": null,
+    "note": "Backbone frozen and inherited from M12; M29 trains nothing."
+  },
+  "best_epoch": {
+    "epoch": null,
+    "primary_metric": "auroc",
+    "primary_metric_value": 0.6466
+  },
+  "best_metrics": {
+    "open_set": {
+      "best_score_name": "Energy",
+      "auroc": 0.6466,
+      "aupr": 0.4131,
+      "unknown_precision": 0.4,
+      "unknown_recall": 0.1053,
+      "unknown_f1": 0.1667,
+      "n_known_patients": 42,
+      "n_unknown_patients": 19
+    },
+    "all_scores": [
+      {
+        "score": "Energy",
+        "auroc": 0.6466,
+        "aupr": 0.4131,
+        "unknown_precision": 0.4,
+        "unknown_recall": 0.1053,
+        "unknown_f1": 0.1667,
+        "threshold": -1.759033,
+        "n_known": 42,
+        "n_unknown": 19
+      },
+      {
+        "score": "Entropy",
+        "auroc": 0.5789,
+        "aupr": 0.4541,
+        "unknown_precision": 0.4,
+        "unknown_recall": 0.1053,
+        "unknown_f1": 0.1667,
+        "threshold": 0.710167,
+        "n_known": 42,
+        "n_unknown": 19
+      },
+      {
+        "score": "Mahalanobis_patient",
+        "auroc": 0.5689,
+        "aupr": 0.428,
+        "unknown_precision": 0.4,
+        "unknown_recall": 0.1053,
+        "unknown_f1": 0.1667,
+        "threshold": 897779.902166,
+        "n_known": 42,
+        "n_unknown": 19
+      },
+      {
+        "score": "Mahalanobis_class",
+        "auroc": 0.5376,
+        "aupr": 0.3352,
+        "unknown_precision": 0.0,
+        "unknown_recall": 0.0,
+        "unknown_f1": 0.0,
+        "threshold": 2596.706878,
+        "n_known": 42,
+        "n_unknown": 19
+      },
+      {
+        "score": "MSP",
+        "auroc": 0.5025,
+        "aupr": 0.4105,
+        "unknown_precision": 0.4,
+        "unknown_recall": 0.1053,
+        "unknown_f1": 0.1667,
+        "threshold": 0.443516,
+        "n_known": 42,
+        "n_unknown": 19
+      }
+    ],
+    "reference_M6_openmax": {
+      "auroc": 0.4516,
+      "aupr": 0.2352,
+      "unknown_precision": 0.2745,
+      "unknown_recall": 0.0255,
+      "source": "Barshon's/M6/result/results_M6.json (real data, audit-verified)"
+    }
+  },
+  "ablation": {
+    "ablation_group": "rejection_method",
+    "ablation_role": "baseline",
+    "baseline_model_id": null,
+    "variable_changed": "rejection signal: trivial post-hoc OOD scores on the sound-event backbone, with no disease head and no cross-task mechanism",
+    "variables_held_constant": [
+      "backbone: M12_selected (frozen)",
+      "preprocessing: identical to M2",
+      "data_split: patient_independent",
+      "augmentation: none",
+      "seed: 42",
+      "evaluation_level: patient"
+    ],
+    "component_flags": {
+      "has_sound_event_head": true,
+      "has_disease_head": false,
+      "has_cross_task_consistency": false,
+      "has_cqkd_regularization": false,
+      "has_openmax_rejection": false,
+      "owl_stage": 1,
+      "compression_clusters": null
+    },
+    "loss_weights": {
+      "sound_event_weight": 1.0,
+      "disease_weight": null,
+      "consistency_weight": null
+    },
+    "purpose": "Mitigates Novelty Search v2 Phase 2 Attack 1: 'the paper does not show that this signal is better than simpler baselines'. Any M15 claim must clear these numbers, not only M6's."
+  },
+  "training_history": []
+}

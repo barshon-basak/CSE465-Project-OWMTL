@@ -1,0 +1,92 @@
+{
+  "meta": {
+    "model_id": "M15",
+    "model_name": "Cross-Task Consistency Scorer \u2014 v4",
+    "member": "B",
+    "member_name": "Member B (Disease Diagnosis & OWL)",
+    "date_completed": "2026-08-05",
+    "is_augmented": false,
+    "augmentation_method": "none",
+    "notes": "v4: Cross-task consistency disagreement scorer evaluated on REAL ICBHI audio. Measures structural disagreement between Sound Event implied disease profile and Prototypical Disease Head. Patient-level evaluation across 104 Known Patients and 19 Unknown Patients. Replaces legacy un-bracketed M15_metrics.json schema with full \u00a74 compliance."
+  },
+  "config": {
+    "model_id": "M15",
+    "model_name": "Cross-Task Consistency Scorer \u2014 v4",
+    "member": "B",
+    "member_name": "Member B (Disease Diagnosis & OWL)",
+    "seed": 42,
+    "sample_rate": 16000,
+    "duration_s": 8.0,
+    "n_mels": 128,
+    "n_fft": 1024,
+    "hop_length": 160,
+    "win_length": 400,
+    "f_min": 50,
+    "f_max": 2000,
+    "n_samples": 128000,
+    "n_frames": 801,
+    "disease_classes": [
+      "COPD",
+      "Healthy",
+      "URTI"
+    ],
+    "unknown_disease_classes": [
+      "Pneumonia",
+      "Bronchiectasis",
+      "Bronchiolitis"
+    ],
+    "sound_classes": [
+      "Normal",
+      "Crackle",
+      "Wheeze",
+      "Both"
+    ],
+    "batch_size": 32,
+    "m2_depth": 5,
+    "m2_base_width": 48,
+    "m2_dropout": 0.4,
+    "m2_fc_dim": 128,
+    "proto_embed_dim": 256,
+    "proto_temperature": 0.1,
+    "data_root": "/content/Respiratory_Sound_Database/Respiratory_Sound_Database/audio_and_txt_files",
+    "m2_ckpt_path": "/content/M2_best_model.pth",
+    "m13_ckpt_path": "/content/M13_best_model.pth",
+    "results_dir": "/content/results_M15"
+  },
+  "environment": {
+    "platform": "Colab",
+    "gpu_name": "Tesla T4",
+    "pytorch_version": "2.11.0+cu128",
+    "python_version": "3.12.13"
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "data_source": "real_audio",
+    "known_patients": 104,
+    "unknown_patients": 22,
+    "known_classes": [
+      "COPD",
+      "Healthy",
+      "URTI"
+    ],
+    "unknown_classes": [
+      "Pneumonia",
+      "Bronchiectasis",
+      "Bronchiolitis"
+    ]
+  },
+  "best_metrics": {
+    "auroc": 0.5782,
+    "aupr": 0.2202,
+    "fpr95": 0.8942
+  },
+  "baseline_comparisons": {
+    "m29_energy_auroc": 0.6005,
+    "reference_m6_openmax_auroc": 0.4516
+  },
+  "ablation": {
+    "ablation_group": "open_world_rejection_mechanism",
+    "ablation_role": "primary_novelty",
+    "variable_changed": "cross_task_disagreement_scoring"
+  }
+}
