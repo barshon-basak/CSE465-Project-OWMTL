@@ -1,19 +1,25 @@
 [
   {
     "model_id": "M12",
-    "path": "Asif's\\M12\\results_M12.json",
+    "path": "Asif's/M12/results_M12.json",
+    "kind": "protocol",
+    "findings": []
+  },
+  {
+    "model_id": "M2",
+    "path": "Asif's/M2/results_M2.json",
     "kind": "protocol",
     "findings": []
   },
   {
     "model_id": "M22",
-    "path": "Asif's\\M22\\result_M22\\results_M22.json",
+    "path": "Asif's/M22/result_M22/results_M22.json",
     "kind": "protocol",
     "findings": []
   },
   {
     "model_id": "M29",
-    "path": "Asif's\\M29\\results_M29.json",
+    "path": "Asif's/M29/results_M29.json",
     "kind": "protocol",
     "findings": [
       {
@@ -22,7 +28,7 @@
         "check": "schema_missing_metrics",
         "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
         "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
-        "source": "Asif's\\M29\\results_M29.json"
+        "source": "Asif's/M29/results_M29.json"
       },
       {
         "severity": "INFO",
@@ -30,7 +36,7 @@
         "check": "no_inference_latency",
         "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
         "evidence": "",
-        "source": "Asif's\\M29\\results_M29.json"
+        "source": "Asif's/M29/results_M29.json"
       },
       {
         "severity": "WARNING",
@@ -38,7 +44,7 @@
         "check": "weak_discrimination",
         "message": "`best_metrics.open_set.auroc` = 0.6466 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
         "evidence": "best_metrics.open_set.auroc = 0.6466",
-        "source": "Asif's\\M29\\results_M29.json"
+        "source": "Asif's/M29/results_M29.json"
       },
       {
         "severity": "INFO",
@@ -46,19 +52,13 @@
         "check": "cites_subchance_reference_value",
         "message": "`best_metrics.reference_M6_openmax.auroc` = 0.4516 is cited here as context from another model's already-audited result (it is at or below chance). This is not a claim about M29's own performance -- see that other model's audit entry for the underlying problem -- but do not treat it as a validity benchmark for M29.",
         "evidence": "best_metrics.reference_M6_openmax.auroc = 0.4516",
-        "source": "Asif's\\M29\\results_M29.json"
+        "source": "Asif's/M29/results_M29.json"
       }
     ]
   },
   {
-    "model_id": "M2",
-    "path": "Asif's\\M2\\results_M2.json",
-    "kind": "protocol",
-    "findings": []
-  },
-  {
     "model_id": "M3",
-    "path": "Asif's\\M3\\results_M3.json",
+    "path": "Asif's/M3/results_M3.json",
     "kind": "protocol",
     "findings": [
       {
@@ -67,460 +67,13 @@
         "check": "best_epoch_very_early",
         "message": "Best epoch 4 of 40 (10% through the budget). The remaining 36 epochs only overfit. Worth reporting, and worth checking the model was given a fair chance to converge.",
         "evidence": "best_epoch=4/40",
-        "source": "Asif's\\M3\\results_M3.json"
-      }
-    ]
-  },
-  {
-    "model_id": "M11",
-    "path": "Barshon's\\M11\\results_M11 (3).json",
-    "kind": "protocol",
-    "findings": [
-      {
-        "severity": "WARNING",
-        "model": "M11",
-        "check": "schema_missing_blocks",
-        "message": "Missing \u00a74 block(s): efficiency, best_epoch, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
-        "evidence": "efficiency, best_epoch, ablation, training_history",
-        "source": "Barshon's\\M11\\results_M11 (3).json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M11",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
-        "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
-        "source": "Barshon's\\M11\\results_M11 (3).json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M11",
-        "check": "schema_missing_ablation",
-        "message": "No \u00a74.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.",
-        "evidence": "",
-        "source": "Barshon's\\M11\\results_M11 (3).json"
-      },
-      {
-        "severity": "INFO",
-        "model": "M11",
-        "check": "patient_independence_not_asserted",
-        "message": "Split is declared patient-independent ('patient_independent_60_20_20') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
-        "evidence": "",
-        "source": "Barshon's\\M11\\results_M11 (3).json"
-      }
-    ]
-  },
-  {
-    "model_id": "M13",
-    "path": "Barshon's\\M13\\results_M13.json",
-    "kind": "protocol",
-    "findings": [
-      {
-        "severity": "INFO",
-        "model": "M13",
-        "check": "schema_incomplete_ablation",
-        "message": "`ablation` block missing: loss_weights.",
-        "evidence": "loss_weights",
-        "source": "Barshon's\\M13\\results_M13.json"
-      },
-      {
-        "severity": "INFO",
-        "model": "M13",
-        "check": "no_inference_latency",
-        "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
-        "evidence": "",
-        "source": "Barshon's\\M13\\results_M13.json"
-      }
-    ]
-  },
-  {
-    "model_id": "M14",
-    "path": "Barshon's\\M14\\v1\\results_M14.json",
-    "kind": "protocol",
-    "findings": [
-      {
-        "severity": "WARNING",
-        "model": "M14",
-        "check": "schema_missing_blocks",
-        "message": "Missing \u00a74 block(s): efficiency, best_epoch, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
-        "evidence": "efficiency, best_epoch, training_history",
-        "source": "Barshon's\\M14\\v1\\results_M14.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M14",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
-        "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
-        "source": "Barshon's\\M14\\v1\\results_M14.json"
-      },
-      {
-        "severity": "CRITICAL",
-        "model": "M14",
-        "check": "discrimination_at_or_below_chance",
-        "message": "`best_metrics.auroc` = 0.4522 is at or below chance (0.5). A random scorer would do as well or better, so this value cannot support a detection claim.",
-        "evidence": "best_metrics.auroc = 0.4522",
-        "source": "Barshon's\\M14\\v1\\results_M14.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M14",
-        "check": "weak_discrimination",
-        "message": "`baseline_comparisons.m15_auroc` = 0.5782 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
-        "evidence": "baseline_comparisons.m15_auroc = 0.5782",
-        "source": "Barshon's\\M14\\v1\\results_M14.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M14",
-        "check": "weak_discrimination",
-        "message": "`baseline_comparisons.m29_energy_auroc` = 0.6466 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
-        "evidence": "baseline_comparisons.m29_energy_auroc = 0.6466",
-        "source": "Barshon's\\M14\\v1\\results_M14.json"
-      },
-      {
-        "severity": "INFO",
-        "model": "M14",
-        "check": "cites_subchance_reference_value",
-        "message": "`baseline_comparisons.reference_m6_openmax_auroc` = 0.4516 is cited here as context from another model's already-audited result (it is at or below chance). This is not a claim about M14's own performance -- see that other model's audit entry for the underlying problem -- but do not treat it as a validity benchmark for M14.",
-        "evidence": "baseline_comparisons.reference_m6_openmax_auroc = 0.4516",
-        "source": "Barshon's\\M14\\v1\\results_M14.json"
-      },
-      {
-        "severity": "INFO",
-        "model": "M14",
-        "check": "patient_independence_not_asserted",
-        "message": "Split is declared patient-independent ('patient_independent_60_20_20') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
-        "evidence": "",
-        "source": "Barshon's\\M14\\v1\\results_M14.json"
-      }
-    ]
-  },
-  {
-    "model_id": "M14",
-    "path": "Barshon's\\M14\\v2\\results_M14.json",
-    "kind": "protocol",
-    "findings": [
-      {
-        "severity": "WARNING",
-        "model": "M14",
-        "check": "schema_missing_blocks",
-        "message": "Missing \u00a74 block(s): efficiency, best_epoch, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
-        "evidence": "efficiency, best_epoch, training_history",
-        "source": "Barshon's\\M14\\v2\\results_M14.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M14",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
-        "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
-        "source": "Barshon's\\M14\\v2\\results_M14.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M14",
-        "check": "weak_discrimination",
-        "message": "`best_metrics.cal_auroc` = 0.5842 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
-        "evidence": "best_metrics.cal_auroc = 0.5842",
-        "source": "Barshon's\\M14\\v2\\results_M14.json"
-      },
-      {
-        "severity": "CRITICAL",
-        "model": "M14",
-        "check": "discrimination_at_or_below_chance",
-        "message": "`best_metrics.test_auroc` = 0.4809 is at or below chance (0.5). A random scorer would do as well or better, so this value cannot support a detection claim.",
-        "evidence": "best_metrics.test_auroc = 0.4809",
-        "source": "Barshon's\\M14\\v2\\results_M14.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M14",
-        "check": "weak_discrimination",
-        "message": "`baseline_comparisons.m15_auroc` = 0.5782 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
-        "evidence": "baseline_comparisons.m15_auroc = 0.5782",
-        "source": "Barshon's\\M14\\v2\\results_M14.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M14",
-        "check": "weak_discrimination",
-        "message": "`baseline_comparisons.m29_energy_auroc` = 0.6466 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
-        "evidence": "baseline_comparisons.m29_energy_auroc = 0.6466",
-        "source": "Barshon's\\M14\\v2\\results_M14.json"
-      },
-      {
-        "severity": "INFO",
-        "model": "M14",
-        "check": "cites_subchance_reference_value",
-        "message": "`baseline_comparisons.reference_m6_openmax_auroc` = 0.4516 is cited here as context from another model's already-audited result (it is at or below chance). This is not a claim about M14's own performance -- see that other model's audit entry for the underlying problem -- but do not treat it as a validity benchmark for M14.",
-        "evidence": "baseline_comparisons.reference_m6_openmax_auroc = 0.4516",
-        "source": "Barshon's\\M14\\v2\\results_M14.json"
-      },
-      {
-        "severity": "INFO",
-        "model": "M14",
-        "check": "patient_independence_not_asserted",
-        "message": "Split is declared patient-independent ('patient_independent_60_20_20') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
-        "evidence": "",
-        "source": "Barshon's\\M14\\v2\\results_M14.json"
-      }
-    ]
-  },
-  {
-    "model_id": "M15",
-    "path": "Barshon's\\M15\\results_M15.json",
-    "kind": "protocol",
-    "findings": [
-      {
-        "severity": "WARNING",
-        "model": "M15",
-        "check": "schema_missing_blocks",
-        "message": "Missing \u00a74 block(s): efficiency, best_epoch, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
-        "evidence": "efficiency, best_epoch, training_history",
-        "source": "Barshon's\\M15\\results_M15.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M15",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
-        "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
-        "source": "Barshon's\\M15\\results_M15.json"
-      },
-      {
-        "severity": "INFO",
-        "model": "M15",
-        "check": "schema_incomplete_ablation",
-        "message": "`ablation` block missing: component_flags, loss_weights.",
-        "evidence": "component_flags, loss_weights",
-        "source": "Barshon's\\M15\\results_M15.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M15",
-        "check": "weak_discrimination",
-        "message": "`best_metrics.auroc` = 0.5782 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
-        "evidence": "best_metrics.auroc = 0.5782",
-        "source": "Barshon's\\M15\\results_M15.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M15",
-        "check": "weak_discrimination",
-        "message": "`baseline_comparisons.m29_energy_auroc` = 0.6005 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
-        "evidence": "baseline_comparisons.m29_energy_auroc = 0.6005",
-        "source": "Barshon's\\M15\\results_M15.json"
-      },
-      {
-        "severity": "INFO",
-        "model": "M15",
-        "check": "cites_subchance_reference_value",
-        "message": "`baseline_comparisons.reference_m6_openmax_auroc` = 0.4516 is cited here as context from another model's already-audited result (it is at or below chance). This is not a claim about M15's own performance -- see that other model's audit entry for the underlying problem -- but do not treat it as a validity benchmark for M15.",
-        "evidence": "baseline_comparisons.reference_m6_openmax_auroc = 0.4516",
-        "source": "Barshon's\\M15\\results_M15.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M15",
-        "check": "patient_independence_unclear",
-        "message": "`dataset_info.split_method` = 'None' does not state a patient-independent split, and `patient_leakage_verified` is absent. Protocol \u00a71 calls this a research-validity requirement, not a style choice -- it should be asserted in code, not assumed.",
-        "evidence": "",
-        "source": "Barshon's\\M15\\results_M15.json"
-      }
-    ]
-  },
-  {
-    "model_id": "M16",
-    "path": "Barshon's\\M16\\results_M16.json",
-    "kind": "protocol",
-    "findings": [
-      {
-        "severity": "WARNING",
-        "model": "M16",
-        "check": "schema_missing_blocks",
-        "message": "Missing \u00a74 block(s): best_epoch, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
-        "evidence": "best_epoch, training_history",
-        "source": "Barshon's\\M16\\results_M16.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M16",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
-        "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
-        "source": "Barshon's\\M16\\results_M16.json"
-      },
-      {
-        "severity": "INFO",
-        "model": "M16",
-        "check": "no_inference_latency",
-        "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
-        "evidence": "",
-        "source": "Barshon's\\M16\\results_M16.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M16",
-        "check": "patient_independence_unclear",
-        "message": "`dataset_info.split_method` = 'None' does not state a patient-independent split, and `patient_leakage_verified` is absent. Protocol \u00a71 calls this a research-validity requirement, not a style choice -- it should be asserted in code, not assumed.",
-        "evidence": "",
-        "source": "Barshon's\\M16\\results_M16.json"
-      }
-    ]
-  },
-  {
-    "model_id": "M17",
-    "path": "Barshon's\\M17\\results_M17.json",
-    "kind": "protocol",
-    "findings": [
-      {
-        "severity": "WARNING",
-        "model": "M17",
-        "check": "schema_missing_blocks",
-        "message": "Missing \u00a74 block(s): efficiency, best_epoch, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
-        "evidence": "efficiency, best_epoch, training_history",
-        "source": "Barshon's\\M17\\results_M17.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M17",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
-        "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
-        "source": "Barshon's\\M17\\results_M17.json"
-      },
-      {
-        "severity": "INFO",
-        "model": "M17",
-        "check": "schema_incomplete_ablation",
-        "message": "`ablation` block missing: component_flags, loss_weights.",
-        "evidence": "component_flags, loss_weights",
-        "source": "Barshon's\\M17\\results_M17.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M17",
-        "check": "patient_independence_unclear",
-        "message": "`dataset_info.split_method` = 'None' does not state a patient-independent split, and `patient_leakage_verified` is absent. Protocol \u00a71 calls this a research-validity requirement, not a style choice -- it should be asserted in code, not assumed.",
-        "evidence": "",
-        "source": "Barshon's\\M17\\results_M17.json"
-      }
-    ]
-  },
-  {
-    "model_id": "M18",
-    "path": "Barshon's\\M18\\results_M18.json",
-    "kind": "protocol",
-    "findings": [
-      {
-        "severity": "WARNING",
-        "model": "M18",
-        "check": "schema_missing_blocks",
-        "message": "Missing \u00a74 block(s): best_epoch, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
-        "evidence": "best_epoch, training_history",
-        "source": "Barshon's\\M18\\results_M18.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M18",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
-        "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
-        "source": "Barshon's\\M18\\results_M18.json"
-      },
-      {
-        "severity": "INFO",
-        "model": "M18",
-        "check": "no_inference_latency",
-        "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
-        "evidence": "",
-        "source": "Barshon's\\M18\\results_M18.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M18",
-        "check": "patient_independence_unclear",
-        "message": "`dataset_info.split_method` = 'None' does not state a patient-independent split, and `patient_leakage_verified` is absent. Protocol \u00a71 calls this a research-validity requirement, not a style choice -- it should be asserted in code, not assumed.",
-        "evidence": "",
-        "source": "Barshon's\\M18\\results_M18.json"
-      }
-    ]
-  },
-  {
-    "model_id": "M19",
-    "path": "Barshon's\\M19\\results_M19.json",
-    "kind": "protocol",
-    "findings": [
-      {
-        "severity": "WARNING",
-        "model": "M19",
-        "check": "schema_missing_blocks",
-        "message": "Missing \u00a74 block(s): best_epoch, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
-        "evidence": "best_epoch, training_history",
-        "source": "Barshon's\\M19\\results_M19.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M19",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
-        "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
-        "source": "Barshon's\\M19\\results_M19.json"
-      },
-      {
-        "severity": "INFO",
-        "model": "M19",
-        "check": "no_inference_latency",
-        "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
-        "evidence": "",
-        "source": "Barshon's\\M19\\results_M19.json"
-      },
-      {
-        "severity": "CRITICAL",
-        "model": "M19",
-        "check": "discrimination_at_or_below_chance",
-        "message": "`best_metrics.auroc` = 0.3287 is at or below chance (0.5). A random scorer would do as well or better, so this value cannot support a detection claim.",
-        "evidence": "best_metrics.auroc = 0.3287",
-        "source": "Barshon's\\M19\\results_M19.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M19",
-        "check": "weak_discrimination",
-        "message": "`best_metrics.per_dataset_results.ICBHI_Unknown.auroc` = 0.5543 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
-        "evidence": "best_metrics.per_dataset_results.ICBHI_Unknown.auroc = 0.5543",
-        "source": "Barshon's\\M19\\results_M19.json"
-      },
-      {
-        "severity": "CRITICAL",
-        "model": "M19",
-        "check": "discrimination_at_or_below_chance",
-        "message": "`best_metrics.per_dataset_results.Coswara_OOD.auroc` = 0.4881 is at or below chance (0.5). A random scorer would do as well or better, so this value cannot support a detection claim.",
-        "evidence": "best_metrics.per_dataset_results.Coswara_OOD.auroc = 0.4881",
-        "source": "Barshon's\\M19\\results_M19.json"
-      },
-      {
-        "severity": "CRITICAL",
-        "model": "M19",
-        "check": "discrimination_at_or_below_chance",
-        "message": "`best_metrics.per_dataset_results.SPRSound_OOD.auroc` = 0.3226 is at or below chance (0.5). A random scorer would do as well or better, so this value cannot support a detection claim.",
-        "evidence": "best_metrics.per_dataset_results.SPRSound_OOD.auroc = 0.3226",
-        "source": "Barshon's\\M19\\results_M19.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M19",
-        "check": "patient_independence_unclear",
-        "message": "`dataset_info.split_method` = 'None' does not state a patient-independent split, and `patient_leakage_verified` is absent. Protocol \u00a71 calls this a research-validity requirement, not a style choice -- it should be asserted in code, not assumed.",
-        "evidence": "",
-        "source": "Barshon's\\M19\\results_M19.json"
+        "source": "Asif's/M3/results_M3.json"
       }
     ]
   },
   {
     "model_id": "M1",
-    "path": "Barshon's\\M1\\results_M1.json",
+    "path": "Barshon's/M1/results_M1.json",
     "kind": "protocol",
     "findings": [
       {
@@ -529,13 +82,491 @@
         "check": "patient_independence_not_asserted",
         "message": "Split is declared patient-independent ('patient_independent_60_40') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
         "evidence": "",
-        "source": "Barshon's\\M1\\results_M1.json"
+        "source": "Barshon's/M1/results_M1.json"
+      }
+    ]
+  },
+  {
+    "model_id": "M11",
+    "path": "Barshon's/M11/results_M11 (3).json",
+    "kind": "protocol",
+    "findings": [
+      {
+        "severity": "WARNING",
+        "model": "M11",
+        "check": "schema_missing_blocks",
+        "message": "Missing \u00a74 block(s): efficiency, best_epoch, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
+        "evidence": "efficiency, best_epoch, ablation, training_history",
+        "source": "Barshon's/M11/results_M11 (3).json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M11",
+        "check": "schema_missing_metrics",
+        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
+        "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
+        "source": "Barshon's/M11/results_M11 (3).json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M11",
+        "check": "schema_missing_ablation",
+        "message": "No \u00a74.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.",
+        "evidence": "",
+        "source": "Barshon's/M11/results_M11 (3).json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M11",
+        "check": "patient_independence_not_asserted",
+        "message": "Split is declared patient-independent ('patient_independent_60_20_20') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
+        "evidence": "",
+        "source": "Barshon's/M11/results_M11 (3).json"
+      }
+    ]
+  },
+  {
+    "model_id": "M13",
+    "path": "Barshon's/M13/results_M13.json",
+    "kind": "protocol",
+    "findings": [
+      {
+        "severity": "INFO",
+        "model": "M13",
+        "check": "schema_incomplete_ablation",
+        "message": "`ablation` block missing: loss_weights.",
+        "evidence": "loss_weights",
+        "source": "Barshon's/M13/results_M13.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M13",
+        "check": "no_inference_latency",
+        "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
+        "evidence": "",
+        "source": "Barshon's/M13/results_M13.json"
+      }
+    ]
+  },
+  {
+    "model_id": "M14",
+    "path": "Barshon's/M14/v1/results_M14.json",
+    "kind": "protocol",
+    "findings": [
+      {
+        "severity": "WARNING",
+        "model": "M14",
+        "check": "schema_missing_blocks",
+        "message": "Missing \u00a74 block(s): efficiency, best_epoch, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
+        "evidence": "efficiency, best_epoch, training_history",
+        "source": "Barshon's/M14/v1/results_M14.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M14",
+        "check": "schema_missing_metrics",
+        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
+        "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
+        "source": "Barshon's/M14/v1/results_M14.json"
+      },
+      {
+        "severity": "CRITICAL",
+        "model": "M14",
+        "check": "discrimination_at_or_below_chance",
+        "message": "`best_metrics.auroc` = 0.4522 is at or below chance (0.5). A random scorer would do as well or better, so this value cannot support a detection claim.",
+        "evidence": "best_metrics.auroc = 0.4522",
+        "source": "Barshon's/M14/v1/results_M14.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M14",
+        "check": "weak_discrimination",
+        "message": "`baseline_comparisons.m15_auroc` = 0.5782 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
+        "evidence": "baseline_comparisons.m15_auroc = 0.5782",
+        "source": "Barshon's/M14/v1/results_M14.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M14",
+        "check": "weak_discrimination",
+        "message": "`baseline_comparisons.m29_energy_auroc` = 0.6466 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
+        "evidence": "baseline_comparisons.m29_energy_auroc = 0.6466",
+        "source": "Barshon's/M14/v1/results_M14.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M14",
+        "check": "cites_subchance_reference_value",
+        "message": "`baseline_comparisons.reference_m6_openmax_auroc` = 0.4516 is cited here as context from another model's already-audited result (it is at or below chance). This is not a claim about M14's own performance -- see that other model's audit entry for the underlying problem -- but do not treat it as a validity benchmark for M14.",
+        "evidence": "baseline_comparisons.reference_m6_openmax_auroc = 0.4516",
+        "source": "Barshon's/M14/v1/results_M14.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M14",
+        "check": "patient_independence_not_asserted",
+        "message": "Split is declared patient-independent ('patient_independent_60_20_20') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
+        "evidence": "",
+        "source": "Barshon's/M14/v1/results_M14.json"
+      }
+    ]
+  },
+  {
+    "model_id": "M14",
+    "path": "Barshon's/M14/v2/results_M14.json",
+    "kind": "protocol",
+    "findings": [
+      {
+        "severity": "WARNING",
+        "model": "M14",
+        "check": "schema_missing_blocks",
+        "message": "Missing \u00a74 block(s): efficiency, best_epoch, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
+        "evidence": "efficiency, best_epoch, training_history",
+        "source": "Barshon's/M14/v2/results_M14.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M14",
+        "check": "schema_missing_metrics",
+        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
+        "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
+        "source": "Barshon's/M14/v2/results_M14.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M14",
+        "check": "weak_discrimination",
+        "message": "`best_metrics.cal_auroc` = 0.5842 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
+        "evidence": "best_metrics.cal_auroc = 0.5842",
+        "source": "Barshon's/M14/v2/results_M14.json"
+      },
+      {
+        "severity": "CRITICAL",
+        "model": "M14",
+        "check": "discrimination_at_or_below_chance",
+        "message": "`best_metrics.test_auroc` = 0.4809 is at or below chance (0.5). A random scorer would do as well or better, so this value cannot support a detection claim.",
+        "evidence": "best_metrics.test_auroc = 0.4809",
+        "source": "Barshon's/M14/v2/results_M14.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M14",
+        "check": "weak_discrimination",
+        "message": "`baseline_comparisons.m15_auroc` = 0.5782 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
+        "evidence": "baseline_comparisons.m15_auroc = 0.5782",
+        "source": "Barshon's/M14/v2/results_M14.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M14",
+        "check": "weak_discrimination",
+        "message": "`baseline_comparisons.m29_energy_auroc` = 0.6466 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
+        "evidence": "baseline_comparisons.m29_energy_auroc = 0.6466",
+        "source": "Barshon's/M14/v2/results_M14.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M14",
+        "check": "cites_subchance_reference_value",
+        "message": "`baseline_comparisons.reference_m6_openmax_auroc` = 0.4516 is cited here as context from another model's already-audited result (it is at or below chance). This is not a claim about M14's own performance -- see that other model's audit entry for the underlying problem -- but do not treat it as a validity benchmark for M14.",
+        "evidence": "baseline_comparisons.reference_m6_openmax_auroc = 0.4516",
+        "source": "Barshon's/M14/v2/results_M14.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M14",
+        "check": "patient_independence_not_asserted",
+        "message": "Split is declared patient-independent ('patient_independent_60_20_20') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
+        "evidence": "",
+        "source": "Barshon's/M14/v2/results_M14.json"
+      }
+    ]
+  },
+  {
+    "model_id": "M15",
+    "path": "Barshon's/M15/results_M15.json",
+    "kind": "protocol",
+    "findings": [
+      {
+        "severity": "WARNING",
+        "model": "M15",
+        "check": "schema_missing_blocks",
+        "message": "Missing \u00a74 block(s): efficiency, best_epoch, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
+        "evidence": "efficiency, best_epoch, training_history",
+        "source": "Barshon's/M15/results_M15.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M15",
+        "check": "schema_missing_metrics",
+        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
+        "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
+        "source": "Barshon's/M15/results_M15.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M15",
+        "check": "schema_incomplete_ablation",
+        "message": "`ablation` block missing: component_flags, loss_weights.",
+        "evidence": "component_flags, loss_weights",
+        "source": "Barshon's/M15/results_M15.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M15",
+        "check": "weak_discrimination",
+        "message": "`best_metrics.auroc` = 0.5782 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
+        "evidence": "best_metrics.auroc = 0.5782",
+        "source": "Barshon's/M15/results_M15.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M15",
+        "check": "weak_discrimination",
+        "message": "`baseline_comparisons.m29_energy_auroc` = 0.6005 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
+        "evidence": "baseline_comparisons.m29_energy_auroc = 0.6005",
+        "source": "Barshon's/M15/results_M15.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M15",
+        "check": "cites_subchance_reference_value",
+        "message": "`baseline_comparisons.reference_m6_openmax_auroc` = 0.4516 is cited here as context from another model's already-audited result (it is at or below chance). This is not a claim about M15's own performance -- see that other model's audit entry for the underlying problem -- but do not treat it as a validity benchmark for M15.",
+        "evidence": "baseline_comparisons.reference_m6_openmax_auroc = 0.4516",
+        "source": "Barshon's/M15/results_M15.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M15",
+        "check": "patient_independence_unclear",
+        "message": "`dataset_info.split_method` = 'None' does not state a patient-independent split, and `patient_leakage_verified` is absent. Protocol \u00a71 calls this a research-validity requirement, not a style choice -- it should be asserted in code, not assumed.",
+        "evidence": "",
+        "source": "Barshon's/M15/results_M15.json"
+      }
+    ]
+  },
+  {
+    "model_id": "M15",
+    "path": "Barshon's/M15/v6/results_M15.json",
+    "kind": "protocol",
+    "findings": [
+      {
+        "severity": "WARNING",
+        "model": "M15",
+        "check": "weak_discrimination",
+        "message": "`best_metrics.open_set.auroc` = 0.5747 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
+        "evidence": "best_metrics.open_set.auroc = 0.5747",
+        "source": "Barshon's/M15/v6/results_M15.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M15",
+        "check": "weak_discrimination",
+        "message": "`best_metrics.open_set.baseline_energy_auroc` = 0.5948 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
+        "evidence": "best_metrics.open_set.baseline_energy_auroc = 0.5948",
+        "source": "Barshon's/M15/v6/results_M15.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M15",
+        "check": "patient_independence_not_asserted",
+        "message": "Split is declared patient-independent ('patient_independent') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
+        "evidence": "",
+        "source": "Barshon's/M15/v6/results_M15.json"
+      }
+    ]
+  },
+  {
+    "model_id": "M16",
+    "path": "Barshon's/M16/results_M16.json",
+    "kind": "protocol",
+    "findings": [
+      {
+        "severity": "WARNING",
+        "model": "M16",
+        "check": "schema_missing_blocks",
+        "message": "Missing \u00a74 block(s): best_epoch, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
+        "evidence": "best_epoch, training_history",
+        "source": "Barshon's/M16/results_M16.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M16",
+        "check": "schema_missing_metrics",
+        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
+        "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
+        "source": "Barshon's/M16/results_M16.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M16",
+        "check": "no_inference_latency",
+        "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
+        "evidence": "",
+        "source": "Barshon's/M16/results_M16.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M16",
+        "check": "patient_independence_unclear",
+        "message": "`dataset_info.split_method` = 'None' does not state a patient-independent split, and `patient_leakage_verified` is absent. Protocol \u00a71 calls this a research-validity requirement, not a style choice -- it should be asserted in code, not assumed.",
+        "evidence": "",
+        "source": "Barshon's/M16/results_M16.json"
+      }
+    ]
+  },
+  {
+    "model_id": "M17",
+    "path": "Barshon's/M17/results_M17.json",
+    "kind": "protocol",
+    "findings": [
+      {
+        "severity": "WARNING",
+        "model": "M17",
+        "check": "schema_missing_blocks",
+        "message": "Missing \u00a74 block(s): efficiency, best_epoch, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
+        "evidence": "efficiency, best_epoch, training_history",
+        "source": "Barshon's/M17/results_M17.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M17",
+        "check": "schema_missing_metrics",
+        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
+        "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
+        "source": "Barshon's/M17/results_M17.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M17",
+        "check": "schema_incomplete_ablation",
+        "message": "`ablation` block missing: component_flags, loss_weights.",
+        "evidence": "component_flags, loss_weights",
+        "source": "Barshon's/M17/results_M17.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M17",
+        "check": "patient_independence_unclear",
+        "message": "`dataset_info.split_method` = 'None' does not state a patient-independent split, and `patient_leakage_verified` is absent. Protocol \u00a71 calls this a research-validity requirement, not a style choice -- it should be asserted in code, not assumed.",
+        "evidence": "",
+        "source": "Barshon's/M17/results_M17.json"
+      }
+    ]
+  },
+  {
+    "model_id": "M18",
+    "path": "Barshon's/M18/results_M18.json",
+    "kind": "protocol",
+    "findings": [
+      {
+        "severity": "WARNING",
+        "model": "M18",
+        "check": "schema_missing_blocks",
+        "message": "Missing \u00a74 block(s): best_epoch, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
+        "evidence": "best_epoch, training_history",
+        "source": "Barshon's/M18/results_M18.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M18",
+        "check": "schema_missing_metrics",
+        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
+        "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
+        "source": "Barshon's/M18/results_M18.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M18",
+        "check": "no_inference_latency",
+        "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
+        "evidence": "",
+        "source": "Barshon's/M18/results_M18.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M18",
+        "check": "patient_independence_unclear",
+        "message": "`dataset_info.split_method` = 'None' does not state a patient-independent split, and `patient_leakage_verified` is absent. Protocol \u00a71 calls this a research-validity requirement, not a style choice -- it should be asserted in code, not assumed.",
+        "evidence": "",
+        "source": "Barshon's/M18/results_M18.json"
+      }
+    ]
+  },
+  {
+    "model_id": "M19",
+    "path": "Barshon's/M19/results_M19.json",
+    "kind": "protocol",
+    "findings": [
+      {
+        "severity": "WARNING",
+        "model": "M19",
+        "check": "schema_missing_blocks",
+        "message": "Missing \u00a74 block(s): best_epoch, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
+        "evidence": "best_epoch, training_history",
+        "source": "Barshon's/M19/results_M19.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M19",
+        "check": "schema_missing_metrics",
+        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
+        "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
+        "source": "Barshon's/M19/results_M19.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M19",
+        "check": "no_inference_latency",
+        "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
+        "evidence": "",
+        "source": "Barshon's/M19/results_M19.json"
+      },
+      {
+        "severity": "CRITICAL",
+        "model": "M19",
+        "check": "discrimination_at_or_below_chance",
+        "message": "`best_metrics.auroc` = 0.3287 is at or below chance (0.5). A random scorer would do as well or better, so this value cannot support a detection claim.",
+        "evidence": "best_metrics.auroc = 0.3287",
+        "source": "Barshon's/M19/results_M19.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M19",
+        "check": "weak_discrimination",
+        "message": "`best_metrics.per_dataset_results.ICBHI_Unknown.auroc` = 0.5543 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
+        "evidence": "best_metrics.per_dataset_results.ICBHI_Unknown.auroc = 0.5543",
+        "source": "Barshon's/M19/results_M19.json"
+      },
+      {
+        "severity": "CRITICAL",
+        "model": "M19",
+        "check": "discrimination_at_or_below_chance",
+        "message": "`best_metrics.per_dataset_results.Coswara_OOD.auroc` = 0.4881 is at or below chance (0.5). A random scorer would do as well or better, so this value cannot support a detection claim.",
+        "evidence": "best_metrics.per_dataset_results.Coswara_OOD.auroc = 0.4881",
+        "source": "Barshon's/M19/results_M19.json"
+      },
+      {
+        "severity": "CRITICAL",
+        "model": "M19",
+        "check": "discrimination_at_or_below_chance",
+        "message": "`best_metrics.per_dataset_results.SPRSound_OOD.auroc` = 0.3226 is at or below chance (0.5). A random scorer would do as well or better, so this value cannot support a detection claim.",
+        "evidence": "best_metrics.per_dataset_results.SPRSound_OOD.auroc = 0.3226",
+        "source": "Barshon's/M19/results_M19.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M19",
+        "check": "patient_independence_unclear",
+        "message": "`dataset_info.split_method` = 'None' does not state a patient-independent split, and `patient_leakage_verified` is absent. Protocol \u00a71 calls this a research-validity requirement, not a style choice -- it should be asserted in code, not assumed.",
+        "evidence": "",
+        "source": "Barshon's/M19/results_M19.json"
       }
     ]
   },
   {
     "model_id": "M20",
-    "path": "Barshon's\\M20\\results_M20.json",
+    "path": "Barshon's/M20/results_M20.json",
     "kind": "protocol",
     "findings": [
       {
@@ -544,7 +575,7 @@
         "check": "schema_missing_blocks",
         "message": "Missing \u00a74 block(s): best_epoch, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
         "evidence": "best_epoch, training_history",
-        "source": "Barshon's\\M20\\results_M20.json"
+        "source": "Barshon's/M20/results_M20.json"
       },
       {
         "severity": "WARNING",
@@ -552,7 +583,7 @@
         "check": "schema_missing_metrics",
         "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
         "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
-        "source": "Barshon's\\M20\\results_M20.json"
+        "source": "Barshon's/M20/results_M20.json"
       },
       {
         "severity": "INFO",
@@ -560,7 +591,7 @@
         "check": "no_inference_latency",
         "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
         "evidence": "",
-        "source": "Barshon's\\M20\\results_M20.json"
+        "source": "Barshon's/M20/results_M20.json"
       },
       {
         "severity": "WARNING",
@@ -568,13 +599,13 @@
         "check": "patient_independence_unclear",
         "message": "`dataset_info.split_method` = 'None' does not state a patient-independent split, and `patient_leakage_verified` is absent. Protocol \u00a71 calls this a research-validity requirement, not a style choice -- it should be asserted in code, not assumed.",
         "evidence": "",
-        "source": "Barshon's\\M20\\results_M20.json"
+        "source": "Barshon's/M20/results_M20.json"
       }
     ]
   },
   {
     "model_id": "M21",
-    "path": "Barshon's\\M21\\results_M21.json",
+    "path": "Barshon's/M21/results_M21.json",
     "kind": "protocol",
     "findings": [
       {
@@ -583,7 +614,7 @@
         "check": "schema_missing_blocks",
         "message": "Missing \u00a74 block(s): best_epoch, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
         "evidence": "best_epoch, training_history",
-        "source": "Barshon's\\M21\\results_M21.json"
+        "source": "Barshon's/M21/results_M21.json"
       },
       {
         "severity": "WARNING",
@@ -591,7 +622,7 @@
         "check": "schema_missing_metrics",
         "message": "Missing \u00a73 metric(s) in `best_metrics`: precision_macro, recall_macro, f1_macro, specificity_macro, icbhi_score.",
         "evidence": "precision_macro, recall_macro, f1_macro, specificity_macro, icbhi_score",
-        "source": "Barshon's\\M21\\results_M21.json"
+        "source": "Barshon's/M21/results_M21.json"
       },
       {
         "severity": "INFO",
@@ -599,7 +630,7 @@
         "check": "no_inference_latency",
         "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
         "evidence": "",
-        "source": "Barshon's\\M21\\results_M21.json"
+        "source": "Barshon's/M21/results_M21.json"
       },
       {
         "severity": "WARNING",
@@ -607,13 +638,13 @@
         "check": "patient_independence_unclear",
         "message": "`dataset_info.split_method` = 'None' does not state a patient-independent split, and `patient_leakage_verified` is absent. Protocol \u00a71 calls this a research-validity requirement, not a style choice -- it should be asserted in code, not assumed.",
         "evidence": "",
-        "source": "Barshon's\\M21\\results_M21.json"
+        "source": "Barshon's/M21/results_M21.json"
       }
     ]
   },
   {
     "model_id": "M24",
-    "path": "Barshon's\\M24\\results_M24.json",
+    "path": "Barshon's/M24/results_M24.json",
     "kind": "protocol",
     "findings": [
       {
@@ -622,7 +653,7 @@
         "check": "schema_missing_blocks",
         "message": "Missing \u00a74 block(s): efficiency, best_epoch, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
         "evidence": "efficiency, best_epoch, ablation, training_history",
-        "source": "Barshon's\\M24\\results_M24.json"
+        "source": "Barshon's/M24/results_M24.json"
       },
       {
         "severity": "WARNING",
@@ -630,7 +661,7 @@
         "check": "schema_missing_metrics",
         "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
         "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
-        "source": "Barshon's\\M24\\results_M24.json"
+        "source": "Barshon's/M24/results_M24.json"
       },
       {
         "severity": "WARNING",
@@ -638,7 +669,7 @@
         "check": "schema_missing_ablation",
         "message": "No \u00a74.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.",
         "evidence": "",
-        "source": "Barshon's\\M24\\results_M24.json"
+        "source": "Barshon's/M24/results_M24.json"
       },
       {
         "severity": "WARNING",
@@ -646,7 +677,7 @@
         "check": "weak_discrimination",
         "message": "`config.m15_baseline_auroc` = 0.6466 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
         "evidence": "config.m15_baseline_auroc = 0.6466",
-        "source": "Barshon's\\M24\\results_M24.json"
+        "source": "Barshon's/M24/results_M24.json"
       },
       {
         "severity": "WARNING",
@@ -654,7 +685,7 @@
         "check": "weak_discrimination",
         "message": "`best_metrics.m15_baseline_auroc` = 0.6466 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
         "evidence": "best_metrics.m15_baseline_auroc = 0.6466",
-        "source": "Barshon's\\M24\\results_M24.json"
+        "source": "Barshon's/M24/results_M24.json"
       },
       {
         "severity": "INFO",
@@ -662,13 +693,13 @@
         "check": "patient_independence_not_asserted",
         "message": "Split is declared patient-independent ('patient_independent_70_30') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
         "evidence": "",
-        "source": "Barshon's\\M24\\results_M24.json"
+        "source": "Barshon's/M24/results_M24.json"
       }
     ]
   },
   {
     "model_id": "M28",
-    "path": "Barshon's\\M28\\results_M28.json",
+    "path": "Barshon's/M28/results_M28.json",
     "kind": "protocol",
     "findings": [
       {
@@ -677,7 +708,7 @@
         "check": "schema_missing_blocks",
         "message": "Missing \u00a74 block(s): config, environment, dataset_info, efficiency, best_epoch, best_metrics, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
         "evidence": "config, environment, dataset_info, efficiency, best_epoch, best_metrics, ablation, training_history",
-        "source": "Barshon's\\M28\\results_M28.json"
+        "source": "Barshon's/M28/results_M28.json"
       },
       {
         "severity": "WARNING",
@@ -685,7 +716,7 @@
         "check": "schema_missing_metrics",
         "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
         "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
-        "source": "Barshon's\\M28\\results_M28.json"
+        "source": "Barshon's/M28/results_M28.json"
       },
       {
         "severity": "WARNING",
@@ -693,7 +724,7 @@
         "check": "schema_missing_ablation",
         "message": "No \u00a74.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.",
         "evidence": "",
-        "source": "Barshon's\\M28\\results_M28.json"
+        "source": "Barshon's/M28/results_M28.json"
       },
       {
         "severity": "WARNING",
@@ -701,7 +732,7 @@
         "check": "weak_discrimination",
         "message": "`novelty_highlights.openmax_baseline_auroc` = 0.6466 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
         "evidence": "novelty_highlights.openmax_baseline_auroc = 0.6466",
-        "source": "Barshon's\\M28\\results_M28.json"
+        "source": "Barshon's/M28/results_M28.json"
       },
       {
         "severity": "WARNING",
@@ -709,7 +740,7 @@
         "check": "weak_discrimination",
         "message": "`novelty_highlights.m17_stage2_auroc` = 0.6120 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
         "evidence": "novelty_highlights.m17_stage2_auroc = 0.6120",
-        "source": "Barshon's\\M28\\results_M28.json"
+        "source": "Barshon's/M28/results_M28.json"
       },
       {
         "severity": "WARNING",
@@ -717,13 +748,13 @@
         "check": "patient_independence_unclear",
         "message": "`dataset_info.split_method` = 'None' does not state a patient-independent split, and `patient_leakage_verified` is absent. Protocol \u00a71 calls this a research-validity requirement, not a style choice -- it should be asserted in code, not assumed.",
         "evidence": "",
-        "source": "Barshon's\\M28\\results_M28.json"
+        "source": "Barshon's/M28/results_M28.json"
       }
     ]
   },
   {
     "model_id": "M30",
-    "path": "Barshon's\\M30\\results_M30.json",
+    "path": "Barshon's/M30/results_M30.json",
     "kind": "protocol",
     "findings": [
       {
@@ -732,7 +763,7 @@
         "check": "schema_missing_metrics",
         "message": "Missing \u00a73 metric(s) in `best_metrics`: precision_macro, recall_macro, f1_macro.",
         "evidence": "precision_macro, recall_macro, f1_macro",
-        "source": "Barshon's\\M30\\results_M30.json"
+        "source": "Barshon's/M30/results_M30.json"
       },
       {
         "severity": "INFO",
@@ -740,7 +771,7 @@
         "check": "no_inference_latency",
         "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
         "evidence": "",
-        "source": "Barshon's\\M30\\results_M30.json"
+        "source": "Barshon's/M30/results_M30.json"
       },
       {
         "severity": "INFO",
@@ -748,13 +779,13 @@
         "check": "patient_independence_not_asserted",
         "message": "Split is declared patient-independent ('patient_independent_70_30') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
         "evidence": "",
-        "source": "Barshon's\\M30\\results_M30.json"
+        "source": "Barshon's/M30/results_M30.json"
       }
     ]
   },
   {
     "model_id": "M31",
-    "path": "Barshon's\\M31\\results_M31.json",
+    "path": "Barshon's/M31/results_M31.json",
     "kind": "protocol",
     "findings": [
       {
@@ -763,13 +794,13 @@
         "check": "patient_independence_not_asserted",
         "message": "Split is declared patient-independent ('patient_independent_70_30') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
         "evidence": "",
-        "source": "Barshon's\\M31\\results_M31.json"
+        "source": "Barshon's/M31/results_M31.json"
       }
     ]
   },
   {
     "model_id": "M32",
-    "path": "Barshon's\\M32\\results_M32.json",
+    "path": "Barshon's/M32/results_M32.json",
     "kind": "protocol",
     "findings": [
       {
@@ -778,7 +809,7 @@
         "check": "no_better_than_majority_class",
         "message": "Accuracy 0.4802 is not meaningfully above the majority-class rate 0.4653 (always predicting the largest class). The model may be learning little; report macro-F1 rather than accuracy and check the per-class breakdown.",
         "evidence": "accuracy=0.4802, majority prior=0.4653",
-        "source": "Barshon's\\M32\\results_M32.json"
+        "source": "Barshon's/M32/results_M32.json"
       },
       {
         "severity": "INFO",
@@ -786,13 +817,13 @@
         "check": "patient_independence_not_asserted",
         "message": "Split is declared patient-independent ('patient_independent_70_30') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
         "evidence": "",
-        "source": "Barshon's\\M32\\results_M32.json"
+        "source": "Barshon's/M32/results_M32.json"
       }
     ]
   },
   {
     "model_id": "M33",
-    "path": "Barshon's\\M33\\results_M33.json",
+    "path": "Barshon's/M33/results_M33.json",
     "kind": "protocol",
     "findings": [
       {
@@ -801,7 +832,7 @@
         "check": "no_better_than_majority_class",
         "message": "Accuracy 0.3561 is not meaningfully above the majority-class rate 0.4653 (always predicting the largest class). The model may be learning little; report macro-F1 rather than accuracy and check the per-class breakdown.",
         "evidence": "accuracy=0.3561, majority prior=0.4653",
-        "source": "Barshon's\\M33\\results_M33.json"
+        "source": "Barshon's/M33/results_M33.json"
       },
       {
         "severity": "WARNING",
@@ -809,7 +840,7 @@
         "check": "best_epoch_very_early",
         "message": "Best epoch 4 of 30 (13% through the budget). The remaining 26 epochs only overfit. Worth reporting, and worth checking the model was given a fair chance to converge.",
         "evidence": "best_epoch=4/30",
-        "source": "Barshon's\\M33\\results_M33.json"
+        "source": "Barshon's/M33/results_M33.json"
       },
       {
         "severity": "INFO",
@@ -817,13 +848,13 @@
         "check": "patient_independence_not_asserted",
         "message": "Split is declared patient-independent ('patient_independent_70_30') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
         "evidence": "",
-        "source": "Barshon's\\M33\\results_M33.json"
+        "source": "Barshon's/M33/results_M33.json"
       }
     ]
   },
   {
     "model_id": "M33",
-    "path": "Barshon's\\M33_v2\\results_M33.json",
+    "path": "Barshon's/M33_v2/results_M33.json",
     "kind": "protocol",
     "findings": [
       {
@@ -832,13 +863,13 @@
         "check": "patient_independence_not_asserted",
         "message": "Split is declared patient-independent ('patient_independent_70_30') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
         "evidence": "",
-        "source": "Barshon's\\M33_v2\\results_M33.json"
+        "source": "Barshon's/M33_v2/results_M33.json"
       }
     ]
   },
   {
     "model_id": "M34",
-    "path": "Barshon's\\M34\\results_M34.json",
+    "path": "Barshon's/M34/results_M34.json",
     "kind": "protocol",
     "findings": [
       {
@@ -847,25 +878,42 @@
         "check": "patient_independence_not_asserted",
         "message": "Split is declared patient-independent ('patient_independent_70_30') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
         "evidence": "",
-        "source": "Barshon's\\M34\\results_M34.json"
+        "source": "Barshon's/M34/results_M34.json"
       }
     ]
   },
   {
     "model_id": "M35",
-    "path": "Barshon's\\M35\\results_M35.json",
+    "path": "Barshon's/M35/results_M35.json",
     "kind": "protocol",
     "findings": []
   },
   {
     "model_id": "M35",
-    "path": "Barshon's\\M35_v2\\results_M35.json",
+    "path": "Barshon's/M35_v2/results_M35.json",
     "kind": "protocol",
-    "findings": []
+    "findings": [
+      {
+        "severity": "CRITICAL",
+        "model": "M35",
+        "check": "best_epoch_is_first",
+        "message": "The best epoch is epoch 1 of 30. Training made the model worse from the very first update, which usually indicates a broken loss, label mismatch, or a learning rate far too high.",
+        "evidence": "best_epoch=1, num_epochs=30",
+        "source": "Barshon's/M35_v2/results_M35.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M35",
+        "check": "patient_independence_not_asserted",
+        "message": "Split is declared patient-independent ('patient_independent_70_30') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
+        "evidence": "",
+        "source": "Barshon's/M35_v2/results_M35.json"
+      }
+    ]
   },
   {
     "model_id": "M36",
-    "path": "Barshon's\\M36\\results_M36.json",
+    "path": "Barshon's/M36/results_M36.json",
     "kind": "protocol",
     "findings": [
       {
@@ -874,7 +922,7 @@
         "check": "no_better_than_majority_class",
         "message": "Accuracy 0.4765 is not meaningfully above the majority-class rate 0.4653 (always predicting the largest class). The model may be learning little; report macro-F1 rather than accuracy and check the per-class breakdown.",
         "evidence": "accuracy=0.4765, majority prior=0.4653",
-        "source": "Barshon's\\M36\\results_M36.json"
+        "source": "Barshon's/M36/results_M36.json"
       },
       {
         "severity": "INFO",
@@ -882,13 +930,28 @@
         "check": "patient_independence_not_asserted",
         "message": "Split is declared patient-independent ('patient_independent_70_30') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
         "evidence": "",
-        "source": "Barshon's\\M36\\results_M36.json"
+        "source": "Barshon's/M36/results_M36.json"
+      }
+    ]
+  },
+  {
+    "model_id": "M37",
+    "path": "Barshon's/M37_v2/results_M37.json",
+    "kind": "protocol",
+    "findings": [
+      {
+        "severity": "INFO",
+        "model": "M37",
+        "check": "patient_independence_not_asserted",
+        "message": "Split is declared patient-independent ('patient_independent_70_30') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
+        "evidence": "",
+        "source": "Barshon's/M37_v2/results_M37.json"
       }
     ]
   },
   {
     "model_id": "M6",
-    "path": "Barshon's\\M6\\result\\results_M6.json",
+    "path": "Barshon's/M6/result/results_M6.json",
     "kind": "protocol",
     "findings": [
       {
@@ -897,7 +960,7 @@
         "check": "discrimination_at_or_below_chance",
         "message": "`best_metrics.open_set.auroc` = 0.4516 is at or below chance (0.5). A random scorer would do as well or better, so this value cannot support a detection claim.",
         "evidence": "best_metrics.open_set.auroc = 0.4516",
-        "source": "Barshon's\\M6\\result\\results_M6.json"
+        "source": "Barshon's/M6/result/results_M6.json"
       },
       {
         "severity": "WARNING",
@@ -905,7 +968,7 @@
         "check": "no_better_than_majority_class",
         "message": "Accuracy 0.7689 is not meaningfully above the majority-class rate 0.8994 (always predicting the largest class). The model may be learning little; report macro-F1 rather than accuracy and check the per-class breakdown.",
         "evidence": "accuracy=0.7689, majority prior=0.8994",
-        "source": "Barshon's\\M6\\result\\results_M6.json"
+        "source": "Barshon's/M6/result/results_M6.json"
       },
       {
         "severity": "INFO",
@@ -913,13 +976,13 @@
         "check": "patient_independence_not_asserted",
         "message": "Split is declared patient-independent ('patient_independent_70_30') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
         "evidence": "",
-        "source": "Barshon's\\M6\\result\\results_M6.json"
+        "source": "Barshon's/M6/result/results_M6.json"
       }
     ]
   },
   {
     "model_id": "M7",
-    "path": "Sami's\\M7\\M7_handoff\\results_M7.json",
+    "path": "Sami's/M7/M7_handoff/results_M7.json",
     "kind": "protocol",
     "findings": [
       {
@@ -928,7 +991,7 @@
         "check": "schema_missing_blocks",
         "message": "Missing \u00a74 block(s): efficiency, best_epoch, best_metrics, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
         "evidence": "efficiency, best_epoch, best_metrics, training_history",
-        "source": "Sami's\\M7\\M7_handoff\\results_M7.json"
+        "source": "Sami's/M7/M7_handoff/results_M7.json"
       },
       {
         "severity": "WARNING",
@@ -936,7 +999,7 @@
         "check": "schema_missing_metrics",
         "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
         "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
-        "source": "Sami's\\M7\\M7_handoff\\results_M7.json"
+        "source": "Sami's/M7/M7_handoff/results_M7.json"
       },
       {
         "severity": "INFO",
@@ -944,7 +1007,7 @@
         "check": "schema_incomplete_ablation",
         "message": "`ablation` block missing: loss_weights.",
         "evidence": "loss_weights",
-        "source": "Sami's\\M7\\M7_handoff\\results_M7.json"
+        "source": "Sami's/M7/M7_handoff/results_M7.json"
       },
       {
         "severity": "INFO",
@@ -952,13 +1015,13 @@
         "check": "patient_independence_not_asserted",
         "message": "Split is declared patient-independent ('patient_independent_60_40_with_calibration_carveout') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
         "evidence": "",
-        "source": "Sami's\\M7\\M7_handoff\\results_M7.json"
+        "source": "Sami's/M7/M7_handoff/results_M7.json"
       }
     ]
   },
   {
     "model_id": "M7",
-    "path": "Sami's\\M7\\M7_handoff\\results_M7_aug.json",
+    "path": "Sami's/M7/M7_handoff/results_M7_aug.json",
     "kind": "protocol",
     "findings": [
       {
@@ -967,7 +1030,7 @@
         "check": "schema_missing_blocks",
         "message": "Missing \u00a74 block(s): efficiency, best_epoch, best_metrics, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
         "evidence": "efficiency, best_epoch, best_metrics, training_history",
-        "source": "Sami's\\M7\\M7_handoff\\results_M7_aug.json"
+        "source": "Sami's/M7/M7_handoff/results_M7_aug.json"
       },
       {
         "severity": "WARNING",
@@ -975,7 +1038,7 @@
         "check": "schema_missing_metrics",
         "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
         "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
-        "source": "Sami's\\M7\\M7_handoff\\results_M7_aug.json"
+        "source": "Sami's/M7/M7_handoff/results_M7_aug.json"
       },
       {
         "severity": "INFO",
@@ -983,7 +1046,7 @@
         "check": "schema_incomplete_ablation",
         "message": "`ablation` block missing: loss_weights.",
         "evidence": "loss_weights",
-        "source": "Sami's\\M7\\M7_handoff\\results_M7_aug.json"
+        "source": "Sami's/M7/M7_handoff/results_M7_aug.json"
       },
       {
         "severity": "INFO",
@@ -991,13 +1054,13 @@
         "check": "patient_independence_not_asserted",
         "message": "Split is declared patient-independent ('patient_independent_60_40_with_calibration_carveout') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
         "evidence": "",
-        "source": "Sami's\\M7\\M7_handoff\\results_M7_aug.json"
+        "source": "Sami's/M7/M7_handoff/results_M7_aug.json"
       }
     ]
   },
   {
     "model_id": "M16",
-    "path": "Barshon's\\M16\\M16_metrics.json",
+    "path": "Barshon's/M16/M16_metrics.json",
     "kind": "legacy",
     "findings": [
       {
@@ -1006,13 +1069,13 @@
         "check": "not_protocol_compliant",
         "message": "`M16_metrics.json` is not a \u00a74 `results_M16.json`. It holds 3 loose field(s) instead of the required schema (meta/config/efficiency/best_metrics/ablation/training_history). The M28 merge cannot consume this, and it carries none of the efficiency, per-class or confusion-matrix data the paper needs.",
         "evidence": "fields: Student_Accuracy, Compression_Ratio, Student_Params",
-        "source": "Barshon's\\M16\\M16_metrics.json"
+        "source": "Barshon's/M16/M16_metrics.json"
       }
     ]
   },
   {
     "model_id": "M18",
-    "path": "Barshon's\\M18\\M18_metrics.json",
+    "path": "Barshon's/M18/M18_metrics.json",
     "kind": "legacy",
     "findings": [
       {
@@ -1021,13 +1084,13 @@
         "check": "not_protocol_compliant",
         "message": "`M18_metrics.json` is not a \u00a74 `results_M18.json`. It holds 3 loose field(s) instead of the required schema (meta/config/efficiency/best_metrics/ablation/training_history). The M28 merge cannot consume this, and it carries none of the efficiency, per-class or confusion-matrix data the paper needs.",
         "evidence": "fields: Best_Accuracy, Best_Size_MB, Best_Pruning_Ratio",
-        "source": "Barshon's\\M18\\M18_metrics.json"
+        "source": "Barshon's/M18/M18_metrics.json"
       }
     ]
   },
   {
     "model_id": "M19",
-    "path": "Barshon's\\M19\\M19_metrics.json",
+    "path": "Barshon's/M19/M19_metrics.json",
     "kind": "legacy",
     "findings": [
       {
@@ -1036,7 +1099,7 @@
         "check": "not_protocol_compliant",
         "message": "`M19_metrics.json` is not a \u00a74 `results_M19.json`. It holds 4 loose field(s) instead of the required schema (meta/config/efficiency/best_metrics/ablation/training_history). The M28 merge cannot consume this, and it carries none of the efficiency, per-class or confusion-matrix data the paper needs.",
         "evidence": "fields: Coswara_OOD_AUROC, SPRSound_OOD_AUROC, Overall_OOD_AUROC, Overall_OOD_AUPR",
-        "source": "Barshon's\\M19\\M19_metrics.json"
+        "source": "Barshon's/M19/M19_metrics.json"
       },
       {
         "severity": "CRITICAL",
@@ -1044,7 +1107,7 @@
         "check": "discrimination_at_or_below_chance",
         "message": "`Coswara_OOD_AUROC` = 0.4881 is at or below chance (0.5). A random scorer would do as well or better, so this value cannot support a detection claim.",
         "evidence": "Coswara_OOD_AUROC = 0.4881",
-        "source": "Barshon's\\M19\\M19_metrics.json"
+        "source": "Barshon's/M19/M19_metrics.json"
       },
       {
         "severity": "CRITICAL",
@@ -1052,7 +1115,7 @@
         "check": "discrimination_at_or_below_chance",
         "message": "`SPRSound_OOD_AUROC` = 0.3226 is at or below chance (0.5). A random scorer would do as well or better, so this value cannot support a detection claim.",
         "evidence": "SPRSound_OOD_AUROC = 0.3226",
-        "source": "Barshon's\\M19\\M19_metrics.json"
+        "source": "Barshon's/M19/M19_metrics.json"
       },
       {
         "severity": "CRITICAL",
@@ -1060,13 +1123,13 @@
         "check": "discrimination_at_or_below_chance",
         "message": "`Overall_OOD_AUROC` = 0.3287 is at or below chance (0.5). A random scorer would do as well or better, so this value cannot support a detection claim.",
         "evidence": "Overall_OOD_AUROC = 0.3287",
-        "source": "Barshon's\\M19\\M19_metrics.json"
+        "source": "Barshon's/M19/M19_metrics.json"
       }
     ]
   },
   {
     "model_id": "M20",
-    "path": "Barshon's\\M20\\M20_metrics.json",
+    "path": "Barshon's/M20/M20_metrics.json",
     "kind": "legacy",
     "findings": [
       {
@@ -1075,13 +1138,13 @@
         "check": "not_protocol_compliant",
         "message": "`M20_metrics.json` is not a \u00a74 `results_M20.json`. It holds 6 loose field(s) instead of the required schema (meta/config/efficiency/best_metrics/ablation/training_history). The M28 merge cannot consume this, and it carries none of the efficiency, per-class or confusion-matrix data the paper needs.",
         "evidence": "fields: ECE_Uncalibrated, ECE_Calibrated, Optimal_Temperature, NLL_Uncalibrated, NLL_Calibrated, ECE_Improvement",
-        "source": "Barshon's\\M20\\M20_metrics.json"
+        "source": "Barshon's/M20/M20_metrics.json"
       }
     ]
   },
   {
     "model_id": "M21",
-    "path": "Barshon's\\M21\\M21_metrics.json",
+    "path": "Barshon's/M21/M21_metrics.json",
     "kind": "legacy",
     "findings": [
       {
@@ -1090,13 +1153,13 @@
         "check": "not_protocol_compliant",
         "message": "`M21_metrics.json` is not a \u00a74 `results_M21.json`. It holds 2 loose field(s) instead of the required schema (meta/config/efficiency/best_metrics/ablation/training_history). The M28 merge cannot consume this, and it carries none of the efficiency, per-class or confusion-matrix data the paper needs.",
         "evidence": "fields: Curriculum_Accuracy, Final_Loss",
-        "source": "Barshon's\\M21\\M21_metrics.json"
+        "source": "Barshon's/M21/M21_metrics.json"
       }
     ]
   },
   {
     "model_id": "M18",
-    "path": "Barshon's\\M18\\compression_sweep_results.csv",
+    "path": "Barshon's/M18/compression_sweep_results.csv",
     "kind": "sweep_csv",
     "findings": []
   }
