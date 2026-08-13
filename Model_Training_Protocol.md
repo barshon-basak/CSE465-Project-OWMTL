@@ -60,7 +60,37 @@ Every model run must report these. Compute them on the **test/validation set** u
 
 For sound-event models, also compute:
 - **Specificity** (macro + per-class)
-- **ICBHI Score** = (Macro Sensitivity + Macro Specificity) / 2
+- **`icbhi_score`** = (Macro Sensitivity + Macro Specificity) / 2 — *project-internal metric, see the warning below*
+- **`icbhi_score_official`** = (Se + Sp) / 2 — **the ICBHI 2017 challenge metric. This is the one that goes in the paper.**
+  - `Se` = correctly classified **abnormal** events (Crackle + Wheeze + Both) / all abnormal events
+  - `Sp` = correctly classified **Normal** events / all Normal events
+
+> ### ⚠️ These two numbers are not interchangeable
+>
+> `icbhi_score` (macro form) is **not** the ICBHI 2017 challenge score and is **not comparable to
+> published ICBHI results.** `specificity_macro` averages per-class specificity, and each class's
+> specificity counts true negatives contributed by the other three classes — so rare classes
+> (Wheeze n≈38, Both n≈35) score ~0.95 specificity almost regardless of whether the model detects
+> them at all. That pulls the macro average up and inflates the score.
+>
+> Measured across this repo: **mean inflation +0.11, worst case +0.22**
+> (`Asif's/audit/ICBHI_SCORE_AUDIT.md`). Published ICBHI SOTA on the official 60/40 split is
+> roughly **0.60–0.65** — read our numbers against that using the *official* column only.
+>
+> The macro form also **hides model pathologies the official metric exposes.** M36 reports
+> `icbhi_score` 0.5137 while detecting only 9% of abnormal events (Se = 0.0932); M33 reports 0.5506
+> while never classifying a single Normal cycle correctly (Sp = 0.0000). In both cases the macro
+> metric is propped up by the specificity term. Always look at Se and Sp separately before
+> believing a score.
+>
+> **Report both, lead with the official one.** Recompute historical runs with
+> `python3 "Asif's/audit/icbhi_score_audit.py"` (add `--write` to backfill the fields into
+> existing results JSONs).
+
+**Also required for sound-event models:** commit `confusion_matrix_raw`. Without it neither score
+can be independently verified — by a teammate, by the audit tool, or by a reviewer who asks. Two
+models currently report an ICBHI score with no committed matrix, including M30, the project's
+highest headline number.
 
 For open-set / unknown-detection models, also compute:
 - Unknown-detection precision, recall, AUROC, AUPR

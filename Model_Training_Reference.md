@@ -109,7 +109,7 @@ has been removed; the technical specs below are otherwise as originally written.
 - **Data:** ICBHI 2017, full corpus, cycle-level, k-fold cross-validation.
 - **Loss function:** Inverse-frequency class-weighted `CrossEntropyLoss` (kept constant across M2/M3/M4 to prevent confounds in the M12 selection).
 - **Augmentation:** none.
-- **Result:** ICBHI 0.7227, accuracy 0.6138, F1 0.5238 — beats every other real candidate.
+- **Result:** **official ICBHI 0.6138** (legacy macro metric: ~~0.7227~~), accuracy 0.6138, F1 0.5238 — beats every other real candidate on both metrics. See `Asif's/audit/ICBHI_SCORE_AUDIT.md`.
 
 ### 2.3 — M3: MobileNet/DenseNet (lightweight)
 - **Chunk:** B. **Requires:** nothing. **Status:** ✅ done, real.
@@ -117,7 +117,7 @@ has been removed; the technical specs below are otherwise as originally written.
 - **Architecture:** MobileNet or DenseNet variant, pretrained on ImageNet if available, fine-tuned on ICBHI log-mel spectrograms.
 - **Loss function:** same as M2/M4.
 - **Augmentation:** none.
-- **Result:** ICBHI 0.6984 — real, second-best real backbone candidate.
+- **Result:** **official ICBHI 0.5895** (legacy macro: ~~0.6984~~) — real, second-best real backbone candidate. Its SpecAugment variant M22 reaches **0.6495**, the best score in the project on the official 60/40 split.
 
 ### 2.4 — M4: AST (Audio Spectrogram Transformer)
 - **Chunk:** B. **Requires:** nothing. **Status:** ✅ done, real.
@@ -126,7 +126,7 @@ has been removed; the technical specs below are otherwise as originally written.
 - **Data/representation:** two documented preprocessing deviations from §2 to preserve AudioSet pretraining: (1) full-band mel filterbank (20–8000 Hz) instead of 50–2000 Hz; (2) `n_fft=512` instead of 1024.
 - **Loss function:** same as M2/M3.
 - **Augmentation:** none.
-- **Result:** ICBHI 0.6359 — real, but **last** of the three real backbone candidates on every metric; also 24× larger and 30× slower than M2. Lost the M12 selection.
+- **Result:** legacy macro ICBHI 0.6359 — real, but **last** of the three real backbone candidates on every metric; also 24× larger and 30× slower than M2. Lost the M12 selection. ⚠️ **M4 has no committed `results_M4.json`** — its numbers are transcribed from notebook output into M12's `decision.comparison_table`, so the official metric cannot be recomputed for it. Commit the results JSON if M4 is to appear in the paper.
 
 ### 2.5 — M12: Final backbone selection
 - **Chunk:** B. **Requires:** M2, M3, M4 (full results from all three). **Status:** ✅ done, real, verified.
@@ -219,7 +219,9 @@ has been removed; the technical specs below are otherwise as originally written.
 - **Hard rule:** only merge models the audit marks real. A synthetic-data result in the paper's tables is worse than a missing row.
 
 ### 2.22 — M30: M2 + M3 Gated Feature-Fusion Ensemble
-- **Chunk:** E (Novelty Layer). **Requires:** M2 and M3 (real checkpoints). **Status:** ✅ done, real (`Barshon's/M30/results_M30.json`). **Selected Novelty Item #3** — see `Novelty Search.md` §4.4. Fuses 768-dim M2 (CNN) and 1280-dim M3 (MobileNetV2) frozen features via a Gated Adaptive Fusion (GAF) head. Achieves **ICBHI Score 0.8213**, Accuracy 0.7275, Macro F1 0.7075 — comfortably beating M2 alone (0.7227, +9.86% boost) and M3 alone (0.6984, +12.29% boost).
+- **Chunk:** E (Novelty Layer). **Requires:** M2 and M3 (real checkpoints). **Status:** 🔴 **result withdrawn — needs re-export.** Fuses 768-dim M2 (CNN) and 1280-dim M3 (MobileNetV2) frozen features via a Gated Adaptive Fusion (GAF) head. **Selected Novelty Item #3** — see `Novelty Search.md` §4.4.
+  - The reported ICBHI 0.8213 is invalid on three counts: it is the **legacy macro metric**, on a **`patient_independent_70_30` split** (M2/M3 use the official 60/40), and `results_M30.json` **commits no `confusion_matrix_raw`**, so no score can be recomputed from it at all. The "+9.86% over M2" claim crosses both a metric and a split boundary.
+  - **To restore:** re-run on the official 60/40 split and export `confusion_matrix_raw` + `icbhi_score_official`. Both input checkpoints (M2, M3) are real and already in the repo, so this is cheap. For calibration: M2 scores 0.6138 official, M22 0.6495; a corrected M30 near 0.65 would be a solid literature-level result.
 
 
 

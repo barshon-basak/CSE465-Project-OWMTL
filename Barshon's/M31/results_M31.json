@@ -136,7 +136,11 @@
         0.371,
         0.0323
       ]
-    ]
+    ],
+    "icbhi_score_official": 0.5535,
+    "icbhi_official_sensitivity": 0.5456,
+    "icbhi_official_specificity": 0.5614,
+    "icbhi_score_metric_note": "icbhi_score is (recall_macro + specificity_macro)/2, a project-internal metric that is NOT the ICBHI 2017 challenge score and is not comparable to published ICBHI results. icbhi_score_official is the challenge metric: (Se + Sp)/2 with Se = correctly-classified abnormal (Crackle+Wheeze+Both) / all abnormal, Sp = correctly-classified Normal / all Normal. Report the official figure in any paper, table, or comparison against prior work."
   },
   "ablation": {
     "ablation_group": "multi_task_loss_weighting",

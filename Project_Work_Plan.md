@@ -69,7 +69,7 @@ Full detail and per-model specs live in `Model_Training_Reference.md` §1–§2.
 | **B** — Sound-event backbone | M1–M4, M12 (backbone = M2) | ✅ Done, real | Chunks D onward use M12's checkpoint |
 | **C** — Open-set baselines | M6 (real negative), M29 (real, sets the bar at AUROC 0.6466) | ✅ Done, real | Chunk D's target metric |
 | **D** — Disease head + core mechanism | M13, M15, M17 | ✅ **Done (M13 v4, M15 v4, M17 v2 all real & audit-clean)** | Chunks F, G |
-| **E** — Novelty layer | 2–3 selected items, fixed (`Novelty Search.md` §4.0) | ✅ **Done (M13 prototypical head, M14 conformal calibration, M30 feature-fusion ensemble all real & audit-clean; M30 ICBHI score 0.8213)** | — |
+| **E** — Novelty layer | 2–3 selected items, fixed (`Novelty Search.md` §4.0) | ⚠️ **Partly blocked.** M13 prototypical head real. M14 conformal real but AUROC 0.4809 (below chance) and 0% unknown detection. 🔴 M30 fusion **withdrawn** — no confusion matrix, non-official split, legacy metric (see `Model_Training_Reference.md` §2.22) | — |
 | **F** — Generalization & compression | M16, M18, M19 | ✅ **Done (M19 OOD transfer completed; M16 Knowledge Distillation & M18 Pruning/Quantization Sweep generated for real audio)** | Requires Chunk D real first |
 | **G** — Trust & calibration | M7–M11, M14, M20 | ✅ **Done (M14 conformal calibration v2 & M20 temperature scaling ECE calibration generated)** | Requires Chunk D real first |
 | **H** — Reporting | M28-equivalent merge | ✅ **Done (M28 Master Merge completed: master_results_summary.json, 4 publication figures, and LaTeX tables generated)** | Requires everything else to be real |

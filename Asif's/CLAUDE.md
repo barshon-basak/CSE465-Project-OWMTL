@@ -83,14 +83,22 @@ novelty claim has to beat **0.6466**, not 0.4516. Full numbers in `Asif's/M29/RE
 
 | Model | Metric | Value | Params | Size |
 |---|---|---|---|---|
-| M2 — tuned CNN (`2D_CNN_5Block_w48_do0.4`) | ICBHI / Acc / F1 | 0.7227 / 0.6138 / 0.5238 | 3.6 M | 13.9 MB |
-| M3 — MobileNetV2 | ICBHI / Acc / F1 | 0.6984 / 0.5915 / 0.4904 | 2.2 M | 8.7 MB |
+| M2 — tuned CNN (`2D_CNN_5Block_w48_do0.4`) | **official** ICBHI / Acc / F1 | **0.6138** / 0.6138 / 0.5238 | 3.6 M | 13.9 MB |
+| M3 — MobileNetV2 | **official** ICBHI / Acc / F1 | **0.5895** / 0.5915 / 0.4904 | 2.2 M | 8.7 MB |
+| M22 — M3 + SpecAugment | **official** ICBHI / Acc / F1 | **0.6495** / 0.6524 / 0.5253 | 2.2 M | 8.7 MB |
 | M12 — backbone decision | selects **M2** | | | |
 | M29 — open-set baselines on M12 | best AUROC (Energy) | **0.6466** | 3.6 M (frozen, M2's) | — |
 
+**⚠️ ICBHI metric:** always report `icbhi_score_official` (the ICBHI 2017 challenge metric), never
+the project's legacy `icbhi_score` macro variant — the latter runs ~0.11 higher and is not
+comparable to published work. Both are now in every results JSON; see
+`Asif's/audit/ICBHI_SCORE_AUDIT.md` and `Model_Training_Protocol.md` §3. Published ICBHI SOTA on the
+official split is ~0.60-0.65, so M2's 0.6138 sits at the literature level.
+
 M12's caveat worth remembering: M2 beats M1 on ICBHI by only 0.0046, *inside* the 0.0129 CV
 tolerance. The real evidence for M2 is accuracy (+0.0731) and macro-F1 (+0.0394). Don't lead with
-the ICBHI number.
+the ICBHI number. (The M2-M3 margin, 0.0243, is identical under both metrics, so M12's decision is
+unaffected by the metric correction.)
 
 ---
 

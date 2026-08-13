@@ -1,6 +1,6 @@
 # OWMTL Project Audit
 
-**Generated:** 2026-08-11 by `Asif's/audit/audit_project.py` · **Files scanned:** 39
+**Generated:** 2026-08-13 by `Asif's/audit/audit_project.py` · **Files scanned:** 39
 
 Automated protocol-compliance and result-validity audit across every results file in the repository. Each check corresponds to a failure mode actually present in this repo, not a hypothetical one.
 
@@ -10,11 +10,11 @@ Automated protocol-compliance and result-validity audit across every results fil
 
 | Severity | Count | Meaning |
 |---|---|---|
-| 🔴 CRITICAL | 15 | The result does not support the claim made on it |
+| 🔴 CRITICAL | 19 | The result does not support the claim made on it |
 | 🟡 WARNING | 62 | Needs resolving before submission |
 | ⚪ INFO | 35 | Worth knowing, not blocking |
 
-**Models with critical findings:** M14, M16, M18, M19, M20, M21, M35, M6
+**Models with critical findings:** M14, M15, M16, M18, M19, M20, M21, M30, M33, M35, M36, M6
 
 **Files with no findings:** M12, M18, M2, M22, M35
 
@@ -43,6 +43,14 @@ Automated protocol-compliance and result-validity audit across every results fil
 > `best_metrics.test_auroc = 0.4809`
 
 <sub>source: `Barshon's/M14/v2/results_M14.json`</sub>
+
+### M15
+
+**`icbhi_score_unverifiable`** — `icbhi_score` = 0.0000 is reported with no committed `confusion_matrix_raw`, so neither the macro nor the official ICBHI score can be independently recomputed -- not by a teammate, not by this tool, not by a reviewer who asks. Re-export this run with the confusion matrix (protocol section 4) before the number is used in any table or claim.
+
+> `icbhi_score = 0.0000, confusion_matrix_raw absent`
+
+<sub>source: `Barshon's/M15/v6/results_M15.json`</sub>
 
 ### M16
 
@@ -120,6 +128,22 @@ Automated protocol-compliance and result-validity audit across every results fil
 
 <sub>source: `Barshon's/M21/M21_metrics.json`</sub>
 
+### M30
+
+**`icbhi_score_unverifiable`** — `icbhi_score` = 0.8213 is reported with no committed `confusion_matrix_raw`, so neither the macro nor the official ICBHI score can be independently recomputed -- not by a teammate, not by this tool, not by a reviewer who asks. Re-export this run with the confusion matrix (protocol section 4) before the number is used in any table or claim.
+
+> `icbhi_score = 0.8213, confusion_matrix_raw absent`
+
+<sub>source: `Barshon's/M30/results_M30.json`</sub>
+
+### M33
+
+**`normal_detection_collapse`** — Official ICBHI specificity is 0.0000 -- the model almost never classifies a Normal cycle correctly, so it would flag nearly every healthy patient. The reported score is being carried by the sensitivity term.
+
+> `Se = 0.6660, Sp = 0.0000`
+
+<sub>source: `Barshon's/M33/results_M33.json`</sub>
+
 ### M35
 
 **`best_epoch_is_first`** — The best epoch is epoch 1 of 30. Training made the model worse from the very first update, which usually indicates a broken loss, label mismatch, or a learning rate far too high.
@@ -127,6 +151,14 @@ Automated protocol-compliance and result-validity audit across every results fil
 > `best_epoch=1, num_epochs=30`
 
 <sub>source: `Barshon's/M35_v2/results_M35.json`</sub>
+
+### M36
+
+**`abnormal_detection_collapse`** — Official ICBHI sensitivity is 0.0932 -- the model detects almost no abnormal (Crackle/Wheeze/Both) events, which is the entire clinical point of the task. The reported score is being carried by the specificity term. This is majority-class collapse, not a working model.
+
+> `Se = 0.0932, Sp = 0.9171`
+
+<sub>source: `Barshon's/M36/results_M36.json`</sub>
 
 ---
 
@@ -254,29 +286,29 @@ Automated protocol-compliance and result-validity audit across every results fil
 
 > `efficiency, best_epoch, training_history`
 
-<sub>source: `Barshon's/M15/results_M15.json`</sub>
+<sub>source: `Barshon's/M15/v4/results_M15.json`</sub>
 
 **`schema_missing_metrics`** — Missing §3 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.
 
 > `accuracy, precision_macro, recall_macro, f1_macro`
 
-<sub>source: `Barshon's/M15/results_M15.json`</sub>
+<sub>source: `Barshon's/M15/v4/results_M15.json`</sub>
 
 **`weak_discrimination`** — `best_metrics.auroc` = 0.5782 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.
 
 > `best_metrics.auroc = 0.5782`
 
-<sub>source: `Barshon's/M15/results_M15.json`</sub>
+<sub>source: `Barshon's/M15/v4/results_M15.json`</sub>
 
 **`weak_discrimination`** — `baseline_comparisons.m29_energy_auroc` = 0.6005 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.
 
 > `baseline_comparisons.m29_energy_auroc = 0.6005`
 
-<sub>source: `Barshon's/M15/results_M15.json`</sub>
+<sub>source: `Barshon's/M15/v4/results_M15.json`</sub>
 
 **`patient_independence_unclear`** — `dataset_info.split_method` = 'None' does not state a patient-independent split, and `patient_leakage_verified` is absent. Protocol §1 calls this a research-validity requirement, not a style choice -- it should be asserted in code, not assumed.
 
-<sub>source: `Barshon's/M15/results_M15.json`</sub>
+<sub>source: `Barshon's/M15/v4/results_M15.json`</sub>
 
 **`weak_discrimination`** — `best_metrics.open_set.auroc` = 0.5747 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.
 
@@ -604,13 +636,13 @@ Automated protocol-compliance and result-validity audit across every results fil
 
 > `component_flags, loss_weights`
 
-<sub>source: `Barshon's/M15/results_M15.json`</sub>
+<sub>source: `Barshon's/M15/v4/results_M15.json`</sub>
 
 **`cites_subchance_reference_value`** — `baseline_comparisons.reference_m6_openmax_auroc` = 0.4516 is cited here as context from another model's already-audited result (it is at or below chance). This is not a claim about M15's own performance -- see that other model's audit entry for the underlying problem -- but do not treat it as a validity benchmark for M15.
 
 > `baseline_comparisons.reference_m6_openmax_auroc = 0.4516`
 
-<sub>source: `Barshon's/M15/results_M15.json`</sub>
+<sub>source: `Barshon's/M15/v4/results_M15.json`</sub>
 
 **`patient_independence_not_asserted`** — Split is declared patient-independent ('patient_independent') but `patient_leakage_verified` is not set, so nothing checked it at runtime.
 
@@ -748,4 +780,10 @@ Automated protocol-compliance and result-validity audit across every results fil
 | `not_protocol_compliant` | metrics files the M28 merge cannot read |
 | `schema_*` | §4 / §4.1 blocks the merge expects |
 | `patient_independence_*` | protocol §1, the one non-negotiable requirement |
+| `non_official_icbhi_score` | the macro ICBHI score reported without the challenge metric |
+| `icbhi_score_unverifiable` | an ICBHI score with no confusion matrix to recompute it from |
+| `official_icbhi_score_mismatch` | stated official score disagrees with the file's own matrix |
+| `abnormal_detection_collapse` | official Se < 0.15 — detects almost no crackles/wheezes |
+| `normal_detection_collapse` | official Sp < 0.15 — flags nearly every healthy patient |
+| `perfect_open_set_operating_point` | open-set precision/recall of exactly 1.0 at a threshold |
 

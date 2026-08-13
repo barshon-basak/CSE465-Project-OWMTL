@@ -213,11 +213,39 @@ def check_ratio_against_subchance_baseline(mid, payload, src, findings):
             f"{a_key}={a_val:.4f} vs {b_key}={b_val:.4f}", src))
 
 
+def _is_operating_point_metric(key):
+    """
+    True for open-set precision/recall reported AT A CHOSEN THRESHOLD (e.g. M29/M38's
+    `unknown_recall` at the 95%-known-TPR operating point) rather than as a closed-set
+    classification result.
+
+    Why these are treated differently: an operating-point recall is a joint property of
+    where the threshold was placed and how separable the two pools are -- it is not
+    evidence the model learned anything. A threshold set at the 95th percentile of the
+    in-distribution scores will trivially catch 100% of a well-separated OOD pool, which
+    is the EXPECTED outcome for a far-OOD control (M38's Coswara regime: phone-recorded
+    cough vs. stethoscope auscultation separates on recording modality alone). Calling
+    that a train/test leak would be wrong.
+
+    AUROC is deliberately NOT included here -- it is threshold-free, so a perfect AUROC
+    stays fully suspicious and keeps its CRITICAL severity.
+    """
+    low = key.lower()
+    return (("unknown_precision" in low or "unknown_recall" in low)
+            and ("open_set" in low or "per_regime" in low or "all_scores" in low))
+
+
 def check_perfect_metrics(mid, payload, src, findings):
     """Perfect scores on a hard task are a leak or train-set evaluation, not a win."""
-    perfect = [k for k, v in flatten_numeric(payload)
-               if v == 1.0 and any(t in k.lower() for t in
-                                   ("accuracy", "precision", "recall", "f1", "auroc"))]
+    perfect, op_point = [], []
+    for k, v in flatten_numeric(payload):
+        if v != 1.0:
+            continue
+        if not any(t in k.lower() for t in
+                   ("accuracy", "precision", "recall", "f1", "auroc")):
+            continue
+        (op_point if _is_operating_point_metric(k) else perfect).append(k)
+
     if len(perfect) >= 2:
         findings.append(Finding(
             CRITICAL, mid, "perfect_metrics_implausible",
@@ -227,6 +255,18 @@ def check_perfect_metrics(mid, payload, src, findings):
             f"leaking into the features. Treat this run as invalid until the "
             f"evaluation split is verified.",
             ", ".join(perfect[:6]), src))
+
+    if op_point:
+        findings.append(Finding(
+            WARNING, mid, "perfect_open_set_operating_point",
+            f"{len(op_point)} open-set operating-point metric(s) are exactly 1.0. This is "
+            f"not automatically a leak -- at a threshold chosen to retain 95% of known "
+            f"samples, a cleanly separated OOD pool can legitimately be caught in full. "
+            f"But confirm the separation is for the RIGHT reason: if the OOD pool differs "
+            f"from the in-distribution set in recording modality, device, or sample rate, "
+            f"a perfect score measures domain mismatch, not unknown-condition detection, "
+            f"and must not be reported as evidence for the open-world mechanism.",
+            ", ".join(op_point[:6]), src))
 
 
 def check_single_class_collapse(mid, payload, src, findings):
@@ -349,6 +389,86 @@ def check_sample_counts(mid, payload, src, findings):
             f"test_samples={int(test_n)}", src))
 
 
+def check_icbhi_score_metric(mid, payload, src, findings):
+    """
+    The project's `icbhi_score` is (recall_macro + specificity_macro)/2, which is NOT the
+    ICBHI 2017 challenge metric and is not comparable to the ~135 published ICBHI papers.
+    The macro form is inflated (mean +0.11 across this repo, worst +0.22) because per-class
+    specificity for a rare class is high almost by construction.
+
+    Worse, it MASKS pathologies: a model that predicts Normal for nearly everything still
+    scores respectably because the specificity term carries it. Both failure directions are
+    present in this repo right now (M36: Se=0.09; M33: Sp=0.00).
+
+    See `Asif's/audit/icbhi_score_audit.py`, which recomputes the official figure from the
+    committed confusion matrix and can backfill it with `--write`.
+    """
+    bm = payload.get("best_metrics")
+    if not isinstance(bm, dict) or not isinstance(bm.get("icbhi_score"), (int, float)):
+        return
+
+    cm = bm.get("confusion_matrix_raw")
+    is_sound_event = isinstance(cm, list) and len(cm) == 4
+
+    if not isinstance(bm.get("icbhi_score_official"), (int, float)):
+        if is_sound_event:
+            findings.append(Finding(
+                WARNING, mid, "non_official_icbhi_score",
+                f"`icbhi_score` = {bm['icbhi_score']:.4f} is the macro form "
+                f"((recall_macro + specificity_macro)/2), not the ICBHI 2017 challenge "
+                f"metric, and is not comparable to published ICBHI results -- it is "
+                f"inflated by ~0.06-0.22 in this repo. No `icbhi_score_official` field is "
+                f"present. Run `Asif's/audit/icbhi_score_audit.py --write` to add it.",
+                f"icbhi_score = {bm['icbhi_score']:.4f}", src))
+        elif not isinstance(cm, list) or not cm:
+            findings.append(Finding(
+                CRITICAL, mid, "icbhi_score_unverifiable",
+                f"`icbhi_score` = {bm['icbhi_score']:.4f} is reported with no committed "
+                f"`confusion_matrix_raw`, so neither the macro nor the official ICBHI score "
+                f"can be independently recomputed -- not by a teammate, not by this tool, "
+                f"not by a reviewer who asks. Re-export this run with the confusion matrix "
+                f"(protocol section 4) before the number is used in any table or claim.",
+                f"icbhi_score = {bm['icbhi_score']:.4f}, confusion_matrix_raw absent", src))
+        return
+
+    # Official figure present -- sanity-check it against the committed matrix.
+    if not is_sound_event:
+        return
+    try:
+        rows = [[float(x) for x in r] for r in cm]
+        sp = rows[0][0] / sum(rows[0]) if sum(rows[0]) else 0.0
+        abn_correct = sum(rows[i][i] for i in (1, 2, 3))
+        abn_total = sum(sum(rows[i]) for i in (1, 2, 3))
+        se = abn_correct / abn_total if abn_total else 0.0
+    except Exception:
+        return
+
+    recomputed = (se + sp) / 2
+    if abs(recomputed - bm["icbhi_score_official"]) > 0.005:
+        findings.append(Finding(
+            CRITICAL, mid, "official_icbhi_score_mismatch",
+            f"`icbhi_score_official` = {bm['icbhi_score_official']:.4f} does not match the "
+            f"value recomputed from this file's own confusion matrix ({recomputed:.4f}). "
+            f"One of the two is wrong.",
+            f"stated {bm['icbhi_score_official']:.4f} vs recomputed {recomputed:.4f}", src))
+
+    if se < 0.15:
+        findings.append(Finding(
+            CRITICAL, mid, "abnormal_detection_collapse",
+            f"Official ICBHI sensitivity is {se:.4f} -- the model detects almost no abnormal "
+            f"(Crackle/Wheeze/Both) events, which is the entire clinical point of the task. "
+            f"The reported score is being carried by the specificity term. This is "
+            f"majority-class collapse, not a working model.",
+            f"Se = {se:.4f}, Sp = {sp:.4f}", src))
+    if sp < 0.15:
+        findings.append(Finding(
+            CRITICAL, mid, "normal_detection_collapse",
+            f"Official ICBHI specificity is {sp:.4f} -- the model almost never classifies a "
+            f"Normal cycle correctly, so it would flag nearly every healthy patient. The "
+            f"reported score is being carried by the sensitivity term.",
+            f"Se = {se:.4f}, Sp = {sp:.4f}", src))
+
+
 def check_open_set_metrics_present(mid, payload, src, findings):
     """M6/M15/M17 exist to produce unknown-detection metrics."""
     if mid not in OPEN_SET_MODELS:
@@ -424,7 +544,7 @@ def audit_protocol_json(path, repo_root):
                check_single_class_collapse, check_near_majority_class,
                check_frozen_validation_curve, check_early_best_epoch,
                check_patient_independence, check_sample_counts,
-               check_open_set_metrics_present):
+               check_open_set_metrics_present, check_icbhi_score_metric):
         try:
             fn(mid, payload, src, audit.findings)
         except Exception as e:                       # a check must never kill the audit
@@ -708,6 +828,12 @@ def build_report(audits, repo_root):
     A("| `not_protocol_compliant` | metrics files the M28 merge cannot read |")
     A("| `schema_*` | §4 / §4.1 blocks the merge expects |")
     A("| `patient_independence_*` | protocol §1, the one non-negotiable requirement |")
+    A("| `non_official_icbhi_score` | the macro ICBHI score reported without the challenge metric |")
+    A("| `icbhi_score_unverifiable` | an ICBHI score with no confusion matrix to recompute it from |")
+    A("| `official_icbhi_score_mismatch` | stated official score disagrees with the file's own matrix |")
+    A("| `abnormal_detection_collapse` | official Se < 0.15 — detects almost no crackles/wheezes |")
+    A("| `normal_detection_collapse` | official Sp < 0.15 — flags nearly every healthy patient |")
+    A("| `perfect_open_set_operating_point` | open-set precision/recall of exactly 1.0 at a threshold |")
     A("")
     return "\n".join(L) + "\n"
 

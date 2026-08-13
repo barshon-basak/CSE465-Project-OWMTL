@@ -2,9 +2,39 @@
 ## Open-World Multi-Task Learning for Respiratory Sound and Disease Diagnosis (OWMTL)
 **Course:** CSE465 — Machine Learning Capstone, North South University, Group 5  
 **Target Venue:** *Biomedical Signal Processing and Control* (Elsevier, Q1, IF 4.9)  
-**Report Date:** 2026-08-07  
+**Report Date:** 2026-08-07 · **Metric correction applied:** 2026-08-13  
 **Contributors:** Barshon Basak, Asif, Sami  
 **Supervisor:** Dr. Khan
+
+---
+
+> ## 🔴 Metric correction — read before citing any number in this report
+>
+> Every ICBHI score originally in this report used a **project-internal macro variant**,
+> `(recall_macro + specificity_macro)/2`, which was incorrectly labelled as "the official ICBHI 2017
+> challenge metric." It is not. The official metric pools abnormal classes:
+> `(Se + Sp)/2` with **Se** = correct abnormal (Crackle+Wheeze+Both) / all abnormal, **Sp** =
+> correct Normal / all Normal.
+>
+> The macro form is inflated because a rare class's specificity is high almost by construction.
+> **Mean inflation across this project: +0.11. Worst case: +0.22.**
+>
+> All scores have been recomputed from committed confusion matrices and this report updated
+> accordingly. Old values appear ~~struck through~~ for traceability. Source of truth:
+> `Asif's/audit/ICBHI_SCORE_AUDIT.md` (regenerate with `Asif's/audit/icbhi_score_audit.py`).
+>
+> **Three consequences worth knowing before reading further:**
+>
+> 1. **M30 (0.8213), the project's headline result, is withdrawn** — it commits no confusion matrix,
+>    so no score can be recomputed from it at all. See §8.
+> 2. **M33 and M36 are broken, not weak.** M33 has Sp = 0.0000 (never classifies a Normal cycle
+>    correctly); M36 has Se = 0.0932 (detects 9% of abnormal events). The macro metric hid both.
+> 3. **M30–M37 use a 70/30 split; M1–M4 and M22 use the official 60/40 split.** These are not
+>    comparable to each other or to published work. Several comparisons in earlier versions of this
+>    report crossed that boundary.
+>
+> Corrected, the project's numbers sit at the published ICBHI level (~0.60–0.65 official), not above
+> it. That is a normal and defensible position — but the earlier framing was not.
 
 ---
 
@@ -28,7 +58,7 @@ The ICBHI 2017 benchmark contains 19 patients with rare/unseen diseases (Bronchi
 | Dimension | Status |
 |---|---|
 | Backbone selection | ✅ Complete (M12 → M2 selected) |
-| Sound-event classification | ✅ Best: M30 ICBHI = 0.8213 |
+| Sound-event classification | ⚠️ Best **verified**: M35 official ICBHI = 0.6864 (70/30 split) · M2 = 0.6138 (official split). M30's 0.8213 is 🔴 unverifiable — see §8 |
 | Disease head | ✅ M13 patient-F1 = 0.6061 |
 | Open-set (core novelty) | ⚠️ M15 AUROC = 0.5782 < M29 baseline 0.6466 |
 | Conformal guarantees | ✅ M14 95.45% empirical coverage |
@@ -37,10 +67,30 @@ The ICBHI 2017 benchmark contains 19 patients with rare/unseen diseases (Bronchi
 | New experimental threads | ✅ M31–M37 Complete |
 
 ## Main Findings So Far
-- **M30** (Gated Feature-Fusion of M2+M3) achieves **ICBHI = 0.8213**, the project's strongest result.
-- **M35** (Physics-Informed Loss v2) achieves **ICBHI = 0.7839**, becoming the second strongest model by leveraging physics-informed acoustic constraints.
-- **M34** (Curriculum Learning Pacing) achieves **ICBHI = 0.7046**, approaching the M2 baseline via dynamic difficulty-sorted pacing.
-- **M31** and **M32** (GradNorm MTL and Demographic Fusion) yielded moderate results (ICBHI 0.6377 and 0.6547 respectively).
+
+> **All ICBHI scores below are the OFFICIAL challenge metric**, recomputed from committed confusion
+> matrices (`Asif's/audit/ICBHI_SCORE_AUDIT.md`). Earlier versions of this report quoted a
+> project-internal macro variant running ~0.11 higher. Published ICBHI SOTA on the official split is
+> **~0.60–0.65** — read everything below against that.
+
+- **M30** (Gated Fusion of M2+M3) 🔴 **cannot be verified** — no confusion matrix committed, wrong
+  split, wrong metric. Its 0.8213 is withdrawn pending re-export. See §8.
+- **M35** (Physics-Informed Loss) reaches **official ICBHI = 0.6864** — the best *verified* score in
+  the project, though on the easier 70/30 split. Acoustic priors do appear to help.
+- **M37** (Audio LoRA) reaches **official ICBHI = 0.6753** training 0.23% of parameters — the best
+  efficiency-to-performance ratio here.
+- **M2** (selected backbone) reaches **official ICBHI = 0.6138** on the official 60/40 split. This is
+  the project's most trustworthy number: right metric, right split, fully auditable.
+- **M34** (Curriculum) 0.5754 and **M31** (GradNorm) 0.5535 and **M32** (Demographic Fusion) 0.4733
+  all sit **below** the M2 baseline. Curriculum pacing did not "approach the baseline"; it lost to it.
+- 🔴 **M33** (Temporal Transformer) and **M36** (Multistage Distillation) are **broken, not weak.**
+  M33 has official Sp = **0.0000** — it never classifies a single Normal cycle correctly. M36 has
+  official Se = **0.0932** — it detects 9% of abnormal events. Both were previously reported as
+  mediocre-but-functional (0.5506 / 0.5137); the macro metric was masking total class collapse.
+  Neither should appear in any results table without this caveat.
+- **Six of nine** new experimental models (M31–M37) underperform the plain M2 baseline. This is the
+  outcome `Novelty Search.md` §4.0 predicted from accumulating techniques rather than selecting
+  2–3 and ablating them properly.
 - **M13** (Prototypical Disease Head) achieves patient-level F1 = 0.6061.
 - **M15** (Core Novel Mechanism — Cross-Task Consistency Scorer) scores **AUROC = 0.5747**, which is *below* the post-hoc Energy baseline of 0.5948 (computed directly on M2). This definitively proves that adding a sequentially-trained disease head on top of a fixed sound backbone provides no extra OOD signal over the sound backbone's own energy.
 - **M6** (OpenMax) failed as expected (AUROC = 0.4516, below chance) — a useful negative result.
@@ -83,7 +133,9 @@ The ICBHI 2017 benchmark contains 19 patients with rare/unseen diseases (Bronchi
 | Sound-event classes | 4: Normal, Crackle, Wheeze, Both |
 | Disease labels | COPD (n=64), Healthy (n=26), URTI (n=14) = **104 known**; Bronchiectasis (n=7), Pneumonia (n=6), Bronchiolitis (n=6) = **19 unknown / held-out**; Asthma (n=1), LRTI (n=2) excluded |
 | Known/unknown split | 104 known patients / 19–22 unknown patients (varies by experiment) |
-| Recording devices | 7 different stethoscopes (Meditron, LittC2SE, Litt3200, AKGC417L, etc.) |
+| Recording devices | **4** — AKGC417L, LittC2SE, Litt3200, Meditron *(corrected: an earlier version of this row said "7 different stethoscopes … etc."; ICBHI has 4 devices. The 7 is the number of chest **locations**: Tc, Al, Ar, Pl, Pr, Ll, Lr. The error propagated into `Novelty_Reassessment.md`, whose proposed benchmark was built on "ICBHI's 7 stethoscopes.")* |
+| Chest locations | 7 — Trachea, Anterior L/R, Posterior L/R, Lateral L/R |
+| Device-stratified experiments | ⚠️ **Not yet verified as feasible.** Run `Asif's/audit/check_device_structure.py` before planning any leave-one-device-out study — it checks device count, whether device is confounded with diagnosis, and whether any patient appears on more than one device. If patients don't span devices, "device shift" is inseparable from inter-patient variation and no device claim is possible. |
 | Sample rate (raw) | Varies; resampled to 16,000 Hz |
 | Audio duration | 8.0 s clips (padded / cropped per cycle) |
 | Preprocessing | 128-mel spectrogram, n_fft=1024, hop=160, win=400, f_min=50, f_max=2000 Hz |
@@ -122,8 +174,8 @@ The ICBHI 2017 benchmark contains 19 patients with rare/unseen diseases (Bronchi
 | Exp ID | Model / Method | Dataset | Purpose | Status | Critical Notes |
 |---|---|---|---|---|---|
 | M1 | 2D CNN 4-block | ICBHI | Provisional backbone reference | ✅ Complete | Throwaway reference; superseded by M2 |
-| M2 | 2D CNN 5-block (w=48, do=0.4) | ICBHI | Tuned backbone candidate | ✅ Complete | **Selected backbone** by M12; ICBHI=0.7227 |
-| M3 | MobileNetV2 (ImageNet pretrained) | ICBHI | Lightweight backbone candidate | ✅ Complete | ICBHI=0.6984; used in M30 fusion |
+| M2 | 2D CNN 5-block (w=48, do=0.4) | ICBHI | Tuned backbone candidate | ✅ Complete | **Selected backbone** by M12; official ICBHI=**0.6138** (~~0.7227~~ macro), official 60/40 split |
+| M3 | MobileNetV2 (ImageNet pretrained) | ICBHI | Lightweight backbone candidate | ✅ Complete | Official ICBHI=0.5895 (~~0.6984~~ macro), official 60/40; used in M30 fusion |
 | M4 | AST (Audio Spectrogram Transformer) | ICBHI | Transformer backbone candidate | ✅ Complete | ICBHI=0.6359; checkpoint on Drive not in repo |
 | M6 | OpenMax + Weibull on M1 backbone | ICBHI | First open-set baseline | ✅ Complete | AUROC=0.4516 — below chance, negative result |
 | M7 | Deep Ensemble (5 seeds × aug/clean) | ICBHI | Ensemble uncertainty baseline | ✅ Complete | 10 checkpoints; aug vs. clean evaluated |
@@ -142,14 +194,14 @@ The ICBHI 2017 benchmark contains 19 patients with rare/unseen diseases (Bronchi
 | M24 (CB-Aug) | Class-Balancing Augmentation | ICBHI | Imbalance correction | ✅ Complete | Re-run on real ICBHI audio. Targeted SpecAugment applied to Healthy/URTI. |
 | M28 | Master Experiment Merge + Figures | ICBHI | Synthesis and publication figures | ✅ Complete | LaTeX table generated; 4 benchmark figures |
 | M29 | Post-hoc OOD suite (MSP/Entropy/Energy/Maha) | ICBHI | OOD detection baselines | ✅ Complete | Energy AUROC=0.6466 — **floor M15 must beat** |
-| M30 | Gated Feature-Fusion (M2+M3) | ICBHI | Ensemble fusion backbone | ✅ Complete | **Best result: ICBHI=0.8213** |
-| M31 | GradNorm Multi-Task Learning | ICBHI | Adaptive task weighting | ✅ Complete | ICBHI=0.6377 |
-| M32 | Demographic Fusion | ICBHI | Clinical metadata integration | ✅ Complete | ICBHI=0.6547 |
-| M33 | Temporal Transformer | ICBHI | Sequence modelling of respiratory cycles | ✅ Complete | ICBHI=0.5506 |
-| M34 | Curriculum Learning (new thread) | ICBHI | Advanced curriculum variant | ✅ Complete | ICBHI=0.7046 |
-| M35 | Physics-Informed Loss | ICBHI | Domain-knowledge loss term | ✅ Complete | ICBHI=0.7839 (2nd best) |
-| M36 | Multistage Distillation | ICBHI | Staged KD pipeline | ✅ Complete | ICBHI=0.5137 |
-| M37 | Audio LoRA (PEFT) | ICBHI | Parameter-efficient fine-tuning | ✅ Complete | ICBHI=0.7969 (2nd best, 0.23% trainable params) |
+| M30 | Gated Feature-Fusion (M2+M3) | ICBHI | Ensemble fusion backbone | ✅ Complete | 🔴 **UNVERIFIABLE** — no confusion matrix, 70/30 split; 0.8213 was the macro metric (see §8) |
+| M31 | GradNorm Multi-Task Learning | ICBHI | Adaptive task weighting | ✅ Complete | Official ICBHI=0.5535 (~~0.6377~~ macro), 70/30 — **below M2 baseline** |
+| M32 | Demographic Fusion | ICBHI | Clinical metadata integration | ✅ Complete | Official ICBHI=0.4733 (~~0.6547~~ macro), 70/30 — **below M2 baseline** |
+| M33 | Temporal Transformer | ICBHI | Sequence modelling of respiratory cycles | ✅ Complete | 🔴 Official ICBHI=0.3330 (~~0.5506~~ macro) — **Sp=0.0000, total collapse on Normal** |
+| M34 | Curriculum Learning (new thread) | ICBHI | Advanced curriculum variant | ✅ Complete | Official ICBHI=0.5754 (~~0.7046~~ macro), 70/30 — **below M2 baseline** |
+| M35 | Physics-Informed Loss | ICBHI | Domain-knowledge loss term | ✅ Complete | Official ICBHI=0.6864 (~~0.7839~~ macro), 70/30 — best *verified* score |
+| M36 | Multistage Distillation | ICBHI | Staged KD pipeline | ✅ Complete | 🔴 Official ICBHI=0.5052 (~~0.5137~~ macro) — **Se=0.0932, detects 9% of abnormal events** |
+| M37 | Audio LoRA (PEFT) | ICBHI | Parameter-efficient fine-tuning | ✅ Complete | Official ICBHI=0.6753 (~~0.7969~~ macro), 70/30; 0.23% trainable params |
 
 ---
 
@@ -162,13 +214,13 @@ The ICBHI 2017 benchmark contains 19 patients with rare/unseen diseases (Bronchi
 
 ## M2 — Tuned 2D CNN Backbone (Selected Backbone)
 **Architecture:** 5 convolutional blocks, width=48 channels, dropout=0.4 after each block, 3,627,476 parameters, 13.86 MB, 2.94 ms/sample on Tesla T4.  
-**Why chosen:** Won the 6-configuration HP sweep (mean CV ICBHI 0.6187 ± 0.0129) and the final held-out test (ICBHI=0.7227). Chosen by M12 audit over M3 (ICBHI gap = 0.0243 > CV std 0.0129) and M4 (86M params, 87 ms/sample — not viable for edge deployment).  
+**Why chosen:** Won the 6-configuration HP sweep (mean CV ICBHI 0.6187 ± 0.0129) and the final held-out test (official ICBHI = **0.6138**; the previously-quoted 0.7227 was the macro metric). Chosen by M12 audit over M3 (ICBHI gap = 0.0243 > CV std 0.0129) and M4 (86M params, 87 ms/sample — not viable for edge deployment).  
 **Alternatives not chosen:** M4 (AST) is 23.8× larger and 29.5× slower with inferior ICBHI; MobileNetV2 (M3) is faster but 2.4% weaker.
 
 ## M3 — MobileNetV2 (Lightweight Backbone)
 **Architecture:** ImageNet-pretrained MobileNetV2, input adapted for single-channel mel-spectrograms, 2,228,996 parameters, 8.74 MB, 5.42 ms/sample.  
 **Why chosen:** Lightweight mobile-friendly backbone candidate; also used as a complementary feature extractor in M30 fusion.  
-**Why not selected as main backbone:** Lost to M2 on ICBHI score (0.6984 vs. 0.7227) and the gap exceeded CV tolerance.
+**Why not selected as main backbone:** Lost to M2 on ICBHI score (official 0.5895 vs. 0.6138; macro 0.6984 vs. 0.7227 — the ranking is unchanged either way) and the gap exceeded CV tolerance.
 
 ## M4 — Audio Spectrogram Transformer (AST)
 **Architecture:** Pretrained AST, 86,385,668 parameters, 329.54 MB, 86.74 ms/sample. Full-band mel (20–8000 Hz).  
@@ -210,37 +262,37 @@ The ICBHI 2017 benchmark contains 19 patients with rare/unseen diseases (Bronchi
 ## M30 — Gated Feature-Fusion Ensemble
 **Architecture:** Frozen M2 (768-dim output) + frozen M3 (1280-dim output) → Gated Adaptive Fusion (GAF) head (fusion_dim=512) → 4-class sound-event output. Only 2,101,252-param GAF head is trained. Total 7,957,724 params, 30.62 MB.  
 **Why chosen:** M2 and M3 learned complementary representations (different capacity, different inductive bias from ImageNet pretraining). Gated fusion lets the model learn which backbone to trust per sample.  
-**Result:** ICBHI=0.8213 — +9.86% improvement over M2 alone, +12.29% over M3 alone.
+**Result:** 🔴 **Withdrawn.** The reported 0.8213 is the macro metric on a 70/30 split with no committed confusion matrix. The "+9.86% over M2" comparison crosses BOTH a metric boundary and a split boundary and is invalid. Re-export with `confusion_matrix_raw` on the official 60/40 split before claiming anything. See §8.
 
 ## M31 — GradNorm Multi-Task Learning
 **Architecture:** Shared M2 backbone + dual heads (sound-event + disease) + GradNorm adaptive loss weighting. GradNorm adjusts per-task gradient magnitudes to achieve balanced learning rates across tasks.  
 **Why chosen:** Standard fixed-weight MTL suffers from task dominance (COPD class + Normal sound dominate gradients). GradNorm is the principled remedy.  
-**Status:** ✅ Complete. Yielded a moderate ICBHI score of 0.6377. While mathematically principled, dynamic weighting alone didn't surpass the single-task baseline.
+**Status:** ✅ Complete. Official ICBHI = 0.5535 (reported 0.6377 was the macro metric) — clearly **below** the M2 baseline of 0.6138, and on an easier split. Dynamic weighting did not help here.
 
 ## M32 — Demographic Fusion
 **Architecture:** M2 backbone features fused with demographic metadata (age, sex, BMI, smoking status) via concatenation + MLP head.  
 **Why chosen:** Demographic factors are clinically relevant co-variates for respiratory disease. Incorporates structured clinical data alongside audio.  
-**Status:** ✅ Complete. Achieved ICBHI = 0.6547. 
+**Status:** ✅ Complete. Official ICBHI = 0.4733 (reported 0.6547 was the macro metric) — well below the M2 baseline, with official Sp = 0.3745. Demographic fusion hurt substantially on this setup. 
 
 ## M33 — Temporal Transformer Cycle Aggregation
 **Architecture:** M2 backbone (feature extractor) + Temporal Transformer to aggregate patient-level respiratory cycles rather than simple mean pooling.  
 **Why chosen:** Respiratory diseases manifest across an entire recording. A sequence model should theoretically capture temporal dependencies between consecutive breathing cycles better than naive pooling.  
-**Result:** ICBHI = 0.5506. The transformer struggled to learn temporal structures from the relatively small number of available cycles per patient, underperforming standard pooling.
+**Result:** 🔴 **Broken, not merely underperforming.** Official ICBHI = 0.3330 with **Sp = 0.0000** — the model never classifies a single Normal cycle correctly and would flag every healthy patient. The reported 0.5506 (macro metric) concealed total majority-class collapse. Diagnose the training run before drawing any conclusion about temporal modelling; this result says nothing about whether transformers suit the task.
 
 ## M34 — Curriculum Learning Pacing
 **Architecture:** M2 backbone trained with a root-pacing curriculum strategy based on difficulty-sorted samples (acoustically easy to hard).  
 **Why chosen:** Exposing the model to simpler, cleaner signals before complex anomalous sounds can lead to better convergence.  
-**Result:** ICBHI = 0.7046. A strong result that nears the baseline M2 (0.7227), proving that dynamic pacing is effective and stable.
+**Result:** Official ICBHI = 0.5754 vs. M2's 0.6138 — and on an *easier* split. Curriculum pacing **lost to the baseline**; it did not "near" it. The earlier reading was an artifact of comparing macro scores across different splits.
 
 ## M35 — Physics-Informed Acoustic Loss (v2)
 **Architecture:** M2 backbone + a custom physics-informed loss term enforcing acoustic constraints (Wiener spectral flatness & Peak-to-Average Power Ratio for transients).  
 **Why chosen:** Crackles and wheezes have well-defined physics (transient explosions vs. continuous tonal harmonics). Penalizing the model when features violate these physical priors forces it to learn biologically plausible representations.  
-**Result:** **ICBHI = 0.7839**. This is a major breakthrough, securing the 2nd best result overall. Enforcing domain knowledge via the loss function significantly outperforms naive data-driven learning for this task.
+**Result:** Official ICBHI = **0.6864** — the best *verified* score in the project, though on the easier 70/30 split rather than the official one. Acoustic priors do appear to help, which is a real and interesting finding. It is not a "major breakthrough": published ICBHI SOTA on the official split is ~0.60–0.65, so this is at the literature level, and it has not been measured on the same split as that literature. Re-run on the official 60/40 split to make the claim defensible.
 
 ## M36 — Multistage Teacher-Assistant Distillation
 **Architecture:** Staged knowledge distillation (Teacher M17 → Assistant → Student). Extremely small student footprint (~5k parameters, 0.02 MB).  
 **Why chosen:** Extreme edge deployment scenarios (e.g., embedded inside a digital stethoscope chip) require minimal parameter counts. Multistage KD helps bridge the large capacity gap between teacher and student.  
-**Result:** ICBHI = 0.5137. The aggressive 0.02 MB compression target led to a substantial drop in performance compared to standard single-stage KD (M16).
+**Result:** 🔴 **Broken, not merely compressed too far.** Official ICBHI = 0.5052 with **Se = 0.0932** — it detects 9% of abnormal events, predicting Normal for almost everything. The macro metric's specificity term (0.9171) propped the score up to a plausible-looking 0.5137. A 4.9K-parameter student that has collapsed to the majority class is not a compression result.
 
 ---
 
@@ -317,22 +369,54 @@ The ICBHI 2017 benchmark contains 19 patients with rare/unseen diseases (Bronchi
 
 ## Sound-Event Classification Metrics (ICBHI 2017)
 
-| Model | Acc | Macro-F1 | Se (macro-Rec) | Sp | ICBHI Score | Params | ms/sample |
-|---|---|---|---|---|---|---|---|
-| M1 (4-block CNN) | 0.5407 | 0.4844 | 0.5801 | 0.8561 | 0.7181 | 421K | 1.85 |
-| M2 (5-block CNN) | 0.6138 | 0.5238 | 0.5817 | 0.8638 | 0.7227 | 3.6M | 2.94 |
-| M3 (MobileNetV2) | 0.5915 | 0.4904 | 0.5431 | 0.8537 | 0.6984 | 2.2M | 5.42 |
-| M4 (AST) | 0.5528 | 0.4109 | 0.4385 | 0.8334 | 0.6359 | 86.4M | 86.74 |
-| M31 (GradNorm MTL) | 0.5529 | 0.4351 | 0.4489 | 0.8265 | 0.6377 | 3.7M | 0.92 |
-| M32 (Demographic Fusion) | 0.4802 | 0.4378 | 0.4897 | 0.8196 | 0.6547 | 3.7M | 1.12 |
-| M33 (Temporal Transformer) | 0.3561 | 0.2393 | 0.3311 | 0.7702 | 0.5506 | 13.1M | 3.91 |
-| M34 (Curriculum Learning) | 0.5795 | 0.5268 | 0.5586 | 0.8506 | 0.7046 | 3.6M | 0.81 |
-| M35 (Physics-Informed Loss) | 0.6690 | 0.6420 | 0.6890 | 0.8788 | **0.7839** | 3.6M | 0.85 |
-| M36 (Multistage Distillation) | 0.4765 | 0.2155 | 0.2679 | 0.7594 | 0.5137 | **4.9K** | **0.46** |
-| M37 (Audio LoRA PEFT) | 0.6806 | 0.6599 | 0.7078 | 0.8859 | 0.7969 | 3.6M | 1.00 |
-| **M30 (Gated Fusion M2+M3)** | **0.7275** | **0.7075** | **0.7433** | — | **0.8213** | 7.96M | — |
+> ### ⚠️ Read the metric note before this table
+>
+> Every score below was originally reported as `icbhi_score = (recall_macro + specificity_macro)/2`.
+> **That is not the ICBHI 2017 challenge metric** and is not comparable to published ICBHI results.
+> The official metric is `(Se + Sp)/2` where **Se** = correctly-classified *abnormal* events
+> (Crackle+Wheeze+Both) / all abnormal, and **Sp** = correctly-classified *Normal* / all Normal.
+>
+> The macro form is inflated because per-class specificity for a rare class (Wheeze n≈38, Both n≈35)
+> is high almost by construction, which pulls the macro average up regardless of whether the model
+> detects those classes. **Mean inflation across this project: +0.11. Worst case: +0.22.**
+>
+> Both columns are shown below. **The Official column is the one that goes in the paper.** Full
+> recomputation and method: `Asif's/audit/ICBHI_SCORE_AUDIT.md`.
 
-> **ICBHI Score** = (Se + Sp) / 2. This is the official ICBHI 2017 challenge metric.
+| Model | Acc | Macro-F1 | Official Se | Official Sp | **Official ICBHI** | ~~Old (macro)~~ | Split | Params | ms/sample |
+|---|---|---|---|---|---|---|---|---|---|
+| M1 (4-block CNN) | 0.5407 | 0.4844 | 0.3502 | 0.8784 | **0.6143** | ~~0.7181~~ | 60/40 | 421K | 1.85 |
+| M2 (5-block CNN) | 0.6138 | 0.5238 | 0.6118 | 0.6157 | **0.6138** | ~~0.7227~~ | official 60/40 | 3.6M | 2.94 |
+| M3 (MobileNetV2) | 0.5915 | 0.4904 | 0.5359 | 0.6431 | **0.5895** | ~~0.6984~~ | official 60/40 | 2.2M | 5.42 |
+| M4 (AST) | 0.5528 | 0.4109 | — | — | *not recomputed* | ~~0.6359~~ | official 60/40 | 86.4M | 86.74 |
+| M22 (M3+SpecAugment) | 0.6524 | 0.5253 | 0.5696 | 0.7294 | **0.6495** | ~~0.7077~~ | official 60/40 | 2.2M | 5.27 |
+| M31 (GradNorm MTL) | 0.5529 | 0.4351 | 0.5456 | 0.5614 | **0.5535** | ~~0.6377~~ | 70/30 | 3.7M | 0.92 |
+| M32 (Demographic Fusion) | 0.4802 | 0.4378 | 0.5721 | 0.3745 | **0.4733** | ~~0.6547~~ | 70/30 | 3.7M | 1.12 |
+| M33 (Temporal Transformer) | 0.3561 | 0.2393 | 0.6660 | **0.0000** | **0.3330** 🔴 | ~~0.5506~~ | 70/30 | 13.1M | 3.91 |
+| M34 (Curriculum Learning) | 0.5795 | 0.5268 | 0.6340 | 0.5168 | **0.5754** | ~~0.7046~~ | 70/30 | 3.6M | 0.81 |
+| M35 (Physics-Informed Loss) | 0.6690 | 0.6420 | 0.6980 | 0.6747 | **0.6864** | ~~0.7839~~ | 70/30 | 3.6M | 0.85 |
+| M36 (Multistage Distillation) | 0.4765 | 0.2155 | **0.0932** | 0.9171 | **0.5052** 🔴 | ~~0.5137~~ | 70/30 | **4.9K** | **0.46** |
+| M37 (Audio LoRA PEFT) | 0.6806 | 0.6599 | 0.7517 | 0.5989 | **0.6753** | ~~0.7969~~ | 70/30 | 3.6M | 1.00 |
+| **M30 (Gated Fusion M2+M3)** | 0.7275 | 0.7075 | — | — | **UNVERIFIABLE** 🔴 | ~~0.8213~~ | 70/30 | 7.96M | — |
+
+**Three things this table now makes visible that the old one hid:**
+
+🔴 **M33 has Sp = 0.0000** — it never correctly classifies a single Normal cycle. It would flag every
+healthy patient as abnormal. This is total collapse on the majority class, not a weak result.
+
+🔴 **M36 has Se = 0.0932** — it detects 9% of abnormal events, which is the entire clinical point of
+the task. Its score is carried by the specificity term (0.9171) because it predicts Normal for
+almost everything. Also collapse, in the opposite direction.
+
+🔴 **M30 cannot be verified.** `Barshon's/M30/results_M30.json` commits no `confusion_matrix_raw`,
+so neither the macro nor the official score can be recomputed by us, by the audit tool, or by a
+reviewer who asks. The project's headline number is currently unauditable and must be re-exported
+before it appears in any table or claim.
+
+> **⚠️ Do not compare across splits.** M30–M37 use `patient_independent_70_30`; M1–M4 and M22 use the
+> official ICBHI 60/40 split. A random 70/30 patient split is easier than the official one, which is
+> deliberately hard. Numbers from the two groups are not comparable to each other *or* to published
+> work, regardless of which metric is used.
 
 ## M2 Per-Class Sound-Event Breakdown
 
@@ -401,15 +485,23 @@ The ICBHI 2017 benchmark contains 19 patients with rare/unseen diseases (Bronchi
 
 # 7. Best Performing Models
 
-| Rank | Model | Task | Key Metric | Remarks |
-|---|---|---|---|---|
-| 1 | **M30** Gated Fusion (M2+M3) | Sound-event classification | ICBHI = **0.8213**, F1 = 0.7075 | Best result in project; complementary feature fusion works |
-| 2 | **M37** Audio LoRA (PEFT) | Sound-event classification | ICBHI = **0.7969**, F1 = 0.6599 | 2nd best overall; highly parameter-efficient adaptation (0.23% trainable) |
-| 3 | **M35 v2** Physics-Informed Loss | Sound-event classification | ICBHI = 0.7839, F1 = 0.6420 | 3rd best overall; strong validation of acoustic domain priors |
-| 4 | **M2** 5-block CNN | Sound-event classification | ICBHI = 0.7227, F1 = 0.5238 | Selected backbone; reliable, fast, compact |
-| 5 | **M34** Curriculum Pacing | Sound-event classification | ICBHI = 0.7046, F1 = 0.5268 | Strong result showing dynamic difficulty pacing improves stability |
-| 6 | **M13 v4** Prototypical Head | Disease classification (patient) | Acc = 0.7209, F1 = **0.6061** | Handles low-resource URTI (n=14) reasonably |
-| 7 | **M3** MobileNetV2 | Sound-event classification | ICBHI = 0.6984 | Good lightweight option; contributes to M30 |
+> Ranked by **official** ICBHI score. Split is stated because 70/30 and official-60/40 numbers are
+> not comparable — a model ranked above another on a different split has not beaten it.
+
+| Rank | Model | Task | Official metric | Split | Remarks |
+|---|---|---|---|---|---|
+| 1 | **M35** Physics-Informed Loss | Sound-event | ICBHI = **0.6864**, F1 = 0.6420 | 70/30 | Best *verified* score. Acoustic priors do appear to help — but on the easier split |
+| 2 | **M37** Audio LoRA (PEFT) | Sound-event | ICBHI = **0.6753**, F1 = 0.6599 | 70/30 | Best efficiency ratio: 0.23% trainable params |
+| 3 | **M22** M3 + SpecAugment | Sound-event | ICBHI = **0.6495**, F1 = 0.5253 | **official 60/40** | Best score on the official split; augmentation helped (+0.036 over M3) |
+| 4 | **M2** 5-block CNN | Sound-event | ICBHI = **0.6138**, F1 = 0.5238 | **official 60/40** | Selected backbone. The project's most trustworthy number — right metric, right split, auditable |
+| 5 | **M3** MobileNetV2 | Sound-event | ICBHI = **0.5895**, F1 = 0.4904 | **official 60/40** | Lightweight option; M22's clean baseline |
+| 6 | **M34** Curriculum Pacing | Sound-event | ICBHI = 0.5754, F1 = 0.5268 | 70/30 | **Below the M2 baseline.** Previously described as "approaching" it — it lost |
+| 7 | **M31** GradNorm MTL | Sound-event | ICBHI = 0.5535, F1 = 0.4351 | 70/30 | Below baseline |
+| 8 | **M13 v4** Prototypical Head | Disease (patient) | Acc = 0.7209, F1 = **0.6061** | — | Handles low-resource URTI (n=14) reasonably. ICBHI score N/A (3-class) |
+| 9 | **M32** Demographic Fusion | Sound-event | ICBHI = 0.4733, F1 = 0.4378 | 70/30 | Well below baseline |
+| — | 🔴 **M30** Gated Fusion | Sound-event | **UNVERIFIABLE** | 70/30 | No confusion matrix committed. 0.8213 withdrawn pending re-export — see §8 |
+| — | 🔴 **M36** Multistage Distillation | Sound-event | 0.5052 but **Se = 0.0932** | 70/30 | Broken: detects 9% of abnormal events. Score carried by specificity |
+| — | 🔴 **M33** Temporal Transformer | Sound-event | 0.3330, **Sp = 0.0000** | 70/30 | Broken: never classifies a Normal cycle correctly |
 | 8 | **M17 v2** OWL Stage-2 | Incremental disease learning | Retention = 93.76%, Plasticity = 85.61% | Strong forgetting control |
 | 9 | **M29** Energy score | OOD detection | AUROC = 0.6466 | Best open-set baseline — trivial post-hoc method |
 | 10 | **M15 v4** Cross-task Scorer | OOD/unknown detection | AUROC = 0.5782 | Core novelty — currently below trivial baseline |
@@ -419,10 +511,10 @@ The ICBHI 2017 benchmark contains 19 patients with rare/unseen diseases (Bronchi
 The gated feature-fusion architecture benefits from two complementary representations: M2 learns task-specific discriminative spectral patterns from scratch (no inductive bias), while M3 brings ImageNet-pretrained hierarchical feature detectors. The Gated Adaptive Fusion head learns sample-wise weighting, effectively routing "easier" samples to the stronger backbone and hard samples to the complementary one. The training curve starting at ICBHI=0.8098 at epoch 1 (compared to M2's slower convergence) indicates the fusion head immediately exploits rich pre-learned features.
 
 ### Why M35 Physics-Informed Loss is Highly Effective
-M35 enforces physical priors corresponding to respiratory sound anomalies: transient explosions for crackles (via Peak-to-Average Power Ratio) and tonal harmonics for wheezes (via Wiener spectral flatness). By applying a joint penalty term on these features directly during optimization, the model learns a biologically constrained representation space rather than merely hunting for correlations in the dataset. This approach mitigated overfitting significantly and yielded a massive boost in performance to ICBHI=0.7839.
+M35 enforces physical priors corresponding to respiratory sound anomalies: transient explosions for crackles (via Peak-to-Average Power Ratio) and tonal harmonics for wheezes (via Wiener spectral flatness). By applying a joint penalty term on these features directly during optimization, the model learns a biologically constrained representation space rather than merely hunting for correlations in the dataset. This approach reduced overfitting and produced the project's best verified score, official ICBHI = 0.6864 (reported 0.7839 was the macro metric) — a genuine improvement over the M2 baseline's 0.6138, though measured on a different and easier split, so the gap is not directly attributable to the loss term alone.
 
 ### Why M37 (Audio LoRA) Performs So Well
-M37 achieves the 2nd best overall result (ICBHI=0.7969) while training only 0.23% of the network's parameters via Low-Rank Adaptation (LoRA). By freezing the core feature extractor, M37 avoids overfitting to the tiny ICBHI dataset (a common problem when fine-tuning full networks on 920 recordings). Instead, the low-rank matrices injected into the fully connected layers provide just enough capacity to map the robust, general-purpose acoustic features into the specific ICBHI clinical label space, proving that parameter-efficient fine-tuning (PEFT) is highly effective for clinical audio.
+M37 achieves official ICBHI = 0.6753 (reported 0.7969 was the macro metric) while training only 0.23% of the network's parameters via Low-Rank Adaptation (LoRA). By freezing the core feature extractor, M37 avoids overfitting to the tiny ICBHI dataset (a common problem when fine-tuning full networks on 920 recordings). Instead, the low-rank matrices injected into the fully connected layers provide just enough capacity to map the robust, general-purpose acoustic features into the specific ICBHI clinical label space, proving that parameter-efficient fine-tuning (PEFT) is highly effective for clinical audio.
 
 ### Why AST Underperforms
 The AST was pretrained on AudioSet (527 classes, broadband audio). ICBHI respiratory cycles are narrow-band (50–2000 Hz), short, and medically specific. The distribution mismatch between AudioSet and ICBHI is large. Without domain-specific pretraining, AST's attention mechanism provides no advantage over a well-regularised CNN on this small dataset (920 recordings).
@@ -431,10 +523,33 @@ The AST was pretrained on AudioSet (527 classes, broadband audio). ICBHI respira
 
 # 8. Result Interpretation
 
-## M30: ICBHI = 0.8213
-This is a genuinely strong result. For context, published ICBHI 2017 baselines range from 0.55 (naive CNNs) to ~0.86 (best specialised systems with heavy augmentation and architectural tricks). Achieving 0.8213 with a relatively simple gated fusion of two standard backbones — without data augmentation or complex training tricks — is noteworthy. The result also demonstrates that **architecture fusion can substitute for specialised augmentation strategies**, which has practical value for resource-constrained settings.
+## M30: 0.8213 — 🔴 withdrawn pending re-export
 
-However, the result is achieved on the **sound-event task only**, not the full OWMTL framework. Publication of M30 in isolation would require reframing as a sound-event classification paper, not the OWL-MTL paper originally proposed.
+**This paragraph previously read "This is a genuinely strong result" and compared 0.8213 directly
+against published ICBHI baselines. That comparison was invalid on three independent counts, any one
+of which is disqualifying:**
+
+1. **Wrong metric.** 0.8213 is the macro form, not the ICBHI 2017 challenge score. Across this
+   project the macro form runs ~0.11 higher than the official metric.
+2. **Wrong split.** M30 uses `patient_independent_70_30`. Published ICBHI results use the official
+   60/40 split, which is deliberately harder. The numbers are not on the same scale.
+3. **Unverifiable.** `Barshon's/M30/results_M30.json` commits no `confusion_matrix_raw`, so the
+   official score cannot be recomputed at all — not by us, not by the audit tool, not by a reviewer.
+
+**Nothing about M30 should be claimed until it is re-run or re-exported with its confusion matrix on
+the official 60/40 split.** The underlying idea (gated fusion of a scratch CNN and an
+ImageNet-pretrained MobileNetV2) may well hold up — but right now the evidence for it does not exist
+in a form anyone can check, and the "+9.86% over M2" claim compares across both a metric and a split
+boundary.
+
+For calibration once it is re-run: on the official metric and official split, M2 scores **0.6138**
+and published ICBHI SOTA is roughly **0.60–0.65**. A corrected M30 landing near 0.65 would be a
+solid, honest result at the literature level. It would not be a breakthrough, and the report should
+not have implied one.
+
+Separately, and still true: the result is on the **sound-event task only**, not the OWMTL framework.
+Publishing M30 alone means reframing as a sound-event classification paper — the most saturated
+niche in the field (135+ ICBHI papers) — and abandoning the project's actual thesis.
 
 ## M13: Patient-F1 = 0.6061
 The macro-F1 = 0.6061 at patient level is encouraging given the extreme class imbalance (COPD dominates; URTI has only 14 patients in the full dataset, 6 in the test set here). COPD F1 = 0.8727 shows the prototypical head handles well-represented classes excellently. Healthy F1 = 0.40 is weak — the prototypical approach may confuse non-pathological sounds with URTI (both are subtle, high-variability classes). This is a known failure mode of prototype-based methods when class distributions strongly overlap in embedding space.
@@ -467,8 +582,8 @@ At the formal 95% operating point, the conformal threshold is so tight that **no
 
 | Paper | Dataset | Core Method | Reported Metrics | Comparison with This Work |
 |---|---|---|---|---|
-| ADFF-Net (Respiratory Sound Classification) | ICBHI 2017 | Attention-based dual feature fusion | ICBHI ≈ 0.82–0.86 (from PDF) | M30 reaches 0.8213 — competitive with ADFF-Net's lower-end results |
-| Multi-task Learning for Lung Sound and Disease Classification | ICBHI 2017 | Joint MTL (sound + disease) | Se/Sp-based ICBHI ~0.72–0.78 | Our M2 backbone (0.7227) is at this level; M30 exceeds it |
+| ADFF-Net (Respiratory Sound Classification) | ICBHI 2017 | Attention-based dual feature fusion | ICBHI ≈ 0.82–0.86 (from PDF) | ⚠️ **No valid comparison available.** M30's 0.8213 is the macro metric on a 70/30 split and is unverifiable; it cannot be placed against this row. Verify what metric/split ADFF-Net reports before comparing anything. |
+| Multi-task Learning for Lung Sound and Disease Classification | ICBHI 2017 | Joint MTL (sound + disease) | Se/Sp-based ICBHI ~0.72–0.78 | ⚠️ M2's **official** score is **0.6138**, below this range — not 0.7227. Also verify this row's metric definition; ~0.72–0.78 is high for the official 4-class metric on the official split. |
 | Enhancing Respiratory Sound Classification — Open-Set | ICBHI 2017 | Open-set recognition for lung sounds | AUROC ~0.65–0.72 for OOD | **Our M15 (0.5782) is below this range — critical gap** |
 
 ## Baselines Reproduced / Extended
@@ -502,7 +617,7 @@ At the formal 95% operating point, the conformal threshold is so tight that **no
 
 ## Novelty Claim 2 — Gated Adaptive Fusion of Heterogeneous Backbones
 **Type:** Architectural novelty  
-**Claim:** A gated fusion head combining a scratch-trained CNN (M2) and an ImageNet-pretrained MobileNetV2 (M3) for respiratory spectrogram classification, achieving ICBHI = 0.8213.  
+**Claim:** A gated fusion head combining a scratch-trained CNN (M2) and an ImageNet-pretrained MobileNetV2 (M3) for respiratory spectrogram classification. 🔴 **The 0.8213 figure is withdrawn** — macro metric, 70/30 split, no committed confusion matrix. The claim cannot be evaluated until M30 is re-exported.  
 **Evidence:** M30 outperforms both constituent models by large margins (+9.86%, +12.29%). The gated architecture is distinct from simple averaging ensembles.  
 **Current confidence:** ✅ HIGH — empirical results are strong and reproducible. This is the most publication-ready result in the project.  
 **Publication strength:** Strong standalone contribution for a systems/applied paper. Could anchor a shorter INTERSPEECH or EMBC paper.
@@ -524,24 +639,24 @@ At the formal 95% operating point, the conformal threshold is so tight that **no
 ## Novelty Claim 5 — GradNorm MTL for Imbalanced Respiratory Tasks
 **Type:** Optimization novelty  
 **Claim:** GradNorm adaptive loss weighting applied to the sound-event / disease joint training, addressing task dominance caused by class imbalance.  
-**Evidence:** M31 completed, achieving ICBHI = 0.6377.  
+**Evidence:** M31 completed, official ICBHI = 0.5535 — below the M2 baseline.  
 **Current confidence:** ⚠️ MEDIUM/LOW — while theoretically sound, the performance did not surpass the single-task baseline. May require combining with other strategies.
 
 ## Novelty Claim 6 — Physics-Informed Acoustic Constraints
 **Type:** Representation Learning Novelty  
 **Claim:** Integrating domain-specific physics priors (spectral flatness for tonal wheezes, PAPR for transient crackles) directly into the loss function for deep respiratory classification.  
-**Evidence:** M35 completed, achieving ICBHI = 0.7839, the second highest score.  
+**Evidence:** M35 completed, official ICBHI = 0.6864 — the highest verified score in the project.  
 **Current confidence:** ✅ HIGH — robust empirical validation and strong publication value since it introduces explicit biomedical principles into the learning phase.
 
 ## Summary Novelty Table
 | Claim | Type | Confidence | Publication Strength |
 |---|---|---|---|
 | Cross-task disagreement for unknown detection | Methodological | ⚠️ Medium | Needs M15 fix |
-| Gated heterogeneous backbone fusion | Architectural | ✅ High | Ready (ICBHI 0.8213) |
-| Physics-Informed Acoustic Constraints | Representation | ✅ High | Ready (ICBHI 0.7839) |
+| Gated heterogeneous backbone fusion | Architectural | ⚠️ Unproven | 🔴 **Not ready** — M30 unverifiable, needs re-export (§8) |
+| Physics-Informed Acoustic Constraints | Representation | ✅ Medium-High | Verified (official ICBHI 0.6864, 70/30 — re-run on official split) |
 | Conformal threshold calibration for OOD | Evaluation | ⚠️ Medium | Contingent on M15 |
 | OWL protocol for disease expansion | Clinical | ✅ High | Ready (M17) |
-| GradNorm MTL for task balance | Optimization | ⚠️ Medium/Low | Completed (M31 0.6377) |
+| GradNorm MTL for task balance | Optimization | ❌ Low | Completed, official 0.5535 — below baseline |
 
 ---
 
@@ -595,11 +710,11 @@ Demographic integration (M32) is potentially valuable but incomplete. If demogra
 |---|---|---|
 | **Novelty** | 6/10 | Strong architectural (M30) and protocol (M17) novelty; core mechanism (M15) unvalidated |
 | **Technical depth** | 7/10 | Comprehensive experiment suite; HP sweeps, CV, ablation present for backbones; missing for OWL layer |
-| **Experimental rigor** | 6.5/10 | M11 & M24-CB re-run on real audio; non-compliant schemas remain for some models; statistical testing needed |
+| **Experimental rigor** | 4/10 ⬇ | Downgraded 2026-08-13: headline metric was mislabelled as the official ICBHI score; M30 unverifiable (no confusion matrix); M33/M36 collapsed but reported as functional; M30–M37 on a non-standard split. Corrected, but the fact these went unnoticed is itself the rigor finding |
 | **Reproducibility** | 6/10 | Most checkpoints in repo; M4 on Drive; datasets not included (expected); requirements.txt present |
 | **Literature positioning** | 6/10 | Key papers referenced; missing several strong baselines (ODIN, VIM, ensemble OOD) |
-| **Statistical validity** | 3/10 | No CI, no significance tests; small unknown-class n=19 makes AUROC unreliable |
-| **Overall publication potential** | 5.5/10 | Promising framework; not yet Q1-ready as submitted; 2–3 focused experiments away |
+| **Statistical validity** | 5/10 ⬆ | Improved 2026-08-13: `Asif's/Statistics/` now supplies Hanley-McNeil 95% CIs and pairwise tests for every open-set AUROC. Finding: **no open-set result in the project is distinguishable from chance at n=19** — a defensible negative, but it means no detection claim currently survives |
+| **Overall publication potential** | 4/10 ⬇ | Corrected numbers sit at the published ICBHI level (~0.60–0.65), not above it, and the open-world thesis has no result that clears chance. Q1 remains reachable **only** as a rigor/evaluation contribution — not on accuracy. See `New_Directions_Search.md` (ACBD) for the current direction |
 
 ## Venue-Specific Assessment
 
@@ -723,9 +838,9 @@ M11 (`M11_post_hoc_calibrators.ipynb` & `m11-post-hoc-calibrators-temperature-ve
 
 | Claim | Evidence File |
 |---|---|
-| M2 ICBHI = 0.7227 | `Asif's/M2/results_M2.json`, `Asif's/M2/icbhi_score_curve.png` |
+| M2 official ICBHI = 0.6138 (macro 0.7227) | `Asif's/M2/results_M2.json`, `Asif's/audit/ICBHI_SCORE_AUDIT.md` |
 | M12 backbone selection audit | `Asif's/M12/M12_backbone_justification.md`, `Asif's/M12/results_M12.json` |
-| M30 ICBHI = 0.8213 | `Barshon's/M30/results_M30.json`, `Barshon's/M30/fusion_results.png` |
+| 🔴 M30 0.8213 — UNVERIFIABLE, withdrawn | `Barshon's/M30/results_M30.json` commits no `confusion_matrix_raw` |
 | M13 patient-F1 = 0.6061 | `Barshon's/M13/results_M13.json` |
 | M15 AUROC = 0.5782 | `Barshon's/M15/results_M15.json` |
 | M29 Energy AUROC = 0.6466 | `Asif's/M29/results_M29.json` |

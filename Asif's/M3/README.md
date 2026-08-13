@@ -13,7 +13,9 @@ efficiency."* The deliverable is the accuracy-vs-cost frontier, not a win.
 ## What M2's result changed about M3's question
 
 M2 finished on 2026-07-30 and **won the backbone race outright** — ICBHI 0.7227 / F1 0.5238,
-ahead of both M1 (0.7181 / 0.4844) and M4 (0.6359 / 0.4109). Crucially it landed at **3.6 M params
+ahead of both M1 (0.7181 / 0.4844) and M4 (0.6359 / 0.4109). *(Those ICBHI figures are the legacy
+macro metric; on the official ICBHI 2017 metric M2 scores 0.6138 and M3 0.5895 — the ranking is
+unchanged. See `Asif's/audit/ICBHI_SCORE_AUDIT.md`.)* Crucially it landed at **3.6 M params
 / 13.86 MB**, which is already lightweight.
 
 That makes M3's most interesting comparison **M3 vs M2**, not M3 vs M4:

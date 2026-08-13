@@ -6,6 +6,22 @@
 
 > Generated programmatically from the candidates' `results_M*.json` files by `M12_backbone_selection.ipynb`. Every number below is read from those files, so this document cannot drift from the data it describes.
 
+> ### ⚠️ Metric note (added 2026-08-13) — **the decision is unchanged**
+>
+> The `ICBHI` column below is the project's macro variant, `(recall_macro + specificity_macro)/2`,
+> not the ICBHI 2017 challenge metric. See `Asif's/audit/ICBHI_SCORE_AUDIT.md`. On the official
+> metric the candidates score **M2 0.6138 > M3 0.5895**, and M4 has no committed results JSON so it
+> cannot be recomputed (its row here is transcribed from notebook output — see
+> `decision.comparison_table.M4.source`).
+>
+> **The selection is unaffected.** The M2–M3 margin is **identical under both metrics (0.0243)**, so
+> the ranking, the comparison against the 0.0129 CV tolerance, and the separation conclusion all
+> hold exactly as written. No re-decision is required.
+>
+> This banner is hand-added rather than regenerated because the numbers below are correct *as the
+> macro metric* — they are mislabelled, not wrong. When `M12_backbone_selection.ipynb` is next run,
+> it should emit `icbhi_score_official` alongside and this note can be dropped.
+
 ---
 
 ## 1. Candidates

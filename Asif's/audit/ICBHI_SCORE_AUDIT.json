@@ -1,0 +1,165 @@
+{
+  "verified": [
+    {
+      "model": "M12",
+      "path": "Asif's/M12/results_M12.json",
+      "reported": 0.7227,
+      "official": 0.6138,
+      "delta": -0.1089,
+      "se": 0.6118,
+      "sp": 0.6157,
+      "split": "patient_independent_official_60_40"
+    },
+    {
+      "model": "M2",
+      "path": "Asif's/M2/results_M2.json",
+      "reported": 0.7227,
+      "official": 0.6138,
+      "delta": -0.1089,
+      "se": 0.6118,
+      "sp": 0.6157,
+      "split": "patient_independent_official_60_40"
+    },
+    {
+      "model": "M22",
+      "path": "Asif's/M22/result_M22/results_M22.json",
+      "reported": 0.7077,
+      "official": 0.6495,
+      "delta": -0.0582,
+      "se": 0.5696,
+      "sp": 0.7294,
+      "split": "patient_independent_official_60_40"
+    },
+    {
+      "model": "M3",
+      "path": "Asif's/M3/results_M3.json",
+      "reported": 0.6984,
+      "official": 0.5895,
+      "delta": -0.1089,
+      "se": 0.5359,
+      "sp": 0.6431,
+      "split": "patient_independent_official_60_40"
+    },
+    {
+      "model": "M1",
+      "path": "Barshon's/M1/results_M1.json",
+      "reported": 0.7181,
+      "official": 0.6143,
+      "delta": -0.1038,
+      "se": 0.3502,
+      "sp": 0.8784,
+      "split": "patient_independent_60_40"
+    },
+    {
+      "model": "M31",
+      "path": "Barshon's/M31/results_M31.json",
+      "reported": 0.6377,
+      "official": 0.5535,
+      "delta": -0.0842,
+      "se": 0.5456,
+      "sp": 0.5614,
+      "split": "patient_independent_70_30"
+    },
+    {
+      "model": "M32",
+      "path": "Barshon's/M32/results_M32.json",
+      "reported": 0.6547,
+      "official": 0.4733,
+      "delta": -0.1814,
+      "se": 0.5721,
+      "sp": 0.3745,
+      "split": "patient_independent_70_30"
+    },
+    {
+      "model": "M33",
+      "path": "Barshon's/M33/results_M33.json",
+      "reported": 0.5506,
+      "official": 0.333,
+      "delta": -0.2176,
+      "se": 0.666,
+      "sp": 0.0,
+      "split": "patient_independent_70_30"
+    },
+    {
+      "model": "M33",
+      "path": "Barshon's/M33_v2/results_M33.json",
+      "reported": 0.6806,
+      "official": 0.5832,
+      "delta": -0.0974,
+      "se": 0.619,
+      "sp": 0.5473,
+      "split": "patient_independent_70_30"
+    },
+    {
+      "model": "M34",
+      "path": "Barshon's/M34/results_M34.json",
+      "reported": 0.7046,
+      "official": 0.5754,
+      "delta": -0.1292,
+      "se": 0.634,
+      "sp": 0.5168,
+      "split": "patient_independent_70_30"
+    },
+    {
+      "model": "M35",
+      "path": "Barshon's/M35/results_M35.json",
+      "reported": 0.7839,
+      "official": 0.6864,
+      "delta": -0.0975,
+      "se": 0.698,
+      "sp": 0.6747,
+      "split": "patient_independent_70_30"
+    },
+    {
+      "model": "M35",
+      "path": "Barshon's/M35_v2/results_M35.json",
+      "reported": 0.7918,
+      "official": 0.6719,
+      "delta": -0.1199,
+      "se": 0.7401,
+      "sp": 0.6036,
+      "split": "patient_independent_70_30"
+    },
+    {
+      "model": "M36",
+      "path": "Barshon's/M36/results_M36.json",
+      "reported": 0.5137,
+      "official": 0.5052,
+      "delta": -0.0085,
+      "se": 0.0932,
+      "sp": 0.9171,
+      "split": "patient_independent_70_30"
+    },
+    {
+      "model": "M37",
+      "path": "Barshon's/M37_v2/results_M37.json",
+      "reported": 0.7969,
+      "official": 0.6753,
+      "delta": -0.1216,
+      "se": 0.7517,
+      "sp": 0.5989,
+      "split": "patient_independent_70_30"
+    }
+  ],
+  "unverifiable": [
+    {
+      "model": "M15",
+      "path": "Barshon's/M15/v6/results_M15.json",
+      "reported": 0.0,
+      "split": "patient_independent"
+    },
+    {
+      "model": "M30",
+      "path": "Barshon's/M30/results_M30.json",
+      "reported": 0.8213,
+      "split": "patient_independent_70_30"
+    }
+  ],
+  "not_applicable": [
+    {
+      "model": "M13",
+      "path": "Barshon's/M13/results_M13.json",
+      "reported": 0.7137
+    }
+  ]
+}

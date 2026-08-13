@@ -284,7 +284,7 @@
   },
   {
     "model_id": "M15",
-    "path": "Barshon's/M15/results_M15.json",
+    "path": "Barshon's/M15/v4/results_M15.json",
     "kind": "protocol",
     "findings": [
       {
@@ -293,7 +293,7 @@
         "check": "schema_missing_blocks",
         "message": "Missing \u00a74 block(s): efficiency, best_epoch, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
         "evidence": "efficiency, best_epoch, training_history",
-        "source": "Barshon's/M15/results_M15.json"
+        "source": "Barshon's/M15/v4/results_M15.json"
       },
       {
         "severity": "WARNING",
@@ -301,7 +301,7 @@
         "check": "schema_missing_metrics",
         "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
         "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
-        "source": "Barshon's/M15/results_M15.json"
+        "source": "Barshon's/M15/v4/results_M15.json"
       },
       {
         "severity": "INFO",
@@ -309,7 +309,7 @@
         "check": "schema_incomplete_ablation",
         "message": "`ablation` block missing: component_flags, loss_weights.",
         "evidence": "component_flags, loss_weights",
-        "source": "Barshon's/M15/results_M15.json"
+        "source": "Barshon's/M15/v4/results_M15.json"
       },
       {
         "severity": "WARNING",
@@ -317,7 +317,7 @@
         "check": "weak_discrimination",
         "message": "`best_metrics.auroc` = 0.5782 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
         "evidence": "best_metrics.auroc = 0.5782",
-        "source": "Barshon's/M15/results_M15.json"
+        "source": "Barshon's/M15/v4/results_M15.json"
       },
       {
         "severity": "WARNING",
@@ -325,7 +325,7 @@
         "check": "weak_discrimination",
         "message": "`baseline_comparisons.m29_energy_auroc` = 0.6005 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
         "evidence": "baseline_comparisons.m29_energy_auroc = 0.6005",
-        "source": "Barshon's/M15/results_M15.json"
+        "source": "Barshon's/M15/v4/results_M15.json"
       },
       {
         "severity": "INFO",
@@ -333,7 +333,7 @@
         "check": "cites_subchance_reference_value",
         "message": "`baseline_comparisons.reference_m6_openmax_auroc` = 0.4516 is cited here as context from another model's already-audited result (it is at or below chance). This is not a claim about M15's own performance -- see that other model's audit entry for the underlying problem -- but do not treat it as a validity benchmark for M15.",
         "evidence": "baseline_comparisons.reference_m6_openmax_auroc = 0.4516",
-        "source": "Barshon's/M15/results_M15.json"
+        "source": "Barshon's/M15/v4/results_M15.json"
       },
       {
         "severity": "WARNING",
@@ -341,7 +341,7 @@
         "check": "patient_independence_unclear",
         "message": "`dataset_info.split_method` = 'None' does not state a patient-independent split, and `patient_leakage_verified` is absent. Protocol \u00a71 calls this a research-validity requirement, not a style choice -- it should be asserted in code, not assumed.",
         "evidence": "",
-        "source": "Barshon's/M15/results_M15.json"
+        "source": "Barshon's/M15/v4/results_M15.json"
       }
     ]
   },
@@ -372,6 +372,14 @@
         "check": "patient_independence_not_asserted",
         "message": "Split is declared patient-independent ('patient_independent') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
         "evidence": "",
+        "source": "Barshon's/M15/v6/results_M15.json"
+      },
+      {
+        "severity": "CRITICAL",
+        "model": "M15",
+        "check": "icbhi_score_unverifiable",
+        "message": "`icbhi_score` = 0.0000 is reported with no committed `confusion_matrix_raw`, so neither the macro nor the official ICBHI score can be independently recomputed -- not by a teammate, not by this tool, not by a reviewer who asks. Re-export this run with the confusion matrix (protocol section 4) before the number is used in any table or claim.",
+        "evidence": "icbhi_score = 0.0000, confusion_matrix_raw absent",
         "source": "Barshon's/M15/v6/results_M15.json"
       }
     ]
@@ -780,6 +788,14 @@
         "message": "Split is declared patient-independent ('patient_independent_70_30') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
         "evidence": "",
         "source": "Barshon's/M30/results_M30.json"
+      },
+      {
+        "severity": "CRITICAL",
+        "model": "M30",
+        "check": "icbhi_score_unverifiable",
+        "message": "`icbhi_score` = 0.8213 is reported with no committed `confusion_matrix_raw`, so neither the macro nor the official ICBHI score can be independently recomputed -- not by a teammate, not by this tool, not by a reviewer who asks. Re-export this run with the confusion matrix (protocol section 4) before the number is used in any table or claim.",
+        "evidence": "icbhi_score = 0.8213, confusion_matrix_raw absent",
+        "source": "Barshon's/M30/results_M30.json"
       }
     ]
   },
@@ -848,6 +864,14 @@
         "check": "patient_independence_not_asserted",
         "message": "Split is declared patient-independent ('patient_independent_70_30') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
         "evidence": "",
+        "source": "Barshon's/M33/results_M33.json"
+      },
+      {
+        "severity": "CRITICAL",
+        "model": "M33",
+        "check": "normal_detection_collapse",
+        "message": "Official ICBHI specificity is 0.0000 -- the model almost never classifies a Normal cycle correctly, so it would flag nearly every healthy patient. The reported score is being carried by the sensitivity term.",
+        "evidence": "Se = 0.6660, Sp = 0.0000",
         "source": "Barshon's/M33/results_M33.json"
       }
     ]
@@ -930,6 +954,14 @@
         "check": "patient_independence_not_asserted",
         "message": "Split is declared patient-independent ('patient_independent_70_30') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
         "evidence": "",
+        "source": "Barshon's/M36/results_M36.json"
+      },
+      {
+        "severity": "CRITICAL",
+        "model": "M36",
+        "check": "abnormal_detection_collapse",
+        "message": "Official ICBHI sensitivity is 0.0932 -- the model detects almost no abnormal (Crackle/Wheeze/Both) events, which is the entire clinical point of the task. The reported score is being carried by the specificity term. This is majority-class collapse, not a working model.",
+        "evidence": "Se = 0.0932, Sp = 0.9171",
         "source": "Barshon's/M36/results_M36.json"
       }
     ]

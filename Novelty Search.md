@@ -276,7 +276,7 @@ adopted, not one at a time — it's a shared file.
 |---|---|---|
 | 1. Meta-learning / prototypical disease head | ✅ **COMPLETED** | `Barshon's/M13/M13_Prototypical_Disease_Head.ipynb` (Real ICBHI audio) |
 | 2. Conformal calibration of the disagreement score | ✅ **COMPLETED** | `Barshon's/M14/v2/M14_Conformal_Risk_Calibration.ipynb` (95% coverage guarantee) |
-| 3. M2+M3 Gated Feature-Fusion Ensemble | ✅ **COMPLETED** | `Barshon's/M30/M30_Gated_Feature_Fusion.ipynb` (**Peak ICBHI Score = 0.8213**) |
+| 3. M2+M3 Gated Feature-Fusion Ensemble | 🔴 **WITHDRAWN — needs re-export** | `Barshon's/M30/M30_Gated_Feature_Fusion.ipynb`. The 0.8213 figure is the legacy macro metric on a 70/30 split with no committed confusion matrix, so it cannot be verified. §4.0 says to include this item **only if it measurably beats both backbones alone** — that test has not actually been passed yet. Re-run on the official 60/40 split before counting it as a selected item. |
 | 4. Temperature Scaling Calibration & ECE | ✅ **COMPLETED** | `Barshon's/M20/M20_Temperature_Scaling_Calibration.ipynb` ($T^*=1.4875$) |
 | 5. Acoustic Difficulty Curriculum Learning | ✅ **COMPLETED** | `Barshon's/M21/M21_Curriculum_Learning_M2.ipynb` (`CurriculumSampler` SNR pacing) |
 | 6. Teacher-Student Knowledge Distillation | ✅ **COMPLETED** | `Barshon's/M16/M16_Knowledge_Distillation.ipynb` (8.85× compression, 93.18% Acc) |

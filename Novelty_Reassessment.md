@@ -6,6 +6,42 @@
 
 ---
 
+> # 🔴 SUPERSEDED — historical record only
+>
+> **Do not act on this document's recommendation.** Two things have invalidated it since it was
+> written on 2026-08-11:
+>
+> **1. Its selected direction was rejected two days later.** `New_Directions_Search.md` states that
+> Direction 1 (device/disease disentangled open-world benchmark) "was rejected after revalidation
+> because 2025–2026 papers closed it," and selects **ACBD (Acoustic Concept-Bottleneck Diagnosis)**
+> instead. `New_Directions_Search.md` is the current direction document.
+>
+> **2. It contains a factual error that its core proposal depended on.** §4.3 builds the benchmark
+> on *"ICBHI's 7 stethoscopes as a controlled covariate axis."* **ICBHI has 4 recording devices**
+> (AKGC417L, LittC2SE, Litt3200, Meditron). The 7 is the number of chest **locations** (Tc, Al, Ar,
+> Pl, Pr, Ll, Lr). The error originated in `Research_Progress_Report.md` (now corrected) and
+> propagated here.
+>
+> Device stratification also has an unverified prerequisite that still applies to ACBD's experiment
+> 6: if patients don't span multiple devices, leave-one-device-out is just
+> leave-those-patients-out and no device claim is possible. Run
+> `Asif's/audit/check_device_structure.py` before planning any device-based experiment.
+>
+> **3. Its performance figures are the legacy macro metric.** §1.2 cites "M30 fusion 0.8213, M35
+> physics loss 0.7839, M37 LoRA 0.7969." On the official ICBHI 2017 metric these are **M30
+> unverifiable** (no committed confusion matrix), **M35 0.6864**, **M37 0.6753** — and all three are
+> on a non-official 70/30 split. See `Asif's/audit/ICBHI_SCORE_AUDIT.md`.
+>
+> Its §1.2 conclusion nevertheless gets *stronger*, not weaker, with corrected numbers: the results
+> are not merely "incremental" in a saturated space, they sit **at** the published ICBHI level
+> (~0.60–0.65 official) rather than above it.
+>
+> **What remains valid and worth reading:** §1.1 (the cross-task mechanism is Zamir et al. 2020's
+> Consistency Energy — genuinely not novel), §1.3 (foundation models have overtaken the backbone
+> story), §1.5 (the M14 conformal paradox), and the Appendix citation list.
+
+---
+
 ## 0. TL;DR (read this first)
 
 1. **The original core novelty is dead on arrival — and your own results already prove it.** "Cross-task disagreement between a sound-event head and a disease head detects unseen diseases" fails empirically (M15 AUROC 0.5747 vs. a two-line Energy baseline at 0.6466) *and* fails on prior art (the mechanism is a published, named OOD signal — "Consistency Energy," Zamir et al. 2020 — and open-set/open-world respiratory recognition already exists). Trying to "fix M15" is the wrong instinct: even if you raised it to 0.70, you would have a worse version of an already-published idea, measured on n=19 patients where the confidence interval (~±0.12) swallows the entire effect.

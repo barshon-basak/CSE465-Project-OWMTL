@@ -2,6 +2,11 @@
 
 **Owner:** Asif (Member A) · **Requires:** M2, M3, M4 · **Status:** ✅ decided and verified
 
+> **⚠️ Metric note (2026-08-13) — decision unchanged.** The ICBHI column below is the project's macro
+> variant, not the ICBHI 2017 challenge metric (`Asif's/audit/ICBHI_SCORE_AUDIT.md`). Official
+> scores: **M2 0.6138 > M3 0.5895**. The M2–M3 margin is **identical under both metrics (0.0243)**,
+> so the selection, the CV-tolerance comparison, and the conclusion all stand as written.
+
 ## The decision
 
 **M2 (tuned 2D CNN, `2D_CNN_5Block_w48_do0.4`) is the frozen shared backbone.**
