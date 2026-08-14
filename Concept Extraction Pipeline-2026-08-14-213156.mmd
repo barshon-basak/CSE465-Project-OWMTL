@@ -1,0 +1,36 @@
+---
+config:
+  layout: dagre
+---
+flowchart TB
+    G0{"G0 · Annotate a fine-grained<br>concept subset? (with Dr. Khan)"} -- Yes --> ANN["Q1-ceiling track:<br>begin labeling in wks 1-2"]
+    G0 -- No / defer --> G1{"G1 · Pre-code kill-search<br>still open?"}
+    ANN --> G1
+    G1 -- Twin found --> PIVOT1["Narrow to the still-open<br>sub-question (leakage /<br>intervention) or reliability-only"]
+    G1 -- Open --> BUILD["Build shared engine:<br>DSP concept extractors"]
+    PIVOT1 --> BUILD
+    BUILD --> G2{"G2 · Concept extractors valid<br>vs ICBHI cycle labels?"}
+    G2 -- No --> LEAN["Fallback: minimal reliable<br>concept set (PAPR / flatness /<br>wheeze band) OR reliability-only paper"]
+    G2 -- Yes --> TRAIN["Train CBM variants +<br>leaky-joint + opaque controls"]
+    LEAN --> TRAIN
+    TRAIN --> G3{"G3 · DECISION HALL<br>tradeoff + leakage + intervention"}
+    G3 -- Bottleneck accurate<br>+ intervention helps --> PA["HEADLINE = Path A<br>interpretable, correctable dx"]
+    G3 -- Collapse / heavy leakage /<br>weak intervention --> PB["HEADLINE = Path B<br>faithfulness / robustness audit"]
+    PA --> DOWN["Shared downstream:<br>concept-space OOD, shift,<br>honest operating point"]
+    PB --> DOWN
+    DOWN --> G4{"G4 · Device separable?<br>check_device_structure.py"}
+    G4 -- Yes --> DEV["+ leave-one-device-out<br>covariate stress"]
+    G4 -- No --> PED["Rely on pediatric<br>(SPRSound) shift only"]
+    DEV --> G5{"G5 · FM compute committed?"}
+    PED --> G5
+    G5 -- Yes --> FM["+ FM probing:<br>do OPERA/M2D listen?"]
+    G5 -- No --> NOFM["OPERA as cited baseline only"]
+    FM --> G6{"G6 · Findings cohere<br>into ONE claim?"}
+    NOFM --> G6
+    G6 -- No --> SHARP["Sharpen to the single<br>strongest finding"]
+    G6 -- Yes --> WRITE["Write the paper<br>(one headline + support)"]
+    SHARP --> WRITE
+    WRITE --> G7{"G7 · Venue<br>(given result + G0)"}
+    G7 -- Annotated + strong --> Q1["Q1 journal<br>(dataset+method or eval-first)"]
+    G7 -- Sharp, no annotation --> DOMAIN["Strong domain venue /<br>borderline Q1"]
+    G7 -- Modest --> Q2["Q2 / domain conference"]

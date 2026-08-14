@@ -1,6 +1,6 @@
 # OWMTL — Week-by-Week Build Sheet (label-free track)
 
-**For:** Barshon Basak · CSE465 Capstone, NSU · Supervisor: Dr. Khan
+**For:** Barshon Basak · NSU · Supervisor: Dr. Khan
 **Prepared:** 2026-08-14
 **Track:** Label-free (default). The **annotation lane** is marked ⟦ANNOT⟧ wherever it would slot in — switch it on only if you and Dr. Khan decide to (Gate G0).
 **Reads against:** `OWMTL_Merged_Decision_Roadmap.md` (gates G0–G7) and `OWMTL_Novelty_Gap_Analysis.md` (ideas I1–I10).
