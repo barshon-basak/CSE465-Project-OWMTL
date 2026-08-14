@@ -116,8 +116,25 @@ visible, with M2's official score as a horizontal reference line.
 
 ## Testing
 
-53/53 on a synthetic ICBHI-shaped corpus with real M2/M3-architecture checkpoints. Beyond schema and
-plot checks, the suite asserts:
+53/53 on a synthetic ICBHI-shaped corpus with checkpoints saved from *this notebook's own* backbone
+classes.
+
+> **Known limitation, learned the hard way (2026-08-14).** Because the test checkpoints were
+> generated from the notebook's own class definitions, the suite could only ever prove
+> *self-consistency* — it could not catch a mismatch between those definitions and the **real** M2/M3
+> checkpoints. One got through: `M3_MobileNet` named its final layer `classifier`, while M3's actual
+> notebook (and checkpoint) uses `head`. The first Colab run died in cell 5 on exactly this.
+> `load_backbone_or_die()` did its job and refused. Fixed by renaming to `head`.
+>
+> This was **not** cosmetic: cell 10 evaluates M3-alone through `forward()`, so a randomly-initialised
+> classifier would have depressed the M3-alone baseline and biased the admission test *in favour of*
+> fusion — the exact comparison this re-run exists to get right. Note also that the fingerprint check
+> alone would have passed (the `features.*` trunk loaded fine); only the missing-parameter check
+> caught it.
+>
+> The real M2/M3 checkpoints are committed in the repo and should be a test input.
+
+Beyond schema and plot checks, the suite asserts:
 
 - `split_method` really is `patient_independent_official_60_40`, and the test patients match the
   split file (not a 70/30 shuffle)

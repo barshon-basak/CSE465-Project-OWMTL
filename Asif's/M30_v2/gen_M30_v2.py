@@ -586,7 +586,7 @@ class M3_MobileNet(nn.Module):
         self.features = mb.features
         self.gap = nn.AdaptiveAvgPool2d((1, 1))
         self.dropout = nn.Dropout(dropout)
-        self.classifier = nn.Linear(1280, num_classes)
+        self.head = nn.Linear(1280, num_classes)      # name must match M3's checkpoint: head.weight/head.bias
         self.embedding_dim = 1280
         self.register_buffer("mean", torch.tensor([0.485, 0.456, 0.406]).view(1, 3, 1, 1))
         self.register_buffer("std", torch.tensor([0.229, 0.224, 0.225]).view(1, 3, 1, 1))
@@ -596,7 +596,7 @@ class M3_MobileNet(nn.Module):
         return self.gap(self.features(x3)).flatten(1)
 
     def forward(self, x):
-        return self.classifier(self.dropout(self.get_embedding(x)))
+        return self.head(self.dropout(self.get_embedding(x)))
 
 
 class GatedFusionEnsemble(nn.Module):
