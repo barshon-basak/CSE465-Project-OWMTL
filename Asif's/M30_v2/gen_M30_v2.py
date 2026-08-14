@@ -508,14 +508,21 @@ class ICBHIDataset(Dataset):
                 int(r["label"]))
 
 
-train_loader = DataLoader(ICBHIDataset(df_train, CFG), batch_size=CFG["batch_size"],
-                          shuffle=True, num_workers=2, pin_memory=torch.cuda.is_available(),
-                          drop_last=True)
-test_loader = DataLoader(ICBHIDataset(df_test, CFG), batch_size=CFG["batch_size"],
-                         shuffle=False, num_workers=2, pin_memory=torch.cuda.is_available())
-_x, _y = next(iter(train_loader))
+# These loaders are used ONCE each, for the feature-extraction pass in Cell 6 -- not per epoch.
+# See Cell 6 for why. persistent_workers keeps the worker pool alive so its iterator is not
+# torn down and garbage-collected mid-run, which is what produces Colab's harmless-but-noisy
+# "AssertionError: can only test a child process" flood from _MultiProcessingDataLoaderIter.__del__.
+_dl_kw = dict(num_workers=2, pin_memory=torch.cuda.is_available(), persistent_workers=True)
+
+extract_train_loader = DataLoader(ICBHIDataset(df_train, CFG), batch_size=CFG["batch_size"],
+                                  shuffle=False, **_dl_kw)
+extract_test_loader = DataLoader(ICBHIDataset(df_test, CFG), batch_size=CFG["batch_size"],
+                                 shuffle=False, **_dl_kw)
+_x, _y = next(iter(extract_train_loader))
 print(f"Batch {tuple(_x.shape)} | expected (B, 1, {CFG['n_mels']}, {CFG['n_frames']})")
 assert _x.shape[1:] == (1, CFG["n_mels"], CFG["n_frames"]), "Spectrogram shape mismatch."
+print(f"Train {len(df_train)} cycles | Test {len(df_test)} cycles "
+      f"— each read from disk exactly ONCE (Cell 6).")
 ''')
 
 # ===========================================================================
@@ -588,34 +595,54 @@ class M3_MobileNet(nn.Module):
         self.dropout = nn.Dropout(dropout)
         self.head = nn.Linear(1280, num_classes)      # name must match M3's checkpoint: head.weight/head.bias
         self.embedding_dim = 1280
-        self.register_buffer("mean", torch.tensor([0.485, 0.456, 0.406]).view(1, 3, 1, 1))
-        self.register_buffer("std", torch.tensor([0.229, 0.224, 0.225]).view(1, 3, 1, 1))
+        # Buffer NAMES must match M3's checkpoint (in_mean / in_std) so the normalisation
+        # actually loads instead of silently falling back to these defaults. The defaults
+        # happen to equal M3's stored values today, but relying on that would break the
+        # instant M3 is retrained with different normalisation.
+        self.register_buffer("in_mean", torch.tensor([0.485, 0.456, 0.406]).view(1, 3, 1, 1))
+        self.register_buffer("in_std", torch.tensor([0.229, 0.224, 0.225]).view(1, 3, 1, 1))
 
     def get_embedding(self, x):
-        x3 = (x.repeat(1, 3, 1, 1) - self.mean) / self.std
+        x3 = (x.repeat(1, 3, 1, 1) - self.in_mean) / self.in_std
         return self.gap(self.features(x3)).flatten(1)
 
     def forward(self, x):
         return self.head(self.dropout(self.get_embedding(x)))
 
 
-class GatedFusionEnsemble(nn.Module):
-    """Gated Adaptive Fusion -- architecture matched to the original M30."""
+class FusionHead(nn.Module):
+    """The only trainable part: gate * projection -> classifier, over concatenated embeddings.
 
-    def __init__(self, m2, m3, fusion_dim=512, num_classes=4, dropout=0.4):
+    Split out from the ensemble deliberately. Because both backbones are FROZEN, the 2048-d
+    embedding for a given cycle is identical at every epoch -- so it is extracted once (Cell 6)
+    and this head trains directly on the cached vectors. Architecture is unchanged from the
+    original M30; only where the embeddings come from differs.
+    """
+
+    def __init__(self, in_dim, fusion_dim=512, num_classes=4, dropout=0.4):
         super().__init__()
-        self.m2, self.m3 = m2, m3
-        in_dim = m2.embedding_dim + m3.embedding_dim                  # 768 + 1280 = 2048
         self.gate = nn.Sequential(nn.Linear(in_dim, fusion_dim), nn.Sigmoid())
         self.project = nn.Sequential(nn.Linear(in_dim, fusion_dim),
                                      nn.BatchNorm1d(fusion_dim), nn.ReLU(inplace=True))
         self.classifier = nn.Sequential(nn.Dropout(dropout),
                                         nn.Linear(fusion_dim, num_classes))
 
+    def forward(self, f):
+        return self.classifier(self.gate(f) * self.project(f))
+
+
+class GatedFusionEnsemble(nn.Module):
+    """Backbones + head, end to end. Used for inference-latency measurement and as the saved
+    checkpoint, so the artifact is a complete usable model rather than a bare head."""
+
+    def __init__(self, m2, m3, head):
+        super().__init__()
+        self.m2, self.m3, self.head = m2, m3, head
+
     def forward(self, x):
         with torch.no_grad():
             f = torch.cat([self.m2.get_embedding(x), self.m3.get_embedding(x)], dim=-1)
-        return self.classifier(self.gate(f) * self.project(f))
+        return self.head(f)
 
 
 def _fingerprint(model):
@@ -643,6 +670,14 @@ def load_backbone_or_die(model, ckpt_path, name):
             f"tensor(s), e.g. {missing_params[:5]}. Those would stay randomly initialised. "
             f"Refusing to continue -- check that {ckpt_path} is the right checkpoint.")
 
+    # Buffers (e.g. M3's in_mean/in_std normalisation) are not parameters, so a name
+    # mismatch there loads nothing and silently leaves defaults in place. Report it.
+    own_buffers = {n for n, _ in model.named_buffers()}
+    missing_buffers = [k for k in missing if k in own_buffers]
+    if missing_buffers:
+        print(f"     NOTE: {name} checkpoint did not supply buffer(s) {missing_buffers}; "
+              f"the class defaults remain in effect. Verify they are correct.")
+
     after = _fingerprint(model)
     if abs(after - before) < 1e-9:
         raise RuntimeError(
@@ -668,12 +703,15 @@ for bb in (m2_backbone, m3_backbone):
     for p in bb.parameters():
         p.requires_grad = False
 
-model = GatedFusionEnsemble(m2_backbone, m3_backbone, fusion_dim=CFG["fusion_dim"],
-                            num_classes=CFG["num_classes"], dropout=CFG["dropout"]).to(DEVICE)
+EMB_DIM = m2_backbone.embedding_dim + m3_backbone.embedding_dim        # 768 + 1280 = 2048
+fusion_head = FusionHead(EMB_DIM, fusion_dim=CFG["fusion_dim"],
+                         num_classes=CFG["num_classes"], dropout=CFG["dropout"]).to(DEVICE)
+model = GatedFusionEnsemble(m2_backbone, m3_backbone, fusion_head).to(DEVICE)
 
 TOTAL_PARAMS = sum(p.numel() for p in model.parameters())
 TRAINABLE_PARAMS = sum(p.numel() for p in model.parameters() if p.requires_grad)
-print(f"\nTotal params     : {TOTAL_PARAMS:,}")
+print(f"\nEmbedding dim    : {EMB_DIM}")
+print(f"Total params     : {TOTAL_PARAMS:,}")
 print(f"Trainable (fusion): {TRAINABLE_PARAMS:,} ({TRAINABLE_PARAMS / TOTAL_PARAMS:.1%})")
 assert TRAINABLE_PARAMS < TOTAL_PARAMS * 0.5, "Backbones are not frozen."
 ''')
@@ -716,17 +754,9 @@ def official_icbhi(cm):
     return se, sp, (se + sp) / 2
 
 
-def evaluate(net, loader, tag=""):
-    net.eval()
-    preds, trues = [], []
-    with torch.no_grad():
-        for x, y in loader:
-            out = net(x.to(DEVICE, non_blocking=True))
-            preds.append(out.argmax(1).cpu().numpy())
-            trues.append(y.numpy())
-    y_pred = np.concatenate(preds)
-    y_true = np.concatenate(trues)
-
+def metrics_from_predictions(y_true, y_pred, tag=""):
+    """All protocol metrics from label arrays. Kept separate from any DataLoader so it can be
+    reused for the cached-embedding path, the backbone baselines, and per-epoch validation."""
     cm = confusion_matrix(y_true, y_pred, labels=list(range(CFG["num_classes"])))
     prec, rec, f1, sup = precision_recall_fscore_support(
         y_true, y_pred, labels=list(range(CFG["num_classes"])), zero_division=0)
@@ -756,6 +786,16 @@ def evaluate(net, loader, tag=""):
     return m
 
 
+def predict_logits(net, feats, batch=512):
+    """Run a head over cached embeddings. No DataLoader, no worker processes."""
+    net.eval()
+    out = []
+    with torch.no_grad():
+        for i in range(0, len(feats), batch):
+            out.append(net(feats[i:i + batch].to(DEVICE)).cpu())
+    return torch.cat(out)
+
+
 print("Metric suite ready: both ICBHI variants computed side by side.")
 ''')
 
@@ -776,13 +816,51 @@ wrong and the fusion result should not be trusted either.
 
 code(r'''
 # ============================================================
-# CELL 7 — BASELINES: M2 ALONE AND M3 ALONE, SAME TEST SET
+# CELL 7 — ONE-TIME FEATURE EXTRACTION + BACKBONE BASELINES
 # ============================================================
-print("Evaluating frozen backbones on THIS notebook's test split")
+# Both backbones are FROZEN, so a given cycle's 2048-d embedding is identical at every
+# epoch. Extracting once and training the head on cached vectors is not an optimisation
+# detail -- recomputing librosa log-mels 30 times over would be ~30x the work for bitwise
+# identical inputs, and it is what made the first run take minutes per epoch.
+# It also removes the per-epoch DataLoader worker churn behind Colab's noisy (harmless)
+# "AssertionError: can only test a child process" flood.
+
+def extract_features(loader, frame, tag):
+    """One pass: cache M2 and M3 embeddings plus each backbone's own logits."""
+    e2, e3, l2, l3, ys = [], [], [], [], []
+    m2_backbone.eval(); m3_backbone.eval()
+    with torch.no_grad():
+        for x, y in tqdm(loader, desc=f"extracting {tag}"):
+            x = x.to(DEVICE, non_blocking=True)
+            f2 = m2_backbone.get_embedding(x)
+            f3 = m3_backbone.get_embedding(x)
+            e2.append(f2.cpu()); e3.append(f3.cpu())
+            l2.append(m2_backbone.head(f2).cpu())      # backbone's own classifier
+            l3.append(m3_backbone.head(f3).cpu())
+            ys.append(y)
+    e2, e3 = torch.cat(e2), torch.cat(e3)
+    out = dict(emb=torch.cat([e2, e3], dim=1), logits_m2=torch.cat(l2),
+               logits_m3=torch.cat(l3), y=torch.cat(ys).numpy())
+    assert len(out["emb"]) == len(frame), \
+        f"{tag}: extracted {len(out['emb'])} rows for {len(frame)} cycles -- order/length mismatch."
+    print(f"  {tag}: {tuple(out['emb'].shape)} cached")
+    return out
+
+
+_t0 = time.time()
+TRAIN_F = extract_features(extract_train_loader, df_train, "train")
+TEST_F = extract_features(extract_test_loader, df_test, "test")
+EXTRACT_TIME = time.time() - _t0
+print(f"\nFeature extraction done in {EXTRACT_TIME:.0f}s. Audio is now read ZERO more times.\n")
+
+# Free the worker pools explicitly so their iterators aren't torn down later during GC.
+del extract_train_loader, extract_test_loader
+
+print("Backbone baselines on THIS notebook's test split")
 print("(sanity anchor: published official scores are M2 0.6138, M3 0.5895)\n")
 
-BASE_M2 = evaluate(m2_backbone, test_loader, "M2 alone")
-BASE_M3 = evaluate(m3_backbone, test_loader, "M3 alone")
+BASE_M2 = metrics_from_predictions(TEST_F["y"], TEST_F["logits_m2"].argmax(1).numpy(), "M2 alone")
+BASE_M3 = metrics_from_predictions(TEST_F["y"], TEST_F["logits_m3"].argmax(1).numpy(), "M3 alone")
 
 for name, got, published in (("M2", BASE_M2["icbhi_score_official"], 0.6138),
                              ("M3", BASE_M3["icbhi_score_official"], 0.5895)):
@@ -803,30 +881,40 @@ md(r"""
 
 code(r'''
 # ============================================================
-# CELL 8 — TRAINING LOOP (fusion head only)
+# CELL 8 — TRAINING LOOP (fusion head on cached embeddings)
 # ============================================================
+# TensorDataset over the cached 2048-d vectors: no librosa, no disk I/O, no worker
+# processes. num_workers=0 is correct here, not a workaround -- there is nothing to
+# parallelise, and it is what keeps the output clean.
+
+train_ds = torch.utils.data.TensorDataset(TRAIN_F["emb"],
+                                          torch.tensor(TRAIN_F["y"], dtype=torch.long))
+head_loader = DataLoader(train_ds, batch_size=CFG["batch_size"], shuffle=True,
+                         num_workers=0, drop_last=True)
+
 counts = np.bincount(df_train.label.values, minlength=CFG["num_classes"]).astype(float)
 weights = torch.tensor((counts.sum() / np.maximum(counts, 1)) / CFG["num_classes"],
                        dtype=torch.float32, device=DEVICE)
 criterion = nn.CrossEntropyLoss(weight=weights)     # inverse-frequency, as in M2/M3
-optimizer = torch.optim.Adam([p for p in model.parameters() if p.requires_grad],
+optimizer = torch.optim.Adam(fusion_head.parameters(),
                              lr=CFG["lr"], weight_decay=CFG["weight_decay"])
 scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=CFG["num_epochs"])
 print(f"Class weights: {weights.cpu().numpy().round(3)}")
+print(f"Training {sum(p.numel() for p in fusion_head.parameters()):,} fusion params "
+      f"on {len(train_ds)} cached embeddings\n")
 
 history, best = [], {"icbhi_score_official": -1.0, "epoch": None}
 BEST_PATH = os.path.join(CFG["ckpt_dir"], "best_model.pth")
 t_start = time.time()
 
 for epoch in range(1, CFG["num_epochs"] + 1):
-    model.train()
-    m2_backbone.eval(); m3_backbone.eval()          # frozen backbones stay in eval
+    fusion_head.train()
     tot, correct, loss_sum = 0, 0, 0.0
     t0 = time.time()
-    for x, y in tqdm(train_loader, desc=f"epoch {epoch}/{CFG['num_epochs']}", leave=False):
-        x, y = x.to(DEVICE, non_blocking=True), y.to(DEVICE, non_blocking=True)
+    for f, y in head_loader:
+        f, y = f.to(DEVICE, non_blocking=True), y.to(DEVICE, non_blocking=True)
         optimizer.zero_grad()
-        out = model(x)
+        out = fusion_head(f)
         loss = criterion(out, y)
         loss.backward()
         optimizer.step()
@@ -835,7 +923,8 @@ for epoch in range(1, CFG["num_epochs"] + 1):
         tot += y.size(0)
     scheduler.step()
 
-    val = evaluate(model, test_loader)
+    val_pred = predict_logits(fusion_head, TEST_F["emb"]).argmax(1).numpy()
+    val = metrics_from_predictions(TEST_F["y"], val_pred)
     rec = {"epoch": epoch, "train_loss": round(loss_sum / tot, 4),
            "train_accuracy": round(correct / tot, 4),
            "val_accuracy": round(val["accuracy"], 4),
@@ -849,24 +938,30 @@ for epoch in range(1, CFG["num_epochs"] + 1):
     if val["icbhi_score_official"] > best["icbhi_score_official"]:
         best = dict(val); best["epoch"] = epoch
         rec["is_best"] = True
+        # Save the FULL ensemble (backbones + head) so the artifact is a usable model.
         torch.save({"epoch": int(epoch),
                     "best_score": float(val["icbhi_score_official"]),
                     "model_state": model.state_dict(),
+                    "head_state": fusion_head.state_dict(),
                     "model_config": {"fusion_dim": CFG["fusion_dim"],
-                                     "dropout": CFG["dropout"]}}, BEST_PATH)   # protocol 11.A
+                                     "dropout": CFG["dropout"],
+                                     "embedding_dim": EMB_DIM}}, BEST_PATH)   # protocol 11.A
     history.append(rec)
     print(f"  epoch {epoch:>2}  loss {rec['train_loss']:.4f}  "
           f"val acc {rec['val_accuracy']:.4f}  official ICBHI "
           f"{rec['val_icbhi_score_official']:.4f}{'  <- best' if rec['is_best'] else ''}")
 
 TRAIN_TIME = time.time() - t_start
-print(f"\nDone in {TRAIN_TIME:.0f}s. Best epoch {best['epoch']} "
-      f"official ICBHI {best['icbhi_score_official']:.4f}")
+print(f"\nHead training done in {TRAIN_TIME:.0f}s "
+      f"({TRAIN_TIME / CFG['num_epochs']:.1f}s/epoch). "
+      f"Best epoch {best['epoch']} official ICBHI {best['icbhi_score_official']:.4f}")
 
-# selection is on the official metric, so re-load the best checkpoint for final reporting
+# selection is on the official metric, so re-load the best head for final reporting
 _st = torch.load(BEST_PATH, map_location=DEVICE, weights_only=False)
-model.load_state_dict(_st["model_state"])
-FUSION = evaluate(model, test_loader, "M30 v2 (fusion)")
+fusion_head.load_state_dict(_st["head_state"])
+FUSION = metrics_from_predictions(
+    TEST_F["y"], predict_logits(fusion_head, TEST_F["emb"]).argmax(1).numpy(),
+    "M30 v2 (fusion)")
 ''')
 
 # ===========================================================================
@@ -1015,7 +1110,13 @@ results = {
             "missing AND that the weights measurably changed on load. "
             "This run also performs the Novelty Search section 4.0 admission test that had never "
             "been run: M2-alone and M3-alone evaluated on the SAME test set as the fusion. See "
-            "best_metrics.admission_test."),
+            "best_metrics.admission_test. "
+            "Implementation note: because both backbones are frozen, each cycle's 2048-d "
+            "embedding is identical at every epoch, so embeddings are extracted ONCE and the "
+            "fusion head trains on the cached vectors. This is mathematically equivalent to "
+            "recomputing them per epoch (frozen backbones in eval mode, no augmentation) but "
+            "avoids ~30x redundant librosa work. training_time_total_s covers both phases; "
+            "efficiency.feature_extraction_time_s and head_training_time_s break it out."),
     },
     "config": {k: v for k, v in CFG.items() if k not in ("ckpt_dir", "results_dir")},
     "environment": {
@@ -1041,8 +1142,10 @@ results = {
         "total_params": int(TOTAL_PARAMS),
         "trainable_params": int(TRAINABLE_PARAMS),
         "model_size_mb": model_size_mb(BEST_PATH),
-        "training_time_total_s": round(float(TRAIN_TIME), 1),
+        "training_time_total_s": round(float(TRAIN_TIME + EXTRACT_TIME), 1),
         "training_time_per_epoch_s_avg": round(float(TRAIN_TIME) / CFG["num_epochs"], 1),
+        "feature_extraction_time_s": round(float(EXTRACT_TIME), 1),
+        "head_training_time_s": round(float(TRAIN_TIME), 1),
         "gpu_name": torch.cuda.get_device_name(0) if torch.cuda.is_available() else "CPU",
         "inference_time_ms_per_sample": round(float(INFER_MS), 3),
         "note": "Only the fusion head trains; both backbones are frozen.",

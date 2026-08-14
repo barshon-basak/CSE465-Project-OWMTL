@@ -1,0 +1,574 @@
+{
+  "meta": {
+    "model_id": "M30",
+    "model_name": "M2 + M3 Gated Feature-Fusion Ensemble (v2, official split)",
+    "contributor": "Asif",
+    "date_completed": "2026-08-14",
+    "is_augmented": false,
+    "augmentation_method": "none",
+    "notes": "v2 re-run of M30 on the OFFICIAL ICBHI 60/40 split, correcting three defects in Barshon's/M30/results_M30.json: (1) the original's build_icbhi_splits() docstring said 'official patient-independent split' while the body performed a random 70/30 shuffle, so its '+9.86% over M2' claim compared across splits; (2) the reported 0.8213 was the legacy macro metric, not the ICBHI 2017 challenge score; (3) no confusion_matrix_raw was committed, so no score could be recomputed from it. Architecture, fusion_dim, dropout, lr and epoch budget are unchanged from the original -- only the split, the metric reporting, and the checkpoint-loading safety differ. Checkpoint loading is asserted rather than best-effort: the original wrapped it in try/except with strict=False and would have trained on randomly-initialised backbones after printing a warning. This version verifies no backbone parameter is missing AND that the weights measurably changed on load. This run also performs the Novelty Search section 4.0 admission test that had never been run: M2-alone and M3-alone evaluated on the SAME test set as the fusion. See best_metrics.admission_test. Implementation note: because both backbones are frozen, each cycle's 2048-d embedding is identical at every epoch, so embeddings are extracted ONCE and the fusion head trains on the cached vectors. This is mathematically equivalent to recomputing them per epoch (frozen backbones in eval mode, no augmentation) but avoids ~30x redundant librosa work. training_time_total_s covers both phases; efficiency.feature_extraction_time_s and head_training_time_s break it out."
+  },
+  "config": {
+    "sample_rate": 16000,
+    "duration_s": 8.0,
+    "n_mels": 128,
+    "n_fft": 1024,
+    "hop_length": 160,
+    "win_length": 400,
+    "f_min": 50,
+    "f_max": 2000,
+    "n_samples": 128000,
+    "n_frames": 801,
+    "sound_classes": [
+      "Normal",
+      "Crackle",
+      "Wheeze",
+      "Both"
+    ],
+    "num_classes": 4,
+    "fusion_dim": 512,
+    "dropout": 0.4,
+    "batch_size": 32,
+    "num_epochs": 30,
+    "lr": 0.001,
+    "weight_decay": 0.0001,
+    "seed": 42,
+    "data_root": "/content/Respiratory_Sound_Database/Respiratory_Sound_Database/audio_and_txt_files",
+    "m2_ckpt": "/content/drive/MyDrive/OWMTL/M2/checkpoints/best_model.pth",
+    "m3_ckpt": "/content/M3_best_model.pth",
+    "model_id": "M30",
+    "contributor": "Asif"
+  },
+  "environment": {
+    "platform": "Google Colab",
+    "gpu_name": "Tesla T4",
+    "pytorch_version": "2.11.0+cu128",
+    "python_version": "3.12.13"
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "data_source": "real_audio",
+    "train_samples": 6406,
+    "test_samples": 492,
+    "train_patients": 115,
+    "test_patients": 11,
+    "split_method": "patient_independent_60_40_patient_id_fallback",
+    "split_source": "patient_id_fallback",
+    "patient_leakage_verified": true
+  },
+  "efficiency": {
+    "total_params": 7957724,
+    "trainable_params": 2101252,
+    "model_size_mb": 30.63,
+    "training_time_total_s": 218.0,
+    "training_time_per_epoch_s_avg": 0.7,
+    "feature_extraction_time_s": 195.5,
+    "head_training_time_s": 22.5,
+    "gpu_name": "Tesla T4",
+    "inference_time_ms_per_sample": 4.743,
+    "note": "Only the fusion head trains; both backbones are frozen."
+  },
+  "best_epoch": {
+    "epoch": 3,
+    "primary_metric": "icbhi_score_official",
+    "primary_metric_value": 0.5975
+  },
+  "best_metrics": {
+    "accuracy": 0.6016,
+    "precision_macro": 0.4721,
+    "recall_macro": 0.5033,
+    "f1_macro": 0.4675,
+    "specificity_macro": 0.8521,
+    "icbhi_score": 0.6777,
+    "icbhi_score_official": 0.5975,
+    "icbhi_official_sensitivity": 0.4852,
+    "icbhi_official_specificity": 0.7098,
+    "confusion_matrix_raw": [
+      [
+        181,
+        27,
+        36,
+        11
+      ],
+      [
+        48,
+        86,
+        15,
+        15
+      ],
+      [
+        13,
+        2,
+        22,
+        1
+      ],
+      [
+        3,
+        8,
+        17,
+        7
+      ]
+    ],
+    "confusion_matrix_normalized": [
+      [
+        0.7098,
+        0.1059,
+        0.1412,
+        0.0431
+      ],
+      [
+        0.2927,
+        0.5244,
+        0.0915,
+        0.0915
+      ],
+      [
+        0.3421,
+        0.0526,
+        0.5789,
+        0.0263
+      ],
+      [
+        0.0857,
+        0.2286,
+        0.4857,
+        0.2
+      ]
+    ],
+    "per_class": {
+      "Normal": {
+        "precision": 0.7388,
+        "recall": 0.7098,
+        "specificity": 0.73,
+        "f1": 0.724,
+        "support": 255
+      },
+      "Crackle": {
+        "precision": 0.6992,
+        "recall": 0.5244,
+        "specificity": 0.8872,
+        "f1": 0.5993,
+        "support": 164
+      },
+      "Wheeze": {
+        "precision": 0.2444,
+        "recall": 0.5789,
+        "specificity": 0.8502,
+        "f1": 0.3438,
+        "support": 38
+      },
+      "Both": {
+        "precision": 0.2059,
+        "recall": 0.2,
+        "specificity": 0.9409,
+        "f1": 0.2029,
+        "support": 35
+      }
+    },
+    "icbhi_score_metric_note": "icbhi_score is (recall_macro + specificity_macro)/2, a project-internal metric that is NOT the ICBHI 2017 challenge score and is not comparable to published ICBHI results. icbhi_score_official is the challenge metric. Report the official figure.",
+    "admission_test": {
+      "rule": "Novelty Search section 4.0: include only if it measurably beats both backbones alone; drop it silently if it doesn't.",
+      "evaluated_on": "identical test cycles for all three rows",
+      "m2_alone_official": 0.6098,
+      "m3_alone_official": 0.5853,
+      "fusion_official": 0.5975,
+      "margin_over_best_backbone": -0.0123,
+      "beats_both_backbones": false,
+      "verdict": "FAILS",
+      "reference_published_m2_official": 0.6138,
+      "reference_published_m3_official": 0.5895
+    }
+  },
+  "ablation": {
+    "ablation_group": "ensemble_fusion",
+    "ablation_role": "variant",
+    "baseline_model_id": "M2",
+    "variable_changed": "gated feature-fusion of frozen M2 + M3 embeddings",
+    "variables_held_constant": [
+      "loss_function: inverse_frequency_class_weighted_CrossEntropyLoss",
+      "data_split: patient_independent_official_60_40",
+      "preprocessing: 128mel_16kHz_8s",
+      "augmentation: none",
+      "seed: 42"
+    ],
+    "known_deviations": [
+      "Supersedes Barshon's/M30/results_M30.json, which used a random 70/30 split despite a docstring claiming the official split, reported the legacy macro metric, and committed no confusion matrix."
+    ],
+    "component_flags": {
+      "has_sound_event_head": true,
+      "has_disease_head": false,
+      "has_cross_task_consistency": false,
+      "has_cqkd_regularization": false,
+      "has_openmax_rejection": false,
+      "owl_stage": 0,
+      "compression_clusters": null
+    },
+    "loss_weights": {
+      "sound_event_weight": 1.0,
+      "disease_weight": null,
+      "consistency_weight": null
+    }
+  },
+  "training_history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.6799,
+      "train_accuracy": 0.6889,
+      "val_accuracy": 0.5793,
+      "val_f1_macro": 0.4625,
+      "val_icbhi_score": 0.6852,
+      "val_icbhi_score_official": 0.5771,
+      "lr": 0.0009972609476841367,
+      "epoch_time_s": 1.1,
+      "is_best": true
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.6246,
+      "train_accuracy": 0.7081,
+      "val_accuracy": 0.5813,
+      "val_f1_macro": 0.4662,
+      "val_icbhi_score": 0.6807,
+      "val_icbhi_score_official": 0.5787,
+      "lr": 0.0009890738003669028,
+      "epoch_time_s": 0.7,
+      "is_best": true
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.6194,
+      "train_accuracy": 0.7091,
+      "val_accuracy": 0.6016,
+      "val_f1_macro": 0.4675,
+      "val_icbhi_score": 0.6777,
+      "val_icbhi_score_official": 0.5975,
+      "lr": 0.0009755282581475768,
+      "epoch_time_s": 0.7,
+      "is_best": true
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.6064,
+      "train_accuracy": 0.712,
+      "val_accuracy": 0.5732,
+      "val_f1_macro": 0.4514,
+      "val_icbhi_score": 0.6719,
+      "val_icbhi_score_official": 0.5695,
+      "lr": 0.0009567727288213003,
+      "epoch_time_s": 0.8,
+      "is_best": false
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.611,
+      "train_accuracy": 0.7164,
+      "val_accuracy": 0.5691,
+      "val_f1_macro": 0.4472,
+      "val_icbhi_score": 0.668,
+      "val_icbhi_score_official": 0.5635,
+      "lr": 0.0009330127018922195,
+      "epoch_time_s": 0.7,
+      "is_best": false
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.5961,
+      "train_accuracy": 0.7227,
+      "val_accuracy": 0.5752,
+      "val_f1_macro": 0.4713,
+      "val_icbhi_score": 0.6857,
+      "val_icbhi_score_official": 0.572,
+      "lr": 0.0009045084971874739,
+      "epoch_time_s": 0.7,
+      "is_best": false
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.597,
+      "train_accuracy": 0.7197,
+      "val_accuracy": 0.5244,
+      "val_f1_macro": 0.425,
+      "val_icbhi_score": 0.6601,
+      "val_icbhi_score_official": 0.5218,
+      "lr": 0.0008715724127386972,
+      "epoch_time_s": 0.6,
+      "is_best": false
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.5764,
+      "train_accuracy": 0.7248,
+      "val_accuracy": 0.565,
+      "val_f1_macro": 0.4706,
+      "val_icbhi_score": 0.6885,
+      "val_icbhi_score_official": 0.5601,
+      "lr": 0.0008345653031794292,
+      "epoch_time_s": 0.6,
+      "is_best": false
+    },
+    {
+      "epoch": 9,
+      "train_loss": 0.5793,
+      "train_accuracy": 0.7341,
+      "val_accuracy": 0.5691,
+      "val_f1_macro": 0.4774,
+      "val_icbhi_score": 0.694,
+      "val_icbhi_score_official": 0.5687,
+      "lr": 0.0007938926261462366,
+      "epoch_time_s": 0.6,
+      "is_best": false
+    },
+    {
+      "epoch": 10,
+      "train_loss": 0.5819,
+      "train_accuracy": 0.7186,
+      "val_accuracy": 0.5691,
+      "val_f1_macro": 0.4529,
+      "val_icbhi_score": 0.6733,
+      "val_icbhi_score_official": 0.5644,
+      "lr": 0.00075,
+      "epoch_time_s": 0.6,
+      "is_best": false
+    },
+    {
+      "epoch": 11,
+      "train_loss": 0.5696,
+      "train_accuracy": 0.7264,
+      "val_accuracy": 0.5,
+      "val_f1_macro": 0.4119,
+      "val_icbhi_score": 0.6539,
+      "val_icbhi_score_official": 0.4992,
+      "lr": 0.0007033683215379003,
+      "epoch_time_s": 0.6,
+      "is_best": false
+    },
+    {
+      "epoch": 12,
+      "train_loss": 0.5547,
+      "train_accuracy": 0.7298,
+      "val_accuracy": 0.5732,
+      "val_f1_macro": 0.4574,
+      "val_icbhi_score": 0.6788,
+      "val_icbhi_score_official": 0.569,
+      "lr": 0.0006545084971874739,
+      "epoch_time_s": 0.6,
+      "is_best": false
+    },
+    {
+      "epoch": 13,
+      "train_loss": 0.5545,
+      "train_accuracy": 0.7322,
+      "val_accuracy": 0.5691,
+      "val_f1_macro": 0.4497,
+      "val_icbhi_score": 0.6704,
+      "val_icbhi_score_official": 0.5648,
+      "lr": 0.0006039558454088797,
+      "epoch_time_s": 0.6,
+      "is_best": false
+    },
+    {
+      "epoch": 14,
+      "train_loss": 0.5524,
+      "train_accuracy": 0.7341,
+      "val_accuracy": 0.5244,
+      "val_f1_macro": 0.4212,
+      "val_icbhi_score": 0.659,
+      "val_icbhi_score_official": 0.5233,
+      "lr": 0.0005522642316338269,
+      "epoch_time_s": 0.6,
+      "is_best": false
+    },
+    {
+      "epoch": 15,
+      "train_loss": 0.5555,
+      "train_accuracy": 0.7334,
+      "val_accuracy": 0.5346,
+      "val_f1_macro": 0.4406,
+      "val_icbhi_score": 0.6741,
+      "val_icbhi_score_official": 0.5328,
+      "lr": 0.0005000000000000002,
+      "epoch_time_s": 0.6,
+      "is_best": false
+    },
+    {
+      "epoch": 16,
+      "train_loss": 0.5317,
+      "train_accuracy": 0.7438,
+      "val_accuracy": 0.5244,
+      "val_f1_macro": 0.4285,
+      "val_icbhi_score": 0.6608,
+      "val_icbhi_score_official": 0.5227,
+      "lr": 0.0004477357683661734,
+      "epoch_time_s": 0.6,
+      "is_best": false
+    },
+    {
+      "epoch": 17,
+      "train_loss": 0.536,
+      "train_accuracy": 0.7425,
+      "val_accuracy": 0.563,
+      "val_f1_macro": 0.4494,
+      "val_icbhi_score": 0.6646,
+      "val_icbhi_score_official": 0.5598,
+      "lr": 0.00039604415459112036,
+      "epoch_time_s": 0.6,
+      "is_best": false
+    },
+    {
+      "epoch": 18,
+      "train_loss": 0.5223,
+      "train_accuracy": 0.7534,
+      "val_accuracy": 0.5589,
+      "val_f1_macro": 0.4426,
+      "val_icbhi_score": 0.6651,
+      "val_icbhi_score_official": 0.5532,
+      "lr": 0.0003454915028125264,
+      "epoch_time_s": 0.7,
+      "is_best": false
+    },
+    {
+      "epoch": 19,
+      "train_loss": 0.5205,
+      "train_accuracy": 0.7475,
+      "val_accuracy": 0.5467,
+      "val_f1_macro": 0.4337,
+      "val_icbhi_score": 0.6615,
+      "val_icbhi_score_official": 0.5413,
+      "lr": 0.00029663167846210003,
+      "epoch_time_s": 0.6,
+      "is_best": false
+    },
+    {
+      "epoch": 20,
+      "train_loss": 0.5129,
+      "train_accuracy": 0.7517,
+      "val_accuracy": 0.5589,
+      "val_f1_macro": 0.4419,
+      "val_icbhi_score": 0.6588,
+      "val_icbhi_score_official": 0.5544,
+      "lr": 0.00025000000000000017,
+      "epoch_time_s": 0.6,
+      "is_best": false
+    },
+    {
+      "epoch": 21,
+      "train_loss": 0.5033,
+      "train_accuracy": 0.7522,
+      "val_accuracy": 0.5366,
+      "val_f1_macro": 0.4398,
+      "val_icbhi_score": 0.6615,
+      "val_icbhi_score_official": 0.5339,
+      "lr": 0.00020610737385376354,
+      "epoch_time_s": 0.6,
+      "is_best": false
+    },
+    {
+      "epoch": 22,
+      "train_loss": 0.4954,
+      "train_accuracy": 0.7583,
+      "val_accuracy": 0.5589,
+      "val_f1_macro": 0.4462,
+      "val_icbhi_score": 0.664,
+      "val_icbhi_score_official": 0.5543,
+      "lr": 0.00016543469682057108,
+      "epoch_time_s": 0.6,
+      "is_best": false
+    },
+    {
+      "epoch": 23,
+      "train_loss": 0.4831,
+      "train_accuracy": 0.763,
+      "val_accuracy": 0.5467,
+      "val_f1_macro": 0.4415,
+      "val_icbhi_score": 0.6664,
+      "val_icbhi_score_official": 0.5431,
+      "lr": 0.00012842758726130303,
+      "epoch_time_s": 0.7,
+      "is_best": false
+    },
+    {
+      "epoch": 24,
+      "train_loss": 0.4828,
+      "train_accuracy": 0.7614,
+      "val_accuracy": 0.5549,
+      "val_f1_macro": 0.4465,
+      "val_icbhi_score": 0.6678,
+      "val_icbhi_score_official": 0.5517,
+      "lr": 9.549150281252637e-05,
+      "epoch_time_s": 0.7,
+      "is_best": false
+    },
+    {
+      "epoch": 25,
+      "train_loss": 0.4681,
+      "train_accuracy": 0.7684,
+      "val_accuracy": 0.5589,
+      "val_f1_macro": 0.4497,
+      "val_icbhi_score": 0.6691,
+      "val_icbhi_score_official": 0.5556,
+      "lr": 6.698729810778068e-05,
+      "epoch_time_s": 0.7,
+      "is_best": false
+    },
+    {
+      "epoch": 26,
+      "train_loss": 0.474,
+      "train_accuracy": 0.7684,
+      "val_accuracy": 0.5589,
+      "val_f1_macro": 0.4515,
+      "val_icbhi_score": 0.671,
+      "val_icbhi_score_official": 0.5554,
+      "lr": 4.322727117869953e-05,
+      "epoch_time_s": 0.7,
+      "is_best": false
+    },
+    {
+      "epoch": 27,
+      "train_loss": 0.4631,
+      "train_accuracy": 0.7706,
+      "val_accuracy": 0.5589,
+      "val_f1_macro": 0.4465,
+      "val_icbhi_score": 0.6673,
+      "val_icbhi_score_official": 0.5549,
+      "lr": 2.447174185242324e-05,
+      "epoch_time_s": 0.7,
+      "is_best": false
+    },
+    {
+      "epoch": 28,
+      "train_loss": 0.4599,
+      "train_accuracy": 0.7714,
+      "val_accuracy": 0.5467,
+      "val_f1_macro": 0.4366,
+      "val_icbhi_score": 0.6635,
+      "val_icbhi_score_official": 0.5429,
+      "lr": 1.092619963309716e-05,
+      "epoch_time_s": 0.7,
+      "is_best": false
+    },
+    {
+      "epoch": 29,
+      "train_loss": 0.4629,
+      "train_accuracy": 0.765,
+      "val_accuracy": 0.5549,
+      "val_f1_macro": 0.4442,
+      "val_icbhi_score": 0.6626,
+      "val_icbhi_score_official": 0.5511,
+      "lr": 2.7390523158633003e-06,
+      "epoch_time_s": 0.6,
+      "is_best": false
+    },
+    {
+      "epoch": 30,
+      "train_loss": 0.4582,
+      "train_accuracy": 0.7708,
+      "val_accuracy": 0.5569,
+      "val_f1_macro": 0.4452,
+      "val_icbhi_score": 0.6645,
+      "val_icbhi_score_official": 0.5532,
+      "lr": 0.0,
+      "epoch_time_s": 0.6,
+      "is_best": false
+    }
+  ]
+}

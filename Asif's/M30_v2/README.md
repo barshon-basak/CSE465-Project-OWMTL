@@ -81,8 +81,20 @@ concealed.
 
 ## Running it
 
-Colab/Kaggle, ~20–30 min on a T4. Only the fusion head trains (≈2.1M of 8.0M params); both backbones
-are frozen.
+Colab/Kaggle. Only the fusion head trains (≈2.1M of 8.0M params); both backbones are frozen.
+
+**Runtime is dominated by a single feature-extraction pass, not by training.** Because the backbones
+are frozen, a given cycle's 2048-d embedding is *identical at every epoch* — so embeddings are
+extracted once (Cell 7) and the head trains on the cached vectors. Expect a few minutes of
+extraction, then all 30 epochs in seconds.
+
+> **Fixed 2026-08-14.** The first version recomputed librosa log-mels from disk every epoch: ~3.4
+> min/epoch × 30 ≈ 100 minutes for bitwise-identical inputs. It also spammed Colab with thousands of
+> harmless `AssertionError: can only test a child process` tracebacks — a known PyTorch/Colab
+> interaction where a `DataLoader`'s worker-pool iterator is garbage-collected in the wrong process.
+> Caching the embeddings removed both: the head trains on a `TensorDataset` with `num_workers=0`, so
+> there are no worker processes to churn. Mathematically equivalent (frozen backbones in eval mode,
+> no augmentation), just ~30× less work.
 
 Needs three inputs:
 1. ICBHI audio — cell 0b downloads it (paste your Kaggle key first)
@@ -116,23 +128,29 @@ visible, with M2's official score as a horizontal reference line.
 
 ## Testing
 
-53/53 on a synthetic ICBHI-shaped corpus with checkpoints saved from *this notebook's own* backbone
-classes.
+53/53 on a synthetic ICBHI-shaped corpus, **using the real committed M2/M3 checkpoints**
+(symlinked into the test tree so the notebook's own discovery globs resolve them, exercising
+discovery rather than bypassing it).
 
-> **Known limitation, learned the hard way (2026-08-14).** Because the test checkpoints were
-> generated from the notebook's own class definitions, the suite could only ever prove
-> *self-consistency* — it could not catch a mismatch between those definitions and the **real** M2/M3
-> checkpoints. One got through: `M3_MobileNet` named its final layer `classifier`, while M3's actual
-> notebook (and checkpoint) uses `head`. The first Colab run died in cell 5 on exactly this.
-> `load_backbone_or_die()` did its job and refused. Fixed by renaming to `head`.
+> **Why real checkpoints, learned the hard way (2026-08-14).** The suite originally built fake
+> checkpoints from its *own* copies of the backbone classes, so it could only ever prove
+> self-consistency — never that the notebook's classes match the actual checkpoints. One bug got
+> through: `M3_MobileNet` named its final layer `classifier`, but M3's real checkpoint uses `head`.
+> The first Colab run died in cell 5 on exactly this. `load_backbone_or_die()` did its job and
+> refused.
 >
-> This was **not** cosmetic: cell 10 evaluates M3-alone through `forward()`, so a randomly-initialised
-> classifier would have depressed the M3-alone baseline and biased the admission test *in favour of*
-> fusion — the exact comparison this re-run exists to get right. Note also that the fingerprint check
-> alone would have passed (the `features.*` trunk loaded fine); only the missing-parameter check
-> caught it.
+> That was **not** cosmetic. The M3-alone baseline is computed through M3's own classifier, so a
+> randomly-initialised one would have depressed it and biased the admission test *in favour of*
+> fusion — the very comparison this re-run exists to get right. Note the fingerprint check alone
+> would have passed (the `features.*` trunk loaded fine); only the missing-parameter check caught it.
 >
-> The real M2/M3 checkpoints are committed in the repo and should be a test input.
+> Switching the test to the real checkpoints then surfaced a second, quieter mismatch: M3 stores its
+> ImageNet normalisation as buffers named `in_mean`/`in_std`, while the notebook registered
+> `mean`/`std`. Buffers aren't parameters, so nothing would have raised — the checkpoint's values
+> would simply have been ignored in favour of the hardcoded defaults. Those defaults happen to be
+> identical today (verified), so no result was wrong, but it would have broken silently the moment M3
+> were retrained with different normalisation. Buffers are now named to match, and
+> `load_backbone_or_die()` reports any buffer it could not load.
 
 Beyond schema and plot checks, the suite asserts:
 
@@ -150,6 +168,8 @@ Plus three deliberate failure injections, all of which must be *refused*:
 | state_dict with wrong keys | raises, naming the tensors that would have stayed random |
 | missing checkpoint file | raises |
 | no official split file | completes, but records `split_source: patient_id_fallback` and **does not** claim "official" in `split_method` |
+
+Timing observed in the test (150 cycles): extraction 75 s, head training **0.6 s/epoch**.
 
 That last one matters: a silent fallback to a different split is exactly the defect this re-run
 exists to correct, so the fallback path is required to be honest about itself.
