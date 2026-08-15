@@ -104,15 +104,41 @@ Needs three inputs:
 The notebook fails fast with an explicit message if any is missing — it deliberately refuses to run
 on randomly-initialised backbones, since that's the failure mode it exists to rule out.
 
-## Calibration — what a good result looks like
+## The split, and why M2/M3's numbers are not anchors
 
-On the official split and official metric: **M2 = 0.6138**, **M3 = 0.5895**, **M22 = 0.6495**, and
-published ICBHI SOTA ≈ **0.60–0.65**.
+> **Corrected 2026-08-15.** `Asif's/ICBHI_challenge_train_test.txt` is now committed, and analysing
+> it invalidated the calibration this section used to give.
 
-A fusion landing near 0.65 is a solid, honest, literature-level result. **It will not look like
-0.8213, and it shouldn't.** Cell 7 also prints M2/M3 against their published values as a sanity
-anchor — a large deviation there means the split or checkpoints differ from the published runs, and
-nothing downstream is trustworthy.
+The official file assigns **920 recordings — 539 train / 381 test (58.6 / 41.4)** across **126
+patients**. The notebook asserts all four numbers on load and refuses to run if any differs.
+
+**M2, M3 and M12 were never on this split.** Their `results_M2/M3/M12.json` all record
+`split_method: "patient_independent_official_60_40"` while reporting `train_patients: 115,
+test_patients: 11, test_samples: 492` — 115 + 11 = 126 patients and 6406 + 492 = 6898 cycles, i.e.
+*every* patient and *every* cycle, split 91/9. That is the documented `pid <= 111` fallback: ICBHI
+patient IDs run 101–226, so it selects exactly 11 patients. So **0.6138 / 0.5895 / 0.6495 are
+11-patient numbers and are not comparable to published ICBHI work.** Cell 7 still prints them, but
+labelled superseded, and a deviation from them is expected rather than alarming.
+
+Until M2/M3 are retrained here, the only valid anchors are the ones this notebook measures itself:
+M2-alone and M3-alone on the same ~2,750 test cycles. Published ICBHI SOTA is ≈ **0.60–0.65**; a
+fusion in that band is a solid, honest result and **will not look like 0.8213.**
+
+## The official split is not patient-disjoint
+
+Patients **156** and **218** have recordings on *both* sides of the official file (9 train + 8 test,
+and 4 train + 4 test). This collides with `Model_Training_Protocol.md` §1 requirement 1, which makes
+patient-independence a hard requirement. `CFG["official_overlap_policy"]` decides:
+
+| Policy | Effect | Result |
+|---|---|---|
+| **`drop_from_train`** *(default)* | Drop those two patients' 13 train recordings | 526 train / **381 test** recordings, 77 / **49** patients, **patient-disjoint** |
+| `as_is` | Official split verbatim | 539 / 381, 2 patients leak, violates §1 |
+
+The default keeps the official **test** set byte-identical, so the reported score stays directly
+comparable to published ICBHI results, and pays for patient-independence out of the training set
+instead — 13 of 539 recordings, 2.4%. The resulting 49 test patients matches the count usually
+quoted for the official split. Whichever policy is active is recorded in `dataset_info`.
 
 ## Outputs
 
