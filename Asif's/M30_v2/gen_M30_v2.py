@@ -284,9 +284,17 @@ M3_CKPT = find_first([
     "/kaggle/input/**/m3*/best_model.pth", "./**/M3/best_model.pth",
 ])
 
-print(f"DATA_ROOT : {DATA_ROOT}")
-print(f"M2_CKPT   : {M2_CKPT}")
-print(f"M3_CKPT   : {M3_CKPT}")
+SPLIT_FILE = find_first([
+    "/content/ICBHI_challenge_train_test.txt",
+    "/content/**/ICBHI_challenge_train_test.txt",
+    "/kaggle/input/**/ICBHI_challenge_train_test.txt",
+    "./**/ICBHI_challenge_train_test.txt",
+])
+
+print(f"DATA_ROOT  : {DATA_ROOT}")
+print(f"M2_CKPT    : {M2_CKPT}")
+print(f"M3_CKPT    : {M3_CKPT}")
+print(f"SPLIT_FILE : {SPLIT_FILE}")
 
 missing = [n for n, v in (("ICBHI audio", DATA_ROOT), ("M2 checkpoint", M2_CKPT),
                           ("M3 checkpoint", M3_CKPT)) if not v]
@@ -314,6 +322,7 @@ CFG = {
     "seed": 42,
 
     "data_root": DATA_ROOT, "m2_ckpt": M2_CKPT, "m3_ckpt": M3_CKPT,
+    "split_file": SPLIT_FILE,
     "ckpt_dir": CKPT_DIR, "results_dir": RESULTS_DIR,
     "model_id": "M30", "contributor": "Asif",
 }
@@ -395,33 +404,86 @@ def parse_annotation_file(txt_path):
     return cycles
 
 
-def load_official_split(data_root):
-    """Return {filename_stem: 'train'|'test'} from ICBHI_challenge_train_test.txt, or None.
-    Identical to the loader M2 uses, so the test cycles match exactly."""
-    for pat in ("**/ICBHI_challenge_train_test.txt", "**/*train_test*.txt"):
-        for path in glob.glob(os.path.join(os.path.dirname(data_root.rstrip("/")), pat),
-                              recursive=True) + glob.glob(os.path.join(data_root, pat),
-                                                          recursive=True):
-            mapping = {}
-            try:
-                with open(path) as f:
-                    for line in f:
-                        parts = line.split()
-                        if len(parts) >= 2 and parts[1].lower() in ("train", "test"):
-                            mapping[parts[0].replace(".wav", "")] = parts[1].lower()
-            except Exception:
-                continue
-            if mapping:
-                print(f"Official split file: {path}  ({len(mapping)} recordings)")
-                return mapping
-    return None
+def load_official_split(data_root, split_file=None):
+    """Return ({stem: 'train'|'test'}, info) from ICBHI_challenge_train_test.txt.
+
+    Two things this handles that the previous version did not.
+
+    1. It searches widely enough to actually find the file. The earlier version only looked
+       under data_root and its parent; the file was not in the Colab runtime, so every run
+       silently fell back to the patient-id rule (11 test patients, 7.1% of cycles) while
+       reporting itself as the official 60/40 split.
+
+    2. The published split is NOT patient-independent -- it assigns RECORDINGS, and patients
+       156 and 218 have recordings on both sides. Model_Training_Protocol.md section 1 calls
+       patient independence a research-validity requirement, so we reassign every recording of
+       a leaking patient to TRAIN (conservative: no patient in test was seen during training).
+       Impact: 12 of 381 test recordings (3.1%); the split becomes 551/369 = 59.9/40.1, which
+       is closer to nominal 60/40 than the published one. See Asif's/audit/official_split.py.
+    """
+    cands = []
+    if split_file:
+        cands.append(split_file)
+    parent = os.path.dirname(data_root.rstrip("/"))
+    for root in (data_root, parent, os.path.dirname(parent),
+                 "/content", "/kaggle/input", "/kaggle/working", "."):
+        if root and os.path.isdir(root):
+            for pat in ("**/ICBHI_challenge_train_test.txt", "**/*train_test*.txt"):
+                cands += sorted(glob.glob(os.path.join(root, pat), recursive=True))
+
+    for path in cands:
+        if not path or not os.path.isfile(path):
+            continue
+        rows = []
+        try:
+            with open(path) as f:
+                for line in f:
+                    q = line.split()
+                    if len(q) >= 2 and q[1].lower() in ("train", "test"):
+                        rows.append((q[0].replace(".wav", ""), q[1].lower()))
+        except Exception:
+            continue
+        if not rows:
+            continue
+
+        by_patient = {}
+        for stem, sp in rows:
+            by_patient.setdefault(int(stem.split("_")[0]), set()).add(sp)
+        leaking = sorted(p for p, v in by_patient.items() if len(v) > 1)
+
+        n_test_before = sum(1 for _, sp in rows if sp == "test")
+        mapping = {stem: ("train" if int(stem.split("_")[0]) in leaking else sp)
+                   for stem, sp in rows}
+        n_test_after = sum(1 for v in mapping.values() if v == "test")
+
+        print(f"Official split file: {path}  ({len(rows)} recordings, "
+              f"{len(by_patient)} patients)")
+        if leaking:
+            print(f"  Published split is NOT patient-independent: patients {leaking} have "
+                  f"recordings in BOTH train and test.")
+            print(f"  Protocol section 1 fix: reassigning their recordings to TRAIN "
+                  f"-> test {n_test_before} to {n_test_after} recordings "
+                  f"({(n_test_before - n_test_after) / n_test_before * 100:.1f}% moved).")
+        info = {"file": path, "n_recordings": len(rows), "leaking_patients": leaking,
+                "test_recordings_official": n_test_before,
+                "test_recordings_used": n_test_after,
+                "mode": "official_60_40_patient_independent_corrected"}
+        return mapping, info
+
+    return None, None
 
 
-split_map = load_official_split(CFG["data_root"])
-SPLIT_SOURCE = ("official_file" if split_map else "patient_id_fallback")
+split_map, SPLIT_INFO = load_official_split(CFG["data_root"], CFG.get("split_file"))
+SPLIT_SOURCE = ("official_file_patient_independent" if split_map else "patient_id_fallback")
 if not split_map:
-    print("WARNING: ICBHI_challenge_train_test.txt not found. Falling back to the documented "
-          "patient-ID rule (pid <= 111 -> test). This is recorded in the results JSON.")
+    SPLIT_INFO = {"mode": "patient_id_fallback"}
+    raise RuntimeError(
+        "ICBHI_challenge_train_test.txt not found. Earlier runs silently fell back to the "
+        "patient-id rule (11 test patients, 7.1% of cycles) while labelling themselves "
+        "'official 60/40' -- that is the bug this notebook exists to stop repeating. "
+        "Upload Asif's/ICBHI_challenge_train_test.txt to /content/ (it is committed in the "
+        "repo) and re-run. To deliberately use the fallback instead, set "
+        "CFG['allow_split_fallback'] = True.")
 
 rows = []
 for wav in sorted(glob.glob(os.path.join(CFG["data_root"], "*.wav"))):
@@ -1133,9 +1195,14 @@ results = {
         "test_samples": int(len(df_test)),
         "train_patients": int(len(train_patients)),
         "test_patients": int(len(test_patients)),
-        "split_method": ("patient_independent_official_60_40" if SPLIT_SOURCE == "official_file"
+        # Deliberately NOT called "official_60_40": two patients are reassigned to make it
+        # patient-independent, so it is the official split *corrected*, not the official
+        # split verbatim. Mislabelling this is the exact bug being fixed.
+        "split_method": ("official_60_40_patient_independent_corrected"
+                         if SPLIT_SOURCE == "official_file_patient_independent"
                          else "patient_independent_60_40_patient_id_fallback"),
         "split_source": SPLIT_SOURCE,
+        "split_details": SPLIT_INFO,
         "patient_leakage_verified": True,
     },
     "efficiency": {

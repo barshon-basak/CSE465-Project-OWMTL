@@ -72,6 +72,21 @@
     ]
   },
   {
+    "model_id": "M30",
+    "path": "Asif's/M30_v2/results_M30.json",
+    "kind": "protocol",
+    "findings": [
+      {
+        "severity": "WARNING",
+        "model": "M30",
+        "check": "best_epoch_very_early",
+        "message": "Best epoch 3 of 30 (10% through the budget). The remaining 27 epochs only overfit. Worth reporting, and worth checking the model was given a fair chance to converge.",
+        "evidence": "best_epoch=3/30",
+        "source": "Asif's/M30_v2/results_M30.json"
+      }
+    ]
+  },
+  {
     "model_id": "M1",
     "path": "Barshon's/M1/results_M1.json",
     "kind": "protocol",

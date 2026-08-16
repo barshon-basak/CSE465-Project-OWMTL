@@ -88,6 +88,7 @@ novelty claim has to beat **0.6466**, not 0.4516. Full numbers in `Asif's/M29/RE
 | M22 — M3 + SpecAugment | **official** ICBHI / Acc / F1 | **0.6495** / 0.6524 / 0.5253 | 2.2 M | 8.7 MB |
 | M12 — backbone decision | selects **M2** | | | |
 | M29 — open-set baselines on M12 | best AUROC (Energy) | **0.6466** | 3.6 M (frozen, M2's) | — |
+| M30 v2 — M2+M3 gated fusion | **official** ICBHI | **0.5975** — ❌ loses to M2 alone (0.6098) | 8.0 M | — |
 
 **⚠️ ICBHI metric:** always report `icbhi_score_official` (the ICBHI 2017 challenge metric), never
 the project's legacy `icbhi_score` macro variant — the latter runs ~0.11 higher and is not

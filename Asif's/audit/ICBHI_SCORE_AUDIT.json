@@ -18,7 +18,7 @@
       "delta": -0.1089,
       "se": 0.6118,
       "sp": 0.6157,
-      "split": "patient_independent_official_60_40"
+      "split": "patient_independent_60_40_patient_id_fallback"
     },
     {
       "model": "M22",
@@ -28,7 +28,7 @@
       "delta": -0.0582,
       "se": 0.5696,
       "sp": 0.7294,
-      "split": "patient_independent_official_60_40"
+      "split": "patient_independent_60_40_patient_id_fallback"
     },
     {
       "model": "M3",
@@ -38,7 +38,17 @@
       "delta": -0.1089,
       "se": 0.5359,
       "sp": 0.6431,
-      "split": "patient_independent_official_60_40"
+      "split": "patient_independent_60_40_patient_id_fallback"
+    },
+    {
+      "model": "M30",
+      "path": "Asif's/M30_v2/results_M30.json",
+      "reported": 0.6777,
+      "official": 0.5975,
+      "delta": -0.0802,
+      "se": 0.4852,
+      "sp": 0.7098,
+      "split": "patient_independent_60_40_patient_id_fallback"
     },
     {
       "model": "M1",

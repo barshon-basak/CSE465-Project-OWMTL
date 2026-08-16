@@ -1,6 +1,6 @@
 # OWMTL Project Audit
 
-**Generated:** 2026-08-13 by `Asif's/audit/audit_project.py` · **Files scanned:** 39
+**Generated:** 2026-08-14 by `Asif's/audit/audit_project.py` · **Files scanned:** 40
 
 Automated protocol-compliance and result-validity audit across every results file in the repository. Each check corresponds to a failure mode actually present in this repo, not a hypothetical one.
 
@@ -11,7 +11,7 @@ Automated protocol-compliance and result-validity audit across every results fil
 | Severity | Count | Meaning |
 |---|---|---|
 | 🔴 CRITICAL | 19 | The result does not support the claim made on it |
-| 🟡 WARNING | 62 | Needs resolving before submission |
+| 🟡 WARNING | 63 | Needs resolving before submission |
 | ⚪ INFO | 35 | Worth knowing, not blocking |
 
 **Models with critical findings:** M14, M15, M16, M18, M19, M20, M21, M30, M33, M35, M36, M6
@@ -515,6 +515,12 @@ Automated protocol-compliance and result-validity audit across every results fil
 <sub>source: `Asif's/M29/results_M29.json`</sub>
 
 ### M30
+
+**`best_epoch_very_early`** — Best epoch 3 of 30 (10% through the budget). The remaining 27 epochs only overfit. Worth reporting, and worth checking the model was given a fair chance to converge.
+
+> `best_epoch=3/30`
+
+<sub>source: `Asif's/M30_v2/results_M30.json`</sub>
 
 **`schema_missing_metrics`** — Missing §3 metric(s) in `best_metrics`: precision_macro, recall_macro, f1_macro.
 

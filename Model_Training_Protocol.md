@@ -15,6 +15,27 @@
 These are the only hard requirements. Everything else in this doc is guidance.
 
 1. **Patient-independent splits.** No patient's cycles in both train and test. This is a research validity requirement, not a style choice.
+
+   > **⚠️ The official ICBHI split does not satisfy this.** `ICBHI_challenge_train_test.txt`
+   > (committed at `Asif's/ICBHI_challenge_train_test.txt`) assigns **recordings**, not patients —
+   > and patients **156** and **218** have recordings on *both* sides. So "use the official split"
+   > and "be patient-independent" cannot both be satisfied verbatim.
+   >
+   > **Project policy:** use the official split with every recording of a leaking patient
+   > reassigned to **train** (conservative — the test set then contains no patient seen during
+   > training). Cost: 12 of 381 test recordings (3.1%). Result: **551 train / 369 test = 59.9/40.1**,
+   > which is closer to a nominal 60/40 than the published split itself.
+   >
+   > Call it `official_60_40_patient_independent_corrected`, **never** plain "official 60/40" —
+   > it is the official split *corrected*, and conflating the two is what this rule exists to stop.
+   > `Asif's/audit/official_split.py` implements and audits both modes; run it standalone to see
+   > the numbers.
+   >
+   > **Historical note:** M2/M3/M12/M22 were all labelled `patient_independent_official_60_40` but
+   > actually ran a fallback rule (`patient_id <= 111 -> test`) giving 11 test patients and 7.1% of
+   > cycles, because the split file was absent from the runtime and the fallback was silent. Their
+   > labels are now corrected in-place. **Any notebook that cannot find the split file must raise,
+   > not fall back.**
 2. **Real data only.** Every `results_M*.json` must come from a run that actually loaded ICBHI audio (or Coswara/SPRSound for OOD runs) — never from a `torch.randn`/`np.random` placeholder Dataset. The audit tool (`Asif's/audit/audit_project.py`) checks for this automatically; a run it flags `synthetic_data_not_real_dataset` is not a result and cannot be reported.
 3. **Save checkpoints every epoch** so Kaggle/Colab disconnects don't lose progress (see §11 for PyTorch 2.6+ checkpoint rules and Kaggle persistence protocol).
 4. **Produce a structured results JSON** per model (schema in §4) — this is what makes the final merge work.

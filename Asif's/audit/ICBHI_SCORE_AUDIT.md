@@ -17,11 +17,12 @@ This matters because the ~135 published ICBHI papers use the official metric. As
 | M35 | 0.7839 | **0.6864** | +0.0975 | 0.6980 | 0.6747 | `patient_independent_70_30` |
 | M37 | 0.7969 | **0.6753** | +0.1216 | 0.7517 | 0.5989 | `patient_independent_70_30` |
 | M35 | 0.7918 | **0.6719** | +0.1199 | 0.7401 | 0.6036 | `patient_independent_70_30` |
-| M22 | 0.7077 | **0.6495** | +0.0582 | 0.5696 | 0.7294 | `patient_independent_official_60_40` |
+| M22 | 0.7077 | **0.6495** | +0.0582 | 0.5696 | 0.7294 | `patient_independent_60_40_patient_id_fallback` |
 | M1 | 0.7181 | **0.6143** | +0.1038 | 0.3502 | 0.8784 | `patient_independent_60_40` |
 | M12 | 0.7227 | **0.6138** | +0.1089 | 0.6118 | 0.6157 | `patient_independent_official_60_40` |
-| M2 | 0.7227 | **0.6138** | +0.1089 | 0.6118 | 0.6157 | `patient_independent_official_60_40` |
-| M3 | 0.6984 | **0.5895** | +0.1089 | 0.5359 | 0.6431 | `patient_independent_official_60_40` |
+| M2 | 0.7227 | **0.6138** | +0.1089 | 0.6118 | 0.6157 | `patient_independent_60_40_patient_id_fallback` |
+| M30 | 0.6777 | **0.5975** | +0.0802 | 0.4852 | 0.7098 | `patient_independent_60_40_patient_id_fallback` |
+| M3 | 0.6984 | **0.5895** | +0.1089 | 0.5359 | 0.6431 | `patient_independent_60_40_patient_id_fallback` |
 | M33 | 0.6806 | **0.5832** | +0.0974 | 0.6190 | 0.5473 | `patient_independent_70_30` |
 | M34 | 0.7046 | **0.5754** | +0.1292 | 0.6340 | 0.5168 | `patient_independent_70_30` |
 | M31 | 0.6377 | **0.5535** | +0.0842 | 0.5456 | 0.5614 | `patient_independent_70_30` |
