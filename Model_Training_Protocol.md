@@ -4,7 +4,7 @@
 >
 > **What this is NOT:** A rigid step-by-step script, and not a role assignment. You have freedom in how you structure your code, which libraries you use, and how you organize your workflow — as long as the outputs match. This document was restructured on 2026-08-05 to drop the old per-member (A/B/C/D) framing; the historical role-based version is in `Archive_Work_Plan/Model_Training_Protocol_ARCHIVED.md` if you need it.
 >
-> **Novelty comes first now — but only 2–3 items, deliberately.** Dr. Khan's 2026 guidance is explicit: the project is not graded on how many models get trained, and a basic classification pipeline isn't enough on its own. Before starting any new model run, check `Novelty Search.md` — it's the highest-priority document in this repo. A run that doesn't trace back to either (a) the core mechanism actually working on real data, or (b) one of the **selected** novelty items in `Novelty Search.md` §4.0, is probably not worth the compute.
+> **Novelty comes first now — but only 2–3 items, deliberately.** Dr. Khan's 2026 guidance is explicit: the project is not graded on how many models get trained, and a basic classification pipeline isn't enough on its own. Before starting any new model run, check `Novelty Search.md` (moved -> `Archive_Files (v2)/Novelty Search v2.md`) — it's the highest-priority document in this repo. A run that doesn't trace back to either (a) the core mechanism actually working on real data, or (b) one of the **selected** novelty items in `Novelty Search.md` §4.0, is probably not worth the compute.
 >
 > **Do not make this project buzzword-heavy.** The supervisor's novelty list is a menu, not a checklist. Implementing all of it would mean nine simultaneous changes on one dataset with 19 unknown patients — unablatable, undefendable, and read by reviewers as a technique list rather than a contribution. The selected set is fixed at 2–3 items (§4.0 of `Novelty Search.md`); if something new looks compelling, it **replaces** a selected item rather than joining it.
 
@@ -17,9 +17,9 @@
 > **The current direction is a shared engine with one data-driven fork:** a **physics-grounded, label-free acoustic concept bottleneck** (clinically-named concepts — fine/coarse crackle, wheeze pitch band, inspiratory phase, rhonchi, spectral flatness, PAPR — computed by DSP, *not* human-labeled), used either as (**Path A**) an interpretable, clinician-correctable diagnosis, or (**Path B**) a faithfulness/robustness audit ("do the models actually listen to the clinical sounds?"). Which headline is chosen is decided by *data* at a mid-project gate (**G3**), not up front.
 >
 > **Current source-of-truth documents** (read alongside `Novelty Search.md`):
-> - `OWMTL_Merged_Decision_Roadmap.md` — the gated roadmap (G0–G7).
-> - `OWMTL_Build_Sheet.md` — the week-by-week build plan and which existing model feeds each step.
-> - `OWMTL_Novelty_Gap_Analysis.md` — the gap analysis + 2026 cross-check.
+> - `OWMTL_Merged_Decision_Roadmap.md` (moved -> `OWMTL_Decision_Roadmap (v3).md`) — the gated roadmap (G0–G7).
+> - `OWMTL_Build_Sheet.md` (moved -> `Archive_Files (v3)/OWMTL_Build_Plan (v3).md` (moved -> `Archive_Files (v3)/OWMTL_Build_Plan (v3).md`)) — the week-by-week build plan and which existing model feeds each step.
+> - `OWMTL_Novelty_Gap_Analysis.md` (moved -> `Archive_Files (v3)/OWMTL_Novelty_Gap_Analysis (before v3).md`) — the gap analysis + 2026 cross-check.
 >
 > **What this changes below:** three reporting rules are now **hard** (official split + official metric only, commit the confusion matrix for *every* model, CIs + a paired test on *every* headline comparison — §1). New model types (concept bottleneck, leakage, intervention, concept-space OOD, foundation-model probing) get required metrics (§3.5), ablation groups, and component flags (§4.1). The cross-task mechanism is **not deleted** — it survives as **one scored baseline detector**, not the contribution.
 

@@ -26,7 +26,7 @@ covariate stress, and say so explicitly in the paper.** This is exactly the chea
 meant to buy — the experiment is impossible, and we now know before building it rather than after.
 
 > Also settles a factual error that had propagated into planning: ICBHI has **4** recording devices,
-> not 7. The 7 is the chest-location count. `Research_Progress_Report.md` has been corrected.
+> not 7. The 7 is the chest-location count. `Research_Progress_Report.md` (moved -> `Archive_Files (v2)/Research_Progress_Report till v2.md`) has been corrected.
 
 ---
 
@@ -118,7 +118,7 @@ prior art — the same class of problem as the ICBHI-metric and "official split"
    define it on first use.
 3. **CBM leakage measurement is established method** — the ARDS paper reports "completeness scores"
    for exactly this. So the *technique* is not novel; the *respiratory-audio instantiation* is. Frame
-   it the way `Novelty Search.md` §1 already frames cross-task disagreement: domain-specific
+   it the way `Novelty Search.md` (moved -> `Archive_Files (v2)/Novelty Search v2.md`) §1 already frames cross-task disagreement: domain-specific
    combination, not invention. Cite Koh et al. 2020 and the ARDS CBM up front.
 
 ---

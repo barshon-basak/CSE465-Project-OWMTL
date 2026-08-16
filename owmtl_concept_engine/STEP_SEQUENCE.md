@@ -1,6 +1,6 @@
 # OWMTL — Build-Plan Execution Sequence (what's done, what's now, what must WAIT)
 
-This is the ordered checklist for executing `OWMTL_Build_Sheet.md`. Every step is numbered so the run order is
+This is the ordered checklist for executing `OWMTL_Build_Sheet.md` (moved -> `../Archive_Files (v3)/OWMTL_Build_Plan (v3).md` (moved -> `../Archive_Files (v3)/OWMTL_Build_Plan (v3).md`)). Every step is numbered so the run order is
 unambiguous. Status legend:
 
 - ✅ **DONE** — code delivered & unit-tested in `owmtl_concept_engine/`.

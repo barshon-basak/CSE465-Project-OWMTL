@@ -1,5 +1,21 @@
 # OWMTL — Merged Decision Roadmap (Path A + Path B, one engine)
 
+> ## 🔴 SUPERSEDED IN PART — Gate G2 failed (2026-08-16)
+>
+> G2 was run twice and failed both times (crackle AUROC 0.5506 → 0.5580; wheeze 0.5729 → 0.5340,
+> against a 0.65 threshold). The project has taken **G2's "if not satisfied (b)" branch**: the
+> reliability/evaluation paper, which does not depend on a working bottleneck.
+>
+> **G3 is never reached** — it presupposed a working concept bottleneck. G4 already failed (only
+> 3/126 patients span devices). G5–G7 are superseded by the reframe.
+>
+> The gate definitions below remain accurate and worth reading; the *forward plan* does not.
+> Current direction: [`DECISION_2026-08-16_PIVOT.md`](DECISION_2026-08-16_PIVOT.md) and
+> [`PAPER_OUTLINE.md`](PAPER_OUTLINE.md).
+
+---
+
+
 **For:** Barshon Basak · CSE465 Capstone, NSU · Supervisor: Dr. Khan
 **Prepared:** 2026-08-14
 **Purpose:** Merge the two directions we compared (Path A = constructive interpretable-bottleneck; Path B = faithfulness/robustness audit) into **one** decision-based plan. This is a roadmap, not a linear script: at each gate you check evidence and branch. The two directions are the *same engine* — the gates decide where the headline points and what venue you land.

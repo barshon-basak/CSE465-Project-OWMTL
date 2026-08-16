@@ -1,6 +1,6 @@
 # OWMTL Project Audit
 
-**Generated:** 2026-08-16 by `Asif's/audit/audit_project.py` · **Files scanned:** 40
+**Generated:** 2026-08-16 by `Asif's/audit/audit_project.py` · **Files scanned:** 42
 
 Automated protocol-compliance and result-validity audit across every results file in the repository. Each check corresponds to a failure mode actually present in this repo, not a hypothetical one.
 
@@ -11,7 +11,7 @@ Automated protocol-compliance and result-validity audit across every results fil
 | Severity | Count | Meaning |
 |---|---|---|
 | 🔴 CRITICAL | 19 | The result does not support the claim made on it |
-| 🟡 WARNING | 63 | Needs resolving before submission |
+| 🟡 WARNING | 69 | Needs resolving before submission |
 | ⚪ INFO | 35 | Worth knowing, not blocking |
 
 **Models with critical findings:** M14, M15, M16, M18, M19, M20, M21, M30, M33, M35, M36, M6
@@ -557,6 +557,44 @@ Automated protocol-compliance and result-validity audit across every results fil
 > `accuracy=0.4765, majority prior=0.4653`
 
 <sub>source: `Barshon's/M36/results_M36.json`</sub>
+
+### M39
+
+**`schema_missing_metrics`** — Missing §3 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.
+
+> `accuracy, precision_macro, recall_macro, f1_macro`
+
+<sub>source: `Asif's/M39/2nd_run_handoff/results_M39.json`</sub>
+
+**`weak_discrimination`** — `best_metrics.gate_g2.per_concept.crackle_score.auroc` = 0.5580 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.
+
+> `best_metrics.gate_g2.per_concept.crackle_score.auroc = 0.5580`
+
+<sub>source: `Asif's/M39/2nd_run_handoff/results_M39.json`</sub>
+
+**`weak_discrimination`** — `best_metrics.gate_g2.per_concept.wheeze_score.auroc` = 0.5340 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.
+
+> `best_metrics.gate_g2.per_concept.wheeze_score.auroc = 0.5340`
+
+<sub>source: `Asif's/M39/2nd_run_handoff/results_M39.json`</sub>
+
+**`schema_missing_metrics`** — Missing §3 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.
+
+> `accuracy, precision_macro, recall_macro, f1_macro`
+
+<sub>source: `Asif's/M39/M39_handoff/results_M39.json`</sub>
+
+**`weak_discrimination`** — `best_metrics.gate_g2.per_concept.crackle_score.auroc` = 0.5506 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.
+
+> `best_metrics.gate_g2.per_concept.crackle_score.auroc = 0.5506`
+
+<sub>source: `Asif's/M39/M39_handoff/results_M39.json`</sub>
+
+**`weak_discrimination`** — `best_metrics.gate_g2.per_concept.wheeze_score.auroc` = 0.5729 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.
+
+> `best_metrics.gate_g2.per_concept.wheeze_score.auroc = 0.5729`
+
+<sub>source: `Asif's/M39/M39_handoff/results_M39.json`</sub>
 
 ---
 

@@ -8,7 +8,7 @@ confidence interval on every AUROC. No training — the backbone stays frozen, e
 
 ## Why this exists
 
-`Novelty Search.md` §1 names the project's strongest contribution as *"the statistically defensible
+`Novelty Search.md` (moved -> `../../Archive_Files (v2)/Novelty Search v2.md`) §1 names the project's strongest contribution as *"the statistically defensible
 evaluation redesign — coarse pooled unknown class + **large-N OOD stress tests**."*
 
 `Asif's/Statistics/SIGNIFICANCE_REPORT.md` showed that had never actually been delivered. At n=19

@@ -87,6 +87,68 @@
     ]
   },
   {
+    "model_id": "M39",
+    "path": "Asif's/M39/2nd_run_handoff/results_M39.json",
+    "kind": "protocol",
+    "findings": [
+      {
+        "severity": "WARNING",
+        "model": "M39",
+        "check": "schema_missing_metrics",
+        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
+        "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
+        "source": "Asif's/M39/2nd_run_handoff/results_M39.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M39",
+        "check": "weak_discrimination",
+        "message": "`best_metrics.gate_g2.per_concept.crackle_score.auroc` = 0.5580 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
+        "evidence": "best_metrics.gate_g2.per_concept.crackle_score.auroc = 0.5580",
+        "source": "Asif's/M39/2nd_run_handoff/results_M39.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M39",
+        "check": "weak_discrimination",
+        "message": "`best_metrics.gate_g2.per_concept.wheeze_score.auroc` = 0.5340 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
+        "evidence": "best_metrics.gate_g2.per_concept.wheeze_score.auroc = 0.5340",
+        "source": "Asif's/M39/2nd_run_handoff/results_M39.json"
+      }
+    ]
+  },
+  {
+    "model_id": "M39",
+    "path": "Asif's/M39/M39_handoff/results_M39.json",
+    "kind": "protocol",
+    "findings": [
+      {
+        "severity": "WARNING",
+        "model": "M39",
+        "check": "schema_missing_metrics",
+        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
+        "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
+        "source": "Asif's/M39/M39_handoff/results_M39.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M39",
+        "check": "weak_discrimination",
+        "message": "`best_metrics.gate_g2.per_concept.crackle_score.auroc` = 0.5506 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
+        "evidence": "best_metrics.gate_g2.per_concept.crackle_score.auroc = 0.5506",
+        "source": "Asif's/M39/M39_handoff/results_M39.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M39",
+        "check": "weak_discrimination",
+        "message": "`best_metrics.gate_g2.per_concept.wheeze_score.auroc` = 0.5729 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
+        "evidence": "best_metrics.gate_g2.per_concept.wheeze_score.auroc = 0.5729",
+        "source": "Asif's/M39/M39_handoff/results_M39.json"
+      }
+    ]
+  },
+  {
     "model_id": "M1",
     "path": "Barshon's/M1/results_M1.json",
     "kind": "protocol",

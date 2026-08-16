@@ -32,7 +32,7 @@ citation, including ones in this file. The team has already been burned once by 
 document that contradicted its own data — so ground claims in the files, not memory.
 
 **3. Always keep looking for novelty — but depth over breadth.** Check work against
-[`Novelty Search.md`](../Novelty%20Search.md) — the single active reference (the old v1/v2/v3 files
+[`Novelty Search.md`](../Archive_Files%20(v2)/Novelty%20Search%20v2.md) *(archived — moved to `Archive_Files (v2)/`)* — the single active reference (the old v1/v2/v3 files
 are consolidated into it; full literature search archived in `Archive_Work_Plan/`).
 
 **The project deliberately implements only 2–3 novelty items, not Dr. Khan's whole list.** See

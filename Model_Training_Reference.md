@@ -1,10 +1,10 @@
 # Model Training Reference — OWMTL Experimental Record (Logbook)
 
-> **Purpose changed (2026-08-14).** This file is no longer a "what to run next" execution plan — that role now lives in `OWMTL_Merged_Decision_Roadmap.md` and `OWMTL_Build_Sheet.md`. This file is now the **comprehensive experimental record**: a per-model / per-notebook logbook of everything the team has run, why, what happened, and what was learned — so a reviewer can understand the whole development history without opening every notebook.
+> **Purpose changed (2026-08-14).** This file is no longer a "what to run next" execution plan — that role now lives in `OWMTL_Merged_Decision_Roadmap.md` (moved -> `OWMTL_Decision_Roadmap (v3).md`) and `OWMTL_Build_Sheet.md` (moved -> `Archive_Files (v3)/OWMTL_Build_Plan (v3).md` (moved -> `Archive_Files (v3)/OWMTL_Build_Plan (v3).md`)). This file is now the **comprehensive experimental record**: a per-model / per-notebook logbook of everything the team has run, why, what happened, and what was learned — so a reviewer can understand the whole development history without opening every notebook.
 >
 > **How each entry is organized (consistent template):** *What it does · Why it was created · What was done · Expected outcome · Actual outcome · Key findings · Limitations/issues · Relationship to previous versions · Reproduction notes.*
 >
-> **Sources of truth this record is built from** (not from re-reading raw code): `Research_Progress_Report.md` (per-model detail), `Asif's/audit/ICBHI_SCORE_AUDIT.md` (recomputed official metrics), `Asif's/audit/PROJECT_AUDIT.md` (real-vs-synthetic + failure findings, 2026-08-13), `Asif's/Statistics/SIGNIFICANCE_REPORT.md` (confidence intervals), and the notebook inventory on disk. Where a source did not contain something, it is marked **⚠️ not established in the reviewed sources** rather than guessed.
+> **Sources of truth this record is built from** (not from re-reading raw code): `Research_Progress_Report.md` (moved -> `Archive_Files (v2)/Research_Progress_Report till v2.md`) (per-model detail), `Asif's/audit/ICBHI_SCORE_AUDIT.md` (recomputed official metrics), `Asif's/audit/PROJECT_AUDIT.md` (real-vs-synthetic + failure findings, 2026-08-13), `Asif's/Statistics/SIGNIFICANCE_REPORT.md` (confidence intervals), and the notebook inventory on disk. Where a source did not contain something, it is marked **⚠️ not established in the reviewed sources** rather than guessed.
 >
 > **Contributors seen in the repo:** Barshon, Asif, Sami, and **Farhana** (M23). Ownership is historical (whose folder the notebook lives in), not a role assignment.
 
@@ -140,7 +140,7 @@
 
 ### 2.8 — M29: Open-set baseline suite on the M12 backbone
 - **Chunk:** C. **Requires:** M12 (frozen backbone checkpoint). **Status:** ✅ done, real. *(New model ID, added 2026-08. Not in the original 28-model list — see `Asif's/M29/README.md` for the full spec.)*
-- **Purpose:** the trivial-baseline ablation Reviewer #2 would demand (`Novelty Search.md` §2, Attack 1) — MSP, entropy, energy, and Mahalanobis distance, computed on frozen M12 embeddings, no training.
+- **Purpose:** the trivial-baseline ablation Reviewer #2 would demand (`Novelty Search.md` (moved -> `Archive_Files (v2)/Novelty Search v2.md`) §2, Attack 1) — MSP, entropy, energy, and Mahalanobis distance, computed on frozen M12 embeddings, no training.
 - **Data:** exact real ICBHI known/unknown split — 104 known / 19 unknown patients, patient-level evaluation, unknown group never fitted.
 - **Result:** best baseline (Energy) reaches **AUROC 0.6466**, comfortably beating M6's 0.4516 with zero training. **This is now the real bar any cross-task mechanism (M15) has to clear.**
 - **Ablation group:** `rejection_method`, alongside M6 and M15.

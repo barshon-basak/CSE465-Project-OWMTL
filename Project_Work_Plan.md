@@ -1,5 +1,19 @@
 # Project Work Plan — OWMTL Project
 
+> ## 🔴 Direction changed 2026-08-16 — read `DECISION_2026-08-16_PIVOT.md` first
+>
+> Gate G2 (concept-extractor validity) **failed twice**. The concept bottleneck is retired as the
+> headline; the project's contribution is now the corrected evaluation protocol + the label
+> reliability finding. Chunk statuses below still describe what was built, but the *forward plan*
+> is superseded.
+>
+> **Still active:** the clinician listening study; re-running M2/M3/M22 on the corrected official
+> split; the audit/statistics tooling.
+> **Stopped:** extractor tuning, the bottleneck head, intervention, concept leakage, any new mechanism.
+
+---
+
+
 **Replaces:** `Individual_Work_Plan.md` (archived at `Archive_Work_Plan/Individual_Work_Plan_ARCHIVED.md`).
 **Why:** two things changed since the old plan was written. First, Dr. Khan's 2026 novelty guidance
 is explicit — this isn't graded on model count or a basic classification pipeline, and novelty is
@@ -19,7 +33,7 @@ were assigned in week 1.
 
 **Priority order for anything you're about to build:**
 
-1. `Novelty Search.md` — is there a novelty angle for this? As of 2026 this matters as much as
+1. `Novelty Search.md` (moved -> `Archive_Files (v2)/Novelty Search v2.md`) — is there a novelty angle for this? As of 2026 this matters as much as
    whether the model runs at all.
 2. `Model_Training_Reference.md` §0 — is the chunk you're about to touch already real, or does it
    need a rebuild first?

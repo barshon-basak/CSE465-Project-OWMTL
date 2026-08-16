@@ -1,6 +1,6 @@
 # OWMTL — Critical-Fix Engine (concept bottleneck foundation)
 
-This package implements **only the Critical Fixes** from `OWMTL_Fix_Triage.md`, aligned to the
+This package implements **only the Critical Fixes** from `OWMTL_Fix_Triage.md` (moved -> `../Archive_Files (v3)/OWMTL_Fix_Triage.md`), aligned to the
 current direction (physics-grounded, label-free **acoustic concept bottleneck** + faithfulness audit).
 It is the shared engine both Path A and Path B stand on. Everything here has been unit-tested on
 synthetic signals and toy data in this environment; the two notebooks run on real ICBHI once you set

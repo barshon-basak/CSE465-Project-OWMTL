@@ -63,7 +63,7 @@ nothing. Both failure modes are covered by the test suite.
 
 ### It runs the test that admits this item
 
-`Novelty Search.md` §4.0 selects the fusion ensemble **"only if it measurably beats both backbones
+`Novelty Search.md` (moved -> `../../Archive_Files (v2)/Novelty Search v2.md`) §4.0 selects the fusion ensemble **"only if it measurably beats both backbones
 alone; drop it silently if it doesn't."** *That test has never been run* — the original compared
 against M2's number from a different split.
 

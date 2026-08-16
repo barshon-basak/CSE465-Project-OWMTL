@@ -5,7 +5,7 @@ to regenerate — both are pure stdlib + matplotlib, no dataset or GPU required)
 
 ## Why this exists
 
-`Research_Progress_Report.md` §12 scores the project's **statistical validity at 3/10** — no
+`Research_Progress_Report.md` (moved -> `../../Archive_Files (v2)/Research_Progress_Report till v2.md`) §12 scores the project's **statistical validity at 3/10** — no
 confidence interval or significance test appears anywhere in the repo, despite every open-set
 claim resting on a 19-patient unknown class. This fills that gap for every AUROC that has a
 recorded, unambiguous class count attached to it.
