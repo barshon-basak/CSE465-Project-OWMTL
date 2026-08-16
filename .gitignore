@@ -11,6 +11,8 @@ datasets/
 .claude/
 .vscode/
 .idea/
+.gemini/
+.agents/
 *.code-workspace
 
 # ─── Experiment outputs ──────────────────────────────────────────────

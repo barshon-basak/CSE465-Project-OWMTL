@@ -325,6 +325,18 @@ CFG = {
     "split_file": SPLIT_FILE,
     "ckpt_dir": CKPT_DIR, "results_dir": RESULTS_DIR,
     "model_id": "M30", "contributor": "Asif",
+
+    # -- how to reconcile the official split with protocol section 1 --
+    # The official ICBHI split is NOT patient-disjoint: patients 156 and 218 appear
+    # on both sides (13 train + 12 test recordings between them). Protocol section 1
+    # requirement 1 makes patient-independence a hard requirement, so we must choose.
+    #   "drop_from_train" (default) -- drop those patients' TRAIN recordings. The official
+    #                                  TEST set stays byte-identical, so the reported score
+    #                                  remains directly comparable to published ICBHI work,
+    #                                  at the cost of 13 of 539 training recordings (2.4%).
+    #   "as_is"                     -- official split verbatim, accepting the leak. Only for
+    #                                  reproducing other papers' exact setup; violates section 1.
+    "official_overlap_policy": "drop_from_train",
 }
 CFG["n_frames"] = 1 + math.floor(CFG["n_samples"] / CFG["hop_length"])   # 801
 
@@ -404,6 +416,7 @@ def parse_annotation_file(txt_path):
     return cycles
 
 
+<<<<<<< HEAD
 def load_official_split(data_root, split_file=None):
     """Return ({stem: 'train'|'test'}, info) from ICBHI_challenge_train_test.txt.
 
@@ -484,8 +497,108 @@ if not split_map:
         "Upload Asif's/ICBHI_challenge_train_test.txt to /content/ (it is committed in the "
         "repo) and re-run. To deliberately use the fallback instead, set "
         "CFG['allow_split_fallback'] = True.")
+=======
+# Ground truth, verified against the committed Asif's/ICBHI_challenge_train_test.txt.
+# If any assertion below fires, the split file is not the official one -- stop and check it.
+OFFICIAL_RECORDINGS = 920
+OFFICIAL_TRAIN_RECS = 539       # 58.6%
+OFFICIAL_TEST_RECS = 381        # 41.4%  -- this is the "60/40"
+OFFICIAL_PATIENTS = 126
+OFFICIAL_OVERLAP_PATIENTS = {156, 218}   # in BOTH train and test in the official file
+
+
+def load_official_split(data_root):
+    """Return {filename_stem: 'train'|'test'} from ICBHI_challenge_train_test.txt.
+
+    Raises if not found. There is deliberately NO fallback: a silent fallback to a
+    patient-ID rule is exactly what gave M2/M3/M12 an 11-patient test set while their
+    results JSONs recorded split_method 'patient_independent_official_60_40'.
+    """
+    searched = []
+    bases = [os.path.dirname(data_root.rstrip("/")), data_root, "/content", "/kaggle/input", "."]
+    for base in bases:
+        if not base or not os.path.isdir(base):
+            continue
+        for pat in ("**/ICBHI_challenge_train_test.txt", "**/*train_test*.txt"):
+            spec = os.path.join(base, pat)
+            searched.append(spec)
+            for path in sorted(glob.glob(spec, recursive=True)):
+                mapping = {}
+                try:
+                    with open(path) as f:
+                        for line in f:
+                            parts = line.split()
+                            if len(parts) >= 2 and parts[1].lower() in ("train", "test"):
+                                mapping[parts[0].replace(".wav", "")] = parts[1].lower()
+                except Exception:
+                    continue
+                if mapping:
+                    print(f"Official split file: {path}  ({len(mapping)} recordings)")
+                    return mapping
+    raise RuntimeError(
+        "ICBHI_challenge_train_test.txt NOT FOUND, and this notebook has no fallback split "
+        "by design.\n"
+        "Upload Asif's/ICBHI_challenge_train_test.txt to /content/ and re-run.\n"
+        "Searched:\n  " + "\n  ".join(searched))
+
+
+split_map = load_official_split(CFG["data_root"])
+SPLIT_SOURCE = "official_file"
+
+# --- Verify the file is the real official split, not a truncated or edited copy ---
+_n_train = sum(1 for v in split_map.values() if v == "train")
+_n_test = sum(1 for v in split_map.values() if v == "test")
+_pat_sides = {}
+for _stem, _s in split_map.items():
+    _pat_sides.setdefault(int(_stem.split("_")[0]), set()).add(_s)
+_overlap = {p for p, s in _pat_sides.items() if len(s) == 2}
+
+print(f"  recordings : {len(split_map)} ({_n_train} train / {_n_test} test)")
+print(f"  patients   : {len(_pat_sides)}  | on both sides: {sorted(_overlap)}")
+
+assert len(split_map) == OFFICIAL_RECORDINGS, \
+    f"expected {OFFICIAL_RECORDINGS} recordings in the split file, got {len(split_map)}"
+assert (_n_train, _n_test) == (OFFICIAL_TRAIN_RECS, OFFICIAL_TEST_RECS), \
+    f"expected {OFFICIAL_TRAIN_RECS}/{OFFICIAL_TEST_RECS} train/test, got {_n_train}/{_n_test}"
+assert len(_pat_sides) == OFFICIAL_PATIENTS, \
+    f"expected {OFFICIAL_PATIENTS} patients, got {len(_pat_sides)}"
+assert _overlap == OFFICIAL_OVERLAP_PATIENTS, \
+    f"expected patients {sorted(OFFICIAL_OVERLAP_PATIENTS)} to straddle the split, got {sorted(_overlap)}"
+print("[OK] split file matches the official ICBHI 2017 challenge split exactly.")
+
+# --- Reconcile the official split with protocol section 1 (patient-independence) ---
+OVERLAP_POLICY = CFG["official_overlap_policy"]
+if OVERLAP_POLICY == "drop_from_train":
+    print(f"\nPolicy 'drop_from_train': patients {sorted(OFFICIAL_OVERLAP_PATIENTS)} appear on both "
+          f"sides of the official split.\n  Dropping their TRAIN recordings; the official TEST set "
+          f"is left byte-identical so scores stay comparable to published work.")
+elif OVERLAP_POLICY == "as_is":
+    print(f"\nPolicy 'as_is': keeping the official split verbatim. WARNING -- patients "
+          f"{sorted(OFFICIAL_OVERLAP_PATIENTS)} leak across train/test, violating "
+          f"Model_Training_Protocol.md section 1 requirement 1.")
+else:
+    raise ValueError(f"unknown official_overlap_policy: {OVERLAP_POLICY!r}")
+
+def key_without_device(stem):
+    """'226_1b1_Pl_sc_LittC2SE' -> '226_1b1_Pl_sc'  (device tag dropped).
+
+    The official split file and the audio filenames disagree on the device suffix for at
+    least one recording: 226_1b1_Pl is 'Meditron' in the split file and 'LittC2SE' on disk.
+    These first four fields are unique across all 920 recordings, so they identify a
+    recording unambiguously without trusting the device tag.
+    """
+    return "_".join(stem.split("_")[:4])
+
+
+split_by_key = {key_without_device(s): (s, side) for s, side in split_map.items()}
+assert len(split_by_key) == len(split_map), (
+    "device-independent keys are not unique in the split file, so a recording whose device "
+    "tag disagrees cannot be matched safely. Investigate before proceeding.")
+>>>>>>> refs/remotes/origin/main
 
 rows = []
+device_mismatches = []
+n_dropped_overlap = 0
 for wav in sorted(glob.glob(os.path.join(CFG["data_root"], "*.wav"))):
     stem = os.path.splitext(os.path.basename(wav))[0]
     txt = os.path.join(CFG["data_root"], stem + ".txt")
@@ -495,9 +608,34 @@ for wav in sorted(glob.glob(os.path.join(CFG["data_root"], "*.wav"))):
         pid = int(stem.split("_")[0])
     except ValueError:
         continue
-    split = (split_map.get(stem) if split_map else None) or ("test" if pid <= 111 else "train")
+    split = split_map.get(stem)
+    if split is None:
+        # Exact stem missing: match on the device-independent key. Not a guess -- same
+        # patient, session, chest location and mode; only the device tag differs.
+        alt = split_by_key.get(key_without_device(stem))
+        if alt is None:
+            raise RuntimeError(
+                f"recording {stem!r} is on disk but has no counterpart in the official split "
+                f"file, even ignoring the device suffix. The audio and the split file "
+                f"genuinely disagree -- do not guess a side for it.")
+        file_stem, split = alt
+        device_mismatches.append((stem, file_stem))
+    if (OVERLAP_POLICY == "drop_from_train" and pid in OFFICIAL_OVERLAP_PATIENTS
+            and split == "train"):
+        n_dropped_overlap += 1
+        continue
     for c in parse_annotation_file(txt):
         rows.append({"wav_path": wav, "patient_id": pid, "split": split, **c})
+
+if device_mismatches:
+    print(f"\n{len(device_mismatches)} recording(s) matched on patient/session/location "
+          f"because the device tag differs between the audio and the split file:")
+    for disk_stem, file_stem in device_mismatches:
+        print(f"    disk={disk_stem}  split_file={file_stem}")
+    print("  (known ICBHI inconsistency; the split assignment itself is unambiguous)")
+if n_dropped_overlap:
+    print(f"Dropped {n_dropped_overlap} train recording(s) from patients "
+          f"{sorted(OFFICIAL_OVERLAP_PATIENTS)} per 'drop_from_train' policy.")
 
 df = pd.DataFrame(rows)
 if df.empty:
@@ -509,21 +647,35 @@ train_patients = set(df_train.patient_id)
 test_patients = set(df_test.patient_id)
 
 leak = train_patients & test_patients
-assert not leak, f"PATIENT LEAKAGE between train and test: {sorted(leak)[:10]}"
+if OVERLAP_POLICY == "drop_from_train":
+    assert not leak, f"PATIENT LEAKAGE between train and test: {sorted(leak)[:10]}"
+    print(f"\n[OK] Patient-independent split verified (protocol section 1).")
+else:
+    assert leak == OFFICIAL_OVERLAP_PATIENTS, \
+        f"expected only {sorted(OFFICIAL_OVERLAP_PATIENTS)} to leak under 'as_is', got {sorted(leak)}"
+    print(f"\n[!!] {len(leak)} patient(s) leak by design under 'as_is': {sorted(leak)}")
 
-print(f"\nTrain : {len(df_train):5d} cycles from {len(train_patients):3d} patients")
+print(f"Train : {len(df_train):5d} cycles from {len(train_patients):3d} patients")
 print(f"Test  : {len(df_test):5d} cycles from {len(test_patients):3d} patients")
-print(f"[OK] Patient-independent split verified (protocol section 1).")
+
+# Expected under the official split: 77 train-only + 47 test-only patients, 2 straddling.
+assert len(test_patients) >= 40, (
+    f"only {len(test_patients)} test patients -- the official split has 47-49. "
+    f"This is the signature of the fallback split that invalidated M2/M3/M12 (11 patients).")
 
 print(f"\n{'class':<10}{'train':>10}{'test':>10}")
 for i, c in enumerate(CFG["sound_classes"]):
     print(f"{c:<10}{int((df_train.label == i).sum()):>10}{int((df_test.label == i).sum()):>10}")
 
-# Cross-check against M2/M3, which report 492 test cycles on the official split.
-if SPLIT_SOURCE == "official_file" and len(df_test) not in range(400, 700):
-    print(f"\nNOTE: {len(df_test)} test cycles. M2/M3 report 492 on the official split. "
-          f"A large discrepancy means the split file or parsing differs -- investigate before "
-          f"comparing against their numbers.")
+# The official test set is ~2700-2800 cycles. M2/M3/M12's committed 492 is NOT a valid
+# reference: those runs took the patient-ID fallback (11 test patients) while recording
+# split_method 'patient_independent_official_60_40'. Do not compare against their scores
+# until they are retrained on this split.
+if not (2400 <= len(df_test) <= 3100):
+    print(f"\nNOTE: {len(df_test)} test cycles, expected ~2750 for the official split. "
+          f"Investigate the annotation parsing before trusting anything downstream.")
+else:
+    print(f"[OK] {len(df_test)} test cycles -- consistent with the official split.")
 ''')
 
 code(r'''
@@ -918,21 +1070,27 @@ print(f"\nFeature extraction done in {EXTRACT_TIME:.0f}s. Audio is now read ZERO
 # Free the worker pools explicitly so their iterators aren't torn down later during GC.
 del extract_train_loader, extract_test_loader
 
-print("Backbone baselines on THIS notebook's test split")
-print("(sanity anchor: published official scores are M2 0.6138, M3 0.5895)\n")
+print("Backbone baselines on THIS notebook's test split (official, ~47 test patients)\n")
 
 BASE_M2 = metrics_from_predictions(TEST_F["y"], TEST_F["logits_m2"].argmax(1).numpy(), "M2 alone")
 BASE_M3 = metrics_from_predictions(TEST_F["y"], TEST_F["logits_m3"].argmax(1).numpy(), "M3 alone")
 
-for name, got, published in (("M2", BASE_M2["icbhi_score_official"], 0.6138),
-                             ("M3", BASE_M3["icbhi_score_official"], 0.5895)):
-    d = abs(got - published)
-    flag = "OK" if d <= 0.05 else "*** LARGE DEVIATION ***"
-    print(f"  {name}: {got:.4f} vs published {published:.4f}  (delta {d:+.4f})  {flag}")
+# NOTE: M2/M3's committed 0.6138/0.5895 were measured on the patient-ID FALLBACK split
+# (11 test patients, 492 cycles) despite their JSONs claiming 'official_60_40'. They are a
+# provenance record, NOT a target. A deviation here is EXPECTED and is not a failure.
+for name, got, superseded in (("M2", BASE_M2["icbhi_score_official"], 0.6138),
+                              ("M3", BASE_M3["icbhi_score_official"], 0.5895)):
+    print(f"  {name}: {got:.4f} on the official split "
+          f"(superseded fallback-split figure was {superseded:.4f}, delta {got - superseded:+.4f})")
 
-print("\nIf either deviation is large, stop: the split, preprocessing, or checkpoint differs from "
-      "the run that produced the published number, and the fusion comparison below would inherit "
-      "that discrepancy.")
+_worst = min(BASE_M2["icbhi_score_official"], BASE_M3["icbhi_score_official"])
+if _worst < 0.40:
+    print(f"\n*** STOP: a backbone scores {_worst:.4f}, near or below chance for this metric. "
+          f"That indicates a broken checkpoint, preprocessing mismatch, or label misalignment -- "
+          f"not a hard split. The fusion comparison below would inherit it. ***")
+else:
+    print(f"\n[OK] Both backbones score above 0.40; published ICBHI work sits at ~0.60-0.65. "
+          f"These two numbers -- not the superseded ones -- are what the fusion must beat.")
 ''')
 
 # ===========================================================================
@@ -1195,6 +1353,7 @@ results = {
         "test_samples": int(len(df_test)),
         "train_patients": int(len(train_patients)),
         "test_patients": int(len(test_patients)),
+<<<<<<< HEAD
         # Deliberately NOT called "official_60_40": two patients are reassigned to make it
         # patient-independent, so it is the official split *corrected*, not the official
         # split verbatim. Mislabelling this is the exact bug being fixed.
@@ -1204,6 +1363,26 @@ results = {
         "split_source": SPLIT_SOURCE,
         "split_details": SPLIT_INFO,
         "patient_leakage_verified": True,
+=======
+        "split_method": ("official_icbhi_60_40_patient_disjoint"
+                         if OVERLAP_POLICY == "drop_from_train"
+                         else "official_icbhi_60_40_verbatim"),
+        "split_source": SPLIT_SOURCE,
+        "split_file_verified": {
+            "recordings": OFFICIAL_RECORDINGS,
+            "train_recordings": OFFICIAL_TRAIN_RECS,
+            "test_recordings": OFFICIAL_TEST_RECS,
+            "patients": OFFICIAL_PATIENTS,
+        },
+        "official_overlap_policy": OVERLAP_POLICY,
+        "official_overlap_patients": sorted(OFFICIAL_OVERLAP_PATIENTS),
+        "official_overlap_note": (
+            "The official ICBHI split is not patient-disjoint: patients 156 and 218 have "
+            "recordings on both sides. Protocol section 1 requirement 1 forbids this, so under "
+            "policy 'drop_from_train' their TRAIN recordings are excluded while the official TEST "
+            "set is left byte-identical, keeping the score comparable to published ICBHI results."),
+        "patient_leakage_verified": bool(OVERLAP_POLICY == "drop_from_train"),
+>>>>>>> refs/remotes/origin/main
     },
     "efficiency": {
         "total_params": int(TOTAL_PARAMS),
@@ -1238,8 +1417,14 @@ results = {
             "beats_both_backbones": bool(beats_both),
             "verdict": ("PASSES" if (beats_both and margin >= 0.01)
                         else "MARGINAL" if beats_both else "FAILS"),
-            "reference_published_m2_official": 0.6138,
-            "reference_published_m3_official": 0.5895,
+            "reference_superseded_m2_fallback_split": 0.6138,
+            "reference_superseded_m3_fallback_split": 0.5895,
+            "reference_note": ("The two reference_superseded_* figures come from M2/M3 runs that "
+                               "took the patient-ID fallback split (11 test patients, 492 cycles) "
+                               "while recording split_method 'patient_independent_official_60_40'. "
+                               "They are NOT comparable to this run and are recorded only for "
+                               "provenance. The admission test uses m2_alone_official and "
+                               "m3_alone_official, measured here on identical test cycles."),
         },
     },
     "ablation": {

@@ -10,6 +10,21 @@
 
 ---
 
+> ## 🧭 Direction update (2026-08-14) — read before starting any new run
+>
+> The project's **headline direction has pivoted** and this protocol has been aligned to it. The original core mechanism (**cross-task disagreement** as an unseen-disease detector) is **retired as the thesis** — it lost to a trivial Energy baseline (M15 AUROC 0.5747 < 0.6466) and is a published method (Zamir et al. 2020). Two later directions were also rejected on cross-check (Direction 1 device/disease disentanglement; ACBD-as-originally-specified). See `OWMTL_Project_Evolution.md` for the full trail.
+>
+> **The current direction is a shared engine with one data-driven fork:** a **physics-grounded, label-free acoustic concept bottleneck** (clinically-named concepts — fine/coarse crackle, wheeze pitch band, inspiratory phase, rhonchi, spectral flatness, PAPR — computed by DSP, *not* human-labeled), used either as (**Path A**) an interpretable, clinician-correctable diagnosis, or (**Path B**) a faithfulness/robustness audit ("do the models actually listen to the clinical sounds?"). Which headline is chosen is decided by *data* at a mid-project gate (**G3**), not up front.
+>
+> **Current source-of-truth documents** (read alongside `Novelty Search.md`):
+> - `OWMTL_Merged_Decision_Roadmap.md` — the gated roadmap (G0–G7).
+> - `OWMTL_Build_Sheet.md` — the week-by-week build plan and which existing model feeds each step.
+> - `OWMTL_Novelty_Gap_Analysis.md` — the gap analysis + 2026 cross-check.
+>
+> **What this changes below:** three reporting rules are now **hard** (official split + official metric only, commit the confusion matrix for *every* model, CIs + a paired test on *every* headline comparison — §1). New model types (concept bottleneck, leakage, intervention, concept-space OOD, foundation-model probing) get required metrics (§3.5), ablation groups, and component flags (§4.1). The cross-task mechanism is **not deleted** — it survives as **one scored baseline detector**, not the contribution.
+
+---
+
 ## 1. The Essentials (Must-Do)
 
 These are the only hard requirements. Everything else in this doc is guidance.
@@ -42,6 +57,9 @@ These are the only hard requirements. Everything else in this doc is guidance.
 5. **Compute all metrics in §3** — accuracy, precision, recall, F1, confusion matrix, model size, params, training time.
 6. **Generate the required plots** (§5) — loss curves, accuracy curves, confusion matrix.
 7. **Use the shared preprocessing parameters** for audio (sample rate, mel bins, etc.) so results stay comparable across models.
+8. **Official split + official metric are the only reportable comparison.** Every number that enters a comparison, table, or claim uses the **patient-independent official 60/40 split** and the **official ICBHI metric** (`icbhi_score_official`, §3). **Never compare across splits** — a 70/30 number and a 60/40 number are not on the same scale (a random 70/30 split is easier than the deliberately-hard official one), and neither is comparable to published work. Legacy 70/30 runs (M30–M37) must be re-run on the official split before they appear in any comparison. *(This is the rule that the M30 withdrawal and the metric-correction audit made non-negotiable.)*
+9. **Commit `confusion_matrix_raw` for every model, every split** — not just sound-event models. Without it, no score can be independently verified by a teammate, the audit tool, or a reviewer. A results JSON with a reported score and no committed matrix is not a result. *(This is exactly why M30's 0.8213 is unverifiable and withdrawn.)*
+10. **Every headline comparison carries a confidence interval + a paired test.** Report bootstrap 95% CIs (B=1000) on the primary metric / AUROC, and a paired significance test (McNemar on paired predictions for classification; Wilcoxon signed-rank across patients/folds; Hanley-McNeil or bootstrap for AUROC differences). With only 19 unknown patients, a bare point AUROC is meaningless — the CI (≈ ±0.12 at n=19) must be shown. Reuse the M30 McNemar/bootstrap code and `Asif's/Statistics/`.
 
 That's it. The rest of this document explains *how* to do these things.
 
@@ -115,6 +133,24 @@ highest headline number.
 
 For open-set / unknown-detection models, also compute:
 - Unknown-detection precision, recall, AUROC, AUPR
+- **AUROC/AUPR with bootstrap 95% CIs** (mandatory at n=19 — see Essential #10)
+
+### Concept-bottleneck / faithfulness / open-world metrics (new direction — §3.5)
+
+For any run that is part of the concept-bottleneck engine (see the Direction-update block), also compute and record the metrics relevant to its role. Put these under a `concept_metrics` object in the results JSON (schema note in §4).
+
+| Metric | For which run | Definition / how |
+|---|---|---|
+| **Concept accuracy** (per concept + macro) | concept extractors, CBM | how well each DSP-derived concept matches the ICBHI cycle label it maps to (crackle/wheeze presence), plus per-concept reliability |
+| **Accuracy–interpretability tradeoff** | CBM variants vs opaque | disease metric of the strict bottleneck vs the opaque baseline, on the **same official split** — report the *gap*, not just the bottleneck number |
+| **Per-class disease F1** | CBM, disease head | watch explicitly for collapse toward COPD (the §2.5 validity-hole failure mode) |
+| **Concept leakage** | CBM variants | information-theoretic estimate — mutual information between residual encoder info and the label *given* the concepts (ref arXiv:2504.09459). Report per variant {independent, sequential, leaky-joint} |
+| **Intervention Δaccuracy** | CBM + intervention | change in diagnosis when a concept value is overwritten (simulated clinician correction); report per corrected concept |
+| **Concept-space vs embedding-space OOD** | concept-space detectors | AUROC/AUPR of MSP/Energy/Mahalanobis run **in concept space** vs the same detectors in embedding space, **with CIs**, stratified by shift type |
+| **Covariate-shift response** | device / pediatric | for device LODO (if feasible, G4) and SPRSound: how much a detector fires on *known* diseases under new device/population (a good detector should NOT) — the physics-fragility check (I5) |
+| **FM concept-faithfulness** | FM-probing (G5) | probing accuracy of the clinical concepts from an OPERA/M2D embedding, and whether it stays faithful under shift |
+
+> **These are the numbers Gate G3 reads** to decide Path A vs Path B (`OWMTL_Merged_Decision_Roadmap.md`): the accuracy–interpretability tradeoff, the leakage, and the intervention effect. Produce all three before the G3 decision.
 
 ### Efficiency Metrics
 
@@ -272,6 +308,8 @@ This is the format the final merge (§9 of `Model_Training_Reference.md`) expect
 
 You can add extra fields if your model needs them (e.g., `auroc` for open-set models, `compression_ratio` for compression sweeps). Just don't remove or rename the fields above.
 
+**New-direction additions (concept-bottleneck engine):** add a **`concept_metrics`** object holding the §3.5 numbers relevant to the run (e.g. `concept_accuracy_per`, `tradeoff_vs_opaque`, `leakage_bits`, `intervention_delta`, `concept_space_auroc`, `embedding_space_auroc`, `covariate_fpr`), and attach a **`ci`** field to every headline metric (e.g. `"icbhi_score_official": 0.63, "icbhi_score_official_ci95": [0.60, 0.66]`) plus the paired-test result in `meta.notes` or a `stats` object (Essential #10). Set the new `component_flags` (§4.1) on every run so the merge can tell concept-bottleneck runs apart from legacy ones.
+
 ---
 
 ## 4.1 Ablation Metadata — How to Fill the `ablation` Block
@@ -306,7 +344,21 @@ The paper needs an ablation study table. An ablation table answers: *"What happe
 | `uncertainty_method` | Ensemble vs. MC-Dropout vs. SNGP vs. Evidential | M7, M8, M9, M10 |
 | `calibration_method` | Temperature vs. vector vs. focal | M11 variants |
 
-New novelty-driven work will likely need a few new group names (e.g. `training_strategy` for curriculum learning, `disease_head_architecture` for a meta-learning/prototypical disease head, `ensemble_fusion` for a feature-fusion ensemble). See `Novelty Search.md` §6 for the current list of proposed-but-not-yet-canonical group names — add to this table as a single batch edit when one is adopted, rather than one at a time.
+**Concept-bottleneck engine groups (new direction — use these for all Path A/B runs):**
+
+| Group name | What it compares | Notes |
+|---|---|---|
+| `bottleneck_type` | independent-CBM vs. sequential-CBM vs. leaky-joint control vs. opaque baseline | the core accuracy–interpretability tradeoff (G3 input) |
+| `concept_source` | physics/DSP-derived vs. learned/CLAP-derived vs. hybrid | the "physics-grounded" novelty claim; physics is the headline arm |
+| `concept_set_size` | minimal {PAPR, flatness, wheeze-band} vs. extended {+ fine/coarse crackle, phase, rhonchi} | how bottleneck width trades against accuracy |
+| `leakage_regularization` | with vs. without the leakage penalty | pairs with the leakage metric (§3.5) |
+| `concept_space_vs_embedding_ood` | novelty detection in concept space vs. embedding space | detector family held constant (MSP/Energy/Mahalanobis) |
+| `covariate_shift` | random split vs. leave-one-device-out (G4) vs. pediatric (SPRSound) | the robustness/physics-fragility axis |
+| `fm_probing` | scratch-CNN encoder vs. OPERA/M2D embedding (frozen or LoRA) | optional, G5 — answers the deferred "Attack 7" |
+
+> **Reuse note:** the old `rejection_method` / `cross_task_consistency` groups still exist, but the cross-task scorer (M15) is now **one scored detector inside `concept_space_vs_embedding_ood`**, not a standalone contribution.
+
+Other novelty-driven work may still need group names (e.g. `training_strategy` for curriculum, `disease_head_architecture` for the prototypical head, `ensemble_fusion` for feature fusion). See `Novelty Search.md` §6 for proposed-but-not-yet-canonical names — add to these tables as a single batch edit when one is adopted, rather than one at a time.
 
 ### How `component_flags` works:
 
@@ -319,6 +371,16 @@ This is the key to building the ablation table automatically. Each flag answers 
 - `has_openmax_rejection` — Is the OpenMax/Weibull rejection mechanism active (alternative to cross-task consistency)?
 - `owl_stage` — Which OWL stage is this run evaluated at? (0, 1, or 2)
 - `compression_clusters` — Number of clusters in CQKD compression. `null` if uncompressed.
+
+**New-direction flags (add these for any concept-bottleneck engine run; set to `false`/`null` on legacy runs):**
+
+- `has_concept_bottleneck` — Is the diagnosis routed *only* through the concept layer (a true bottleneck)?
+- `bottleneck_type` — `"independent"` | `"sequential"` | `"leaky_joint"` | `"opaque"` | `null`.
+- `concept_source` — `"physics"` | `"learned"` | `"hybrid"` | `null` (physics = DSP-derived clinically-named concepts).
+- `has_leakage_measurement` — Was the information-theoretic leakage metric computed for this run?
+- `has_concept_intervention` — Is the concept-intervention API exercised (overwrite-and-re-predict)?
+- `concept_space_ood` — Is the OOD/novelty score computed in concept space (`true`) vs embedding space (`false`)?
+- `fm_backbone` — `"none"` | `"OPERA"` | `"M2D"` | ... — the foundation-model encoder if used (G5).
 
 These flags let the merge step auto-generate rows like:
 
@@ -519,7 +581,11 @@ Quick sanity check:
 - [ ] Confusion matrix plot generated
 - [ ] Model size (MB) and parameter count recorded
 - [ ] Training time recorded
-- [ ] Patient-independent split was used
+- [ ] Patient-independent split was used — **and it is the official 60/40 split** for any number that will be compared or reported (Essential #8)
+- [ ] **`confusion_matrix_raw` committed** (every model, so the score can be independently verified — Essential #9)
+- [ ] **`icbhi_score_official` reported and led with** (macro `icbhi_score` may accompany it but is never the headline)
+- [ ] **CI + paired test on every headline comparison** — bootstrap 95% CI + McNemar/Wilcoxon (Essential #10)
+- [ ] **For concept-bottleneck engine runs:** `concept_metrics` object filled (§3.5) and the new `component_flags` set (§4.1)
 - [ ] **Real data verified** — run `Asif's/audit/audit_project.py` and confirm no `synthetic_data_not_real_dataset` finding on this model
 - [ ] For augmented runs: `is_augmented` and `augmentation_method` filled in
 - [ ] **Ablation block filled in** — `ablation_group`, `ablation_role`, `baseline_model_id`, `variable_changed`, `component_flags`, and `loss_weights` are all populated (§4.1)
@@ -659,11 +725,11 @@ Before generating code, identify the assigned model run (e.g., M1, M4, M15, M18,
 
 ### Step 2: Adhere to Project Scientific Context & Background
 To ensure your implementation aligns with the core research methodology, keep the following foundational principles in mind:
-1. **The Core Research Gap (Why we do this):**
-   Nearly all prior respiratory audio multi-task learning (MTL) operates under a *closed-world assumption*—assuming every disease seen at test time was present during training. This is clinically dangerous. This project introduces an **Open-World Multi-Task Learning (OWMTL)** framework that uses **cross-task consistency disagreement** between a sound-event classification head and a disease-diagnosis head to flag unknown/unseen conditions.
-2. **Dataset & Task Formulation:** ICBHI 2017 (primary), Coswara/SPRSound (OOD stress tests). Audio only — no imaging data exists in this pipeline.
+1. **The Core Research Gap (Why we do this) — CURRENT DIRECTION:**
+   Prior respiratory-audio deep learning is a black box evaluated mostly on closed-set accuracy at the published level (~0.60–0.65 official ICBHI), and its interpretability, when present, is *post-hoc* (Grad-CAM/SHAP) and unverified. This project routes diagnosis through a **physics-grounded, label-free acoustic concept bottleneck** — clinically-named concepts (fine/coarse crackle, wheeze pitch band, inspiratory phase, rhonchi, spectral flatness, PAPR) computed by DSP — to ask whether the model *actually listens to the clinical sounds*, whether that reasoning is **correctable** (intervention) and **faithful** (low leakage), and whether the clinical concept space is a **safer, more device/population-robust** place to flag unknown disease. **Retired framing (do not build a notebook around it):** cross-task disagreement as the unseen-disease detector — it lost to a trivial Energy baseline and is a published method; it now appears only as *one baseline detector*.
+2. **Dataset & Task Formulation:** ICBHI 2017 (primary), Coswara/SPRSound (OOD + pediatric shift stress tests). Audio only — no imaging data exists in this pipeline. Official 60/40 patient-independent split for all reported numbers.
 3. **Efficiency & Deployability:** Track parameter counts, model size in MB, training time per epoch, and inference latency (ms/sample) to support edge-deployment and clinical reliability claims.
-4. **Novelty is now weighted as heavily as core execution.** See `Novelty Search.md` for the current prioritized list.
+4. **Novelty is a rigor/mechanism contribution, not an accuracy race.** The corrected numbers sit at the published level, so the contribution comes from interpretability, faithfulness, and honest evaluation — not from beating SOTA. See `OWMTL_Merged_Decision_Roadmap.md`, `OWMTL_Build_Sheet.md`, and `Novelty Search.md` for the current prioritized plan.
 
 ---
 
@@ -740,6 +806,17 @@ NOT ABOUT NOVELTY COUNT EITHER:
   2-3 selected novelty items only (Novelty Search.md §4.0).
   Do NOT make this project buzzword-heavy.
   New technique? It REPLACES a selected item, it does not join it.
+
+CURRENT DIRECTION (2026-08-14):
+  Physics-grounded, label-free acoustic CONCEPT BOTTLENECK
+  + faithfulness audit. One engine, A/B headline chosen by data at Gate G3.
+  Cross-task disagreement = retired thesis, now one baseline detector.
+  Source of truth: OWMTL_Merged_Decision_Roadmap.md + OWMTL_Build_Sheet.md
+
+HARD REPORTING RULES (Essentials #8-10):
+  ✓ Official 60/40 split + icbhi_score_official ONLY for comparisons (no 70/30)
+  ✓ confusion_matrix_raw committed for EVERY model
+  ✓ Bootstrap 95% CI + paired test (McNemar/Wilcoxon) on EVERY headline number
 
 AI NOTEBOOK GENERATION:
   See §12 for direct instructions for LLM assistants to generate protocol-compliant .ipynb files.
