@@ -1,6 +1,6 @@
 # OWMTL Project Audit
 
-**Generated:** 2026-08-14 by `Asif's/audit/audit_project.py` · **Files scanned:** 40
+**Generated:** 2026-08-16 by `Asif's/audit/audit_project.py` · **Files scanned:** 40
 
 Automated protocol-compliance and result-validity audit across every results file in the repository. Each check corresponds to a failure mode actually present in this repo, not a hypothetical one.
 

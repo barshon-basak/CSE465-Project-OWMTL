@@ -74,6 +74,13 @@ was the only option available from committed artifacts — see Limitations.
    paired data. **Recommendation: the next model notebook that touches open-set scoring should
    dump `{patient_id: score}` to a `.npy`/`.csv` alongside `results_*.json`.** That one change
    unlocks a real DeLong test and removes this entire caveat.
+
+   > **✅ RESOLVED 2026-08-15 (tooling side).** `owmtl_scores.py` in this folder now defines the
+   > canonical score format and implements a validated **paired DeLong test**, plus exact
+   > McNemar and bootstrap CIs. Protocol §1 essential #10 requires its use. The numbers in this
+   > report are still the conservative unpaired ones — they will be recomputed once the engine
+   > notebooks emit score files. On correlated scorers the paired test was ~9x tighter in
+   > validation (SE 0.0086 vs 0.0785), so several 'not significant' rows here may well flip.
 2. **M6 excluded from cross-method comparison, included for its own sake.** M6's AUROC is
    computed at the cycle level (1631 known / 549 unknown cycles), not patient level like
    everything else in this table. Cycle-level and patient-level AUROC are not the same quantity
