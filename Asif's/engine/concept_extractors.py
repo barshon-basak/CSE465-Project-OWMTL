@@ -86,6 +86,7 @@ WHEEZE_BAND = (100.0, 1000.0)
 RHONCHI_BAND = (60.0, 300.0)
 WHEEZE_MIN_MS = 100.0        # "continuous" by clinical convention
 CRACKLE_BAND = (100.0, 2000.0)
+HIGHPASS_HZ = 80.0     # below this is heart sound / handling noise, not lung sound
 
 
 # ============================================================ primitives
@@ -156,8 +157,35 @@ def _robust_z(v):
     return (v - med) / (1.4826 * mad + 1e-12)
 
 
+def _moving_stat(v, win, fn):
+    """Sliding-window statistic, edge-padded. `win` is in samples of `v`."""
+    if len(v) == 0:
+        return v
+    win = max(3, int(win) | 1)                 # force odd
+    pad = win // 2
+    padded = np.pad(v, pad, mode="edge")
+    idx = np.arange(win)[None, :] + np.arange(len(v))[:, None]
+    return fn(padded[idx], axis=1)
+
+
+def _local_robust_z(v, win):
+    """Median/MAD z-score against a LOCAL baseline rather than the whole cycle.
+
+    Real auscultation carries continuous breath sound, so a cycle-wide median/MAD is set by that
+    ongoing signal and every fluctuation in it looks like an outlier. On real ICBHI audio the
+    cycle-wide version fired on 100% of cycles at ~10 events/s in Normal and Crackle alike
+    (AUROC 0.55). A crackle is a brief excursion above its LOCAL background; this measures that.
+    """
+    if len(v) == 0:
+        return v
+    med = _moving_stat(v, win, np.median)
+    mad = _moving_stat(np.abs(v - med), win, np.median)
+    return (v - med) / (1.4826 * mad + 1e-12)
+
+
 # ============================================================ detectors
-def detect_crackles(audio, sr, z_thresh=3.5, refractory_ms=6.0, min_peak_frac=0.15):
+def detect_crackles(audio, sr, z_thresh=4.0, refractory_ms=6.0, min_peak_frac=0.10,
+                    baseline_ms=60.0, max_width_ms=30.0):
     """Detect transient events. Returns a list of dicts: onset_s, width_ms, centre_hz.
 
     Crackles are discontinuous, explosive and brief. We band-pass to 100-2000 Hz, build a 2 ms
@@ -175,7 +203,8 @@ def detect_crackles(audio, sr, z_thresh=3.5, refractory_ms=6.0, min_peak_frac=0.
     env, dt = _envelope(x, sr)
     if len(env) < 5:
         return []
-    z = _robust_z(env)
+    win = max(3, int(round(baseline_ms / 1000.0 / dt)))
+    z = _local_robust_z(env, win)
 
     # A crackle is an EXPLOSIVE sound, so it must carry real energy -- not merely be a
     # statistical outlier. Without this floor the median/MAD z-score fires on numerical
@@ -183,8 +212,13 @@ def detect_crackles(audio, sr, z_thresh=3.5, refractory_ms=6.0, min_peak_frac=0.
     # happened on the synthetic trains: 27 "crackles" detected in a 10-crackle signal.
     env_floor = min_peak_frac * float(env.max()) if env.size else 0.0
 
-    events, i, n = [], 1, len(env)
-    while i < n - 1:
+    # Skip half a baseline window at each end: there the sliding median is edge-padded rather
+    # than measured, so the local baseline is fictional and the band-pass edge transient reads as
+    # an explosive event. A pure tone produced two phantom crackles at its boundaries until this
+    # guard was added. Cycles are cut from longer recordings, so the cut itself is an artifact.
+    edge = win // 2
+    events, i, n = [], max(1, edge), len(env)
+    while i < n - 1 - edge:
         if (z[i] >= z_thresh and env[i] >= env_floor
                 and z[i] >= z[i - 1] and z[i] > z[i + 1]):
             half = z[i] / 2.0
@@ -195,6 +229,12 @@ def detect_crackles(audio, sr, z_thresh=3.5, refractory_ms=6.0, min_peak_frac=0.
             while b < n - 1 and z[b] > half:
                 b += 1
             width_ms = (b - a) * dt * 1000.0
+
+            if width_ms > max_width_ms:
+                # Wider than ~30 ms is not a crackle -- CORSA puts them at 5-15 ms. A slow rise
+                # is breath-sound amplitude modulation, which is what flooded the real-audio run.
+                i = b + 1
+                continue
 
             c0, c1 = int(a * dt * sr), int(min(len(x), (b + 1) * dt * sr))
             centre = 0.0
@@ -240,7 +280,13 @@ def detect_wheezes(audio, sr, band=WHEEZE_BAND, min_ms=WHEEZE_MIN_MS, prominence
     Note the bands overlap by clinical convention: a sustained 150 Hz tone is both "low-pitched
     wheeze" and "rhonchus", so both concepts firing on it is correct, not double counting.
     """
-    mag, freqs = _stft_mag(audio, sr, win_ms=40.0, hop_ms=10.0)
+    # High-pass first. `min_band_share` compares the in-band peak to the frame's GLOBAL peak, but
+    # real auscultation is dominated by sub-100 Hz energy (heart sounds, muscle, handling noise),
+    # so the global peak sits below the wheeze band and the share test rejects genuine wheezes.
+    # On real ICBHI audio that silenced the detector on 47% of WHEEZE-labelled cycles.
+    _x = _bandpass(np.asarray(audio, dtype=float), sr,
+                   max(HIGHPASS_HZ, band[0] * 0.5), sr / 2.0 * 0.99)
+    mag, freqs = _stft_mag(_x, sr, win_ms=40.0, hop_ms=10.0)
     if mag.shape[0] == 0:
         return []
     sel = (freqs >= band[0]) & (freqs <= band[1])
@@ -279,7 +325,8 @@ def detect_wheezes(audio, sr, band=WHEEZE_BAND, min_ms=WHEEZE_MIN_MS, prominence
 # ============================================================ scalar concepts
 def spectral_flatness(audio, sr, band=WHEEZE_BAND):
     """Wiener flatness (geometric/arithmetic mean) in-band. Tone -> 0, noise -> 1. From M35."""
-    mag, freqs = _stft_mag(audio, sr)
+    mag, freqs = _stft_mag(_bandpass(np.asarray(audio, dtype=float), sr,
+                                     HIGHPASS_HZ, sr / 2.0 * 0.99), sr)
     if mag.shape[0] == 0:
         return 1.0
     sel = (freqs >= band[0]) & (freqs <= band[1])

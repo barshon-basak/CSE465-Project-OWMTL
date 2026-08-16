@@ -531,6 +531,19 @@ def _fast_delong(mat, n_pos):
     return aucs, np.atleast_2d(np.cov(v01, ddof=1)) / m + np.atleast_2d(np.cov(v10, ddof=1)) / n
 
 
+def auprc(y, s):
+    """Average precision. Reported alongside AUROC because the classes are imbalanced
+    (~27% crackle-positive, ~17% wheeze-positive) and AUROC is optimistic under imbalance.
+    Its chance baseline is the POSITIVE PREVALENCE, not 0.5."""
+    y = np.asarray(y).astype(int)
+    order = np.argsort(-np.asarray(s, dtype=float), kind="mergesort")
+    y = y[order]
+    tp = np.cumsum(y)
+    prec = tp / np.arange(1, len(y) + 1)
+    n_pos = int(y.sum())
+    return float((prec * y).sum() / n_pos) if n_pos else 0.0
+
+
 def auroc_ci(y, s, alpha=0.05):
     y = np.asarray(y).astype(int); s = np.asarray(s, dtype=float)
     if len(set(y.tolist())) < 2:
@@ -545,24 +558,43 @@ def auroc_ci(y, s, alpha=0.05):
             "n_pos": int(y.sum()), "n_neg": int((y == 0).sum())}
 
 
+# TIGHTENED 2026-08-16. The first version passed a concept whenever its CI excluded chance.
+# At n=2636 cycles that admits AUROC 0.52 -- statistically significant, practically useless. The
+# first real run duly "passed" with crackle 0.5506 / wheeze 0.5729 while the crackle detector was
+# firing on 100% of cycles. A gate that cannot fail is not a gate.
+MIN_AUROC = 0.65
+
 VALIDATABLE = [(k, v) for k, (s, v) in CONCEPT_VALIDATION.items() if s == "validatable"]
 TARGETS = {"crackle_score": "crackle", "wheeze_score": "wheeze"}
 
 G2 = {}
-for split in ("test", "train"):
+# TRAIN FIRST, deliberately. If an extractor needs work, diagnose it on train and leave the test
+# split untouched -- tuning against the number the gate reads is fitting the gate, not passing it.
+for split in ("train", "test"):
+    if split == "test":
+        print("\n" + "!" * 74)
+        print("TEST SPLIT BELOW — treat this as your ONE look.")
+        print("If you change the extractors after seeing these numbers and re-read them, the")
+        print("gate no longer means anything. Diagnose on TRAIN, change, then look here once.")
+        print("!" * 74)
     sub = df[df.split == split]
     print(f"\n{'=' * 74}\n{split.upper()} SPLIT  (n={len(sub)} cycles)\n{'=' * 74}")
     for concept, target in TARGETS.items():
         r = auroc_ci(sub[target].values, sub[concept].values)
         if r is None:
             continue
-        mark = "PASS" if r["excludes_chance"] and r["auroc"] > 0.5 else "FAIL"
+        mark = "PASS" if r["excludes_chance"] and r["auroc"] >= MIN_AUROC else "FAIL"
         print(f"  {concept:<16} vs ICBHI '{target}'   AUROC {r['auroc']:.4f}  "
               f"95% CI [{r['ci_lo']:.4f}, {r['ci_hi']:.4f}]   "
               f"n+={r['n_pos']} n-={r['n_neg']}   [{mark}]")
+        ap = auprc(sub[target].values, sub[concept].values)
+        prev = float(sub[target].mean())
+        print(f"  {'':<16}    AUPRC {ap:.4f}  (chance = prevalence {prev:.4f})")
         if split == "test":
-            G2[concept] = {**r, "target": target,
-                           "passes": bool(r["excludes_chance"] and r["auroc"] > 0.5)}
+            G2[concept] = {**r, "target": target, "auprc": ap, "prevalence": prev,
+                           "auprc_lift_over_prevalence": round(ap - prev, 4),
+                           "min_auroc_required": MIN_AUROC,
+                           "passes": bool(r["excludes_chance"] and r["auroc"] >= MIN_AUROC)}
 ''')
 
 code(r'''
@@ -573,9 +605,13 @@ n_pass = sum(1 for v in G2.values() if v["passes"])
 print("=" * 74)
 print("GATE G2 — CONCEPT-EXTRACTOR VALIDITY")
 print("=" * 74)
-print('Rule: a concept passes if its 95% CI excludes chance on the TEST split.\n')
+print(f'Rule: AUROC >= {MIN_AUROC} AND its 95% CI excludes chance, on the TEST split.')
+print('Both conditions are required: at this sample size a CI can exclude chance at AUROC 0.52,')
+print('which is significant but useless. AUPRC is shown against its own chance baseline (the')
+print('positive prevalence), since the classes are imbalanced.\n')
 for c, v in G2.items():
-    print(f"  {c:<16} AUROC {v['auroc']:.4f}  [{v['ci_lo']:.4f}, {v['ci_hi']:.4f}]  "
+    print(f"  {c:<16} AUROC {v['auroc']:.4f} [{v['ci_lo']:.4f}, {v['ci_hi']:.4f}]  "
+          f"AUPRC {v['auprc']:.4f} (chance {v['prevalence']:.3f})  "
           f"{'PASS' if v['passes'] else 'FAIL'}")
 
 print("-" * 74)
@@ -597,6 +633,23 @@ else:
     print("  (physics-fragility + honest operating point + optional FM probing), which does not")
     print("  depend on clean concepts. This is a graceful degradation, not a dead end.")
 print("=" * 74)
+
+print("\n" + "-" * 74)
+print("HUMAN BENCHMARK -- read the numbers above against these")
+print("-" * 74)
+print("  7 senior physicians, blind, on clean ICBHI audio (Tzeng et al., JMIR AI 2025):")
+print("      ICBHI score 47.77%   sensitivity 23.23%   mean confidence 2.88/5")
+print("  12 physicians, DETAILED adventitious-sound descriptions (Aviles-Solis 2016):")
+print("      kappa < 0.40 (poor-to-fair)")
+print("      ... same study, COMBINED categories: crackles 0.62, wheezes 0.59")
+print()
+print("  So the ceiling here is set substantially by LABEL RELIABILITY, not only by detector")
+print("  quality -- seven senior physicians miss ~77% of the cycles ICBHI marks abnormal.")
+print("  crackle_fine_ratio targets a distinction humans agree on at kappa < 0.40, which is why")
+print("  it stays a proxy permanently. See Papers/HUMAN_BENCHMARKS.md.")
+print()
+print("  This is CONTEXT, NOT AN EXCUSE. A weak detector is still weak. Report both numbers")
+print("  together; never cite the human benchmark alone as cover for a failing gate.")
 
 print("\nNOTE ON THE OTHER 7 CONCEPTS")
 print("-" * 74)
@@ -770,7 +823,10 @@ results = {
     "best_metrics": {
         "gate_g2": {
             "verdict": VERDICT,
-            "rule": "a concept passes if its 95% DeLong CI excludes chance on the test split",
+            "rule": (f"AUROC >= {MIN_AUROC} AND 95% DeLong CI excludes chance, on the test "
+                     f"split. The AUROC floor is required because at n~2600 a CI can exclude "
+                     f"chance at AUROC 0.52 -- significant but practically useless."),
+            "min_auroc_required": MIN_AUROC,
             "n_validatable": len(G2), "n_passing": int(n_pass),
             "per_concept": G2,
         },
@@ -778,6 +834,23 @@ results = {
         "concept_summary_test": {
             c: {"mean": round(float(te[c].mean()), 4), "std": round(float(te[c].std()), 4),
                 "median": round(float(te[c].median()), 4)} for c in CONCEPT_NAMES},
+        "human_benchmark_context": {
+            "note": ("Interpret the G2 AUROCs against human performance on the same task, not "
+                     "against 1.0. This is context for the reader, not a pass condition."),
+            "reference_physicians_vs_icbhi": {
+                "source": "Tzeng et al., JMIR AI 2025;4:e67239, Table 4 (7 senior physicians, "
+                          "blind, clean ICBHI audio)",
+                "icbhi_score": 0.4777, "sensitivity": 0.2323, "specificity": 0.7232,
+                "accuracy": 0.4940, "mean_confidence_1_to_5": 2.88},
+            "reference_physician_interobserver": {
+                "source": "Aviles-Solis et al. 2016, PMID 27158515 (12 physicians, 20 ERS "
+                          "recordings)",
+                "kappa_detailed_descriptions": "<0.40 (poor to fair)",
+                "kappa_combined_crackles": 0.62, "kappa_combined_wheezes": 0.59,
+                "implication": ("crackle_fine_ratio targets a distinction physicians agree on at "
+                                "kappa < 0.40, so it stays a proxy permanently regardless of how "
+                                "the extractor performs.")},
+        },
         "unvalidated_proxy_warning": (
             "crackle_fine_ratio, crackle_rate_hz, wheeze_pitch_hz, rhonchi_score and "
             "inspiratory_fraction have NO ground truth in ICBHI. Any paper text must name them as "

@@ -141,6 +141,66 @@ Write it in this tone — short, concrete, no ML vocabulary:
 
 ---
 
+## Part 3b — How to deliver it: xlsx, Google Sheets, or both
+
+Three routes. Pick on how your physician actually likes to work — they all produce the same columns
+and are equally analysable.
+
+| Route | Good for | Trade-off |
+|---|---|---|
+| **`labels.xlsx`** *(shipped by default)* | Works offline, no account, dropdowns locked | They must email the file back; risk of "I lost my edits" |
+| **Google Sheets** ⭐ | Autosaves, no file to return, works on phone/tablet, you can watch progress | Needs a Google account and a network connection |
+| **`labels.csv`** | Universal fallback | No dropdowns — free-typed answers arrive as `Fine`/`FINE`/`fine ` |
+
+**Recommended for a family member: Google Sheets.** It removes the two things that actually go
+wrong — lost work and a file that never comes back — and lets you see whether they have started
+without having to ask.
+
+### Setting up the Sheets route (about 2 minutes)
+
+1. Upload `labels.xlsx` to Google Drive.
+2. Right-click → **Open with → Google Sheets**. The dropdowns carry over as data validation, so
+   they still cannot type a wrong answer.
+3. **Share → give them Editor access.** Send the link.
+4. Send the clips separately (the zip, or a Drive folder).
+5. When they finish: **File → Download → CSV**, and analyse exactly as you would the returned file.
+
+> **Keep the clips as local files even on the Sheets route.** Browser audio preview is fine for
+> speech but poor for scrubbing and repeat-listening, and these are 5–15 ms events. Ask them to
+> download and unzip the clips folder and play from a real media player, with the Sheet open in a
+> browser tab beside it.
+
+> **Whichever route you pick, `clip_key.csv` never goes near it.** Not in the Drive folder, not in
+> the Sheet, not as a second tab. It holds the answer for every clip, and a rating made with the
+> answer visible validates nothing.
+
+---
+
+## ⚠️ Sanity anchors — set expectations BEFORE the labels arrive
+
+Added 2026-08-16 from `Papers/HUMAN_BENCHMARKS.md`. Decide now what counts as a good outcome, so
+the result is not judged against an imaginary standard afterwards.
+
+| Measurement | Expected, per published data | Source |
+|---|---|---|
+| Clinician agreement with **ICBHI labels** | around **~49%** accuracy | 7 senior physicians on ICBHI (Tzeng, *JMIR AI* 2025) |
+| Agreement on **crackle/wheeze presence** | κ ≈ **0.6** is the realistic best case | 12 physicians (Aviles-Solis 2016) |
+| Agreement on **fine vs. coarse crackle** | **κ < 0.40** — poor to fair | same study, detailed descriptions |
+
+**Landing near these is success, not failure.** In particular:
+
+* If our clinician agrees with ICBHI on only about half the clips, that matches what seven senior
+  physicians did on this exact corpus. It is a finding about the benchmark, not about them.
+* If their fine/coarse answers disagree with themselves on the duplicate clips, that matches
+  κ < 0.40 in the literature. It confirms fine/coarse should stay a proxy permanently — which is a
+  reportable result, not a wasted exercise.
+
+**What this changes about the ask:** our pack ships six calibration exemplars; the JMIR study does
+not report giving its physicians any. So expect our numbers to be *no worse* than theirs, and
+mention the calibration step when writing it up — it is a genuine methodological difference.
+
+---
+
 ## Part 4 — What you do with it
 
 1. **Intra-rater check first.** Compare the 12 duplicate pairs. If they disagree with themselves on
