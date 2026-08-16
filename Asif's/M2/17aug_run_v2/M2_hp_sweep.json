@@ -1,0 +1,115 @@
+{
+  "results": [
+    {
+      "config": {
+        "depth": 4,
+        "base_width": 32,
+        "dropout": 0.3,
+        "lr": 0.001,
+        "scheduler": "cosine"
+      },
+      "fold_scores": [
+        0.6998,
+        0.6533,
+        0.6581
+      ],
+      "mean_icbhi": 0.6704,
+      "std_icbhi": 0.0209,
+      "total_params": 421732
+    },
+    {
+      "config": {
+        "depth": 4,
+        "base_width": 48,
+        "dropout": 0.5,
+        "lr": 0.0005,
+        "scheduler": "cosine"
+      },
+      "fold_scores": [
+        0.6858,
+        0.6673,
+        0.657
+      ],
+      "mean_icbhi": 0.67,
+      "std_icbhi": 0.0119,
+      "total_params": 922580
+    },
+    {
+      "config": {
+        "depth": 5,
+        "base_width": 48,
+        "dropout": 0.4,
+        "lr": 0.0005,
+        "scheduler": "cosine"
+      },
+      "fold_scores": [
+        0.6848,
+        0.6571,
+        0.6649
+      ],
+      "mean_icbhi": 0.6689,
+      "std_icbhi": 0.0117,
+      "total_params": 3627476
+    },
+    {
+      "config": {
+        "depth": 4,
+        "base_width": 32,
+        "dropout": 0.5,
+        "lr": 0.003,
+        "scheduler": "cosine"
+      },
+      "fold_scores": [
+        0.6709,
+        0.6601,
+        0.6662
+      ],
+      "mean_icbhi": 0.6657,
+      "std_icbhi": 0.0044,
+      "total_params": 421732
+    },
+    {
+      "config": {
+        "depth": 5,
+        "base_width": 32,
+        "dropout": 0.5,
+        "lr": 0.001,
+        "scheduler": "cosine"
+      },
+      "fold_scores": [
+        0.6583,
+        0.6661,
+        0.6592
+      ],
+      "mean_icbhi": 0.6612,
+      "std_icbhi": 0.0035,
+      "total_params": 1635172
+    },
+    {
+      "config": {
+        "depth": 4,
+        "base_width": 32,
+        "dropout": 0.5,
+        "lr": 0.001,
+        "scheduler": "step"
+      },
+      "fold_scores": [
+        0.6208,
+        0.6548,
+        0.6144
+      ],
+      "mean_icbhi": 0.63,
+      "std_icbhi": 0.0177,
+      "total_params": 421732
+    }
+  ],
+  "best_config": {
+    "depth": 4,
+    "base_width": 32,
+    "dropout": 0.3,
+    "lr": 0.001,
+    "scheduler": "cosine"
+  },
+  "sweep_epochs": 12,
+  "n_folds": 3
+}
