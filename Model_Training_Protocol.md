@@ -4,7 +4,7 @@
 >
 > **What this is NOT:** A rigid step-by-step script, and not a role assignment. You have freedom in how you structure your code, which libraries you use, and how you organize your workflow — as long as the outputs match. This document was restructured on 2026-08-05 to drop the old per-member (A/B/C/D) framing; the historical role-based version is in `Archive_Work_Plan/Model_Training_Protocol_ARCHIVED.md` if you need it.
 >
-> **Novelty comes first now — but only 2–3 items, deliberately.** Dr. Khan's 2026 guidance is explicit: the project is not graded on how many models get trained, and a basic classification pipeline isn't enough on its own. Before starting any new model run, check `Novelty Search.md` — it's the highest-priority document in this repo. A run that doesn't trace back to either (a) the core mechanism actually working on real data, or (b) one of the **selected** novelty items in `Novelty Search.md` §4.0, is probably not worth the compute.
+> **Novelty comes first now — but only 2–3 items, deliberately.** Dr. Khan's 2026 guidance is explicit: the project is not graded on how many models get trained, and a basic classification pipeline isn't enough on its own. Before starting any new model run, check `Novelty Search.md` (moved -> `Archive_Files (v2)/Novelty Search v2.md`) — it's the highest-priority document in this repo. A run that doesn't trace back to either (a) the core mechanism actually working on real data, or (b) one of the **selected** novelty items in `Novelty Search.md` §4.0, is probably not worth the compute.
 >
 > **Do not make this project buzzword-heavy.** The supervisor's novelty list is a menu, not a checklist. Implementing all of it would mean nine simultaneous changes on one dataset with 19 unknown patients — unablatable, undefendable, and read by reviewers as a technique list rather than a contribution. The selected set is fixed at 2–3 items (§4.0 of `Novelty Search.md`); if something new looks compelling, it **replaces** a selected item rather than joining it.
 
@@ -17,9 +17,9 @@
 > **The current direction is a shared engine with one data-driven fork:** a **physics-grounded, label-free acoustic concept bottleneck** (clinically-named concepts — fine/coarse crackle, wheeze pitch band, inspiratory phase, rhonchi, spectral flatness, PAPR — computed by DSP, *not* human-labeled), used either as (**Path A**) an interpretable, clinician-correctable diagnosis, or (**Path B**) a faithfulness/robustness audit ("do the models actually listen to the clinical sounds?"). Which headline is chosen is decided by *data* at a mid-project gate (**G3**), not up front.
 >
 > **Current source-of-truth documents** (read alongside `Novelty Search.md`):
-> - `OWMTL_Merged_Decision_Roadmap.md` — the gated roadmap (G0–G7).
-> - `OWMTL_Build_Sheet.md` — the week-by-week build plan and which existing model feeds each step.
-> - `OWMTL_Novelty_Gap_Analysis.md` — the gap analysis + 2026 cross-check.
+> - `OWMTL_Merged_Decision_Roadmap.md` (moved -> `OWMTL_Decision_Roadmap (v3).md`) — the gated roadmap (G0–G7).
+> - `OWMTL_Build_Sheet.md` (moved -> `Archive_Files (v3)/OWMTL_Build_Plan (v3).md` (moved -> `Archive_Files (v3)/OWMTL_Build_Plan (v3).md`)) — the week-by-week build plan and which existing model feeds each step.
+> - `OWMTL_Novelty_Gap_Analysis.md` (moved -> `Archive_Files (v3)/OWMTL_Novelty_Gap_Analysis (before v3).md`) — the gap analysis + 2026 cross-check.
 >
 > **What this changes below:** three reporting rules are now **hard** (official split + official metric only, commit the confusion matrix for *every* model, CIs + a paired test on *every* headline comparison — §1). New model types (concept bottleneck, leakage, intervention, concept-space OOD, foundation-model probing) get required metrics (§3.5), ablation groups, and component flags (§4.1). The cross-task mechanism is **not deleted** — it survives as **one scored baseline detector**, not the contribution.
 
@@ -30,6 +30,27 @@
 These are the only hard requirements. Everything else in this doc is guidance.
 
 1. **Patient-independent splits.** No patient's cycles in both train and test. This is a research validity requirement, not a style choice.
+
+   > **⚠️ The official ICBHI split does not satisfy this.** `ICBHI_challenge_train_test.txt`
+   > (committed at `Asif's/ICBHI_challenge_train_test.txt`) assigns **recordings**, not patients —
+   > and patients **156** and **218** have recordings on *both* sides. So "use the official split"
+   > and "be patient-independent" cannot both be satisfied verbatim.
+   >
+   > **Project policy:** use the official split with every recording of a leaking patient
+   > reassigned to **train** (conservative — the test set then contains no patient seen during
+   > training). Cost: 12 of 381 test recordings (3.1%). Result: **551 train / 369 test = 59.9/40.1**,
+   > which is closer to a nominal 60/40 than the published split itself.
+   >
+   > Call it `official_60_40_patient_independent_corrected`, **never** plain "official 60/40" —
+   > it is the official split *corrected*, and conflating the two is what this rule exists to stop.
+   > `Asif's/audit/official_split.py` implements and audits both modes; run it standalone to see
+   > the numbers.
+   >
+   > **Historical note:** M2/M3/M12/M22 were all labelled `patient_independent_official_60_40` but
+   > actually ran a fallback rule (`patient_id <= 111 -> test`) giving 11 test patients and 7.1% of
+   > cycles, because the split file was absent from the runtime and the fallback was silent. Their
+   > labels are now corrected in-place. **Any notebook that cannot find the split file must raise,
+   > not fall back.**
 2. **Real data only.** Every `results_M*.json` must come from a run that actually loaded ICBHI audio (or Coswara/SPRSound for OOD runs) — never from a `torch.randn`/`np.random` placeholder Dataset. The audit tool (`Asif's/audit/audit_project.py`) checks for this automatically; a run it flags `synthetic_data_not_real_dataset` is not a result and cannot be reported.
 3. **Save checkpoints every epoch** so Kaggle/Colab disconnects don't lose progress (see §11 for PyTorch 2.6+ checkpoint rules and Kaggle persistence protocol).
 4. **Produce a structured results JSON** per model (schema in §4) — this is what makes the final merge work.

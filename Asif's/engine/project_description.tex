@@ -1,0 +1,76 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=0.85in,top=0.6in,bottom=0.6in]{geometry}
+\usepackage{newtxtext,newtxmath}
+\usepackage[T1]{fontenc}
+\usepackage{enumitem}
+\usepackage{parskip}
+\usepackage{titlesec}
+\usepackage[hidelinks]{hyperref}
+
+\setlength{\parskip}{4pt}
+\titlespacing*{\section}{0pt}{9pt}{3pt}
+\titleformat{\section}{\large\bfseries}{\thesection}{0.6em}{}
+\setlist[itemize]{leftmargin=1.6em, itemsep=2pt, topsep=2pt}
+
+\pagenumbering{gobble}
+
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries Interpretable Respiratory Sound Analysis}\\[2pt]
+{\normalsize Project Background}
+\end{center}
+
+\vspace{2pt}
+\noindent This note explains what the project is, where the recordings come from, and why your
+listening judgment is genuinely useful to it.
+
+\section*{What the project is}
+Most machine learning models for detecting disease from lung sounds work as a black box: audio
+goes in, a diagnosis comes out, and there is no way for a clinician to see or correct the
+reasoning in between. This project builds a diagnosis pipeline that instead routes every decision
+through a small set of \textbf{named acoustic concepts} --- crackle, wheeze, and related
+adventitious sounds --- computed directly from the audio signal using established signal-processing
+methods, not learned from opaque features. The disease prediction is only allowed to depend on
+these concept values, so a clinician can, in principle, inspect which sounds the model believed it
+heard, and correct one if it is wrong.
+
+The immediate technical question is simpler than that final goal: \textbf{do the automated
+concept detectors actually measure what they claim to measure?} A detector labeled ``crackle''
+is only useful if it responds to crackles specifically, not to breath sounds in general. That is
+what this listening task is designed to check.
+
+\section*{The dataset}
+The audio comes from the \textbf{ICBHI 2017 Respiratory Sound Database}, a public research corpus
+of 920 recordings from 126 patients, collected with digital stethoscopes across multiple clinical
+sites. Each recording is segmented into individual respiratory cycles, and each cycle is already
+labeled by the dataset's original creators for the \emph{presence} of crackles and wheezes --- but
+not for finer distinctions such as fine versus coarse crackle, or wheeze pitch. All recordings are
+anonymized archival research data; there is no patient-identifying information, clinical history,
+or imaging attached to any clip.
+
+\section*{Why we need your review}
+The dataset's own labels only go so far: they say whether a crackle is present, not what kind. Our
+automated detectors compute several finer-grained acoustic properties, but without an independent
+human judgment there is no way to know whether those finer measurements are trustworthy. Your
+listening task provides exactly that independent check --- a blind, expert judgment on a sample of
+clips, made without seeing what our detectors concluded, so that your answers can be compared
+fairly against both the automated output and the dataset's own labels. This also lets us tell
+apart two different explanations for any disagreement we see: that our detectors need work, or
+that the dataset's original labels are themselves imperfect --- both are useful things to know, and
+both are publishable findings in their own right.
+
+\section*{Publication scope}
+This work is being carried out as a university machine learning research project, with the
+explicit goal of submitting the results to a peer-reviewed biomedical engineering journal. Your
+listening judgments, if used, would be described in the resulting paper as an expert validation
+step, and you would be acknowledged by name (with your permission) as the clinician who performed
+it. No patient data, institutional affiliation, or clinical opinion beyond your acoustic
+judgments on these anonymized clips would be attributed to you.
+
+\vspace{6pt}
+\noindent Thank you again for lending your expertise to this --- it directly strengthens the
+scientific credibility of the project.
+
+\end{document}

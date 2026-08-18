@@ -35,7 +35,7 @@ ICBHI's real known-vs-pooled-unknown split. No training — the backbone is froz
 
 ## Why this, why now
 
-[`Novelty Search.md`](../../Novelty%20Search.md) §2 **Attack 1** is the harshest
+[`Novelty Search.md`](../../Archive_Files%20(v2)/Novelty%20Search%20v2.md) *(archived)* §2 **Attack 1** is the harshest
 plausible review of this project, and it names the exact mitigation:
 
 > *"The paper does not show that this signal is better than simpler baselines (max-softmax score,

@@ -1,0 +1,185 @@
+{
+  "meta": {
+    "model_id": "M39",
+    "model_name": "Physics-Derived Acoustic Concept Extraction & Validation (Gate G2)",
+    "contributor": "Asif",
+    "date_completed": "2026-08-16",
+    "is_augmented": false,
+    "augmentation_method": "none",
+    "notes": "Gate G2 evidence for the concept-bottleneck direction. Computes 9 physics-derived acoustic concepts per ICBHI cycle by DSP (no model, no training, no labels) and validates the two that ICBHI can validate. Lineage: refactors M35's VectorizedAcousticPhysicsLoss (spectral flatness, temporal PAPR) from a training regulariser on log-mels into standalone per-cycle measurements on the RAW WAVEFORM, and adds 7 more concepts. M35's reported number is not reused (70/30 split, legacy metric). IMPORTANT: only crackle_score and wheeze_score are validatable -- ICBHI labels crackle/wheeze PRESENCE only. The other 7 are proxies with no ground truth and are reported descriptively. Do not name a proxy after the clinical entity it proxies; promoting them requires the clinician exercise in CLINICIAN_LABELING_PACK.md (G0). Concepts are computed on each cycle's TRUE duration, never tiled to 8 s -- tiling would repeat crackles and fabricate crackle_rate_hz."
+  },
+  "config": {
+    "model_id": "M39",
+    "contributor": "Asif",
+    "sample_rate": 16000,
+    "min_cycle_s": 0.15,
+    "seed": 42,
+    "data_root": "/content/Respiratory_Sound_Database/Respiratory_Sound_Database/audio_and_txt_files",
+    "split_file": "/content/ICBHI_challenge_train_test.txt"
+  },
+  "environment": {
+    "platform": "Google Colab",
+    "python_version": "3.12.13",
+    "numpy_version": "2.0.2"
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "data_source": "real_audio",
+    "unit": "respiratory_cycle",
+    "total_cycles": 6887,
+    "train_cycles": 4251,
+    "test_cycles": 2636,
+    "train_patients": 79,
+    "test_patients": 47,
+    "split_method": "official_60_40_patient_independent_corrected",
+    "split_source": "official_file_patient_independent",
+    "split_details": {
+      "leaking_patients": [
+        156,
+        218
+      ],
+      "test_recordings_official": 381,
+      "test_recordings_used": 369
+    },
+    "patient_leakage_verified": true,
+    "cycles_skipped_too_short": 0
+  },
+  "efficiency": {
+    "total_params": 0,
+    "trainable_params": 0,
+    "model_size_mb": 0.0,
+    "training_time_total_s": 0,
+    "extraction_time_total_s": 384.5,
+    "extraction_ms_per_cycle": 55.834,
+    "gpu_name": "none (pure DSP)",
+    "inference_time_ms_per_sample": 55.834,
+    "note": "No model. Cost is DSP over the raw waveform."
+  },
+  "best_epoch": {
+    "epoch": null,
+    "primary_metric": "concept_validation_auroc",
+    "primary_metric_value": 0.5729
+  },
+  "best_metrics": {
+    "gate_g2": {
+      "verdict": "PASS",
+      "rule": "a concept passes if its 95% DeLong CI excludes chance on the test split",
+      "n_validatable": 2,
+      "n_passing": 2,
+      "per_concept": {
+        "crackle_score": {
+          "auroc": 0.5505596810358975,
+          "se": 0.01251327777132238,
+          "ci_lo": 0.52603410727556,
+          "ci_hi": 0.575085254796235,
+          "excludes_chance": true,
+          "n_pos": 703,
+          "n_neg": 1933,
+          "target": "crackle",
+          "passes": true
+        },
+        "wheeze_score": {
+          "auroc": 0.5728816714252689,
+          "se": 0.013622322348509287,
+          "ci_lo": 0.5461824102363956,
+          "ci_hi": 0.5995809326141422,
+          "excludes_chance": true,
+          "n_pos": 459,
+          "n_neg": 2177,
+          "target": "wheeze",
+          "passes": true
+        }
+      }
+    },
+    "concept_validation_status": {
+      "crackle_score": "validatable",
+      "wheeze_score": "validatable",
+      "crackle_fine_ratio": "proxy",
+      "crackle_rate_hz": "proxy",
+      "wheeze_pitch_hz": "proxy",
+      "rhonchi_score": "proxy",
+      "inspiratory_fraction": "proxy",
+      "spectral_flatness": "descriptive",
+      "temporal_papr": "descriptive"
+    },
+    "concept_summary_test": {
+      "crackle_score": {
+        "mean": 0.7478,
+        "std": 0.1867,
+        "median": 0.7435
+      },
+      "wheeze_score": {
+        "mean": 0.0602,
+        "std": 0.1074,
+        "median": 0.0
+      },
+      "crackle_fine_ratio": {
+        "mean": 0.0247,
+        "std": 0.0787,
+        "median": 0.0
+      },
+      "crackle_rate_hz": {
+        "mean": 10.1587,
+        "std": 4.8954,
+        "median": 9.8299
+      },
+      "wheeze_pitch_hz": {
+        "mean": 55.8742,
+        "std": 78.1276,
+        "median": 0.0
+      },
+      "rhonchi_score": {
+        "mean": 0.0648,
+        "std": 0.1236,
+        "median": 0.0
+      },
+      "inspiratory_fraction": {
+        "mean": 0.506,
+        "std": 0.1567,
+        "median": 0.5178
+      },
+      "spectral_flatness": {
+        "mean": 0.0656,
+        "std": 0.0444,
+        "median": 0.0549
+      },
+      "temporal_papr": {
+        "mean": 23.6807,
+        "std": 22.4223,
+        "median": 16.6053
+      }
+    },
+    "unvalidated_proxy_warning": "crackle_fine_ratio, crackle_rate_hz, wheeze_pitch_hz, rhonchi_score and inspiratory_fraction have NO ground truth in ICBHI. Any paper text must name them as physics-derived proxies, not as the clinical entities."
+  },
+  "ablation": {
+    "ablation_group": "concept_extraction",
+    "ablation_role": "baseline",
+    "baseline_model_id": null,
+    "variable_changed": "physics-derived DSP concepts computed per cycle (no model)",
+    "variables_held_constant": [
+      "data_split: official_60_40_patient_independent_corrected",
+      "sample_rate: 16000",
+      "seed: 42"
+    ],
+    "known_deviations": [
+      "Concepts use each cycle's true duration, not the shared 8 s tiled clip, because tiling repeats transients and fabricates crackle_rate_hz.",
+      "Computed from the raw waveform rather than the shared 128-mel spectrogram: at hop_length=160 (10 ms) a mel frame cannot resolve a 5 ms crackle."
+    ],
+    "component_flags": {
+      "has_sound_event_head": false,
+      "has_disease_head": false,
+      "has_cross_task_consistency": false,
+      "has_cqkd_regularization": false,
+      "has_openmax_rejection": false,
+      "owl_stage": 0,
+      "compression_clusters": null
+    },
+    "loss_weights": {
+      "sound_event_weight": null,
+      "disease_weight": null,
+      "consistency_weight": null
+    }
+  },
+  "training_history": [],
+  "raw_scores_file": "scores_M39.csv"
+}

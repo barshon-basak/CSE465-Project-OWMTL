@@ -44,9 +44,12 @@
     "test_samples": 492,
     "train_patients": 115,
     "test_patients": 11,
-    "split_method": "patient_independent_official_60_40",
+    "split_method": "patient_independent_60_40_patient_id_fallback",
     "patient_leakage_verified": true,
-    "hp_selection_split": "GroupKFold(n_splits=3) on train patients only"
+    "hp_selection_split": "GroupKFold(n_splits=3) on train patients only",
+    "split_source": "patient_id_fallback",
+    "split_method_correction_note": "CORRECTED 2026-08-14. This was labelled 'patient_independent_official_60_40', but the run did not use the ICBHI 2017 challenge split file. It used the notebook's documented fallback rule (patient_id <= 111 -> test), which yields 11 test patients and 492 of 6898 cycles (7.1%). The official 60/40 split puts ~40% of the data in test. The split IS patient-independent and IS valid for internal comparisons across M2/M3/M22/M30v2 (all use the identical 492 cycles), but results on it are NOT comparable to published ICBHI work, and 11 test patients gives very wide confidence intervals. Detected because M30 v2 records split_source explicitly; see Asif's/M30_v2/results_M30.json.",
+    "test_fraction_of_cycles": 0.0713
   },
   "efficiency": {
     "total_params": 3627476,

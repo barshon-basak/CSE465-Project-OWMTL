@@ -96,7 +96,7 @@ clears **AUROC 0.6466**, comfortably beating M6's 0.4516 and landing just short 
 
 1. **This is now the real bar for M15.** Once M15 is rebuilt on real data, "beats M6" is a low bar
    already cleared by a zero-training baseline. The paper's novelty claim needs to clear **0.6466**,
-   not 0.4516 — this is exactly the mitigation `Novelty Search.md` §2 (Attack 1) demands.
+   not 0.4516 — this is exactly the mitigation `Novelty Search.md` (moved -> `../../Archive_Files (v2)/Novelty Search v2.md`) §2 (Attack 1) demands.
 2. **Unknown detection is not hopeless on this backbone.** With n=19 unknown patients the interval
    on 0.6466 is wide, but "everything is at chance" is no longer the working hypothesis — a signal
    exists in the embeddings; the open question is whether cross-task disagreement adds anything on

@@ -284,9 +284,17 @@ M3_CKPT = find_first([
     "/kaggle/input/**/m3*/best_model.pth", "./**/M3/best_model.pth",
 ])
 
-print(f"DATA_ROOT : {DATA_ROOT}")
-print(f"M2_CKPT   : {M2_CKPT}")
-print(f"M3_CKPT   : {M3_CKPT}")
+SPLIT_FILE = find_first([
+    "/content/ICBHI_challenge_train_test.txt",
+    "/content/**/ICBHI_challenge_train_test.txt",
+    "/kaggle/input/**/ICBHI_challenge_train_test.txt",
+    "./**/ICBHI_challenge_train_test.txt",
+])
+
+print(f"DATA_ROOT  : {DATA_ROOT}")
+print(f"M2_CKPT    : {M2_CKPT}")
+print(f"M3_CKPT    : {M3_CKPT}")
+print(f"SPLIT_FILE : {SPLIT_FILE}")
 
 missing = [n for n, v in (("ICBHI audio", DATA_ROOT), ("M2 checkpoint", M2_CKPT),
                           ("M3 checkpoint", M3_CKPT)) if not v]
@@ -314,6 +322,7 @@ CFG = {
     "seed": 42,
 
     "data_root": DATA_ROOT, "m2_ckpt": M2_CKPT, "m3_ckpt": M3_CKPT,
+    "split_file": SPLIT_FILE,
     "ckpt_dir": CKPT_DIR, "results_dir": RESULTS_DIR,
     "model_id": "M30", "contributor": "Asif",
 

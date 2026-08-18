@@ -32,7 +32,7 @@ citation, including ones in this file. The team has already been burned once by 
 document that contradicted its own data — so ground claims in the files, not memory.
 
 **3. Always keep looking for novelty — but depth over breadth.** Check work against
-[`Novelty Search.md`](../Novelty%20Search.md) — the single active reference (the old v1/v2/v3 files
+[`Novelty Search.md`](../Archive_Files%20(v2)/Novelty%20Search%20v2.md) *(archived — moved to `Archive_Files (v2)/`)* — the single active reference (the old v1/v2/v3 files
 are consolidated into it; full literature search archived in `Archive_Work_Plan/`).
 
 **The project deliberately implements only 2–3 novelty items, not Dr. Khan's whole list.** See
@@ -88,6 +88,7 @@ novelty claim has to beat **0.6466**, not 0.4516. Full numbers in `Asif's/M29/RE
 | M22 — M3 + SpecAugment | **official** ICBHI / Acc / F1 | **0.6495** / 0.6524 / 0.5253 | 2.2 M | 8.7 MB |
 | M12 — backbone decision | selects **M2** | | | |
 | M29 — open-set baselines on M12 | best AUROC (Energy) | **0.6466** | 3.6 M (frozen, M2's) | — |
+| M30 v2 — M2+M3 gated fusion | **official** ICBHI | **0.5975** — ❌ loses to M2 alone (0.6098) | 8.0 M | — |
 
 **⚠️ ICBHI metric:** always report `icbhi_score_official` (the ICBHI 2017 challenge metric), never
 the project's legacy `icbhi_score` macro variant — the latter runs ~0.11 higher and is not

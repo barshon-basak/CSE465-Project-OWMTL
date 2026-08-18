@@ -1,0 +1,106 @@
+\documentclass[11pt]{article}
+
+% ---- Times New Roman look, standard margins, single column (article default) ----
+% Tightened deliberately to fit on ONE page -- an instruction sheet a clinician skims should not
+% spill to a second page with a few lines on it.
+\usepackage[margin=0.85in,top=0.55in,bottom=0.55in]{geometry}
+\usepackage{newtxtext,newtxmath}   % Times New Roman-equivalent text + math
+\usepackage[T1]{fontenc}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{parskip}
+\usepackage{titlesec}
+\usepackage[hidelinks]{hyperref}
+
+\setlength{\parskip}{3pt}
+\titlespacing*{\section}{0pt}{7pt}{3pt}
+\titleformat{\section}{\large\bfseries}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.6em}{}
+\titlespacing*{\subsection}{0pt}{6pt}{2pt}
+\setlist[enumerate]{leftmargin=1.6em, itemsep=1pt, topsep=1pt}
+\setlist[itemize]{leftmargin=1.6em, itemsep=1pt, topsep=1pt}
+
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+\pagenumbering{gobble}
+
+\begin{document}
+
+\begin{center}
+{\Large\bfseries Respiratory Sound Listening Task}\\[2pt]
+{\normalsize Instructions}
+\end{center}
+
+\vspace{2pt}
+\noindent Thank you for helping with this. It should take about \textbf{75 minutes}, and you can
+stop and resume at any time --- nothing needs to be finished in one sitting.
+
+\section*{Setup (2 minutes)}
+\begin{enumerate}
+  \item Use \textbf{headphones or earbuds}, not laptop speakers --- the sounds we are asking about
+        are quiet and very brief, and laptop speakers cannot reproduce them clearly.
+  \item Sit somewhere quiet. Set a comfortable volume using
+        \texttt{reference\_sounds/example\_normal.wav}, then \textbf{do not change the volume}
+        afterward --- every clip is recorded at the same loudness.
+\end{enumerate}
+
+\section*{Step 1: Calibrate (5 minutes)}
+Listen to every file in the \texttt{reference\_sounds/} folder before labeling anything. These
+examples show what we mean by each term below, so we are both using the same words for the same
+sounds. Return to them at any time during the task if you are unsure.
+
+\emph{Note: these reference examples are drawn from the dataset's own existing labels, not
+selected by a clinician. If one sounds mislabeled to you, please tell us --- that is useful
+information on its own.}
+
+\section*{Step 2: Label the clips (about 70 minutes)}
+
+Open \texttt{labels.xlsx}. Every answer cell is a dropdown menu, so you select an option rather
+than type it.
+
+\begin{enumerate}
+  \item Play \texttt{clips/clip\_001.wav} in any media player (double-clicking usually works).
+  \item Fill in the corresponding row using the dropdown menus. Replay as many times as you like
+        before answering.
+  \item Move to the next clip. \textbf{Please go in order and do not skip ahead.} If a clip is too
+        unclear to judge, choose \texttt{unsure} and move on --- do not guess.
+\end{enumerate}
+
+\subsection*{The columns}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}L{2.7cm}L{5.6cm}L{5.5cm}@{}}
+\toprule
+\textbf{Column} & \textbf{Options} & \textbf{Notes} \\
+\midrule
+\texttt{crackles} & none / fine / coarse / both / unsure & The one we care about most \\
+\texttt{wheeze} & none / wheeze / rhonchi / both / unsure & \\
+\texttt{confidence} & low / medium / high & Please be honest --- low-confidence answers are
+   still useful \\
+\texttt{audio\_quality} & ok / noisy / unusable & Lets us exclude a bad recording rather than
+   blame a good detector for it \\
+\texttt{notes} & free text (optional) & Anything else worth telling us \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent\textbf{Please use \texttt{unsure} freely.} An honest ``unsure'' is far more useful to us
+than a guess. If you mark many clips \texttt{unsure}, that is a genuine and useful finding for
+us --- it will not mean your time was wasted.
+
+\section*{What we are \emph{not} asking}
+You are not diagnosing a patient. There is no clinical history, no imaging, and nothing here
+affects anyone's care. These are anonymous archived research recordings. The only question at any
+point is simply: \emph{what sound do you hear in this clip?}
+
+\section*{When you are finished}
+If you were sent a \textbf{Google Sheets} link, your answers are already saved --- just let us
+know you are done. Otherwise, please email the completed \texttt{labels.xlsx} file back to us.
+
+\vspace{6pt}
+\noindent Thank you again for your time and expertise --- this is genuinely helpful to the
+project.
+
+\end{document}
