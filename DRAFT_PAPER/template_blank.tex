@@ -1,0 +1,247 @@
+%=======================================================================
+% CSE465 Final Report - OWMTL
+% FORMAT SKELETON ONLY. See paper_requirement.md before writing content.
+%
+% Supervisor hard rules (slides 2 and 4 of 4X5_Final_Report_261):
+%   - IEEE single-column journal format is MANDATORY (line below).
+%   - Compile on Overleaf. Submit the Overleaf link with EDIT access.
+%   - Minimum 6 pages.
+%   - LaTeX Error => not allowed. LaTeX Warning => allowed.
+%=======================================================================
+\documentclass[journal,onecolumn]{IEEEtran}
+
+\usepackage{cite}                 % IEEE-style [1], [2]-[4] collapsing
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}  % load last
+
+\graphicspath{{figures/}}
+
+% Placeholder box so the skeleton compiles before real figures exist.
+% DELETE this macro and every \figstub call once figures are dropped in.
+\newcommand{\figstub}[1]{%
+  \fbox{\begin{minipage}[c][4.5cm][c]{0.92\linewidth}\centering\textit{#1}\end{minipage}}}
+
+\begin{document}
+
+%=======================================================================
+\title{TODO: Paper title\\
+{\normalsize\itshape (working title is in PAPER\_OUTLINE.md)}}
+
+\author{Asif~TODO,
+        Barshon~Basak,
+        Farhana~TODO,
+        and~Sami~TODO%
+\thanks{Department of Electrical and Computer Engineering, North South
+University, Dhaka, Bangladesh. Course: CSE465, Section TODO.
+Supervisor: TODO. E-mail: TODO.}}
+
+\maketitle
+
+%=======================================================================
+% ABSTRACT -- 200-300 words. No citations, no abbreviations, no symbols,
+% no equations. Cover: purpose -> dataset -> preprocessing -> models ->
+% results -> ablation/XAI -> conclusion.
+%=======================================================================
+\begin{abstract}
+TODO.
+\end{abstract}
+
+% Keywords: main topics, ALPHABETICAL ORDER.
+\begin{IEEEkeywords}
+TODO, TODO, TODO, TODO, TODO.
+\end{IEEEkeywords}
+
+%=======================================================================
+\section{Introduction}
+\label{sec:intro}
+% P1  -- motivation: why this project was chosen.
+% P2+ -- literature review. At least one paper reviewed per group member
+%        (4 total), journal preferred over conference. Cite as \cite{ref1}.
+% P_n -- END of the review: gaps, limitations, weaknesses of prior work.
+% next 3-4 paragraphs -- YOUR work.
+% Last paragraph -- roadmap of the remaining sections.
+
+TODO: motivation \cite{ref1}.
+
+The remainder of this paper is organised as follows. Section~\ref{sec:proposed}
+describes the proposed system. Section~\ref{sec:results} presents the results
+and discussion. Section~\ref{sec:conclusion} concludes the paper.
+
+%=======================================================================
+\section{Proposed System}
+\label{sec:proposed}
+% NO RESULTS IN THIS SECTION. Methodology only.
+TODO: one-paragraph overview, then the system flowchart.
+
+\begin{figure}[!t]
+\centering
+\figstub{Fig. 1 -- flowchart of the complete system}
+% \includegraphics[width=0.95\linewidth]{system_flowchart.pdf}
+\caption{Flowchart of the complete proposed system.}
+\label{fig:flowchart}
+\end{figure}
+
+The end-to-end pipeline is summarised in Fig.~\ref{fig:flowchart}.
+
+\subsection{Dataset}
+\label{subsec:dataset}
+% Cite the dataset itself.
+TODO: source, size, classes, split policy \cite{ref2}.
+
+\begin{table}[!t]
+\centering
+\caption{Class distribution before and after data augmentation.}
+\label{tab:dataset}
+\begin{tabular}{lrrrr}
+\toprule
+Class & Open-source & Collected & Total & Augmented total \\
+\midrule
+TODO & 0 & 0 & 0 & 0 \\
+TODO & 0 & 0 & 0 & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:dataset} reports the class distribution.
+
+\subsection{Dataset Preprocessing}
+\label{subsec:preprocessing}
+% ALL preprocessing techniques must be applied and described here.
+% Training-set data augmentation belongs here too.
+TODO. Every quantity introduced here gets an equation, e.g.
+
+\begin{equation}
+\label{eq:example}
+x_{\mathrm{norm}} = \frac{x - \mu}{\sigma},
+\end{equation}
+
+\noindent where (\ref{eq:example}) is applied per TODO.
+
+\subsection{Applied Models}
+\label{subsec:models}
+% One pre-trained model per group member (4), PLUS at least 4 transformer
+% models (ViT / Swin / DINO / PVT / CvT / DeiT ...). A custom model or
+% algorithm gets its own figure and/or algorithm block here.
+TODO.
+
+%=======================================================================
+\section{Results and Discussion}
+\label{sec:results}
+% The most important section. Every number lives here.
+TODO.
+
+\begin{table}[!t]
+\centering
+\caption{Classification performance of all applied models.}
+\label{tab:performance}
+\begin{tabular}{lrrrr}
+\toprule
+Model & Accuracy & Precision & Recall & F1-score \\
+\midrule
+TODO & 0.0000 & 0.0000 & 0.0000 & 0.0000 \\
+TODO & 0.0000 & 0.0000 & 0.0000 & 0.0000 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[!t]
+\centering
+\caption{Model size, parameter count, and training time. Training was
+performed on TODO (GPU / runtime).}
+\label{tab:complexity}
+\begin{tabular}{lrrrr}
+\toprule
+Model & Epochs & Time (min) & Params & Size (MB) \\
+\midrule
+TODO & 0 & 0.00 & 0 & 0.00 \\
+TODO & 0 & 0.00 & 0 & 0.00 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Tables~\ref{tab:performance} and~\ref{tab:complexity} summarise TODO.
+
+% --- Figures below are required for the BEST model only ---
+\begin{figure}[!t]
+\centering
+\figstub{Fig. 2 -- normalized confusion matrix, best model}
+\caption{Normalized confusion matrix of the best-performing model.}
+\label{fig:cm}
+\end{figure}
+
+\begin{figure}[!t]
+\centering
+\figstub{Fig. 3 -- training/validation loss and accuracy vs. epochs}
+\caption{Training and validation loss and accuracy versus epochs for the
+best-performing model.}
+\label{fig:curves}
+\end{figure}
+
+\subsection{Explainable AI}
+\label{subsec:xai}
+% LIME / SHAP / Grad-CAM on the BEST model. Interpret it, do not just show it.
+\begin{figure}[!t]
+\centering
+\figstub{Fig. 4 -- XAI visualisation}
+\caption{TODO XAI visualisation for the best-performing model.}
+\label{fig:xai}
+\end{figure}
+
+Fig.~\ref{fig:xai} shows TODO.
+
+\subsection{Ablation Study}
+\label{subsec:ablation}
+% One row per metric, with a "possible reason" column explaining the delta.
+\begin{table}[!t]
+\centering
+\caption{Ablation study on the best-performing model.}
+\label{tab:ablation}
+\begin{tabular}{lrrl}
+\toprule
+Metric & With TODO & Without TODO & Possible reason \\
+\midrule
+Accuracy & 0.0000 & 0.0000 & TODO \\
+F1-score & 0.0000 & 0.0000 & TODO \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:ablation} reports TODO.
+
+\subsection{Comparison with Existing Works}
+\label{subsec:comparison}
+% MANDATORY, and it goes at the END of Results and Discussion.
+% The last row is always "This work".
+\begin{table}[!t]
+\centering
+\caption{Performance comparison of the proposed system with existing works.}
+\label{tab:comparison}
+\begin{tabular}{llrrr}
+\toprule
+Author & Dataset & Model & Accuracy & F1-score \\
+\midrule
+\cite{ref1} & TODO & TODO & 0.0000 & 0.0000 \\
+\cite{ref2} & TODO & TODO & 0.0000 & 0.0000 \\
+\midrule
+This work & TODO & TODO & 0.0000 & 0.0000 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:comparison} compares TODO.
+
+%=======================================================================
+\section{Conclusions}
+\label{sec:conclusion}
+% Close the paper, then TWO or THREE future works.
+TODO.
+
+%=======================================================================
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}
