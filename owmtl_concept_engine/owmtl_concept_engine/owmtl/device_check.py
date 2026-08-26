@@ -23,6 +23,11 @@ from __future__ import annotations
 import os, glob
 from collections import defaultdict, Counter
 
+# A device axis needs enough patients recorded on >1 device to separate "device" from
+# "patient". ICBHI has 4 of 126 -- below this floor, LODO == leave-those-patients-out.
+# ponytail: flat threshold, not a power calculation; revisit if a corpus lands near it.
+MIN_MULTI_DEVICE_PATIENTS = 10
+
 
 def parse_filename(fname: str):
     base = os.path.basename(fname)
@@ -35,17 +40,29 @@ def parse_filename(fname: str):
 
 
 def _load_diagnoses(diag_path: str):
+    """{patient: diagnosis}. Pass None to skip the confound check deliberately; passing a
+    path that cannot be read RAISES.
+
+    This used to return {} on a missing file, which silently disabled the
+    device/diagnosis confound check below -- analyze() then reported
+    "confounded_diagnoses": {} and a clean LODO verdict for a dataset where 26/26 Healthy
+    and 14/14 URTI patients sit on a single device (2026-08-26 run).
+    """
     d: dict[str, str] = {}
-    if not diag_path or not os.path.exists(diag_path):
+    if diag_path is None:
         return d
+    if not os.path.exists(diag_path):
+        raise FileNotFoundError(
+            f"diagnosis file not found: {diag_path!r}. Pass diagnosis_file=None to skip the "
+            "device-confound check on purpose; do not let it fail open.")
     with open(diag_path) as fh:
         for line in fh:
-            line = line.strip()
-            if not line:
-                continue
-            toks = line.replace("\t", " ").split()
+            # ICBHI patient_diagnosis.csv is COMMA-separated on most Kaggle mirrors.
+            toks = [t for t in line.replace("\t", " ").replace(",", " ").split() if t]
             if len(toks) >= 2:
                 d[toks[0]] = toks[1]
+    if not d:
+        raise ValueError(f"no patient/diagnosis rows parsed from {diag_path}")
     return d
 
 
@@ -87,7 +104,7 @@ def analyze(wav_dir_or_list, diagnosis_file: str | None = None):
                 confounded[dg] = {"device": top_dev, "fraction": round(frac, 3)}
 
     n_patients = len(patient_devices)
-    lodo_feasible = (len(devices) >= 2) and (len(multi_device_patients) > 0)
+    lodo_feasible = (len(devices) >= 2) and (len(multi_device_patients) >= MIN_MULTI_DEVICE_PATIENTS)
 
     return {
         "n_files": len(files),
@@ -113,6 +130,12 @@ def _verdict(n_devices, n_multi, confounded):
         return ("LODO NOT separable: no patient spans >1 device, so leave-one-device-out "
                 "== leave-those-patients-out. A device claim is not possible; rely on "
                 "SPRSound pediatric shift for the covariate stress instead.")
+    if n_multi < MIN_MULTI_DEVICE_PATIENTS:
+        return (f"LODO UNDERPOWERED: only {n_multi} patient(s) span >1 device, so a "
+                "leave-one-device-out contrast is almost entirely a leave-those-patients-out "
+                "contrast. Do not make a device claim from it."
+                + (f" Also: {len(confounded)} diagnosis(es) are device-confounded "
+                   f"({', '.join(confounded)})." if confounded else ""))
     msg = ("LODO feasible: multiple devices and some patients span devices.")
     if confounded:
         msg += (f" CAUTION: {len(confounded)} diagnosis(es) are device-confounded "

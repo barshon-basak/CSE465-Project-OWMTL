@@ -37,23 +37,103 @@ def sound_event_label(crackle: int, wheeze: int) -> int:
     return {(0, 0): 0, (1, 0): 1, (0, 1): 2, (1, 1): 3}[(crackle, wheeze)]
 
 
+# The published split file ships INSIDE this package so a notebook can never silently
+# fall back to a hand-typed patient list. That failure produced the 2026-08-14 result
+# ("7.1% of cycles reported as 60/40") and again on 2026-08-26 (a 15/47-correct list).
+PACKAGED_SPLIT_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                   "ICBHI_challenge_train_test.txt")
+
+
+def _tokens(line: str):
+    """ICBHI metadata files are inconsistently tab-, space-, or COMMA-separated
+    (patient_diagnosis.csv is comma-separated on most Kaggle mirrors)."""
+    return [t for t in line.replace("\t", " ").replace(",", " ").split() if t]
+
+
+def find_split_file(extra_dirs=()) -> str:
+    """Locate ICBHI_challenge_train_test.txt. The packaged copy wins -- it is the one
+    artifact guaranteed to exist regardless of which mirror the audio came from."""
+    import glob
+    cands = [PACKAGED_SPLIT_FILE]
+    for d in list(extra_dirs) + ["/kaggle/input", "/kaggle/working", "/content", "."]:
+        if d and os.path.isdir(d):
+            cands += sorted(glob.glob(os.path.join(d, "**", "ICBHI_challenge_train_test.txt"),
+                                      recursive=True))
+    for c in cands:
+        if os.path.isfile(c):
+            return c
+    raise FileNotFoundError(
+        "ICBHI_challenge_train_test.txt not found. Do NOT hand-type a patient list; "
+        "upload the committed copy (repo: Asif's/ICBHI_challenge_train_test.txt).")
+
+
 def load_official_split(split_file: str) -> dict:
+    """{stem: 'train'|'test'} exactly as published. Raises rather than returning {}."""
     d = {}
     with open(split_file) as fh:
         for line in fh:
-            t = line.replace("\t", " ").split()
-            if len(t) >= 2:
-                d[t[0]] = t[1].lower()
+            t = _tokens(line)
+            if len(t) >= 2 and t[1].lower() in ("train", "test"):
+                d[t[0].replace(".wav", "")] = t[1].lower()
+    if not d:
+        raise ValueError(f"no train/test rows parsed from {split_file}")
     return d
 
 
+def load_split(split_file=None, mode: str = "patient_independent"):
+    """Return ({stem: 'train'|'test'}, info). Project policy; the full audit and the
+    rationale live in `Asif's/audit/official_split.py` -- this is the packaged
+    implementation the Kaggle notebooks import.
+
+    mode='patient_independent' (default): the published split, with every recording of a
+        patient appearing on BOTH sides reassigned to TRAIN. Conservative: the test set
+        then contains no patient seen during training (Model_Training_Protocol.md sect 1).
+    mode='official': published verbatim. NOT patient-independent -- say so wherever you
+        report it.
+    """
+    if mode not in ("patient_independent", "official"):
+        raise ValueError(f"unknown mode {mode!r}")
+    path = split_file or find_split_file()
+    rows = load_official_split(path)
+
+    sides = {}
+    for stem, sp in rows.items():
+        sides.setdefault(stem.split("_")[0], set()).add(sp)
+    leaking = sorted(p for p, v in sides.items() if len(v) > 1)
+
+    if mode == "patient_independent":
+        rows = {stem: ("train" if stem.split("_")[0] in leaking else sp)
+                for stem, sp in rows.items()}
+        still_leaking = []
+    else:
+        still_leaking = leaking
+
+    n_test = sum(v == "test" for v in rows.values())
+    info = {"path": path, "mode": mode, "n_recordings": len(rows),
+            "n_patients": len(sides), "n_train": len(rows) - n_test, "n_test": n_test,
+            "test_fraction": round(n_test / len(rows), 4),
+            "leaking_patients": leaking,
+            "leaking_patients_still_present": still_leaking,
+            "is_patient_independent": not still_leaking,
+            "split_method": ("patient_independent_official_60_40" if mode == "patient_independent"
+                             else "official_60_40_NOT_patient_independent")}
+    return rows, info
+
+
 def load_diagnoses(diag_file: str) -> dict:
+    """{patient: diagnosis}. Raises on a missing/unparseable file -- returning {} silently
+    made every downstream diagnosis 'UNKNOWN' and turned the CC2 device-confound check into
+    a no-op that reported 'no confound'."""
+    if not diag_file or not os.path.exists(diag_file):
+        raise FileNotFoundError(f"diagnosis file not found: {diag_file!r}")
     d = {}
     with open(diag_file) as fh:
         for line in fh:
-            t = line.replace("\t", " ").split()
+            t = _tokens(line)
             if len(t) >= 2:
                 d[t[0]] = t[1]
+    if not d:
+        raise ValueError(f"no patient/diagnosis rows parsed from {diag_file}")
     return d
 
 

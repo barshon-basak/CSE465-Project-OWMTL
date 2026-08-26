@@ -1,0 +1,22 @@
+{
+  "leakage_bits": 0.2209,
+  "leakage_frac_of_base": 0.1393,
+  "logprob_bits": {
+    "concepts_only": -0.5255,
+    "concepts_plus_features": -0.3047,
+    "features_only": -0.3025
+  },
+  "accuracy": {
+    "concepts_only": 0.9092,
+    "concepts_plus_features": 0.9212,
+    "features_only": 0.9192
+  },
+  "accuracy_gain_from_features": 0.012,
+  "uniform_baseline_bits": -1.585,
+  "n_rows": 6311,
+  "rows_per_feature": 8.1,
+  "patient_grouped_cv": true,
+  "estimator_valid": true,
+  "interpretation": "MODERATE leakage: features add some signal beyond concepts; report and consider a leakage penalty.",
+  "method": "held-out CV log-likelihood; leakage = I(y;f|c) in bits (arXiv:2504.09459 view)"
+}

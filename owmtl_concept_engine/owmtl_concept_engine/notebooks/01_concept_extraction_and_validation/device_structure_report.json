@@ -1,0 +1,82 @@
+{
+  "n_files": 920,
+  "n_parsed": 920,
+  "n_patients": 126,
+  "n_devices": 4,
+  "device_counts": {
+    "AKGC417L": 646,
+    "Meditron": 127,
+    "LittC2SE": 87,
+    "Litt3200": 60
+  },
+  "n_multi_device_patients": 4,
+  "multi_device_patients": {
+    "158": [
+      "AKGC417L",
+      "LittC2SE"
+    ],
+    "112": [
+      "Litt3200",
+      "Meditron"
+    ],
+    "226": [
+      "LittC2SE",
+      "Meditron"
+    ],
+    "218": [
+      "Litt3200",
+      "Meditron"
+    ]
+  },
+  "diagnosis_available": true,
+  "device_by_diagnosis": {
+    "AKGC417L": {
+      "COPD": 32
+    },
+    "Meditron": {
+      "Bronchiectasis": 7,
+      "URTI": 14,
+      "Bronchiolitis": 6,
+      "Healthy": 26,
+      "COPD": 8,
+      "Pneumonia": 1,
+      "LRTI": 2
+    },
+    "LittC2SE": {
+      "Pneumonia": 6,
+      "COPD": 16,
+      "Asthma": 1
+    },
+    "Litt3200": {
+      "COPD": 11
+    }
+  },
+  "confounded_diagnoses": {
+    "Bronchiectasis": {
+      "device": "Meditron",
+      "fraction": 1.0
+    },
+    "URTI": {
+      "device": "Meditron",
+      "fraction": 1.0
+    },
+    "Bronchiolitis": {
+      "device": "Meditron",
+      "fraction": 1.0
+    },
+    "Healthy": {
+      "device": "Meditron",
+      "fraction": 1.0
+    },
+    "Asthma": {
+      "device": "LittC2SE",
+      "fraction": 1.0
+    },
+    "LRTI": {
+      "device": "Meditron",
+      "fraction": 1.0
+    }
+  },
+  "lodo_feasible": false,
+  "verdict": "LODO UNDERPOWERED: only 4 patient(s) span >1 device, so a leave-one-device-out contrast is almost entirely a leave-those-patients-out contrast. Do not make a device claim from it. Also: 6 diagnosis(es) are device-confounded (Bronchiectasis, URTI, Bronchiolitis, Healthy, Asthma, LRTI)."
+}

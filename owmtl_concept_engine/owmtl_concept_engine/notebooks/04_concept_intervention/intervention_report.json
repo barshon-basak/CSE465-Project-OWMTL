@@ -1,0 +1,147 @@
+{
+  "gate": "G3_input",
+  "sensitivity": [
+    {
+      "concept": "inspiratory_energy_fraction",
+      "sensitivity": 0.4376,
+      "delta_by_class": [
+        0.4201,
+        -0.2697,
+        -0.1504
+      ]
+    },
+    {
+      "concept": "rhonchi_presence",
+      "sensitivity": 0.4165,
+      "delta_by_class": [
+        -0.4025,
+        0.2932,
+        0.1093
+      ]
+    },
+    {
+      "concept": "papr_db",
+      "sensitivity": 0.3942,
+      "delta_by_class": [
+        -0.3797,
+        0.2143,
+        0.1654
+      ]
+    },
+    {
+      "concept": "crackle_presence",
+      "sensitivity": 0.2632,
+      "delta_by_class": [
+        0.2602,
+        -0.0881,
+        -0.172
+      ]
+    },
+    {
+      "concept": "transient_timing_centroid",
+      "sensitivity": 0.1648,
+      "delta_by_class": [
+        -0.094,
+        0.1475,
+        -0.0535
+      ]
+    },
+    {
+      "concept": "wheeze_duration_ratio",
+      "sensitivity": 0.1253,
+      "delta_by_class": [
+        -0.0973,
+        -0.0051,
+        0.1024
+      ]
+    },
+    {
+      "concept": "crackle_rate_hz",
+      "sensitivity": 0.1163,
+      "delta_by_class": [
+        -0.0917,
+        0.0499,
+        0.0418
+      ]
+    },
+    {
+      "concept": "low_high_freq_ratio",
+      "sensitivity": 0.0966,
+      "delta_by_class": [
+        0.0803,
+        0.0061,
+        -0.0864
+      ]
+    },
+    {
+      "concept": "wheeze_dominant_freq_hz",
+      "sensitivity": 0.0783,
+      "delta_by_class": [
+        0.0675,
+        -0.0012,
+        -0.0662
+      ]
+    },
+    {
+      "concept": "coarse_crackle_ratio",
+      "sensitivity": 0.0762,
+      "delta_by_class": [
+        0.0521,
+        -0.0185,
+        -0.0336
+      ]
+    },
+    {
+      "concept": "wheeze_presence",
+      "sensitivity": 0.0758,
+      "delta_by_class": [
+        -0.0069,
+        0.0012,
+        0.0058
+      ]
+    },
+    {
+      "concept": "dominant_freq_hz",
+      "sensitivity": 0.0601,
+      "delta_by_class": [
+        -0.012,
+        -0.035,
+        0.0471
+      ]
+    },
+    {
+      "concept": "spectral_flatness",
+      "sensitivity": 0.0468,
+      "delta_by_class": [
+        -0.0285,
+        0.036,
+        -0.0076
+      ]
+    },
+    {
+      "concept": "fine_crackle_ratio",
+      "sensitivity": 0.0,
+      "delta_by_class": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    }
+  ],
+  "directed": {
+    "crackle_presence->COPD": {
+      "concept_idx": 0,
+      "new_value": 1.54814612865448,
+      "target_class": 0,
+      "mean_delta_p": 0.1398,
+      "frac_increased": 0.894
+    },
+    "wheeze_presence->COPD": {
+      "concept_idx": 4,
+      "new_value": 1.381134271621704,
+      "target_class": 0,
+      "mean_delta_p": -0.0008,
+      "frac_increased": 0.433
+    }
+  }
+}

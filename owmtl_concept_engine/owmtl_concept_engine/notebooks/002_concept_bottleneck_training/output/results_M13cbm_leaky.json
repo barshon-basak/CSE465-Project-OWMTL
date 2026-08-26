@@ -1,0 +1,83 @@
+{
+  "meta": {
+    "model_id": "M13cbm_leaky",
+    "model_name": "Concept bottleneck (leaky)",
+    "contributor": "Barshon",
+    "is_augmented": false,
+    "augmentation_method": "none",
+    "notes": "Critical-Fix concept bottleneck; disease = f(concepts). Path A/B decided at G3."
+  },
+  "config": {},
+  "environment": {},
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "split_method": "patient_independent_official_60_40"
+  },
+  "efficiency": {},
+  "best_metrics": {
+    "accuracy": 0.6511627906976745,
+    "f1_macro": 0.545747328356024,
+    "f1_macro_ci95": [
+      0.4025,
+      0.695
+    ],
+    "per_class_f1": {
+      "COPD": 0.8695652173913043,
+      "Healthy": 0.5454545454545454,
+      "URTI": 0.2222222222222222
+    },
+    "confusion_matrix_raw": [
+      [
+        20,
+        0,
+        5
+      ],
+      [
+        1,
+        6,
+        7
+      ],
+      [
+        0,
+        2,
+        2
+      ]
+    ]
+  },
+  "ablation": {
+    "ablation_group": "bottleneck_type",
+    "ablation_role": "variant",
+    "variable_changed": "bottleneck_type: leaky",
+    "component_flags": {
+      "has_concept_bottleneck": false,
+      "bottleneck_type": "leaky",
+      "concept_source": "physics"
+    }
+  },
+  "training_history": [],
+  "concept_metrics": {
+    "gate_G3": {
+      "interpretability_cost_acc": 0.2326,
+      "interpretability_cost_f1": 0.1432,
+      "leakage_proxy_acc": 0.1628,
+      "independent_predicts_COPD_frac": 0.465,
+      "independent_COPD_f1": 0.5777777777777777
+    },
+    "concept_names": [
+      "crackle_presence",
+      "crackle_rate_hz",
+      "fine_crackle_ratio",
+      "coarse_crackle_ratio",
+      "wheeze_presence",
+      "wheeze_dominant_freq_hz",
+      "wheeze_duration_ratio",
+      "rhonchi_presence",
+      "spectral_flatness",
+      "papr_db",
+      "inspiratory_energy_fraction",
+      "transient_timing_centroid",
+      "dominant_freq_hz",
+      "low_high_freq_ratio"
+    ]
+  }
+}

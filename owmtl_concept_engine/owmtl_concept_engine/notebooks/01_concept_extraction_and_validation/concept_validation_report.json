@@ -1,0 +1,30 @@
+{
+  "gate": "G2",
+  "n_test_cycles": 2636,
+  "concept_label_auroc": {
+    "crackle_presence": {
+      "vs_label": "crackle",
+      "auroc": 0.5556,
+      "ci95": [
+        0.5292,
+        0.5811
+      ],
+      "n_pos": 703,
+      "n_neg": 1933
+    },
+    "wheeze_presence": {
+      "vs_label": "wheeze",
+      "auroc": 0.5818,
+      "ci95": [
+        0.5522,
+        0.6103
+      ],
+      "n_pos": 459,
+      "n_neg": 2177
+    }
+  },
+  "full_vector_auroc": {
+    "crackle": 0.6561,
+    "wheeze": 0.5847
+  }
+}

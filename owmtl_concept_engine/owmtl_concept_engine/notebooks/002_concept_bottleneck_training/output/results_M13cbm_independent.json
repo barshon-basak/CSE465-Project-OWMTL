@@ -1,0 +1,83 @@
+{
+  "meta": {
+    "model_id": "M13cbm_independent",
+    "model_name": "Concept bottleneck (independent)",
+    "contributor": "Barshon",
+    "is_augmented": false,
+    "augmentation_method": "none",
+    "notes": "Critical-Fix concept bottleneck; disease = f(concepts). Path A/B decided at G3."
+  },
+  "config": {},
+  "environment": {},
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "split_method": "patient_independent_official_60_40"
+  },
+  "efficiency": {},
+  "best_metrics": {
+    "accuracy": 0.4883720930232558,
+    "f1_macro": 0.4541555909976962,
+    "f1_macro_ci95": [
+      0.2931,
+      0.5968
+    ],
+    "per_class_f1": {
+      "COPD": 0.5777777777777777,
+      "Healthy": 0.36363636363636365,
+      "URTI": 0.42105263157894735
+    },
+    "confusion_matrix_raw": [
+      [
+        13,
+        4,
+        8
+      ],
+      [
+        7,
+        4,
+        3
+      ],
+      [
+        0,
+        0,
+        4
+      ]
+    ]
+  },
+  "ablation": {
+    "ablation_group": "bottleneck_type",
+    "ablation_role": "baseline",
+    "variable_changed": "bottleneck_type: independent",
+    "component_flags": {
+      "has_concept_bottleneck": true,
+      "bottleneck_type": "independent",
+      "concept_source": "physics"
+    }
+  },
+  "training_history": [],
+  "concept_metrics": {
+    "gate_G3": {
+      "interpretability_cost_acc": 0.2326,
+      "interpretability_cost_f1": 0.1432,
+      "leakage_proxy_acc": 0.1628,
+      "independent_predicts_COPD_frac": 0.465,
+      "independent_COPD_f1": 0.5777777777777777
+    },
+    "concept_names": [
+      "crackle_presence",
+      "crackle_rate_hz",
+      "fine_crackle_ratio",
+      "coarse_crackle_ratio",
+      "wheeze_presence",
+      "wheeze_dominant_freq_hz",
+      "wheeze_duration_ratio",
+      "rhonchi_presence",
+      "spectral_flatness",
+      "papr_db",
+      "inspiratory_energy_fraction",
+      "transient_timing_centroid",
+      "dominant_freq_hz",
+      "low_high_freq_ratio"
+    ]
+  }
+}
