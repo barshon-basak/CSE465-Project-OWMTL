@@ -110,6 +110,13 @@ under the macro metric.
 - **The argument:** `crackle_fine_ratio` targeted a distinction humans agree on at κ < 0.40. Its
   ceiling was set before any DSP was written. Generalise carefully — this bounds *concept-level
   validation against these labels*, not respiratory ML overall.
+- ⏳ **Inter-rater (second clinician, ~30 shared clips) — in flight.** Interpretation
+  **pre-registered 2026-08-18 before the labels existed**, three outcomes fixed in advance
+  (`INTER_RATER_READINGS`): (A) raters agree with each other but not ICBHI → the labels are the
+  outlier; (B) raters disagree with each other → the ceiling is the task's; (C) everyone agrees →
+  **no ceiling, our extractors are simply weak, and we say so.** Writing (C) down in advance is
+  what makes (A) or (B) worth believing. Report the pre-registration itself in the methods —
+  reviewers of a reliability paper will weight it heavily.
 
 ### 7. Discussion
 - What a corrected baseline table looks like ⏳ (needs M2/M3/M22 re-run on the corrected split).
@@ -129,6 +136,9 @@ report. Here is the corrected protocol, a pre-registered negative result, and th
 ## Evidence ledger — what exists vs. what is needed
 
 **Have today**
+- ✅ **Clinician labels, first pass** (`CLINICIAN_RESULTS_v1.md`) — intra-rater 88%/92% PASS;
+  crackle κ = +0.035 (CI includes 0) and 23.1% sensitivity vs ICBHI, replicating Tzeng's 23.23%;
+  `wheeze_score` rises 0.534 → 0.660 when scored against the physician instead of ICBHI
 - ✅ Two G2 runs with full diagnostics + gate discipline
 - ✅ Metric audit: 14 models recomputed, +0.11 mean inflation (`ICBHI_SCORE_AUDIT.md`)
 - ✅ Split audit: mislabel + non-patient-independence (`official_split.py`)
@@ -138,11 +148,28 @@ report. Here is the corrected protocol, a pre-registered negative result, and th
 - ✅ Statistics: CIs + pairwise tests over the open-set suite
 
 **Needed**
-1. ⏳ **Clinician labels** — in flight. The only genuinely new evidence.
+1. ⏳ **Second clinician, ~30 shared clips** — in flight, pre-registered. The only genuinely new
+   evidence still outstanding, and the one reviewers will ask for by name.
 2. ⏳ **M2/M3/M22 re-run on the corrected official split** — §7's baseline table needs real numbers,
    and their current ones are on the 11-patient split. **Highest-priority compute.**
-3. ⏳ Kappa analysis of the returned labels (tooling exists).
-4. ⏳ Release packaging: corrected split file, score format, audit tool.
+   Notebooks are now patched (`patch_official_metric.py`) to (a) compute and **select checkpoints
+   on** the official ICBHI score rather than the macro variant, (b) report both so per-model
+   inflation is quotable from one run, and (c) dump per-cycle probabilities keyed by
+   `<wav_stem>#<start>-<end>` so M2/M3/M22 become **pairable with DeLong without retraining**.
+   Note the old checkpoints are unusable regardless: they were selected on the macro metric *and*
+   trained on the wrong split, so the metric fix adds no compute cost to a re-run that was
+   already mandatory.
+3. ⏳ **A transformer baseline — decided 2026-08-28, currently missing.** The corrected-baseline
+   table is CNN-only (M2 / M3 / M22). The project's one transformer, **M4 (AST, pretrained)**, is
+   unusable as evidence: `results_M4.json` lives in Barshon's Drive, not the repo, so it never
+   entered the metric audit and has no recomputed official score. Reviewers of a 2026
+   respiratory-audio paper will ask why every baseline is a CNN. Fix: run at least one audio
+   transformer (AST / SSAST / AudioMAE / BEATs) on the corrected split with
+   `patch_official_metric.py` applied, so it emits the same per-cycle score dump and becomes
+   DeLong-comparable to the CNNs without retraining them.
+4. ✅ Kappa analysis of the returned labels — done, with bootstrap CIs on κ *and* sensitivity,
+   fully reproducible from the documented command (seed 20260818).
+5. ⏳ Release packaging: corrected split file, score format, audit tool.
 
 **Explicitly NOT needed** — and must not be started: bottleneck head, intervention API, concept
 leakage, a fourth mechanism.
