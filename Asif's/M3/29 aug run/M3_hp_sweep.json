@@ -1,0 +1,134 @@
+{
+  "results": [
+    {
+      "config": {
+        "arch": "mobilenet_v3_small",
+        "pretrained": true,
+        "freeze_features": false,
+        "dropout": 0.3,
+        "lr": 0.001,
+        "scheduler": "cosine"
+      },
+      "label": "mobilenet_v3_small lr0.001 finetune",
+      "fold_scores": [
+        0.5804,
+        0.6021
+      ],
+      "mean_icbhi": 0.5913,
+      "std_icbhi": 0.0108,
+      "total_params": 929316,
+      "trainable_params": 929316,
+      "model_size_mb": 3.67
+    },
+    {
+      "config": {
+        "arch": "mobilenet_v2",
+        "pretrained": true,
+        "freeze_features": false,
+        "dropout": 0.3,
+        "lr": 0.0005,
+        "scheduler": "cosine"
+      },
+      "label": "mobilenet_v2 lr0.0005 finetune",
+      "fold_scores": [
+        0.591,
+        0.5895
+      ],
+      "mean_icbhi": 0.5902,
+      "std_icbhi": 0.0007,
+      "total_params": 2228996,
+      "trainable_params": 2228996,
+      "model_size_mb": 8.74
+    },
+    {
+      "config": {
+        "arch": "densenet121",
+        "pretrained": true,
+        "freeze_features": false,
+        "dropout": 0.3,
+        "lr": 0.0005,
+        "scheduler": "cosine"
+      },
+      "label": "densenet121 lr0.0005 finetune",
+      "fold_scores": [
+        0.5745,
+        0.604
+      ],
+      "mean_icbhi": 0.5893,
+      "std_icbhi": 0.0147,
+      "total_params": 6957956,
+      "trainable_params": 6957956,
+      "model_size_mb": 27.12
+    },
+    {
+      "config": {
+        "arch": "mobilenet_v3_large",
+        "pretrained": true,
+        "freeze_features": false,
+        "dropout": 0.3,
+        "lr": 0.0005,
+        "scheduler": "cosine"
+      },
+      "label": "mobilenet_v3_large lr0.0005 finetune",
+      "fold_scores": [
+        0.5905,
+        0.5716
+      ],
+      "mean_icbhi": 0.5811,
+      "std_icbhi": 0.0095,
+      "total_params": 2975796,
+      "trainable_params": 2975796,
+      "model_size_mb": 11.55
+    },
+    {
+      "config": {
+        "arch": "mobilenet_v3_large",
+        "pretrained": true,
+        "freeze_features": false,
+        "dropout": 0.3,
+        "lr": 0.0001,
+        "scheduler": "cosine"
+      },
+      "label": "mobilenet_v3_large lr0.0001 finetune",
+      "fold_scores": [
+        0.5879,
+        0.5577
+      ],
+      "mean_icbhi": 0.5728,
+      "std_icbhi": 0.0151,
+      "total_params": 2975796,
+      "trainable_params": 2975796,
+      "model_size_mb": 11.55
+    },
+    {
+      "config": {
+        "arch": "mobilenet_v3_large",
+        "pretrained": true,
+        "freeze_features": true,
+        "dropout": 0.3,
+        "lr": 0.001,
+        "scheduler": "cosine"
+      },
+      "label": "mobilenet_v3_large lr0.001 frozen",
+      "fold_scores": [
+        0.4698,
+        0.4999
+      ],
+      "mean_icbhi": 0.4849,
+      "std_icbhi": 0.0151,
+      "total_params": 2975796,
+      "trainable_params": 3844,
+      "model_size_mb": 11.55
+    }
+  ],
+  "best_config": {
+    "arch": "mobilenet_v3_small",
+    "pretrained": true,
+    "freeze_features": false,
+    "dropout": 0.3,
+    "lr": 0.001,
+    "scheduler": "cosine"
+  },
+  "sweep_epochs": 10,
+  "n_folds": 2
+}

@@ -105,7 +105,7 @@ currently report**, and supplying the corrected protocol and tooling to measure 
 
 | Gate | Status |
 |---|---|
-| G0 annotation | ✅ clinician secured, study in flight |
+| G0 annotation | ✅ **first pass returned 2026-08-18** — intra-rater PASS; see `CLINICIAN_RESULTS_v1.md` |
 | G1 kill-search | ✅ clear (2026-08-15) |
 | G2 extractor validity | ❌ **FAILED twice** → branch (b) |
 | G3 A-vs-B headline | **not reached** — presupposed G2 |
