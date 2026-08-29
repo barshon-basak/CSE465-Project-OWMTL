@@ -1,0 +1,309 @@
+{
+  "meta": {
+    "model_id": "M20",
+    "model_name": "Temperature Scaling Calibration & ECE",
+    "member": "B",
+    "member_name": "Member B (Disease Diagnosis & OWL)",
+    "date_completed": "2026-08-29",
+    "is_augmented": false,
+    "augmentation_method": "none",
+    "notes": "Post-hoc temperature scaling on the frozen disease head. Re-run 2026-08-29 per SYNTHETIC_DATA_REMEDIATION.md item 4. The previous result fitted T and measured ECE on the SAME 851 whole recordings, with no train/test split, and carried a `torch.randn(100, 3)` fallback that would have calibrated random logits if no audio loaded. This run is cycle-level: T is fitted on a patient-disjoint calibration carve-out of TRAIN and every reported number is on the untouched TEST split.",
+    "supersedes_note": "Replaces the 2026-08-05 result (ECE 0.2701 -> 0.2635, T* 1.4875, 851 recording rows, fit and reported on the same rows)."
+  },
+  "config": {
+    "model_id": "M20",
+    "model_name": "Temperature Scaling Calibration & ECE",
+    "member": "B",
+    "seed": 42,
+    "sample_rate": 16000,
+    "duration_s": 8.0,
+    "n_mels": 128,
+    "n_fft": 1024,
+    "hop_length": 160,
+    "win_length": 400,
+    "f_min": 50,
+    "f_max": 2000,
+    "n_samples": 128000,
+    "n_frames": 801,
+    "disease_classes": [
+      "COPD",
+      "Healthy",
+      "URTI",
+      "Pneumonia"
+    ],
+    "m2_depth": 5,
+    "m2_base_width": 48,
+    "proto_embed_dim": 256,
+    "proto_temperature": 0.1,
+    "known_classes": [
+      "COPD",
+      "Healthy",
+      "URTI"
+    ],
+    "batch_size": 32,
+    "m2_ckpt_path": "/kaggle/input/datasets/sudamchandrabasak/m2-checkpoint/M2_best_model.pth",
+    "m17_ckpt_path": "/kaggle/input/datasets/barshonbasak/m17-checkpoints/best_model.pth",
+    "icbhi_path": "/kaggle/input/datasets/vbookshelf/respiratory-sound-database/Respiratory_Sound_Database/Respiratory_Sound_Database/audio_and_txt_files",
+    "results_dir": "/kaggle/working/results_M20",
+    "split_method": "official_60_40_patient_independent_corrected",
+    "split_file": "/kaggle/input/datasets/sudamchandrabasak/icbhi-challenge-train-test-split/ICBHI_challenge_train_test.txt",
+    "num_classes": 4
+  },
+  "environment": {
+    "platform": "Kaggle",
+    "gpu_name": "Tesla T4",
+    "pytorch_version": "2.10.0+cu128",
+    "python_version": "3.12.13"
+  },
+  "efficiency": {
+    "total_params": 4153556,
+    "trainable_params": 1,
+    "gpu_name": "Tesla T4"
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "data_source": "real_audio",
+    "unit": "respiratory_cycle",
+    "split_method": "official_60_40_patient_independent_corrected",
+    "split_file": "/kaggle/input/datasets/sudamchandrabasak/icbhi-challenge-train-test-split/ICBHI_challenge_train_test.txt",
+    "split_file_verified": true,
+    "diagnosis_file": "/kaggle/input/datasets/vbookshelf/respiratory-sound-database/Respiratory_Sound_Database/Respiratory_Sound_Database/patient_diagnosis.csv",
+    "official_overlap_patients": [
+      156,
+      218
+    ],
+    "official_overlap_policy": "reassign_to_train",
+    "disease_classes": [
+      "COPD",
+      "Healthy",
+      "URTI",
+      "Pneumonia"
+    ],
+    "train_samples": 4049,
+    "calibration_samples": 981,
+    "test_samples": 2536,
+    "train_patients": 67,
+    "calibration_patients": 17,
+    "test_patients": 43,
+    "patient_leakage_verified": true,
+    "validation_method": "temperature fitted on a patient-disjoint 25% carve-out of TRAIN; all reported metrics computed on TEST only",
+    "known_limitation": "the frozen head was trained on the TRAIN patients, so the calibration carve-out is not unseen data for the model -- only for the temperature. TEST is unseen for both."
+  },
+  "best_metrics": {
+    "ece_uncalibrated": 0.0612,
+    "ece_calibrated": 0.0552,
+    "ece_improvement": 0.006,
+    "optimal_temperature": 0.9333,
+    "nll_uncalibrated": 0.2947,
+    "nll_calibrated": 0.2902,
+    "accuracy": 0.8983,
+    "precision_macro": 0.3878,
+    "recall_macro": 0.4045,
+    "f1_macro": 0.3949,
+    "specificity_macro": 0.9543,
+    "majority_class_rate": 0.9026,
+    "per_class": {
+      "COPD": {
+        "precision": 0.9904,
+        "recall": 0.9511,
+        "f1": 0.9704,
+        "specificity": 0.915,
+        "support": 2289
+      },
+      "Healthy": {
+        "precision": 0.4412,
+        "recall": 0.5143,
+        "f1": 0.4749,
+        "specificity": 0.9517,
+        "support": 175
+      },
+      "URTI": {
+        "precision": 0.1196,
+        "recall": 0.1528,
+        "f1": 0.1341,
+        "specificity": 0.9671,
+        "support": 72
+      },
+      "Pneumonia": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "specificity": 0.9834,
+        "support": 0
+      }
+    },
+    "confusion_matrix_raw": [
+      [
+        2177,
+        61,
+        25,
+        26
+      ],
+      [
+        14,
+        90,
+        56,
+        15
+      ],
+      [
+        7,
+        53,
+        11,
+        1
+      ],
+      [
+        0,
+        0,
+        0,
+        0
+      ]
+    ],
+    "confusion_matrix_normalized": [
+      [
+        0.9511,
+        0.0266,
+        0.0109,
+        0.0114
+      ],
+      [
+        0.08,
+        0.5143,
+        0.32,
+        0.0857
+      ],
+      [
+        0.0972,
+        0.7361,
+        0.1528,
+        0.0139
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    ]
+  },
+  "ablation": {
+    "ablation_group": "trust_calibration",
+    "ablation_role": "calibration_wrapper",
+    "baseline_model_id": "M17",
+    "variable_changed": "temperature_scaling",
+    "variables_held_constant": [
+      "backbone: M2_CNN",
+      "seed: 42",
+      "split: official_60_40_patient_independent_corrected"
+    ],
+    "component_flags": {
+      "has_sound_event_head": false,
+      "has_disease_head": true,
+      "has_temperature_scaling": true,
+      "owl_stage": 2
+    },
+    "loss_weights": {}
+  },
+  "training_history": {
+    "note": "post-hoc calibration of a frozen model; no training epochs",
+    "reliability_bins_uncalibrated": [
+      {
+        "bin_idx": 2,
+        "confidence": 0.28741690516471863,
+        "accuracy": 1.0,
+        "count": 1
+      },
+      {
+        "bin_idx": 3,
+        "confidence": 0.36771416664123535,
+        "accuracy": 0.45161290322580644,
+        "count": 31
+      },
+      {
+        "bin_idx": 4,
+        "confidence": 0.45740288496017456,
+        "accuracy": 0.3888888888888889,
+        "count": 90
+      },
+      {
+        "bin_idx": 5,
+        "confidence": 0.550266444683075,
+        "accuracy": 0.43795620437956206,
+        "count": 137
+      },
+      {
+        "bin_idx": 6,
+        "confidence": 0.6451715230941772,
+        "accuracy": 0.4956521739130435,
+        "count": 115
+      },
+      {
+        "bin_idx": 7,
+        "confidence": 0.7497454285621643,
+        "accuracy": 0.6744186046511628,
+        "count": 129
+      },
+      {
+        "bin_idx": 8,
+        "confidence": 0.8615665435791016,
+        "accuracy": 0.9694656488549618,
+        "count": 262
+      },
+      {
+        "bin_idx": 9,
+        "confidence": 0.957046389579773,
+        "accuracy": 0.9994353472614342,
+        "count": 1771
+      }
+    ],
+    "reliability_bins_calibrated": [
+      {
+        "bin_idx": 2,
+        "confidence": 0.2899242639541626,
+        "accuracy": 1.0,
+        "count": 1
+      },
+      {
+        "bin_idx": 3,
+        "confidence": 0.36733299493789673,
+        "accuracy": 0.4,
+        "count": 25
+      },
+      {
+        "bin_idx": 4,
+        "confidence": 0.4585455358028412,
+        "accuracy": 0.40963855421686746,
+        "count": 83
+      },
+      {
+        "bin_idx": 5,
+        "confidence": 0.5494763255119324,
+        "accuracy": 0.4409448818897638,
+        "count": 127
+      },
+      {
+        "bin_idx": 6,
+        "confidence": 0.6422188878059387,
+        "accuracy": 0.43478260869565216,
+        "count": 115
+      },
+      {
+        "bin_idx": 7,
+        "confidence": 0.7484062910079956,
+        "accuracy": 0.6271186440677966,
+        "count": 118
+      },
+      {
+        "bin_idx": 8,
+        "confidence": 0.8584526181221008,
+        "accuracy": 0.9383886255924171,
+        "count": 211
+      },
+      {
+        "bin_idx": 9,
+        "confidence": 0.9641754031181335,
+        "accuracy": 0.9994612068965517,
+        "count": 1856
+      }
+    ]
+  }
+}

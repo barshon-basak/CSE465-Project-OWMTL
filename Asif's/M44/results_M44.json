@@ -1,0 +1,65 @@
+{
+  "meta": {
+    "model_id": "M44",
+    "model_name": "Interpretability analysis (XAI)",
+    "contributor": "OWMTL team",
+    "date_completed": "2026-08-29",
+    "explains_model": "M22_v2",
+    "checkpoint_epoch": 38,
+    "notes": "RTK requirement 9. Grad-CAM + occlusion on the best model under the corrected split."
+  },
+  "spec_deviation": {
+    "requested": "pointing game against annotated crackle/wheeze event windows",
+    "why_not_implementable": "ICBHI annotates one row per respiratory CYCLE (start, end, crackle, wheeze) and marks whether the cycle contains an adventitious sound, not where inside it. The pipeline crops to exactly that window, so the annotated window IS the model input and the hit rate is 100% by construction. No finer annotation exists in the corpus.",
+    "substituted": [
+      "band pointing (100-1000 Hz wheeze band)",
+      "tiling consistency across wrap-padded repetitions"
+    ]
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "split_method": "official_60_40_patient_independent_corrected",
+    "test_cycles": 2636,
+    "cycles_analysed": 400
+  },
+  "band_pointing": {
+    "band_hz": [
+      100.0,
+      1000.0
+    ],
+    "uniform_baseline": 0.5547,
+    "wheeze_positive_mean": 0.714,
+    "wheeze_negative_mean": 0.7674,
+    "n_wheeze_positive": 75,
+    "n_wheeze_negative": 325,
+    "difference": -0.0534,
+    "difference_ci95_patient_bootstrap": [
+      -0.0785,
+      -0.0256
+    ],
+    "p": 0.001,
+    "verdict": "the model attends LESS to the wheeze band when a wheeze is present"
+  },
+  "tiling_consistency": {
+    "n_evaluable": 361,
+    "mean_r": 0.098,
+    "median_r": 0.1802,
+    "fraction_above_0.5": 0.3213,
+    "verdict": "attribution DIFFERS across identical repeated audio \u2014 the model is partly keying on position within the 8 s window, not on the sound"
+  },
+  "interpretation_guard": "This is evidence about WHERE THE MODEL LOOKS, not clinical validation. This project measured clinician-vs-ICBHI agreement at kappa 0.035 on crackles (N9) and found task adaptation degrades 13/14 acoustic concepts (N1). Attributions aligned to labels of that reliability cannot certify clinical reasoning.",
+  "figure": "M44_xai_panels.png",
+  "resolution_caveat": {
+    "grad_cam_native_resolution": "4 frequency x 26 time cells",
+    "input_resolution": "128 mel x 801 frames",
+    "per_cell": "~500 Hz and ~0.31 s",
+    "why_it_matters": "MobileNetV2 downsamples 32x, so the final conv block is 4x26. Every Grad-CAM map in the figure is that 4x26 grid bilinearly upsampled \u2014 the apparent detail is interpolation, not measurement. The 100-1000 Hz wheeze band spans only ~1.8 of the 4 frequency cells, so band pointing is a coarse contrast, not a localisation. The median 2.42 s cycle spans ~7.9 of the 26 time cells, so tiling consistency correlates ~8-point sequences.",
+    "consequence": "The DIRECTION of both results is trustworthy (both intervals exclude their null); the spatial precision implied by the figures is not. Do not describe Grad-CAM here as showing the model 'focuses on' any fine structure.",
+    "occlusion_is_better_resolved": "The occlusion maps use a 16-mel x 80-frame patch at stride 8x40, giving a finer frequency grid than Grad-CAM. Where the two disagree, prefer occlusion \u2014 it is model-agnostic and needs no gradient through a downsampled layer."
+  },
+  "headline": {
+    "band_pointing": "The model attends LESS to the 100-1000 Hz wheeze band when a wheeze is present (-0.0534, CI [-0.0785, -0.0256], p=0.001). Both groups sit above the 0.5547 uniform baseline, so the model does concentrate on the physiological band in general \u2014 but the CONTRAST runs backwards from what a wheeze detector should show.",
+    "tiling": "Attribution is largely inconsistent across identical repeated audio (mean r=0.098, median 0.18; only 32.1% of cycles exceed r=0.5). The 8 s input contains the same cycle tiled ~3x, so a model reading acoustics should attribute alike to each copy. It does not \u2014 a substantial part of the attribution tracks position in the window rather than sound.",
+    "together": "Neither measure supports the reading that this model localises adventitious sounds. That is consistent with N1 (task adaptation degrades 13/14 acoustic concepts) and with the corrected-split Se of 0.41 \u2014 the model separates classes without attending to the acoustics the labels name."
+  }
+}

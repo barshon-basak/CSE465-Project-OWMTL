@@ -69,7 +69,9 @@
     "macro_precision": 0.6967,
     "macro_recall": 0.7433,
     "beats_m2": true,
-    "beats_m3": true
+    "beats_m3": true,
+    "icbhi_score_unverifiable": true,
+    "icbhi_score_metric_note": "0.8213 is the MACRO variant on a 70/30 split with no committed confusion matrix. It is the highest number in the repo and the least supported. Do not cite it."
   },
   "best_epoch": {
     "epoch": 14,
@@ -449,5 +451,18 @@
       "val_icbhi": 0.80642272839918,
       "time_s": 106.19257831573486
     }
-  ]
+  ],
+  "audit_status": {
+    "status": "WITHDRAWN \u2014 DO NOT QUOTE",
+    "reviewed": "2026-08-29",
+    "reasons": [
+      "The model is already dropped from the project: Project_Work_Plan.md chunk E records that M30 failed its own admission test (0.5975 vs M2-alone 0.6098 on identical test cycles, Asif's/M30_v2/).",
+      "icbhi_score 0.8213 commits NO confusion_matrix_raw, so it cannot be verified by a teammate, the audit tool, or a reviewer (Model_Training_Protocol.md Essential #9).",
+      "It is the project-internal MACRO variant, not icbhi_score_official, and is therefore not comparable to published ICBHI results.",
+      "It was measured on patient_independent_70_30, which Essential #8 excludes from every comparison, table and claim.",
+      "dataset_info records no test_samples and no test_patients, so the sample it was computed on is unknown."
+    ],
+    "why_not_re_exported": "Re-running inference would produce a verifiable number for a withdrawn model on a split that cannot be reported. The defect is not a missing field \u2014 it is that this number should never enter a comparison. Annotated rather than recomputed.",
+    "if_ever_revived": "Re-train on official_60_40_patient_independent_corrected, commit confusion_matrix_raw, and report icbhi_score_official."
+  }
 }

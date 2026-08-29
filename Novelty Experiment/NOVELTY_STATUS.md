@@ -34,7 +34,10 @@ Written down here so nobody re-litigates it in three weeks.
 
 ## 1. Scoreboard
 
-**All eight ran to completion.** Nothing is blocked.
+**All eight faculty items ran to completion on real data, and nothing is simulated any more.**
+The clinician listening study came back on 2026-08-29 (`Asif's/labels v1 - labels.csv`, 116/132
+clips answered), which closed the last data dependency and unlocked two further experiments the
+project had never been able to run.
 
 | # | Faculty item | Before this folder | Now | Script |
 |---|---|---|---|---|
@@ -44,8 +47,10 @@ Written down here so nobody re-litigates it in three weeks.
 | 4 | Calibration-Aware Honest Operating Point | 🟡 parts, never assembled | ✅ **complete** | `N4_honest_operating_point.py` |
 | 5 | Concept Leakage / Faithfulness Audit | ✅ done, no CI/null | ✅ **complete** — CI + null + per-concept | `N5_leakage_audit.py` |
 | 6 | Physics-Derived Acoustic Concept Bottleneck | ✅ done, 1 seed, no control | ✅ **complete** — all 4 modes, 5 seeds | `N6_physics_bottleneck.py` |
-| 7 | Clinician Concept Intervention | 🟡 mechanism only | ✅ **complete** — 2 modes + curve | `N7_clinician_intervention.py` |
+| 7 | Clinician Concept Intervention | 🟡 mechanism only | ✅ **complete** — 2 modes + curve, **REAL clinician** | `N7_clinician_intervention.py` |
 | 8 | Pediatric Physics-Fragility | 🔴 12-line MMD stub | ✅ **complete** — 2 arms, pre-registered | `N8_pediatric_fragility.py` |
+| 9 | *(support)* Clinician Label Reliability | 🔴 nothing | ✅ **complete** — real labels scored | `N9_clinician_reliability.py` |
+| 10 | *(support)* Gate G2 vs an independent reference | 🔴 impossible before now | ✅ **complete** — the G2 ambiguity finally measured | `N10_gate_vs_clinician.py` |
 
 ### Inputs that were acquired to get here
 
@@ -56,8 +61,31 @@ Written down here so nobody re-litigates it in three weeks.
 | `embeddings/ast_frozen.npy`, `ast_lora.npy` | AST embedding pass (~11 min each on the 4050) + 5-epoch LoRA fine-tune | N1 headline |
 | SPRSound BioCAS2022 | shallow-cloned to `Desktop/SPRSound` (~718 MB) | N8 both arms |
 
-Only one thing in the folder is still simulated rather than real: **N7 has no clinician**. Drop a
-`clinician_corrections.csv` (`patient,concept,value`) into this folder and it reruns on real data.
+### Synthetic-data audit (2026-08-29)
+
+Every script was checked for synthetic data standing in for real data. **One substitution exists.**
+
+| Usage | Where | Verdict |
+|---|---|---|
+| `random_control` probe arm | N1 | **Control**, not a stand-in — it is what shows the real probe is not a high-dimensional artefact. Keep. |
+| `torch.randn(...) * 0.01` | N1 | LoRA A-matrix **initialisation**. Not data. |
+| `rng.permutation` / `rng.choice` | N5, N6, N7, N8, `common.py` | Bootstrap resampling and permutation nulls **applied to real data**. Keep. |
+| shuffled-concept controls | N6, N7 | Deliberate controls. Keep. |
+| `--dry-run`, `--selftest`, `test_nx.py` | N1, N9, tests | Wiring checks that write **no result**. Keep. |
+| **DSP values used as a clinician oracle** | **N7** | **The one real substitution.** Blocked on the returned listening sheet — see N9. |
+
+`common.load_concepts()` raises rather than substituting random data if `concepts_all.npz` is absent,
+so no experiment can silently fall back to synthetic input.
+
+### ✅ The clinician study is in
+
+`Asif's/labels v1 - labels.csv` — **116 of 132 clips answered**. The 16 blanks are exactly the 16
+clips the rater marked `unusable`, so they are a deliberate answer rather than missing data. Two
+schema deviations were handled explicitly rather than absorbed: `ambiguous` appears 12 times and is
+treated as `unsure` (excluded from agreement, never coerced to a class), and audio quality is used
+for a sensitivity analysis rather than a silent filter.
+
+This closed the last simulated component (N7) and made two new experiments possible — N9 and N10.
 
 > **Do not use `owmtl.m2_features.export_features` for the M2 checkpoint.** Its `default_logmel`
 > applies a plain `power_to_db` with no normalisation, but M2 was trained on
@@ -69,7 +97,7 @@ Only one thing in the folder is still simulated rather than real: **N7 has no cl
 
 ## 2. Item-by-item
 
-### 1. Foundation-Model Concept Probing (LoRA) — 🟡 M2 arm run, FM arm pending
+### 1. Foundation-Model Concept Probing (LoRA) — ✅ COMPLETE (AST frozen + LoRA + 2 controls)
 
 **What existed.** `Barshon's/M37_v2` is titled *"Audio Spectrogram Transformer LoRA PEFT"* but
 instantiates `M37_LoRA_CNN` wrapping the project's own scratch-trained `M2_CNN` — 3,635,700 params,
@@ -354,7 +382,7 @@ nothing. **Report both metrics**; quoting either alone misleads.
 
 ---
 
-### 7. Clinician Concept Intervention — ✅ COMPLETE (both modes)
+### 7. Clinician Concept Intervention — ✅ COMPLETE (both modes, REAL clinician)
 
 **What existed.** Sensitivity ranking (top `inspiratory_energy_fraction` 0.4376; `fine_crackle_ratio`
 exactly 0.0) and two directed edits, one moving the model the wrong way — recorded but not flagged.
@@ -389,13 +417,21 @@ restore k true concept values, 43 test patients):
 3. Five of six directed interventions across the two modes push the probability the **wrong way**.
 
 **The clinician demo cannot be presented as a working mechanism.** It is a well-instrumented negative
-result. The real-clinician hook is wired: drop `clinician_corrections.csv` (`patient,concept,value`)
-into this folder and the same curve reruns on real corrections. Until then every number is labelled
-**SIMULATED**.
+result.
+
+**Now run with REAL clinician corrections** (N9 writes `clinician_corrections.csv` automatically):
+84 corrections across 42 patients, of which **30 landed on test patients**. Substituting the
+clinician's own crackle/wheeze judgements for the DSP values moves accuracy **0.5349 → 0.3953**.
+
+Read this carefully — it is *not* "the clinician is wrong". The concept space was built to a DSP
+convention aligned with ICBHI's annotation, and N9 shows the clinician disagrees with that
+convention at κ = 0.035 on crackles. Substituting a genuinely independent human judgement therefore
+moves the model off the operating point it was fitted to. The drop is another measurement of the
+same label-reliability gap, arriving from a third direction.
 
 ---
 
-### 8. Pediatric Physics-Fragility Analysis — 🟡 PRE-REGISTERED
+### 8. Pediatric Physics-Fragility Analysis — ✅ COMPLETE (pre-registered, both arms)
 
 **What existed.** `Barshon's/Gap7/results_Gap7_OOD.json` is **twelve lines**, MMD only: SPRSound M2
 0.4236, M30 0.4093, **M35 0.4434**. No CI, no schema, no downstream accuracy, no per-concept
@@ -453,23 +489,112 @@ ICBHI's 6,898 cycles.
 
 Concept-space MMD² = **0.4805** [0.457, 0.502] (Gap7 reported an embedding MMD of 0.4236 with no CI).
 
-**Reading. This is the folder's second real positive, and the strongest novelty claim available.**
-Both arms give 3/4, and in the confound-free age arm **all three frequency concepts confirm the
-mechanism with intervals excluding zero**: as a child grows, the dominant and wheeze frequencies fall
-and the low/high energy ratio rises — exactly what inverse scaling with airway calibre predicts, in a
-test where corpus, device, protocol and annotator are all held fixed. `rhonchi_presence` is the lone
-miss and it misses in *opposite* directions in the two arms, so it should be reported as unresolved
-rather than folded into either.
+**⚠ RESULT REVISED (prediction set extended from 4 to 8).** The original 4-prediction sign test
+floors at p = 0.0625 and could never have supported the hypothesis whatever the data showed — a test
+with no power to pass. Four more predictions were added, derived from the same two mechanisms
+(frequency scaling; allometric respiratory rate), which lifts the floor to 0.0039. **With a test that
+can actually pass, the mechanism does not reach significance.**
 
-> "Adult-tuned acoustic priors degrade on pediatric airways via frequency scaling" is now a
-> **mechanistic, pre-registered, confound-controlled claim** rather than an unexplained MMD.
+| arm | confirmed (CI excludes 0) | contradicted | sign test | verdict |
+|---|---|---|---|---|
+| within-cohort age gradient | 5/7 | 2 | 5/7, p = 0.227 | **MIXED** |
+| cross-corpus | 5/8 | 3 | 5/8, p = 0.363 | **MIXED** |
+| round-1 pre-registered only | 3/4 both arms | — | p = 0.3125 (floor 0.0625) | underpowered |
 
-**⚠ A methodological correction to this script's own design.** The first version judged the mechanism
-by a one-sided binomial sign test over the 4 predictions. With n=4 that test **floors at p = 0.0625 —
-even a perfect 4/4 can never reach p < 0.05**, so it hardcoded "NOT supported" regardless of the
-data, and it did exactly that on the first full run. The criterion is now per-concept (direction
-matched **and** interval excludes zero), with the binomial reported as secondary alongside its floor.
-Anyone re-running an earlier copy of this script will get the wrong verdict text.
+**What holds.** The three *frequency* concepts confirm consistently in the confound-free age arm —
+`dominant_freq_hz` ρ = −0.259 [−0.348, −0.156], `wheeze_dominant_freq_hz` −0.240 [−0.310, −0.159],
+`low_high_freq_ratio` +0.300 [0.187, 0.399]. That is the pattern inverse frequency scaling predicts,
+with corpus, device, protocol and annotator all held fixed.
+
+**What does not.** The crackle-morphology predictions fail: `fine_crackle_ratio` is degenerate and
+not estimable, `coarse_crackle_ratio` contradicts cross-corpus, `wheeze_duration_ratio` contradicts
+within-cohort, and `rhonchi_presence` contradicts in the age arm while confirming cross-corpus.
+
+**Honest summary for the paper:** *the frequency concepts behave as the physics predicts and the
+crackle-morphology concepts do not; a mechanism claim needs more named predictions or a second
+pediatric corpus.* Registration rounds are tracked in code (`PREDICTIONS[concept] = (direction,
+round, mechanism)`) and reported separately, so round-2 additions are never laundered as
+pre-registered.
+
+Concept-space MMD² = **0.4805** [0.457, 0.502] (Gap7 reported an embedding MMD of 0.4236, no CI).
+
+---
+
+### 9. Clinician Label Reliability — ✅ COMPLETE
+
+**The listening study came back and it is the project's single most important measurement.**
+One clinician, blind to ICBHI, 116/132 clips answered, 12 hidden duplicates.
+
+| quantity | crackles | wheeze |
+|---|---|---|
+| vs ICBHI, Cohen's κ | **0.035** [−0.157, 0.210] *(slight)* | **0.266** [0.036, 0.444] *(fair)* |
+| vs ICBHI, raw agreement | 0.528 [0.421, 0.639] | 0.718 [0.610, 0.832] |
+| sensitivity vs ICBHI | **0.231** | 0.297 |
+| specificity vs ICBHI | 0.804 | 0.932 |
+| confusion (TP/FP/FN/TN) | 12 / 11 / 40 / 45 | 11 / 5 / 26 / 68 |
+| **intra-rater κ (hidden duplicates)** | **0.714** *(substantial)* | **0.600** *(substantial)* |
+| n | 108 answers, 42 patients | 110 answers, 42 patients |
+
+Sensitivity analysis on `ok`-quality audio only: κ 0.023 / 0.255 — essentially unchanged, so audio
+quality is not driving the result.
+
+**The decisive contrast is the last row against the first.** The rater agrees with *themselves* at
+κ = 0.71 / 0.60 but with ICBHI at κ = 0.04 / 0.27. The disagreement is therefore **not rater noise** —
+it is a genuine discrepancy with the reference standard. That is the project's central claim, and it
+is now measured on its own data rather than inherited from citations.
+
+**An independent replication of the published benchmark.** Our clinician's crackle sensitivity
+against ICBHI is **0.231**; Tzeng et al. report **0.2323** for seven senior physicians on this same
+corpus. Our rater missed 40 of 52 ICBHI-positive crackle cycles — 77% — matching the published
+"~77% of abnormal cycles missed" almost exactly. One rater, a different sample, an independently
+built listening pack, and the same number.
+
+**Released asset (Gate G0's ceiling lever).** `release_annotations/` now holds
+`ICBHI_clinician_annotations_v1.csv` (132 cycles, clinician labels joined to the ICBHI reference)
+plus a README documenting provenance, schema, the `ambiguous` deviation, measured reliability and
+four limitations. To our knowledge these are the first fine-grained (fine-vs-coarse crackle)
+reference labels released for ICBHI — which is exactly what the roadmap's G0 identified as the only
+lever that lifts the venue ceiling.
+
+**Limitations, stated plainly.** One rater, so no inter-rater agreement is computable. The sample is
+not random — the pack excluded cycles under 0.9 s and sorted each stratum longest-first. Fine-vs-
+coarse has only 19 fine and 3 coarse answers. These labels are an independent second opinion, not a
+correction of ICBHI; where they disagree, neither is established as correct.
+
+---
+
+### 10. Gate G2 Re-Run Against an Independent Reference — ✅ COMPLETE
+
+**The experiment the project could never run.** `DECISION_2026-08-16_PIVOT.md` recorded an
+ambiguity it explicitly could not resolve: *"Our extractors are weak — TRUE, demonstrated twice"*
+versus *"the 0.65 target is reachable on this reference standard by any method — UNKNOWN, and this
+experiment cannot decide it."* Every validation to date used the same reference standard whose
+reliability was in question. The clinician labels supply a second one.
+
+Same extractors, same 132 clips, two reference standards. The clip→concept-row mapping is not
+assumed but **verified**: `clip_key.csv` stores ICBHI's own labels, so a correct mapping must
+reproduce them — all 132 did, and the script refuses to run otherwise.
+
+| concept | vs ICBHI | vs clinician | paired difference |
+|---|---|---|---|
+| `crackle_presence` | 0.5251 [0.415, 0.630] | 0.5581 [0.417, 0.693] | **+0.033** [−0.137, 0.196] |
+| `wheeze_presence` | 0.7360 [0.621, 0.843] | 0.8334 [0.723, 0.928] | **+0.097** [−0.045, 0.250] |
+
+**Verdict: UNDECIDED.** Both differences point the same way — the extractors track the clinician
+slightly better than they track ICBHI — but neither interval excludes zero. The pivot document's
+ambiguity **stands as written**, now with a measurement behind it instead of an assumption.
+
+> ⚠️ **The absolute AUROCs here must not be compared with G2's 0.5556 / 0.5818.** The listening pack
+> is not a random sample: cycles under 0.9 s were dropped and each stratum sorted longest-first, so
+> these clips are systematically easier. `wheeze_presence` clears 0.65 on this subset **and that does
+> not overturn the G2 failure.** Only the paired difference — same score, same clips, two references,
+> so selection bias cancels — is a valid comparison. The script prints this warning on every run and
+> stores it in the JSON.
+
+**First fine/coarse validation: not estimable.** `fine_crackle_ratio` is *constant* across all 22
+fine-or-coarse clips (it is 99.7% zero corpus-wide), so no AUROC exists. Reporting it as "AUROC
+0.500" would read as a precise finding of no signal when it is actually no measurement at all. This
+is now the fourth independent line of evidence against that concept.
 
 ---
 
@@ -491,10 +616,12 @@ Anyone re-running an earlier copy of this script will get the wrong verdict text
 
 **A third, mechanistic result stands on its own:**
 
-> **3. Adult-tuned acoustic priors fail on pediatric airways via frequency scaling** — pre-registered
-> in code before any pediatric audio was read, and confirmed in a *confound-free* within-cohort age
-> gradient across 243 children: all three frequency concepts move as predicted with intervals
-> excluding zero (N8).
+> **3. The frequency concepts shift with airway size as the physics predicts — but the mechanism is
+> not established.** In a confound-free within-cohort age gradient across 243 children, all three
+> frequency concepts move as predicted with intervals excluding zero. Once the prediction set is
+> extended from 4 to 8 (giving the sign test power it previously lacked), the overall test does not
+> reach significance: 5/7, p = 0.227. Report the confirming concepts individually; do not claim the
+> mechanism (N8).
 
 Supporting and corrective results:
 
@@ -519,7 +646,7 @@ genuinely new, positive, and mechanistic, which the pivot did not anticipate.
 | # | Task | Effort | Why |
 |---|---|---|---|
 | 1 | Fold N6's non-replication into the paper | writing | a committed claim that does not survive seed variance must not ship |
-| 2 | Real clinician corrections CSV | depends on the listening study | the only simulated component left; converts N7 from SIMULATED to real |
+| 2 | **Get the clinician to fill in the sheet** | their time | the only simulated component left. `N9` then runs in seconds, writes `clinician_corrections.csv`, and N7 picks it up automatically |
 | 3 | Raise N8's pre-registered predictions above 4 | design | with 4 predictions the binomial sign test floors at p = 0.0625 and can never reach significance; more named predictions would fix the power, not just the phrasing |
 | 4 | N5 null at `--n_perm` ≥ 20 | ~2 h CPU | the null *mean* is solid at 5; only quote a null *interval* after this |
 | 5 | Re-run N1's LoRA at other ranks / epochs | ~1 h each on the 4050 | tests whether concept destruction scales with adaptation strength — the obvious follow-up to the headline |
@@ -544,6 +671,17 @@ genuinely new, positive, and mechanistic, which the pivot did not anticipate.
 | 2026-08-29 | — | N1 `--stage embed` / `lora` / `probe` | AST frozen **13/14** concepts (mean R² 0.410); **LoRA degrades 13/14**, mean ΔR² **−0.091**, worst `rhonchi_presence` −0.219 |
 | 2026-08-29 | — | fixed `inject_lora` (transformers 5 renamed q/v) | first LoRA run injected **0 adapters** and silently trained a linear probe; now raises instead |
 | 2026-08-29 | — | fixed N8 verdict criterion | 4-prediction binomial floors at p=0.0625 and hardcoded "NOT supported"; now judged per-concept |
+| 2026-08-29 | — | **N8 predictions extended 4 → 8** (2 mechanisms, 2 registration rounds) | sign-test floor 0.0625 → 0.0039. With real power the mechanism is **MIXED, not supported**: 5/7 p=0.227 (age), 5/8 p=0.363 (cross-corpus) |
+| 2026-08-29 | — | paper: added §probe (N1), §bottleneck (N6), §pediatric (N8) | abstract, limitations and conclusions updated; 4 new bib entries; LaTeX structure verified balanced |
+| 2026-08-29 | — | **clinician sheet returned** (`Asif's/labels v1 - labels.csv`) | 116/132 answered; `ambiguous` ×12 handled as unsure; 16 blanks = 16 `unusable` |
+| 2026-08-29 | — | N9 on real labels | vs ICBHI κ **0.035** / **0.266**; intra-rater κ **0.714** / **0.600**; Se 0.231 vs Tzeng's 0.2323 |
+| 2026-08-29 | — | N9 release asset | `release_annotations/` — first fine-grained ICBHI concept labels + README (G0 ceiling lever) |
+| 2026-08-29 | — | N7 re-run with real corrections | 30 test-patient corrections; accuracy 0.5349 → 0.3953. No simulated component remains |
+| 2026-08-29 | — | **N10 — G2 vs an independent reference** | paired diff +0.033 / +0.097, neither excludes zero → **UNDECIDED**; pivot's ambiguity stands, now measured |
+| 2026-08-29 | — | N10 selection-bias + degeneracy guards | pack is longest-first stratified → absolute AUROC not comparable to G2; `fine_crackle_ratio` constant → not estimable |
+| 2026-08-29 | — | synthetic-data audit of all scripts | one substitution found: N7's clinician oracle. All other randomness is controls, bootstraps or nulls on real data |
+| 2026-08-29 | — | built `N9_clinician_reliability.py`, `--selftest` | 90%-agreeing synthetic rater → κ 0.758; random rater → κ −0.160. Statistics validated |
+| 2026-08-29 | — | N9 against the real sheet | **BLOCKED: 0/132 clips answered** — `labels.csv`/`.xlsx` are the blank template. No result invented |
 
 > Append a row every time you run something. A number without a row here is a number nobody can
 > reproduce.

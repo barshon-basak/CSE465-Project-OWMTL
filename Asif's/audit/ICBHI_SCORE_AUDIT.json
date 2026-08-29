@@ -2,7 +2,7 @@
   "verified": [
     {
       "model": "M12",
-      "path": "Asif's/M12/results_M12.json",
+      "path": "Asif's\\M12\\results_M12.json",
       "reported": 0.7227,
       "official": 0.6138,
       "delta": -0.1089,
@@ -11,18 +11,8 @@
       "split": "patient_independent_official_60_40"
     },
     {
-      "model": "M2",
-      "path": "Asif's/M2/results_M2.json",
-      "reported": 0.7227,
-      "official": 0.6138,
-      "delta": -0.1089,
-      "se": 0.6118,
-      "sp": 0.6157,
-      "split": "patient_independent_60_40_patient_id_fallback"
-    },
-    {
       "model": "M22",
-      "path": "Asif's/M22/result_M22/results_M22.json",
+      "path": "Asif's\\M22\\result_M22\\results_M22.json",
       "reported": 0.7077,
       "official": 0.6495,
       "delta": -0.0582,
@@ -31,18 +21,58 @@
       "split": "patient_independent_60_40_patient_id_fallback"
     },
     {
-      "model": "M3",
-      "path": "Asif's/M3/results_M3.json",
-      "reported": 0.6984,
-      "official": 0.5895,
+      "model": "M22_v2",
+      "path": "Asif's\\M22_v2\\Results\\results_M22_v2.json",
+      "reported": 0.614,
+      "official": 0.5602,
+      "delta": -0.0538,
+      "se": 0.4089,
+      "sp": 0.7115,
+      "split": "official_60_40_patient_independent_corrected"
+    },
+    {
+      "model": "M2",
+      "path": "Asif's\\M2\\17aug_run_v2\\results_M2.json",
+      "reported": 0.6167,
+      "official": 0.4139,
+      "delta": -0.2028,
+      "se": 0.503,
+      "sp": 0.3249,
+      "split": "official_icbhi_60_40_patient_disjoint"
+    },
+    {
+      "model": "M2",
+      "path": "Asif's\\M2\\29aug_run_v3\\results_M2.json",
+      "reported": 0.578,
+      "official": 0.4671,
+      "delta": -0.1109,
+      "se": 0.2991,
+      "sp": 0.6352,
+      "split": "official_icbhi_60_40_patient_disjoint"
+    },
+    {
+      "model": "M2",
+      "path": "Asif's\\M2\\m2_v4\\results_M2.json",
+      "reported": 0.548,
+      "official": 0.472,
+      "delta": -0.076,
+      "se": 0.2005,
+      "sp": 0.7435,
+      "split": "official_icbhi_60_40_patient_disjoint"
+    },
+    {
+      "model": "M2",
+      "path": "Asif's\\M2\\results_M2.json",
+      "reported": 0.7227,
+      "official": 0.6138,
       "delta": -0.1089,
-      "se": 0.5359,
-      "sp": 0.6431,
+      "se": 0.6118,
+      "sp": 0.6157,
       "split": "patient_independent_60_40_patient_id_fallback"
     },
     {
       "model": "M30",
-      "path": "Asif's/M30_v2/results_M30.json",
+      "path": "Asif's\\M30_v2\\results_M30.json",
       "reported": 0.6777,
       "official": 0.5975,
       "delta": -0.0802,
@@ -51,8 +81,48 @@
       "split": "patient_independent_60_40_patient_id_fallback"
     },
     {
+      "model": "M3",
+      "path": "Asif's\\M3\\17aug_run_result\\results_M3.json",
+      "reported": 0.6239,
+      "official": 0.449,
+      "delta": -0.1749,
+      "se": 0.4902,
+      "sp": 0.4079,
+      "split": "official_icbhi_60_40_patient_disjoint"
+    },
+    {
+      "model": "M3",
+      "path": "Asif's\\M3\\29 aug run\\results_M3.json",
+      "reported": 0.5639,
+      "official": 0.5132,
+      "delta": -0.0507,
+      "se": 0.198,
+      "sp": 0.8284,
+      "split": "official_icbhi_60_40_patient_disjoint"
+    },
+    {
+      "model": "M3",
+      "path": "Asif's\\M3\\results_M3.json",
+      "reported": 0.6984,
+      "official": 0.5895,
+      "delta": -0.1089,
+      "se": 0.5359,
+      "sp": 0.6431,
+      "split": "patient_independent_60_40_patient_id_fallback"
+    },
+    {
+      "model": "M3_v2",
+      "path": "Asif's\\M3_v2\\Results\\results_M3_v2.json",
+      "reported": 0.6075,
+      "official": 0.52,
+      "delta": -0.0875,
+      "se": 0.4266,
+      "sp": 0.6135,
+      "split": "official_60_40_patient_independent_corrected"
+    },
+    {
       "model": "M1",
-      "path": "Barshon's/M1/results_M1.json",
+      "path": "Barshon's\\M1\\results_M1.json",
       "reported": 0.7181,
       "official": 0.6143,
       "delta": -0.1038,
@@ -62,7 +132,7 @@
     },
     {
       "model": "M31",
-      "path": "Barshon's/M31/results_M31.json",
+      "path": "Barshon's\\M31\\results_M31.json",
       "reported": 0.6377,
       "official": 0.5535,
       "delta": -0.0842,
@@ -72,7 +142,7 @@
     },
     {
       "model": "M32",
-      "path": "Barshon's/M32/results_M32.json",
+      "path": "Barshon's\\M32\\results_M32.json",
       "reported": 0.6547,
       "official": 0.4733,
       "delta": -0.1814,
@@ -82,7 +152,7 @@
     },
     {
       "model": "M33",
-      "path": "Barshon's/M33/results_M33.json",
+      "path": "Barshon's\\M33\\results_M33.json",
       "reported": 0.5506,
       "official": 0.333,
       "delta": -0.2176,
@@ -92,7 +162,7 @@
     },
     {
       "model": "M33",
-      "path": "Barshon's/M33_v2/results_M33.json",
+      "path": "Barshon's\\M33_v2\\results_M33.json",
       "reported": 0.6806,
       "official": 0.5832,
       "delta": -0.0974,
@@ -102,7 +172,7 @@
     },
     {
       "model": "M34",
-      "path": "Barshon's/M34/results_M34.json",
+      "path": "Barshon's\\M34\\results_M34.json",
       "reported": 0.7046,
       "official": 0.5754,
       "delta": -0.1292,
@@ -112,7 +182,7 @@
     },
     {
       "model": "M35",
-      "path": "Barshon's/M35/results_M35.json",
+      "path": "Barshon's\\M35\\results_M35.json",
       "reported": 0.7839,
       "official": 0.6864,
       "delta": -0.0975,
@@ -122,7 +192,7 @@
     },
     {
       "model": "M35",
-      "path": "Barshon's/M35_v2/results_M35.json",
+      "path": "Barshon's\\M35_v2\\results_M35.json",
       "reported": 0.7918,
       "official": 0.6719,
       "delta": -0.1199,
@@ -132,7 +202,7 @@
     },
     {
       "model": "M36",
-      "path": "Barshon's/M36/results_M36.json",
+      "path": "Barshon's\\M36\\results_M36.json",
       "reported": 0.5137,
       "official": 0.5052,
       "delta": -0.0085,
@@ -142,7 +212,7 @@
     },
     {
       "model": "M37",
-      "path": "Barshon's/M37_v2/results_M37.json",
+      "path": "Barshon's\\M37_v2\\results_M37.json",
       "reported": 0.7969,
       "official": 0.6753,
       "delta": -0.1216,
@@ -154,13 +224,13 @@
   "unverifiable": [
     {
       "model": "M15",
-      "path": "Barshon's/M15/v6/results_M15.json",
+      "path": "Barshon's\\M15\\v6\\results_M15.json",
       "reported": 0.0,
       "split": "patient_independent"
     },
     {
       "model": "M30",
-      "path": "Barshon's/M30/results_M30.json",
+      "path": "Barshon's\\M30\\results_M30.json",
       "reported": 0.8213,
       "split": "patient_independent_70_30"
     }
@@ -168,7 +238,7 @@
   "not_applicable": [
     {
       "model": "M13",
-      "path": "Barshon's/M13/results_M13.json",
+      "path": "Barshon's\\M13\\results_M13.json",
       "reported": 0.7137
     }
   ]

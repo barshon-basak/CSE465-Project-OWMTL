@@ -61,13 +61,21 @@ Last full audit: run `python3 "Asif's/audit/audit_project.py"` (no GPU, no datas
 
 | Status | Models |
 |---|---|
-| ✅ Real data, verified | **M1, M2, M3, M4, M6, M12, M29** |
-| 🔴 Synthetic data — not results | M11, M13, M15, M17, M18, M19, M20, M21, M24 |
+| ✅ Real data, verified | **M1, M2, M3, M4, M6, M11, M12, M13, M15, M17, M19, M22_v2, M24, M29, M30_v2, M31–M37, M39** |
+| 🟡 Real audio, provenance unproven + no train/test split | M16, M18, M20, M21 |
+| 🔴 Synthetic data — not results | *(none)* |
 
-**The single most important fact:** every model downstream of M12 except M6 and M29 runs on
-`torch.randn`/`np.random` data, not ICBHI. M15's Dataset is *named* `ICBHI_OWL_Dataset` and returns
-Gaussian noise. So the core cross-task mechanism has **never been evaluated** — it is not "failing,"
-it has not been tested. Do not treat any number from those models as a result.
+**The synthetic-data finding is closed (2026-08-29).** The line that stood here — *"every model
+downstream of M12 except M6 and M29 runs on `torch.randn` data"* — no longer holds. M11, M13, M15,
+M17, M19 and M24 were re-run on real ICBHI audio and the audit now reports **zero
+`synthetic_data_not_real_dataset` findings**. The core cross-task mechanism **has** now been
+evaluated on real data, and it lost: M15 v6 scores 0.5747 against M29's zero-training Energy
+baseline at 0.6466.
+
+**What replaced it** is narrower, and tracked in `SYNTHETIC_DATA_REMEDIATION.md` at the repo root:
+M28's hardcoded benchmark table, M15 v6's fabricated-label fallback and the silent all-zero
+spectrogram fallback in 39 files are all fixed; M16/M18/M20/M21 remain open because their notebooks
+carry no committed outputs and evaluate 851 whole recordings with no train/test split.
 
 **M6 is real, and it's a genuine negative:** OpenMax `auroc = 0.4516`, `unknown_recall = 0.0255` on
 real audio with real patient counts (72 train / 32 known-test / 19 unknown-test). Citable as-is.
@@ -132,7 +140,11 @@ unaffected by the metric correction.)
 
 Check for these in any new work, and keep the audit's checks in mind as a written record of them:
 
-1. **Synthetic data committed as results** — the big one, see above.
+1. **Synthetic data committed as results** — closed 2026-08-29, but it took four rounds to find
+   every form it took: a `torch.randn` Dataset, a hand-typed benchmark table, a `pid % 3`
+   label fallback, and an `except: return np.zeros(...)` that turned an unreadable wav into a
+   silent all-zero cycle. **A fallback that substitutes data is the same bug as a synthetic
+   Dataset.** Make the missing input a hard failure. See `SYNTHETIC_DATA_REMEDIATION.md`.
 2. **Metrics of exactly 1.0** — M21. Always ask what the evaluation split actually is.
 3. **A metric constant across a sweep** — M18, flat 0.28 over a 62× parameter range.
 4. **Ratios against sub-chance baselines** — M15's "beats M6 by 36.9%" where M6 = 0.4516.

@@ -119,10 +119,14 @@ def log_mel(wav_path, start, end):
     try:
         audio, _ = librosa.load(wav_path, sr=sr, offset=start,
                                 duration=max(end - start, 0.05), mono=True)
-    except Exception:
-        return np.zeros((CFG["n_mels"], CFG["n_frames"]), np.float32)
+    except Exception as e:
+        # A silent all-zero spectrogram here would be trained on and
+        # scored as a real cycle. Fail instead of substituting
+        # (Model_Training_Protocol.md section 1.2).
+        raise RuntimeError(f"failed to load audio: {wav_path}") from e
     if len(audio) == 0:
-        return np.zeros((CFG["n_mels"], CFG["n_frames"]), np.float32)
+        # Empty decode is a failed read, not a silent zero cycle.
+        raise RuntimeError(f"empty audio decoded from audio: {wav_path}")
 
     # wrap-pad by repetition (M2/M1/M4 convention), then crop
     if len(audio) < n_samples:

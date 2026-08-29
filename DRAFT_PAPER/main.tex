@@ -68,11 +68,17 @@ not patient independent as it is routinely described. We then report a pre-regis
 validity gate for physics-derived acoustic concepts, run twice and failed twice, and
 read that failure against published human performance on the same labels, where seven
 senior physicians reach a score below fifty percent and twelve physicians agree on
-detailed adventitious sound descriptions only poorly. We release the corrected split
-loader, a canonical score format with paired significance tests, and the audit tool
-that detects all three faults. The contribution is a measurement rather than a
-mechanism: concept-level validation against these labels is bounded by the
-reliability of the labels themselves.
+detailed adventitious sound descriptions only poorly. A linear probe then separates the
+two readings of that failure: a foundation model never exposed to respiratory audio
+already encodes thirteen of our fourteen acoustic concepts, so the information is
+present and the failure is one of reference rather than representation---and adapting
+that model to the benchmark with a third of a percent of its parameters degrades
+thirteen of the fourteen. We further report a non-replication of our own: an
+interpretability cost we had recorded from a single random initialisation reverses sign
+across five, and we withdraw it. We release the corrected split loader, a canonical
+score format with paired significance tests, and the audit tool that detects all three
+faults. The contribution is a measurement rather than a mechanism: concept-level
+validation against these labels is bounded by the reliability of the labels themselves.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -739,6 +745,71 @@ demonstrated, twice. Whether the 0.65 threshold is reachable on this reference
 standard by \emph{any} method is a different question, and this experiment cannot
 decide it. Section~\ref{subsec:ceiling} is why that distinction matters.
 
+\subsection{Do the Models Represent the Concepts at All?}
+\label{subsec:probe}
+
+Section~\ref{subsec:conceptgate} shows that our hand-built detectors do not track the
+ICBHI cycle labels. That leaves two very different explanations, and the gate cannot
+separate them. Either the acoustic information is not present in a form a model can
+use---a representational failure---or it is present, and the labels do not follow it---a
+referential one. A linear probe distinguishes them directly: if a frozen network's
+embedding linearly predicts a concept, the network represents that concept, whatever
+the labels say.
+
+We probe four representations for all fourteen concepts. Two are foundation models: an
+Audio Spectrogram Transformer~\cite{gong2021ast} pre-trained on
+AudioSet~\cite{gemmeke2017audioset} and never exposed to respiratory audio, and the
+same model after low-rank adaptation~\cite{hu2022lora} to the four-class ICBHI task
+($r=8$ on the query and value projections of all twelve blocks, $294{,}912$ trainable
+parameters, 0.34\% of the total). The third is our own M2 CNN, trained from scratch on
+this task. The fourth is a random projection of the same dimensionality, which is the
+control that makes the others readable: a linear probe on a 768-dimensional embedding
+with roughly a hundred patients will appear to work on noise unless it is checked.
+Continuous concepts are scored by ridge $R^2$ and binary ones by AUROC, always under
+patient-grouped cross-validation, with bootstrap intervals and a within-patient
+permutation null.
+
+\begin{table}[!t]
+\centering
+\caption{Linear recoverability of the fourteen acoustic concepts from four
+representations. 6{,}898 cycles, patient-grouped cross-validation.}
+\label{tab:probe}
+\begin{tabular}{lrr}
+\toprule
+Representation & Concepts above chance & Mean $R^2$ \\
+\midrule
+AST, frozen (AudioSet only)      & 13 / 14 & 0.4102 \\
+AST, LoRA-adapted to ICBHI       & 13 / 14 & 0.3195 \\
+M2 CNN, trained on ICBHI         & 12 / 14 & 0.4289 \\
+Random projection (control)      & \phantom{0}0 / 14 & $-0.0054$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The first row settles the question. A model that has never heard a stethoscope
+recording already encodes thirteen of the fourteen concepts, several strongly---wheeze
+duration ratio at $R^2=0.777$, spectral flatness at $0.759$, rhonchi presence at
+$0.648$---while the random control recovers nothing at all. The acoustic structure our
+detectors were built to measure is present and linearly accessible. The gate failure in
+Section~\ref{subsec:conceptgate} is therefore not a representational failure, which is
+the strongest available evidence that it is a referential one.
+
+The second row is the more uncomfortable result. Adapting 0.34\% of the parameters to
+the ICBHI task \emph{reduces} concept recoverability on thirteen of the fourteen
+concepts, with a mean change of $-0.0907$ in $R^2$. Task adaptation, at the smallest
+scale we could apply it, systematically discards clinically named structure that the
+pre-trained model had already learned. The concept degraded most is rhonchi presence,
+at $-0.219$; Section~\ref{subsec:bottleneck} independently identifies rhonchi presence
+as the only one of the fourteen carrying appreciable diagnostic information, from a
+different estimator on different data. Two analyses converge on the same concept from
+opposite directions, and the direction of travel is that fitting this benchmark costs
+the model exactly the structure a clinician would name.
+
+Fine crackle ratio is the one concept no representation recovers ($R^2 \approx 0$
+everywhere). It was already the concept that never functioned on real audio, and it
+targets the fine-versus-coarse distinction on which physicians themselves agree at
+$\kappa<0.40$. Three independent lines of evidence now say the same thing about it.
+
 \subsection{The Label-Reliability Ceiling}
 \label{subsec:ceiling}
 
@@ -793,6 +864,65 @@ agreement, and the first fine/coarse crackle reference on this corpus. State the
 $n=1$ limitation explicitly; the published $n=7$ and $n=12$ studies carry the
 reliability argument, and ours adds the fine-grained reference neither has.}
 
+\subsection{The Concept Bottleneck and a Non-Replication}
+\label{subsec:bottleneck}
+
+A concept bottleneck~\cite{koh2020cbm} forces the diagnosis through the interpretable
+concept vector, and the accuracy it gives up is the usual price of that
+interpretability. We evaluate four variants at patient level on the corrected
+partition: \emph{independent}, in which the disease is predicted from the DSP concepts
+alone; \emph{sequential}, in which a learned predictor maps encoder features to
+concepts and the disease is read from those; \emph{leaky}, which sees concepts and
+encoder features together and can therefore bypass the bottleneck; and \emph{opaque},
+which ignores concepts entirely and upper-bounds the trade-off.
+
+Our own first run of this comparison used a single random initialisation and produced a
+clean monotone story: macro-F1 fell from 0.5973 (opaque) through 0.5457 (leaky) and
+0.4441 (sequential), and we recorded an interpretability cost of 0.2326 in accuracy and
+0.1432 in macro-F1. Table~\ref{tab:bottleneck} repeats the experiment across five
+seeds.
+
+\begin{table}[!t]
+\centering
+\caption{Concept bottleneck variants, five seeds, 43 held-out test patients.
+Intervals are stratified bootstrap. The final row is the shuffled-concept control.}
+\label{tab:bottleneck}
+\begin{tabular}{lrrlr}
+\toprule
+Variant & Acc. & Macro-F1 & 95\% CI & Seed SD \\
+\midrule
+Independent (bottleneck) & 0.5814 & \best{0.5254} & [0.333, 0.700] & 0.059 \\
+Leaky                    & 0.6512 & 0.4802 & [0.385, 0.554] & 0.021 \\
+Sequential               & \best{0.6744} & 0.4526 & [0.358, 0.540] & 0.032 \\
+Opaque (upper bound)     & 0.5814 & 0.4378 & [0.332, 0.521] & 0.019 \\
+\midrule
+Independent, shuffled concepts & 0.4884 & 0.2963 & [0.197, 0.393] & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The ordering inverts. Under five seeds the strict bottleneck attains the \emph{highest}
+macro-F1 and the unconstrained opaque model the lowest, which is the opposite of what
+the single-seed run reported. A McNemar test between the independent and opaque
+predictions gives $p=1.0000$. The interpretability cost we previously recorded does not
+survive the addition of four more initialisations, and we withdraw it: at 43 test
+patients there is no measurable cost to routing this diagnosis through the concepts, in
+either direction.
+
+We report this at length because it is the same class of error as the metric and split
+faults in Sections~\ref{subsec:metric_audit} and~\ref{subsec:split_audit}---a number
+taken at a precision the evidence does not support---and because it was our own, found
+only by re-running an experiment we had already recorded as finished. A single seed on
+43 patients is not an ablation.
+
+The shuffled-concept control is the check the first run omitted, and it is the one
+positive finding here. Replacing each patient's concept vector with another patient's
+costs 0.2291 macro-F1 (95\% CI $[0.004, 0.441]$, $p=0.045$), so the concept values do
+carry patient-specific information beyond their marginal distribution. On accuracy the
+same comparison is null ($+0.0930$, CI $[-0.093, 0.279]$, $p=0.389$), because accuracy
+on this three-class task is dominated by COPD, which is 64 of 104 patients. Both
+numbers belong in the record; either alone misleads.
+
 \subsection{Open-Set Behaviour}
 \label{subsec:openset}
 
@@ -823,6 +953,87 @@ because the alternative phrasing, which the ranking invites, would be the same c
 of error as Section~\ref{subsec:metric_audit}: a number presented at a precision the
 evidence does not support. The cross-task disagreement scorer, which was the
 project's original headline mechanism, does not outperform the energy baseline.
+
+\subsection{Covariate Shift: Do Adult Acoustic Priors Transfer to Children?}
+\label{subsec:pediatric}
+
+The device axis of this corpus is unusable for a shift study---only three of 126
+patients span more than one stethoscope---so the pediatric population is the single
+covariate stress available to us. We compare the fourteen concepts, computed by the
+same extractors without modification, between ICBHI and SPRSound~\cite{zhang2022sprsound}
+(6{,}656 annotated events from 243 children, ages 0.2--16.2 years, median 4.4).
+SPRSound events are cut from their annotated start and end times so that the acoustic
+unit matches ICBHI's annotated cycle; fixed-length windowing would compare one breath
+against several and measure segmentation rather than physiology.
+
+A distance between two corpora does not explain itself, so we state directional
+predictions on named concepts in advance. Two mechanisms generate them. Frequency
+scaling: a child's airway is shorter and narrower, so resonant frequency rises and
+spectral quantities shift upward. Allometric respiratory rate: smaller bodies breathe
+faster, so cycles shorten and events occupy a larger fraction of them. Six concepts
+follow from neither and are named as controls.
+
+Two caveats govern how the result may be read. First, four predictions were fixed
+before any pediatric audio was opened; four more were added afterwards, because a
+four-item one-sided binomial cannot fall below $p=0.0625$ and therefore could not have
+supported the hypothesis whatever the data showed. The extension bought the test power,
+but it is an extension and not a pre-registration, and we report the two sets
+separately. Second, the cross-corpus comparison confounds airway size with corpus,
+stethoscope, protocol and annotator. We therefore lead with a within-cohort analysis
+that holds all four fixed: the correlation of each concept with age \emph{inside}
+SPRSound. If the mechanism is real it must appear there too.
+
+\begin{table}[!t]
+\centering
+\caption{Within-cohort age gradient in SPRSound (Spearman $\rho$ against age,
+patient-level bootstrap). Round 1 predictions were fixed before any pediatric audio
+was examined; round 2 was added afterwards to give the sign test power.}
+\label{tab:pediatric}
+\begin{tabular}{llrlc}
+\toprule
+Concept & Pred. & $\rho$ & 95\% CI & Round \\
+\midrule
+Dominant frequency        & $-$ & $-0.259$ & [$-0.348$, $-0.156$] & 1 \\
+Wheeze dominant frequency & $-$ & $-0.240$ & [$-0.310$, $-0.159$] & 1 \\
+Low/high frequency ratio  & $+$ & $+0.300$ & [$+0.187$, $+0.399$] & 1 \\
+Coarse crackle ratio      & $+$ & $+0.069$ & [$+0.022$, $+0.112$] & 2 \\
+Crackle rate              & $-$ & $-0.115$ & [$-0.219$, $-0.010$] & 2 \\
+\midrule
+\multicolumn{5}{l}{\emph{Contradicting the prediction:}} \\
+Wheeze duration ratio     & $-$ & $+0.271$ & [$+0.178$, $+0.347$] & 2 \\
+Rhonchi presence          & $+$ & $-0.090$ & [$-0.152$, $-0.031$] & 1 \\
+\bottomrule
+\end{tabular}
+
+\vspace{2pt}
+\footnotesize Predicted sign is the direction the concept should take as age
+\emph{increases}, derived from the cross-corpus prediction by inversion. Fine crackle
+ratio is degenerate on this corpus and is not estimable.
+\end{table}
+
+Five of seven estimable concepts move as predicted with intervals excluding zero, and
+the three frequency quantities---dominant frequency, wheeze dominant frequency and the
+low/high ratio---are the strongest and most consistent of them. That is the pattern
+inverse frequency scaling predicts, in a comparison where corpus, device and protocol
+are constant.
+
+We nonetheless decline to call the mechanism established. Two concepts move
+\emph{against} prediction with intervals excluding zero, and the sign test over all
+predictions does not reach significance in either arm ($5/7$, $p=0.227$ within cohort;
+$5/8$, $p=0.363$ cross-corpus). Restricted to the four genuinely pre-registered
+predictions the test is $3/4$ in both arms, which is the best result its 0.0625 floor
+permits and still not significant. The honest summary is that the frequency concepts
+behave as the physics predicts and the crackle-morphology concepts do not, and that a
+mechanism claim needs either more named predictions or a second pediatric corpus. We
+report the concept-space maximum mean discrepancy alongside, at $0.4805$ (CI
+$[0.457, 0.502]$), which is a shift of a size the earlier embedding-space figure of
+0.4236 was reported without any interval at all.
+
+This subsection also records a methodological point worth more than the result. Our
+first version of this analysis judged the mechanism solely by the four-prediction sign
+test and duly printed ``not supported''---a verdict that was determined by the design
+rather than the data, since no outcome could have produced $p<0.05$. A test that cannot
+pass is not evidence of absence.
 
 \subsection{Interpretability Analysis}
 \label{subsec:xai}
@@ -965,15 +1176,28 @@ have been compared against may contain the same class of error.
 \subsection{Limitations}
 \label{subsec:limitations}
 
-Four limitations bound the claims above. The corrected-partition evidence currently
+Seven limitations bound the claims above. The corrected-partition evidence currently
 rests on two architectures, not a matched re-run of the full suite, so the size of the
 split effect is estimated rather than measured. The concept extractors are one
-implementation, and a better one may exist; we cannot separate ``our detector is
-weak'' from ``0.65 is unreachable here'' from this experiment alone, and we do not try
-to. The reliability argument leans on two published studies plus a single-clinician
-study still in flight, against the $n=7$ and $n=12$ of the literature. And all of it
-concerns one corpus: ICBHI is the field's default benchmark and the faults we describe
-are ICBHI-specific, so the scope of the claim is that benchmark and no further.
+implementation, and a better one may exist; the probe of
+Section~\ref{subsec:probe} narrows this---the information is demonstrably present in a
+learned representation---but it does not establish that a hand-built detector can reach
+0.65 on these labels, and we do not claim it. The reliability argument leans on two
+published studies plus a single-clinician study still in flight, against the $n=7$ and
+$n=12$ of the literature.
+
+The bottleneck comparison of Section~\ref{subsec:bottleneck} is run on 43 test patients,
+where the intervals are wide enough that the ordering between adjacent variants carries
+little information; the claim we make from it is a negative one, that no
+interpretability cost is measurable, and even that is a statement about this sample
+size. The adaptation result of Section~\ref{subsec:probe} uses one adaptation recipe at
+one rank for five epochs, so it shows that concept encoding degrades under this
+adaptation, not that degradation scales with adaptation strength. The pediatric analysis
+mixes four pre-registered predictions with four added afterwards and reaches
+significance under neither, so it is reported as a pattern consistent with frequency
+scaling rather than as an established mechanism. And all of it concerns one corpus for
+the adult side: ICBHI is the field's default benchmark and the faults we describe are
+ICBHI-specific, so the scope of the claim is that benchmark and no further.
 
 %=======================================================================
 \section{Conclusions}
@@ -989,7 +1213,15 @@ split assigns recordings rather than patients and is not patient-independent. We
 supplied corrected baselines under the official metric, a pre-registered
 concept-validity gate that was run twice and failed twice under a threshold chosen so
 that it \emph{could} fail, and a reading of that failure against a reference standard
-that seven senior physicians reproduce at a 47.77\% ICBHI score. The contribution is a
+that seven senior physicians reproduce at a 47.77\% ICBHI score. A linear probe then
+showed that the acoustic information those detectors were built to capture is present
+and linearly accessible in a foundation model that has never heard a stethoscope, which
+locates the failure at the labels rather than at the representation---and that adapting
+that model to the benchmark degrades thirteen of the fourteen concepts, worst of all the
+one concept that carries diagnostic signal. We also withdrew one of our own results: an
+interpretability cost recorded from a single random initialisation reversed sign across
+five, and a mechanism verdict was being produced by a sign test whose design floor made
+it incapable of ever supporting the hypothesis. The contribution is a
 measurement rather than a mechanism: concept-level validation against ICBHI cycle
 labels is bounded by the reliability of those labels, and we release the corrected
 split loader, the canonical score format with paired significance tests, and the audit

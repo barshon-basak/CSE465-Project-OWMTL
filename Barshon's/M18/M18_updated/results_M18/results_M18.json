@@ -1,0 +1,643 @@
+{
+  "meta": {
+    "model_id": "M18",
+    "model_name": "Model Pruning & Quantization Sweep",
+    "member": "B",
+    "member_name": "Member B (Disease Diagnosis & OWL)",
+    "date_completed": "2026-08-29",
+    "is_augmented": false,
+    "augmentation_method": "none",
+    "notes": "Structured L1 pruning and dynamic INT8 quantization sweep. Re-run 2026-08-29 per SYNTHETIC_DATA_REMEDIATION.md item 4. The previous result indexed 851 whole recordings with no train/test split, and its loader swallowed every checkpoint error (`except Exception: pass`), so the sweep could run over a randomly initialised network -- consistent with the committed 0.0411 accuracy at pruning 0.0, below the 0.25 four-class chance line. This run is cycle-level on the corrected patient-independent official split, the checkpoint must load fully or the notebook raises, and every configuration is scored on TEST.",
+    "supersedes_note": "Replaces the 2026-08-05 result (best_accuracy 0.9318, 851 recording rows, no split, unchecked checkpoint load)."
+  },
+  "config": {
+    "model_id": "M18",
+    "model_name": "Model Pruning & Quantization Sweep",
+    "member": "B",
+    "seed": 42,
+    "sample_rate": 16000,
+    "duration_s": 8.0,
+    "n_mels": 128,
+    "n_fft": 1024,
+    "hop_length": 160,
+    "win_length": 400,
+    "f_min": 50,
+    "f_max": 2000,
+    "n_samples": 128000,
+    "n_frames": 801,
+    "disease_classes": [
+      "COPD",
+      "Healthy",
+      "URTI",
+      "Pneumonia"
+    ],
+    "m2_depth": 5,
+    "m2_base_width": 48,
+    "proto_embed_dim": 256,
+    "proto_temperature": 0.1,
+    "known_classes": [
+      "COPD",
+      "Healthy",
+      "URTI"
+    ],
+    "batch_size": 32,
+    "m2_ckpt_path": "/kaggle/input/datasets/sudamchandrabasak/m2-checkpoint/M2_best_model.pth",
+    "m17_ckpt_path": "/kaggle/input/datasets/barshonbasak/m17-checkpoints/best_model.pth",
+    "icbhi_path": "/kaggle/input/datasets/vbookshelf/respiratory-sound-database/Respiratory_Sound_Database/Respiratory_Sound_Database/audio_and_txt_files",
+    "results_dir": "/kaggle/working/results_M18",
+    "split_method": "official_60_40_patient_independent_corrected",
+    "split_file": "/kaggle/input/datasets/sudamchandrabasak/icbhi-challenge-train-test-split/ICBHI_challenge_train_test.txt",
+    "num_classes": 4
+  },
+  "environment": {
+    "platform": "Kaggle",
+    "gpu_name": "Tesla T4",
+    "pytorch_version": "2.10.0+cu128",
+    "python_version": "3.12.13"
+  },
+  "efficiency": {
+    "base_params": 4153556,
+    "best_compressed_params": 4153556,
+    "best_model_size_mb": 15.84,
+    "best_latency_ms": 0.072,
+    "gpu_name": "Tesla T4"
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "data_source": "real_audio",
+    "unit": "respiratory_cycle",
+    "split_method": "official_60_40_patient_independent_corrected",
+    "split_file": "/kaggle/input/datasets/sudamchandrabasak/icbhi-challenge-train-test-split/ICBHI_challenge_train_test.txt",
+    "split_file_verified": true,
+    "diagnosis_file": "/kaggle/input/datasets/vbookshelf/respiratory-sound-database/Respiratory_Sound_Database/Respiratory_Sound_Database/patient_diagnosis.csv",
+    "official_overlap_patients": [
+      156,
+      218
+    ],
+    "official_overlap_policy": "reassign_to_train",
+    "disease_classes": [
+      "COPD",
+      "Healthy",
+      "URTI",
+      "Pneumonia"
+    ],
+    "train_samples": 4049,
+    "test_samples": 2536,
+    "train_patients": 67,
+    "test_patients": 43,
+    "patient_leakage_verified": true,
+    "evaluation_level": "cycle"
+  },
+  "best_metrics": {
+    "selection_criterion": "macro_f1 (accuracy rewards majority-class collapse on this corpus)",
+    "best_accuracy": 0.8983,
+    "best_f1_macro": 0.3949,
+    "majority_class_rate": 0.9026,
+    "beats_majority_class": false,
+    "best_pruning_ratio": 0.0,
+    "best_quantization_mode": "FP32",
+    "confusion_matrix_raw": [
+      [
+        2177,
+        61,
+        25,
+        26
+      ],
+      [
+        14,
+        90,
+        56,
+        15
+      ],
+      [
+        7,
+        53,
+        11,
+        1
+      ],
+      [
+        0,
+        0,
+        0,
+        0
+      ]
+    ],
+    "uncompressed_baseline": {
+      "accuracy": 0.8983,
+      "precision_macro": 0.3878,
+      "recall_macro": 0.4045,
+      "f1_macro": 0.3949,
+      "specificity_macro": 0.9543,
+      "majority_class_rate": 0.9026,
+      "per_class": {
+        "COPD": {
+          "precision": 0.9904,
+          "recall": 0.9511,
+          "f1": 0.9704,
+          "specificity": 0.915,
+          "support": 2289
+        },
+        "Healthy": {
+          "precision": 0.4412,
+          "recall": 0.5143,
+          "f1": 0.4749,
+          "specificity": 0.9517,
+          "support": 175
+        },
+        "URTI": {
+          "precision": 0.1196,
+          "recall": 0.1528,
+          "f1": 0.1341,
+          "specificity": 0.9671,
+          "support": 72
+        },
+        "Pneumonia": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "specificity": 0.9834,
+          "support": 0
+        }
+      },
+      "confusion_matrix_raw": [
+        [
+          2177,
+          61,
+          25,
+          26
+        ],
+        [
+          14,
+          90,
+          56,
+          15
+        ],
+        [
+          7,
+          53,
+          11,
+          1
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "confusion_matrix_normalized": [
+        [
+          0.9511,
+          0.0266,
+          0.0109,
+          0.0114
+        ],
+        [
+          0.08,
+          0.5143,
+          0.32,
+          0.0857
+        ],
+        [
+          0.0972,
+          0.7361,
+          0.1528,
+          0.0139
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      ],
+      "latency_ms_per_sample": 0.1796
+    },
+    "sweep_summary": [
+      {
+        "status": "ok",
+        "pruning_ratio": 0.0,
+        "quantization_mode": "FP32",
+        "remaining_params": 4153556,
+        "model_size_mb": 15.84,
+        "accuracy": 0.8983,
+        "f1_macro": 0.3949,
+        "majority_class_rate": 0.9026,
+        "beats_majority": false,
+        "latency_ms_per_sample": 0.072,
+        "confusion_matrix_raw": [
+          [
+            2177,
+            61,
+            25,
+            26
+          ],
+          [
+            14,
+            90,
+            56,
+            15
+          ],
+          [
+            7,
+            53,
+            11,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ]
+        ]
+      },
+      {
+        "status": "ok",
+        "pruning_ratio": 0.0,
+        "quantization_mode": "INT8_Dynamic",
+        "remaining_params": 4153556,
+        "model_size_mb": 3.96,
+        "accuracy": 0.8979,
+        "f1_macro": 0.3949,
+        "majority_class_rate": 0.9026,
+        "beats_majority": false,
+        "latency_ms_per_sample": 131.701,
+        "confusion_matrix_raw": [
+          [
+            2176,
+            61,
+            25,
+            27
+          ],
+          [
+            13,
+            90,
+            56,
+            16
+          ],
+          [
+            7,
+            53,
+            11,
+            1
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ]
+        ]
+      },
+      {
+        "status": "ok",
+        "pruning_ratio": 0.2,
+        "quantization_mode": "FP32",
+        "remaining_params": 3448446,
+        "model_size_mb": 13.15,
+        "accuracy": 0.8474,
+        "f1_macro": 0.3353,
+        "majority_class_rate": 0.9026,
+        "beats_majority": false,
+        "latency_ms_per_sample": 0.075,
+        "confusion_matrix_raw": [
+          [
+            2079,
+            79,
+            68,
+            63
+          ],
+          [
+            26,
+            66,
+            49,
+            34
+          ],
+          [
+            15,
+            50,
+            4,
+            3
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ]
+        ]
+      },
+      {
+        "status": "ok",
+        "pruning_ratio": 0.2,
+        "quantization_mode": "INT8_Dynamic",
+        "remaining_params": 3448446,
+        "model_size_mb": 3.29,
+        "accuracy": 0.8474,
+        "f1_macro": 0.3381,
+        "majority_class_rate": 0.9026,
+        "beats_majority": false,
+        "latency_ms_per_sample": 133.217,
+        "confusion_matrix_raw": [
+          [
+            2078,
+            80,
+            65,
+            66
+          ],
+          [
+            26,
+            66,
+            48,
+            35
+          ],
+          [
+            15,
+            49,
+            5,
+            3
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ]
+        ]
+      },
+      {
+        "status": "ok",
+        "pruning_ratio": 0.4,
+        "quantization_mode": "FP32",
+        "remaining_params": 2743335,
+        "model_size_mb": 10.46,
+        "accuracy": 0.4783,
+        "f1_macro": 0.217,
+        "majority_class_rate": 0.9026,
+        "beats_majority": false,
+        "latency_ms_per_sample": 0.073,
+        "confusion_matrix_raw": [
+          [
+            1176,
+            80,
+            456,
+            577
+          ],
+          [
+            46,
+            23,
+            53,
+            53
+          ],
+          [
+            23,
+            18,
+            14,
+            17
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ]
+        ]
+      },
+      {
+        "status": "ok",
+        "pruning_ratio": 0.4,
+        "quantization_mode": "INT8_Dynamic",
+        "remaining_params": 2743335,
+        "model_size_mb": 2.62,
+        "accuracy": 0.4811,
+        "f1_macro": 0.2175,
+        "majority_class_rate": 0.9026,
+        "beats_majority": false,
+        "latency_ms_per_sample": 130.629,
+        "confusion_matrix_raw": [
+          [
+            1184,
+            71,
+            453,
+            581
+          ],
+          [
+            46,
+            22,
+            53,
+            54
+          ],
+          [
+            24,
+            17,
+            14,
+            17
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ]
+        ]
+      },
+      {
+        "status": "ok",
+        "pruning_ratio": 0.6,
+        "quantization_mode": "FP32",
+        "remaining_params": 2038225,
+        "model_size_mb": 7.78,
+        "accuracy": 0.5528,
+        "f1_macro": 0.2166,
+        "majority_class_rate": 0.9026,
+        "beats_majority": false,
+        "latency_ms_per_sample": 0.073,
+        "confusion_matrix_raw": [
+          [
+            1368,
+            276,
+            163,
+            482
+          ],
+          [
+            76,
+            33,
+            2,
+            64
+          ],
+          [
+            23,
+            25,
+            1,
+            23
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ]
+        ]
+      },
+      {
+        "status": "ok",
+        "pruning_ratio": 0.6,
+        "quantization_mode": "INT8_Dynamic",
+        "remaining_params": 2038225,
+        "model_size_mb": 1.94,
+        "accuracy": 0.554,
+        "f1_macro": 0.2171,
+        "majority_class_rate": 0.9026,
+        "beats_majority": false,
+        "latency_ms_per_sample": 129.984,
+        "confusion_matrix_raw": [
+          [
+            1371,
+            273,
+            162,
+            483
+          ],
+          [
+            76,
+            33,
+            2,
+            64
+          ],
+          [
+            23,
+            25,
+            1,
+            23
+          ],
+          [
+            0,
+            0,
+            0,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  "ablation": {
+    "ablation_group": "model_compression",
+    "ablation_role": "pruning_quantization_sweep",
+    "baseline_model_id": "M17",
+    "variable_changed": "pruning_and_quantization",
+    "variables_held_constant": [
+      "backbone: M2_CNN",
+      "seed: 42",
+      "split: official_60_40_patient_independent_corrected"
+    ],
+    "component_flags": {
+      "has_sound_event_head": false,
+      "has_disease_head": true,
+      "has_pruning": true,
+      "has_quantization": true,
+      "owl_stage": 2
+    },
+    "loss_weights": {}
+  },
+  "training_history": {
+    "note": "post-hoc compression of a frozen checkpoint; no training epochs",
+    "sweep": [
+      {
+        "status": "ok",
+        "pruning_ratio": 0.0,
+        "quantization_mode": "FP32",
+        "remaining_params": 4153556,
+        "model_size_mb": 15.84,
+        "accuracy": 0.8983,
+        "f1_macro": 0.3949,
+        "majority_class_rate": 0.9026,
+        "beats_majority": false,
+        "latency_ms_per_sample": 0.072
+      },
+      {
+        "status": "ok",
+        "pruning_ratio": 0.0,
+        "quantization_mode": "INT8_Dynamic",
+        "remaining_params": 4153556,
+        "model_size_mb": 3.96,
+        "accuracy": 0.8979,
+        "f1_macro": 0.3949,
+        "majority_class_rate": 0.9026,
+        "beats_majority": false,
+        "latency_ms_per_sample": 131.701
+      },
+      {
+        "status": "ok",
+        "pruning_ratio": 0.2,
+        "quantization_mode": "FP32",
+        "remaining_params": 3448446,
+        "model_size_mb": 13.15,
+        "accuracy": 0.8474,
+        "f1_macro": 0.3353,
+        "majority_class_rate": 0.9026,
+        "beats_majority": false,
+        "latency_ms_per_sample": 0.075
+      },
+      {
+        "status": "ok",
+        "pruning_ratio": 0.2,
+        "quantization_mode": "INT8_Dynamic",
+        "remaining_params": 3448446,
+        "model_size_mb": 3.29,
+        "accuracy": 0.8474,
+        "f1_macro": 0.3381,
+        "majority_class_rate": 0.9026,
+        "beats_majority": false,
+        "latency_ms_per_sample": 133.217
+      },
+      {
+        "status": "ok",
+        "pruning_ratio": 0.4,
+        "quantization_mode": "FP32",
+        "remaining_params": 2743335,
+        "model_size_mb": 10.46,
+        "accuracy": 0.4783,
+        "f1_macro": 0.217,
+        "majority_class_rate": 0.9026,
+        "beats_majority": false,
+        "latency_ms_per_sample": 0.073
+      },
+      {
+        "status": "ok",
+        "pruning_ratio": 0.4,
+        "quantization_mode": "INT8_Dynamic",
+        "remaining_params": 2743335,
+        "model_size_mb": 2.62,
+        "accuracy": 0.4811,
+        "f1_macro": 0.2175,
+        "majority_class_rate": 0.9026,
+        "beats_majority": false,
+        "latency_ms_per_sample": 130.629
+      },
+      {
+        "status": "ok",
+        "pruning_ratio": 0.6,
+        "quantization_mode": "FP32",
+        "remaining_params": 2038225,
+        "model_size_mb": 7.78,
+        "accuracy": 0.5528,
+        "f1_macro": 0.2166,
+        "majority_class_rate": 0.9026,
+        "beats_majority": false,
+        "latency_ms_per_sample": 0.073
+      },
+      {
+        "status": "ok",
+        "pruning_ratio": 0.6,
+        "quantization_mode": "INT8_Dynamic",
+        "remaining_params": 2038225,
+        "model_size_mb": 1.94,
+        "accuracy": 0.554,
+        "f1_macro": 0.2171,
+        "majority_class_rate": 0.9026,
+        "beats_majority": false,
+        "latency_ms_per_sample": 129.984
+      }
+    ]
+  }
+}

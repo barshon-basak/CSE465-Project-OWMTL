@@ -289,10 +289,10 @@ def stage_lora(args):
 
         def __getitem__(self, i):
             r = train[i]
-            try:
-                w = load_cycle_waveform(args.audio_dir, r, sr=16000)
-            except Exception:
-                w = np.zeros(16000, dtype=np.float32)
+            # No fallback: a silent all-zero waveform would be fine-tuned on and
+            # would land in embeddings/ast_lora.npy as if it were a real cycle
+            # (Model_Training_Protocol.md section 1.2).
+            w = load_cycle_waveform(args.audio_dir, r, sr=16000)
             return w, r.sound_label
 
     def collate(b):

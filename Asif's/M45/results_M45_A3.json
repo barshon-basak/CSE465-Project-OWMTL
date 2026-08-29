@@ -1,0 +1,87 @@
+{
+  "meta": {
+    "model_id": "M45_A3",
+    "row": "A3",
+    "variable_changed": "- class-weighted loss (plain CE)",
+    "baseline_model_id": "M22_v2",
+    "date_completed": "2026-08-30",
+    "is_augmented": true,
+    "notes": "M45 ablation row. One variable changed from the M22_v2 recipe."
+  },
+  "config": {
+    "n_mels": 128,
+    "duration_s": 8.0,
+    "padding": "wrap",
+    "minmax": true,
+    "pretrained": true,
+    "freeze": false,
+    "class_weighted": false,
+    "specaug": true,
+    "lr": 0.0005,
+    "batch_size": 16,
+    "epochs": 40,
+    "dropout": 0.3,
+    "seed": 42
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "split_method": "official_60_40_patient_independent_corrected",
+    "train_samples": 4251,
+    "test_samples": 2636,
+    "test_patients": 47
+  },
+  "best_epoch": {
+    "epoch": 15,
+    "primary_metric": "icbhi_score_official",
+    "primary_metric_value": 0.5497
+  },
+  "best_metrics": {
+    "icbhi_score_official": 0.5497,
+    "icbhi_score_official_ci95": [
+      0.5016,
+      0.5932
+    ],
+    "icbhi_se_official": 0.4275,
+    "icbhi_sp_official": 0.6718,
+    "accuracy": 0.5721,
+    "f1_macro": 0.4294,
+    "confusion_matrix_raw": [
+      [
+        1048,
+        260,
+        203,
+        49
+      ],
+      [
+        289,
+        293,
+        12,
+        23
+      ],
+      [
+        119,
+        37,
+        147,
+        70
+      ],
+      [
+        30,
+        12,
+        24,
+        20
+      ]
+    ]
+  },
+  "efficiency": {
+    "total_params": 2228996,
+    "trainable_params": 2228996,
+    "training_time_total_s": 857.6,
+    "gpu_name": "NVIDIA GeForce RTX 4050 Laptop GPU"
+  },
+  "ablation": {
+    "ablation_group": "component_and_preprocessing_ablation",
+    "ablation_role": "variant",
+    "baseline_model_id": "M22_v2",
+    "variable_changed": "- class-weighted loss (plain CE)"
+  }
+}

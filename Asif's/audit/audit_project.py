@@ -728,8 +728,12 @@ def audit_sweep_csv(path, repo_root):
 def discover(repo_root):
     protocol, legacy, sweeps, notebooks = [], [], [], []
     for dirpath, dirnames, filenames in os.walk(repo_root):
-        dirnames[:] = [d for d in dirnames if d not in (".git", "__pycache__",
-                                                        "protocol_bundle", "venv_m2")]
+        # Archive_Files (v1..v4) hold WITHDRAWN runs, kept only as the audit trail
+        # for what was corrected. Auditing them re-raises findings on results that
+        # were already withdrawn, which buries the findings that still matter.
+        dirnames[:] = [d for d in dirnames
+                       if d not in (".git", "__pycache__", "protocol_bundle", "venv_m2")
+                       and not d.startswith("Archive_Files")]
         for fn in filenames:
             full = os.path.join(dirpath, fn)
             if fn.startswith("results_M") and fn.endswith(".json"):

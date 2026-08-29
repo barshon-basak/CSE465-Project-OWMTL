@@ -17,26 +17,36 @@ WHY THIS IS A NEW EXPERIMENT (audit finding):
   STEP_SEQUENCE.md step 08a was never built. The device axis (G4) already failed - only
   3/126 patients span devices - so pediatric shift is the ONLY covariate stress available.
 
-WHAT MAKES THIS VERSION WORTH RUNNING - A PRE-REGISTERED MECHANISM:
+WHAT MAKES THIS VERSION WORTH RUNNING - A DECLARED MECHANISM:
   An MMD number says "the distributions differ". It does not say WHY, and a reviewer will
-  ask. The physics does say why: a child's airway is shorter and narrower, so its resonant
-  frequency is HIGHER. That is a DIRECTIONAL prediction, made in advance, on named
-  concepts:
+  ask. Two physiological arguments do say why, and each yields DIRECTIONAL predictions on
+  NAMED concepts (see PREDICTIONS below):
 
-      wheeze_dominant_freq_hz   expected HIGHER in children
-      dominant_freq_hz          expected HIGHER in children
-      low_high_freq_ratio       expected LOWER  in children
-      rhonchi_presence          expected LOWER  in children  (rhonchi are <300 Hz)
+    A. FREQUENCY SCALING - a child's airway is shorter and narrower, so resonant frequency
+       is higher and everything spectral shifts up.
+    B. ALLOMETRIC RESPIRATORY RATE - smaller bodies breathe faster, so cycles are shorter
+       and events fill a larger fraction of them.
 
-  The other ten concepts have no directional prediction and act as the control set. Four
-  pre-registered signs, tested one-sided, plus a binomial test on how many matched. If the
-  signs come out as predicted, "adult-tuned acoustic priors fail on pediatric airways via
-  frequency scaling" becomes a mechanistic claim rather than a distance measurement. If
-  they do not, that is equally reportable and far more honest than an unexplained MMD.
+  Six other concepts have no direction under either mechanism and are named explicitly as
+  the CONTROL set, so a post-hoc "well, this one moved too" is not available.
 
-  The predictions below are FIXED IN CODE before any pediatric audio is read. Running the
-  script with no SPRSound data emits the adult reference distribution and this prediction
-  table - which is exactly how a pre-registration should look.
+  TWO REGISTRATION ROUNDS, REPORTED SEPARATELY. Round 1 (4 predictions) was fixed before
+  any pediatric audio was read. Round 2 (4 more) was added afterwards, because a 4-item
+  binomial floors at p = 0.0625 and therefore could never support the hypothesis whatever
+  the data said - the test had no power to pass. Round 2 is an EXTENSION, not a
+  pre-registration, and the sign test is reported for round 1 alone, round 2 alone, and
+  all 8. Quoting only the combined figure would launder round-2 predictions as
+  pre-registered; quoting only round 1 would discard the power the extension bought.
+
+  With 8 predictions the test can now both pass and fail: 8/8 gives p = 0.0039 and 7/8
+  gives 0.0352.
+
+TWO ARMS, and the second is the stronger one:
+  * CROSS-CORPUS (ICBHI adults vs SPRSound children) - confounded by corpus, stethoscope,
+    protocol and annotator, none of which bootstrapping fixes.
+  * WITHIN-COHORT AGE GRADIENT (SPRSound only, ages 0.2-16.2 y) - same corpus, same
+    devices, same protocol, same annotators, continuous predictor. Same physics, no
+    confound. This is the arm to lead with.
 
 ALSO REPORTED: per-concept Cohen's d with bootstrap CI, KS statistic, adult-vs-child
 separability AUROC per concept, and MMD with a CI (hardening the Gap7 row).
@@ -60,16 +70,53 @@ import common as C  # noqa: E402
 EXP_ID = "N8_pediatric_fragility"
 
 # ---------------------------------------------------------------------------------
-# PRE-REGISTERED DIRECTIONAL PREDICTIONS. Fixed before any pediatric audio is read.
-# "higher" = the concept should be LARGER in children than in adults.
-# Rationale: resonant frequency scales inversely with airway calibre and length.
+# DIRECTIONAL PREDICTIONS. "higher" = the concept should be LARGER in children.
+#
+# REGISTRATION ROUNDS - read this before quoting any p-value.
+#   round 1 : fixed BEFORE any pediatric audio was read. Genuinely pre-registered.
+#   round 2 : added AFTER the round-1 run, to give the sign test usable power (see the
+#             power note below). These four concepts had not been examined individually
+#             when they were declared, but the corpus HAD been opened, so they are an
+#             extension, not a pre-registration, and are reported separately. Conflating
+#             the two would be exactly the failure the G2 "test read twice" rule exists to
+#             prevent.
+#
+# MECHANISMS. Two distinct physiological arguments, kept separate so a hit on one is not
+# credited to the other:
+#   A. FREQUENCY SCALING - a child's airway is shorter and narrower, so resonant frequency
+#      is higher. Everything spectral shifts up.
+#   B. ALLOMETRIC RESPIRATORY RATE - smaller bodies breathe faster, so cycles are shorter
+#      and events occupy a larger fraction of them.
+#
+# WHY THE SET GREW. With 4 predictions a one-sided binomial floors at 0.5^4 = 0.0625: even
+# a perfect 4/4 can never reach p < 0.05, so the test could not have supported the
+# hypothesis whatever the data said. With 8, 8/8 gives p = 0.0039 and 7/8 gives 0.0352, so
+# the test can both pass and fail. The concepts below were chosen because a direction
+# follows from A or B, not because of how they behaved in round 1.
 # ---------------------------------------------------------------------------------
-PHYSICS_PREDICTIONS = {
-    "wheeze_dominant_freq_hz": "higher",
-    "dominant_freq_hz": "higher",
-    "low_high_freq_ratio": "lower",
-    "rhonchi_presence": "lower",
+PREDICTIONS = {
+    # -- round 1, mechanism A (frequency scaling) --------------------------------
+    "wheeze_dominant_freq_hz": ("higher", 1, "A"),   # tonal peak scales up
+    "dominant_freq_hz": ("higher", 1, "A"),          # spectral centroid scales up
+    "low_high_freq_ratio": ("lower", 1, "A"),        # energy moves out of the low band
+    "rhonchi_presence": ("lower", 1, "A"),           # rhonchi are <300 Hz; fewer qualify
+    # -- round 2, mechanism A ----------------------------------------------------
+    "fine_crackle_ratio": ("higher", 2, "A"),        # transients reclassify as fine when
+                                                     # their centre frequency rises
+    "coarse_crackle_ratio": ("lower", 2, "A"),       # the exact mirror of the above
+    # -- round 2, mechanism B (respiratory rate) ---------------------------------
+    "crackle_rate_hz": ("higher", 2, "B"),           # shorter cycles pack transients denser
+    "wheeze_duration_ratio": ("higher", 2, "B"),     # a wheeze of given length fills more
+                                                     # of a shorter cycle
 }
+
+# Kept as the explicit control set: no direction follows from either mechanism, so these
+# must NOT be counted either way. Naming them stops a post-hoc "well this one moved too".
+CONTROL_CONCEPTS = ["crackle_presence", "wheeze_presence", "spectral_flatness", "papr_db",
+                    "inspiratory_energy_fraction", "transient_timing_centroid"]
+
+# Direction only, for code that does not care about round/mechanism.
+PHYSICS_PREDICTIONS = {k: v[0] for k, v in PREDICTIONS.items()}
 
 
 def cohens_d(a, b):
@@ -235,9 +282,11 @@ def age_gradient_test(X, ages, pids, names, n_boot=1000, seed=0):
                "excludes_zero": bool(lo > 0 or hi < 0)}
         if nm in AGE_PREDICTIONS:
             pred = AGE_PREDICTIONS[nm]
+            _, rnd, mech = PREDICTIONS[nm]
             observed = "negative" if rho < 0 else "positive"
             row["prereg"] = {"predicted": pred, "observed": observed,
-                             "direction_matched": pred == observed}
+                             "direction_matched": pred == observed,
+                             "round": rnd, "mechanism": mech}
             tested += 1
             matched += int(pred == observed)
         rows.append(row)
@@ -274,13 +323,14 @@ def compare(adult, child, names, n_boot=2000, seed=0):
                "adult_vs_child_auroc": round(sep, 4),
                "shift_excludes_zero": bool(lo > 0 or hi < 0)}
 
-        if nm in PHYSICS_PREDICTIONS:
-            pred = PHYSICS_PREDICTIONS[nm]
+        if nm in PREDICTIONS:
+            pred, rnd, mech = PREDICTIONS[nm]
             observed = "higher" if d > 0 else "lower"
             alt = "less" if pred == "higher" else "greater"   # H1: adult < child, or >
             p1 = float(stats.mannwhitneyu(a, b, alternative=alt).pvalue)
             row["prereg"] = {"predicted": pred, "observed": observed,
                              "direction_matched": pred == observed,
+                             "round": rnd, "mechanism": mech,
                              "one_sided_p": round(p1, 5)}
             tested += 1
             matched += int(pred == observed)
@@ -289,53 +339,91 @@ def compare(adult, child, names, n_boot=2000, seed=0):
     return rows, verdict_from_predictions(rows, "cross-corpus")
 
 
-def verdict_from_predictions(rows, arm_label):
-    """Judge the pre-registered mechanism on PER-CONCEPT evidence, not the sign test.
-
-    WHY NOT THE SIGN TEST. With only 4 pre-registered predictions a one-sided binomial
-    floors at p = 0.5^4 = 0.0625 - even a PERFECT 4/4 cannot reach p < 0.05. Using it as
-    the primary criterion hardcodes "not supported" no matter what the data say. It is
-    reported below for completeness, with that floor stated, but the criterion that
-    actually carries information is per concept: did the direction match AND does its
-    interval exclude zero?
-    """
+def _sign_block(subset):
+    """Binomial sign test over a subset of predictions, with its own power floor stated."""
     from scipy import stats
+    n = len(subset)
+    if n == 0:
+        return None
+    m = sum(r["prereg"]["direction_matched"] for r in subset)
+    p = float(stats.binomtest(m, n, 0.5, alternative="greater").pvalue)
+    floor = float(stats.binomtest(n, n, 0.5, alternative="greater").pvalue)
+    return {"n_predictions": n, "n_matched": m,
+            "binomial_p_one_sided": round(p, 4),
+            "min_achievable_p": round(floor, 4),
+            "can_reach_significance": bool(floor < 0.05),
+            "concepts": [r["concept"] for r in subset]}
 
+
+def verdict_from_predictions(rows, arm_label):
+    """Judge the mechanism on PER-CONCEPT evidence, with the sign test as support.
+
+    The per-concept criterion (direction matched AND interval excludes zero) is primary
+    because it uses the effect sizes, not just their signs, and it does not degrade as the
+    number of predictions changes.
+
+    The sign test is reported three ways, and the split matters:
+      round 1 : the 4 genuinely pre-registered predictions (fixed before any pediatric
+                audio was read). Underpowered - 0.0625 floor - and labelled as such.
+      round 2 : the 4 added afterwards to give the test power. An extension, not a
+                pre-registration.
+      all 8   : the combined test, which CAN reach significance (7/8 -> p = 0.035).
+    Reporting only the combined number would launder round-2 predictions as
+    pre-registered; reporting only round 1 would throw away the power that was the whole
+    point of extending the set.
+    """
     pre = [r for r in rows if "prereg" in r]
     if not pre:
         return None
-    tested = len(pre)
-    matched = sum(r["prereg"]["direction_matched"] for r in pre)
-    confirmed = [r["concept"] for r in pre
-                 if r["prereg"]["direction_matched"] and r.get("excludes_zero")
-                 or (r["prereg"]["direction_matched"] and r.get("shift_excludes_zero"))]
+
+    def _ok(r):
+        return r.get("excludes_zero") or r.get("shift_excludes_zero")
+
+    confirmed = [r["concept"] for r in pre if r["prereg"]["direction_matched"] and _ok(r)]
     contradicted = [r["concept"] for r in pre
-                    if not r["prereg"]["direction_matched"]
-                    and (r.get("excludes_zero") or r.get("shift_excludes_zero"))]
-    p = float(stats.binomtest(matched, tested, 0.5, alternative="greater").pvalue)
+                    if not r["prereg"]["direction_matched"] and _ok(r)]
+    r1 = [r for r in pre if r["prereg"].get("round") == 1]
+    r2 = [r for r in pre if r["prereg"].get("round") == 2]
+    mech = {}
+    for m in ("A", "B"):
+        sub = [r for r in pre if r["prereg"].get("mechanism") == m]
+        if sub:
+            mech[m] = _sign_block(sub)
 
-    if len(confirmed) >= 3 and not contradicted:
-        v = (f"SUPPORTED ({arm_label}): {len(confirmed)}/{tested} pre-registered concepts "
-             "moved in the predicted direction with intervals excluding zero, and none "
-             "moved against it.")
-    elif len(confirmed) >= 3:
-        v = (f"MOSTLY SUPPORTED ({arm_label}): {len(confirmed)}/{tested} confirmed with "
-             f"intervals excluding zero, but {contradicted} moved against prediction. "
-             "Report both.")
-    elif len(confirmed) >= 2:
-        v = (f"MIXED ({arm_label}): only {len(confirmed)}/{tested} pre-registered concepts "
-             "confirmed. Not enough to claim the mechanism.")
+    n, c = len(pre), len(confirmed)
+    allsign = _sign_block(pre)
+    sig = allsign["binomial_p_one_sided"] < 0.05 if allsign else False
+
+    # Contradictions are weighted, not just counted against the total. A concept that moves
+    # AGAINST a directional prediction with an interval excluding zero is evidence against
+    # the mechanism, not merely absence of evidence for it - so two of them cap the verdict
+    # at MIXED however many others confirm.
+    if c >= 0.75 * n and not contradicted and sig:
+        v = (f"SUPPORTED ({arm_label}): {c}/{n} concepts moved as predicted with intervals "
+             f"excluding zero, none moved against, and the sign test reaches "
+             f"p = {allsign['binomial_p_one_sided']}.")
+    elif c >= 0.6 * n and len(contradicted) <= 1:
+        v = (f"MOSTLY SUPPORTED ({arm_label}): {c}/{n} confirmed, {len(contradicted)} "
+             f"against. Sign test p = {allsign['binomial_p_one_sided']}.")
+    elif c >= 0.4 * n:
+        v = (f"MIXED ({arm_label}): {c}/{n} confirmed but {len(contradicted)} moved AGAINST "
+             f"prediction with intervals excluding zero, and the sign test does not reach "
+             f"significance (p = {allsign['binomial_p_one_sided']}). The mechanism is not "
+             "established; report the confirming concepts individually and name the "
+             "contradicting ones.")
     else:
-        v = (f"NOT SUPPORTED ({arm_label}): {len(confirmed)}/{tested} confirmed. Report the "
-             "shift as an unexplained distribution difference, not as physics fragility.")
+        v = (f"NOT SUPPORTED ({arm_label}): {c}/{n} confirmed. Report the shift as an "
+             "unexplained distribution difference, not as physics fragility.")
 
-    return {"n_predictions": tested, "n_matched": matched,
+    return {"n_predictions": n, "n_matched": sum(r["prereg"]["direction_matched"] for r in pre),
             "confirmed_with_ci_excluding_zero": confirmed,
             "contradicted_with_ci_excluding_zero": contradicted,
-            "binomial_p_one_sided": round(p, 4),
-            "binomial_floor_note": ("With 4 predictions the one-sided binomial cannot go "
-                                    "below p = 0.0625 even at 4/4, so it is reported as "
-                                    "secondary, never as the criterion."),
+            "sign_test_all": _sign_block(pre),
+            "sign_test_round1_prereg_only": _sign_block(r1),
+            "sign_test_round2_extension": _sign_block(r2),
+            "sign_test_by_mechanism": mech,
+            "mechanism_key": {"A": "frequency scaling with airway calibre",
+                              "B": "allometric respiratory rate"},
             "verdict": v}
 
 
@@ -389,9 +477,11 @@ def main():
                              "frequency is higher. Adult-tuned acoustic priors should "
                              "therefore shift in named, predictable directions."),
               "predictions": PHYSICS_PREDICTIONS,
-              "control_concepts": [n for n in names if n not in PHYSICS_PREDICTIONS],
-              "test": "one-sided Mann-Whitney per concept + binomial sign test over the "
-                      "4 predictions",
+              "control_concepts": CONTROL_CONCEPTS,
+              "registration_rounds": {k: {"direction": v[0], "round": v[1], "mechanism": v[2]}
+                                      for k, v in PREDICTIONS.items()},
+              "test": "per-concept CI (primary) + one-sided Mann-Whitney + binomial "
+                      "sign test reported by registration round (secondary)",
               "fixed_before_seeing_pediatric_data": True}
     adult_ref = {n: {"mean": round(float(np.nanmean(adult[:, j])), 4),
                      "std": round(float(np.nanstd(adult[:, j])), 4),

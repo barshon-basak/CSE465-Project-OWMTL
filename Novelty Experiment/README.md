@@ -44,6 +44,17 @@ All eight have run to completion. Each writes `results/<id>.json` and a figure.
 | `N6_physics_bottleneck.py` | CPU | `--features` for 3 of the 4 bottleneck modes | ✅ all 4 modes |
 | `N7_clinician_intervention.py` | CPU | nothing; `clinician_corrections.csv` upgrades it | ✅ (simulated clinician) |
 | `N8_pediatric_fragility.py` | CPU | `--sprsound_dir` for the actual comparison | ✅ both arms |
+| `N9_clinician_reliability.py` | CPU | the **returned** clinician sheet | 🔴 blocked — sheet is blank |
+
+**N9 is what makes N7 real.** It scores the clinician listening study against ICBHI, measures
+intra-rater reliability from the 12 repeated clips, and writes `clinician_corrections.csv` — the file
+N7 already reads. Today `Asif's/ICBHI_Dataset_labeling/labels.csv` is the unfilled template (0 of 132
+clips answered), so N9 reports BLOCKED and invents nothing. Once the sheet comes back:
+
+```bash
+python N9_clinician_reliability.py                                  # scores it, writes corrections
+python N7_clinician_intervention.py --features M2_features.npy      # now says REAL, not SIMULATED
+```
 
 Every script takes `--help`.
 

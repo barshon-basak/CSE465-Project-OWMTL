@@ -66,7 +66,14 @@
       "auroc": 0.5747,
       "aupr": 0.2063,
       "baseline_energy_auroc": 0.5948
-    }
+    },
+    "accuracy_not_applicable": true,
+    "precision_macro_not_applicable": true,
+    "recall_macro_not_applicable": true,
+    "f1_macro_not_applicable": true,
+    "specificity_macro_not_applicable": true,
+    "icbhi_score_not_applicable": true,
+    "classification_metrics_note": "NOT APPLICABLE \u2014 M15 v6 is an open-set scorer, not a 4-class classifier. The zeros are placeholders. The result is best_metrics.open_set (AUROC 0.5747)."
   },
   "ablation": {
     "ablation_group": "rejection_method",
@@ -93,5 +100,24 @@
       "consistency_weight": 1.0
     }
   },
-  "training_history": []
+  "training_history": [],
+  "audit_status": {
+    "status": "VALID as an open-set scorer; classification metrics are NOT APPLICABLE",
+    "reviewed": "2026-08-29",
+    "explanation": "M15 v6 is a cross-task consistency SCORER. It emits an unknown-disease score, not a four-class sound-event prediction, so accuracy / precision / recall / F1 / specificity / icbhi_score have no meaning for it. They were exported as 0.0 placeholders and confusion_matrix_raw as an empty list. Read as written, '0.0' says the model scored zero; it actually means the task does not apply.",
+    "the_real_result": {
+      "primary_metric": "auroc",
+      "value": 0.5747,
+      "where": "best_metrics.open_set"
+    },
+    "placeholder_fields_marked_na": [
+      "accuracy",
+      "f1_macro",
+      "icbhi_score",
+      "precision_macro",
+      "recall_macro",
+      "specificity_macro"
+    ],
+    "why_not_re_exported": "There is no 4-class prediction to export. The fix is to stop reporting an inapplicable metric, not to compute one."
+  }
 }

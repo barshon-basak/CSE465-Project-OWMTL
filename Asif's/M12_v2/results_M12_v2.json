@@ -1,0 +1,154 @@
+{
+  "meta": {
+    "model_id": "M12_v2",
+    "model_name": "Backbone Re-Decision (corrected split)",
+    "contributor": "OWMTL team",
+    "date_completed": "2026-08-29",
+    "is_augmented": false,
+    "augmentation_method": "none",
+    "notes": "M12_v2 is a DECISION, not a trained model \u2014 inference only. It supersedes M12, which decided on the MACRO icbhi_score using candidate numbers from the 11-patient fallback split, with no CI and no paired test. Candidates here are the 2026-08-28/29 re-runs nominated by the team; architectures were rebuilt from the model_config stored inside each checkpoint."
+  },
+  "supersedes": {
+    "M12": {
+      "decided_on": "icbhi_score (macro variant)",
+      "candidate_split": "patient_id fallback, 11 test patients",
+      "selected": "M2",
+      "margin": 0.0243,
+      "tie_tolerance_used": 0.0129,
+      "had_confidence_interval": false,
+      "had_paired_test": false
+    }
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "split_method": "official_icbhi_60_40_patient_disjoint",
+    "overlap_policy": "drop_from_train",
+    "test_samples": 2756,
+    "test_patients": 49,
+    "evaluation": "inference only, frozen checkpoints"
+  },
+  "primary_metric": "icbhi_score_official",
+  "candidates": {
+    "M2": {
+      "checkpoint": "Asif's\\M2\\m2_v4\\best_model.pth",
+      "architecture": "scratch CNN depth=4 width=32",
+      "trained_to_epoch": 19,
+      "reported_best_score_at_train": 0.5732,
+      "icbhi_score_official": 0.472,
+      "icbhi_score_official_ci95": [
+        0.4021,
+        0.5344
+      ],
+      "icbhi_se_official": 0.2005,
+      "icbhi_sp_official": 0.7435,
+      "accuracy": 0.5116,
+      "f1_macro": 0.2884,
+      "confusion_matrix_raw": [
+        [
+          1174,
+          14,
+          391,
+          0
+        ],
+        [
+          558,
+          48,
+          43,
+          0
+        ],
+        [
+          197,
+          1,
+          187,
+          0
+        ],
+        [
+          81,
+          1,
+          60,
+          1
+        ]
+      ]
+    },
+    "M3": {
+      "checkpoint": "Asif's\\M3\\29 aug run\\best_model.pth",
+      "architecture": "mobilenet_v3_small (feat_dim 576)",
+      "trained_to_epoch": 17,
+      "reported_best_score_at_train": 0.5432,
+      "icbhi_score_official": 0.5135,
+      "icbhi_score_official_ci95": [
+        0.4796,
+        0.5433
+      ],
+      "icbhi_se_official": 0.198,
+      "icbhi_sp_official": 0.829,
+      "accuracy": 0.5595,
+      "f1_macro": 0.3495,
+      "confusion_matrix_raw": [
+        [
+          1309,
+          105,
+          63,
+          102
+        ],
+        [
+          492,
+          141,
+          3,
+          13
+        ],
+        [
+          232,
+          27,
+          72,
+          54
+        ],
+        [
+          97,
+          21,
+          5,
+          20
+        ]
+      ]
+    }
+  },
+  "excluded_candidates": {
+    "M4": "no checkpoint committed (link file only) \u2014 cannot be evaluated"
+  },
+  "paired_comparison": {
+    "comparison": "M2 minus M3",
+    "delta": -0.0415,
+    "delta_ci95_patient_bootstrap": [
+      -0.0988,
+      0.0128
+    ],
+    "delta_p_bootstrap": 0.1484,
+    "mcnemar": {
+      "M2_only_right": 259,
+      "M3_only_right": 391,
+      "p_exact": 2.533e-07,
+      "note": "cycle-level and therefore anti-conservative; cycles from one patient are not independent. Lead with the bootstrap."
+    },
+    "separable": false
+  },
+  "decision": {
+    "leader_on_point_estimate": "M3",
+    "verdict": "NO SEPARATION. M3 leads on the point estimate (0.5135 vs 0.472) but the paired interval spans zero, so the candidates are not distinguishable on this test set. Any backbone choice between them must be justified on grounds other than the official score \u2014 efficiency, or a stated preference \u2014 and said so explicitly.",
+    "status": "ACCEPTED 2026-08-29",
+    "selected_backbone": "M3 (mobilenet_v3_small)",
+    "basis": "STATED PREFERENCE, not a measured win. The paired interval [-0.0988, +0.0128] spans zero, so the candidates are not separable on the official metric at 49 test patients. M3 is preferred because it leads on the point estimate (0.5135 vs 0.4720) and on macro-F1 (0.3495 vs 0.2884). This must never be written as 'M3 outperforms M2'."
+  },
+  "original_m12_question": {
+    "status": "OPEN \u2014 deliberately not answered",
+    "question": "Was the ORIGINAL backbone selection valid? M12 chose the 5-block/width-48 CNN in Asif's/M2/M2_best_model.pth, which M13, M15, M17, M29 and the concept engine all inherit.",
+    "why_not_answered_by_inference": "The original M2/M3 were trained under the fallback rule (patient_id <= 111 -> test), so they trained on all 115 patients with id > 111. 45 of the 49 patients in the official test set (92%) were in their training data. Evaluating those checkpoints on the corrected test set would score them on memorised patients \u2014 inflated and meaningless.",
+    "contamination_measured": {
+      "official_test_patients": 49,
+      "also_in_original_training_set": 45,
+      "fraction": 0.918
+    },
+    "what_would_settle_it": "Retrain M2 and M3 from scratch on the corrected split \u2014 two training runs, not an inference pass.",
+    "expected_outcome": "Probably another null. Two independent pairs at ~49 test patients have now produced deltas of 0.040 and 0.042, both with intervals spanning zero.",
+    "decision": "Deferred. Marginal information is low against four RTK requirements with zero implementation. Revisit if the backbone choice is challenged."
+  }
+}

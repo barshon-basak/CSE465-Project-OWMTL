@@ -6,7 +6,7 @@
 
 Every model here reports `icbhi_score = (recall_macro + specificity_macro) / 2`. That is not the ICBHI 2017 challenge metric, which is `(Se + Sp) / 2` with **Se** over pooled abnormal events (Crackle+Wheeze+Both) and **Sp** over Normal.
 
-`specificity_macro` averages per-class specificity, and each class's specificity counts true negatives from the other three classes â€” so rare classes (Wheeze, Both) score ~0.95 almost regardless of whether the model detects them. That inflates the average.
+`specificity_macro` averages per-class specificity, and each class's specificity counts true negatives from the other three classes — so rare classes (Wheeze, Both) score ~0.95 almost regardless of whether the model detects them. That inflates the average.
 
 This matters because the ~135 published ICBHI papers use the official metric. As reported, the project's numbers are **not comparable to any prior work**, and they look implausibly high to anyone who knows the benchmark.
 
@@ -25,29 +25,36 @@ This matters because the ~135 published ICBHI papers use the official metric. As
 | M3 | 0.6984 | **0.5895** | +0.1089 | 0.5359 | 0.6431 | `patient_independent_60_40_patient_id_fallback` |
 | M33 | 0.6806 | **0.5832** | +0.0974 | 0.6190 | 0.5473 | `patient_independent_70_30` |
 | M34 | 0.7046 | **0.5754** | +0.1292 | 0.6340 | 0.5168 | `patient_independent_70_30` |
+| M22_v2 | 0.6140 | **0.5602** | +0.0538 | 0.4089 | 0.7115 | `official_60_40_patient_independent_corrected` |
 | M31 | 0.6377 | **0.5535** | +0.0842 | 0.5456 | 0.5614 | `patient_independent_70_30` |
+| M3_v2 | 0.6075 | **0.5200** | +0.0875 | 0.4266 | 0.6135 | `official_60_40_patient_independent_corrected` |
+| M3 | 0.5639 | **0.5132** | +0.0507 | 0.1980 | 0.8284 | `official_icbhi_60_40_patient_disjoint` |
 | M36 | 0.5137 | **0.5052** | +0.0085 | 0.0932 | 0.9171 | `patient_independent_70_30` |
 | M32 | 0.6547 | **0.4733** | +0.1814 | 0.5721 | 0.3745 | `patient_independent_70_30` |
+| M2 | 0.5480 | **0.4720** | +0.0760 | 0.2005 | 0.7435 | `official_icbhi_60_40_patient_disjoint` |
+| M2 | 0.5780 | **0.4671** | +0.1109 | 0.2991 | 0.6352 | `official_icbhi_60_40_patient_disjoint` |
+| M3 | 0.6239 | **0.4490** | +0.1749 | 0.4902 | 0.4079 | `official_icbhi_60_40_patient_disjoint` |
+| M2 | 0.6167 | **0.4139** | +0.2028 | 0.5030 | 0.3249 | `official_icbhi_60_40_patient_disjoint` |
 | M33 | 0.5506 | **0.3330** | +0.2176 | 0.6660 | 0.0000 | `patient_independent_70_30` |
 
-Published ICBHI SOTA on the official 60/40 split is roughly **0.60â€“0.65**. Read the Official column against that, not the Reported column.
+Published ICBHI SOTA on the official 60/40 split is roughly **0.60–0.65**. Read the Official column against that, not the Reported column.
 
 ## Cannot be verified
 
-These report an `icbhi_score` but commit no 4Ã—4 confusion matrix, so the number cannot be checked by us or by a reviewer:
+These report an `icbhi_score` but commit no 4×4 confusion matrix, so the number cannot be checked by us or by a reviewer:
 
-- **M15** â€” `Barshon's/M15/v6/results_M15.json` (reports 0.0000)
-- **M30** â€” `Barshon's/M30/results_M30.json` (reports 0.8213)
+- **M15** — `Barshon's\M15\v6\results_M15.json` (reports 0.0000)
+- **M30** — `Barshon's\M30\results_M30.json` (reports 0.8213)
 
 ## Not applicable
 
 Disease-head models (3-class COPD/Healthy/URTI). The ICBHI challenge score is a sound-event metric and does not apply to them:
 
-- M13 â€” `Barshon's/M13/results_M13.json`
+- M13 — `Barshon's\M13\results_M13.json`
 
 ## What to do
 
 1. **Report the Official column** in the paper and in every comparison against prior work.
 2. **Keep both numbers** in the results JSON (run with `--write`) so the internal metric stays available for continuity but is never mistaken for the challenge score.
 3. **Do not compare across splits.** Models on `patient_independent_70_30` are not comparable to those on `patient_independent_official_60_40`, whichever metric is used.
-4. New runs should emit both â€” see `Model_Training_Protocol.md` Â§3.
+4. New runs should emit both — see `Model_Training_Protocol.md` §3.

@@ -1,0 +1,280 @@
+{
+  "meta": {
+    "model_id": "M16",
+    "model_name": "Teacher-Student Knowledge Distillation",
+    "member": "B",
+    "member_name": "Member B (Disease Diagnosis & OWL)",
+    "date_completed": "2026-08-29",
+    "is_augmented": false,
+    "augmentation_method": "none",
+    "notes": "Knowledge distillation to a lightweight 2D-CNN student. Re-run 2026-08-29 per SYNTHETIC_DATA_REMEDIATION.md item 4. The previous result distilled over 851 whole recordings and reported last-epoch accuracy on those same rows -- no train/test split existed in the notebook -- and loaded the teacher with strict=False inside a try/except that only printed a note, so the teacher could have been randomly initialised. This run is cycle-level on the corrected patient-independent official split, the teacher must load fully or the notebook raises, and the student is scored on TEST only.",
+    "supersedes_note": "Replaces the 2026-08-05 result (student_accuracy 0.9318, 851 recording rows, no split, unchecked teacher load)."
+  },
+  "config": {
+    "model_id": "M16",
+    "model_name": "Teacher-Student Knowledge Distillation",
+    "member": "B",
+    "seed": 42,
+    "sample_rate": 16000,
+    "duration_s": 8.0,
+    "n_mels": 128,
+    "n_fft": 1024,
+    "hop_length": 160,
+    "win_length": 400,
+    "f_min": 50,
+    "f_max": 2000,
+    "n_samples": 128000,
+    "n_frames": 801,
+    "temperature": 3.0,
+    "alpha": 0.7,
+    "epochs": 10,
+    "lr": 0.001,
+    "batch_size": 32,
+    "disease_classes": [
+      "COPD",
+      "Healthy",
+      "URTI",
+      "Pneumonia"
+    ],
+    "m2_depth": 5,
+    "m2_base_width": 48,
+    "proto_embed_dim": 256,
+    "proto_temperature": 0.1,
+    "known_classes": [
+      "COPD",
+      "Healthy",
+      "URTI"
+    ],
+    "m2_ckpt_path": "/kaggle/input/datasets/barshonbasak/m2-checkpoint/best_model.pth",
+    "m17_ckpt_path": "/kaggle/input/datasets/barshonbasak/m17-checkpoints/best_model.pth",
+    "icbhi_path": "/kaggle/input/datasets/vbookshelf/respiratory-sound-database/Respiratory_Sound_Database/Respiratory_Sound_Database/audio_and_txt_files",
+    "results_dir": "/kaggle/working/results_M16",
+    "split_method": "official_60_40_patient_independent_corrected",
+    "split_file": "/kaggle/input/datasets/sudamchandrabasak/icbhi-challenge-train-test-split/ICBHI_challenge_train_test.txt",
+    "num_classes": 4
+  },
+  "environment": {
+    "platform": "Kaggle",
+    "gpu_name": "Tesla T4",
+    "pytorch_version": "2.10.0+cu128",
+    "python_version": "3.12.13"
+  },
+  "efficiency": {
+    "teacher_params": 4153556,
+    "student_params": 405028,
+    "total_params": 405028,
+    "compression_ratio": 10.25,
+    "model_size_mb": 1.56,
+    "gpu_name": "Tesla T4"
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "data_source": "real_audio",
+    "unit": "respiratory_cycle",
+    "split_method": "official_60_40_patient_independent_corrected",
+    "split_file": "/kaggle/input/datasets/sudamchandrabasak/icbhi-challenge-train-test-split/ICBHI_challenge_train_test.txt",
+    "split_file_verified": true,
+    "diagnosis_file": "/kaggle/input/datasets/vbookshelf/respiratory-sound-database/Respiratory_Sound_Database/Respiratory_Sound_Database/patient_diagnosis.csv",
+    "official_overlap_patients": [
+      156,
+      218
+    ],
+    "official_overlap_policy": "reassign_to_train",
+    "disease_classes": [
+      "COPD",
+      "Healthy",
+      "URTI",
+      "Pneumonia"
+    ],
+    "train_samples": 4049,
+    "test_samples": 2536,
+    "train_patients": 67,
+    "test_patients": 43,
+    "patient_leakage_verified": true,
+    "evaluation_level": "cycle"
+  },
+  "best_metrics": {
+    "selection_criterion": "macro_f1 on TEST (accuracy rewards majority-class collapse here)",
+    "student_accuracy": 0.9192,
+    "student_f1_macro": 0.4301,
+    "majority_class_rate": 0.9026,
+    "beats_majority_class": true,
+    "teacher_accuracy": 0.8983,
+    "teacher_f1_macro": 0.3949,
+    "f1_retention_vs_teacher": 1.0891,
+    "compression_ratio": 10.25,
+    "final_distill_loss": 0.1952,
+    "accuracy": 0.9192,
+    "precision_macro": 0.4335,
+    "recall_macro": 0.427,
+    "f1_macro": 0.4301,
+    "specificity_macro": 0.9279,
+    "per_class": {
+      "COPD": {
+        "precision": 0.9754,
+        "recall": 0.9707,
+        "f1": 0.9731,
+        "specificity": 0.7733,
+        "support": 2289
+      },
+      "Healthy": {
+        "precision": 0.5793,
+        "recall": 0.5429,
+        "f1": 0.5605,
+        "specificity": 0.9708,
+        "support": 175
+      },
+      "URTI": {
+        "precision": 0.1795,
+        "recall": 0.1944,
+        "f1": 0.1867,
+        "specificity": 0.974,
+        "support": 72
+      },
+      "Pneumonia": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "specificity": 0.9937,
+        "support": 0
+      }
+    },
+    "confusion_matrix_raw": [
+      [
+        2222,
+        30,
+        32,
+        5
+      ],
+      [
+        37,
+        95,
+        32,
+        11
+      ],
+      [
+        19,
+        39,
+        14,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0
+      ]
+    ],
+    "confusion_matrix_normalized": [
+      [
+        0.9707,
+        0.0131,
+        0.014,
+        0.0022
+      ],
+      [
+        0.2114,
+        0.5429,
+        0.1829,
+        0.0629
+      ],
+      [
+        0.2639,
+        0.5417,
+        0.1944,
+        0.0
+      ],
+      [
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    ]
+  },
+  "best_epoch": 10,
+  "ablation": {
+    "ablation_group": "model_compression",
+    "ablation_role": "student_distillation",
+    "baseline_model_id": "M17",
+    "variable_changed": "knowledge_distillation",
+    "variables_held_constant": [
+      "teacher: M17 checkpoint",
+      "temperature: 3.0",
+      "seed: 42",
+      "split: official_60_40_patient_independent_corrected"
+    ],
+    "component_flags": {
+      "has_sound_event_head": false,
+      "has_disease_head": true,
+      "has_distillation": true,
+      "owl_stage": 2
+    },
+    "loss_weights": {
+      "alpha_distill": 0.7,
+      "temperature": 3.0
+    }
+  },
+  "training_history": {
+    "epochs": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "loss": [
+      0.630474,
+      0.435898,
+      0.349732,
+      0.291965,
+      0.26307,
+      0.237535,
+      0.224677,
+      0.213497,
+      0.200879,
+      0.195175
+    ],
+    "train_accuracy": [
+      0.845147,
+      0.858731,
+      0.878242,
+      0.891331,
+      0.898,
+      0.909113,
+      0.91183,
+      0.918251,
+      0.920968,
+      0.921956
+    ],
+    "test_accuracy": [
+      0.903785,
+      0.891562,
+      0.912855,
+      0.914826,
+      0.824527,
+      0.911672,
+      0.916404,
+      0.919164,
+      0.905757,
+      0.919164
+    ],
+    "test_f1_macro": [
+      0.246122,
+      0.261196,
+      0.405174,
+      0.409203,
+      0.420785,
+      0.401402,
+      0.418055,
+      0.397807,
+      0.416233,
+      0.430052
+    ]
+  }
+}

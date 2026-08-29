@@ -1,22 +1,43 @@
 \begin{table}[htbp]
 \centering
-\caption{Main OWMTL Benchmark Comparison Across Model Milestones}
+\caption{OWMTL benchmark across model milestones. Scores are only comparable within a split; the split column is part of the result. Empty cells are metrics the model does not report.}
 \label{tab:main_benchmark}
-\begin{tabular}{llccccc}
+\begin{tabular}{llcccccc}
 \hline
-\textbf{Model ID} & \textbf{Category / Architecture} & \textbf{ICBHI Score} & \textbf{AUROC} & \textbf{AUPR} & \textbf{Params (M)} & \textbf{Size (MB)} \\
+\textbf{Model} & \textbf{Category} & \textbf{Split} & \textbf{ICBHI (official)} & \textbf{Macro-F1} & \textbf{AUROC} & \textbf{Params (M)} & \textbf{Size (MB)} \\
 \hline
-M2  & Baseline 2D-CNN Backbone     & 0.7227 & --     & --     & 4.15 & 16.6 \\
-M3  & MobileNetV2 Backbone         & 0.6984 & --     & --     & 3.80 & 14.0 \\
-M29 & OpenMax Rejection Baseline    & 0.6466 & 0.6466 & --     & 4.15 & 16.6 \\
-M13 & Prototypical Disease Head    & 0.7180 & --     & --     & 4.15 & 16.6 \\
-M15 & Staged OWL (Stage 1)          & 0.7210 & 0.5820 & 0.4910 & 4.15 & 16.6 \\
-M17 & Staged OWL (Stage 2)          & 0.7250 & 0.6120 & 0.5230 & 4.15 & 16.6 \\
-M14 & Conformal Risk Calibration   & 0.7250 & 0.6120 & 0.5230 & 4.15 & 16.6 \\
-\textbf{M30} & \textbf{Gated Feature-Fusion} & \textbf{0.8213} & -- & -- & 7.96 & 30.6 \\
-M16 & Distilled Student Model      & 0.7080 & --     & --     & 0.41 & 1.55 \\
-M18 & 60\% Pruned + INT8 Model    & 0.6950 & --     & --     & 1.66 & 6.64 \\
-M20 & Temperature Scaled Model     & 0.7250 & --     & --     & 4.15 & 16.6 \\
+M1 & Backbone (provisional CNN) & 60/40 & 0.6143 & 0.4844 & -- & 0.42 & 4.85 \\
+M2 & Backbone (2D-CNN) & official 60/40 & -- & 0.2884 & -- & 0.42 & 1.62 \\
+M3 & Backbone (MobileNetV2) & official 60/40 & -- & 0.3500 & -- & 0.93 & 3.67 \\
+M6 & Open-set (OpenMax) & 70/30 & -- & 0.4561 & 0.4516 & 0.46 & 0.13 \\
+M12 & Backbone selection & official 60/40 & 0.6138 & 0.5238 & -- & 3.63 & 13.86 \\
+M13 & Core OWL head & stratified 60/40 & -- & 0.6061 & -- & 4.15 & 16.61 \\
+M13cbm\_opaque & Concept bottleneck & official 60/40 & -- & 0.5973 & -- & -- & -- \\
+M13cbm\_independent & Concept bottleneck & official 60/40 & -- & 0.4542 & -- & -- & -- \\
+M13cbm\_leaky & Concept bottleneck & official 60/40 & -- & 0.5457 & -- & -- & -- \\
+M13cbm\_sequential & Concept bottleneck & official 60/40 & -- & 0.4441 & -- & -- & -- \\
+M14 & Trust: conformal risk & 60/20/20 & -- & -- & 0.4809 & -- & -- \\
+M15 & Core OWL stage 1 & patient\_independent & -- & 0.0000 & 0.5747 & 4.15 & 15.87 \\
+M17 & Core OWL stage 2 & -- & -- & -- & 0.8561 & -- & -- \\
+M19 & OOD: Coswara / SPRSound & -- & -- & -- & 0.3287 & 4.15 & -- \\
+M22\_v2 & Augmentation (SpecAugment) & official 60/40 & 0.5602 & 0.4141 & -- & 2.23 & 8.74 \\
+M24 & Class balancing & 70/30 & -- & -- & 0.6739 & -- & -- \\
+M29 & Open-set baselines & patient\_independent\_known\_60\_40; unknown group evaluation-only & -- & -- & 0.6466 & 3.63 & -- \\
+M30 & Novelty: gated fusion & id-fallback (retired) & 0.5975 & 0.4675 & -- & 7.96 & 30.63 \\
+M31 & Novelty: GradNorm MTL & 70/30 & 0.5535 & 0.4351 & -- & 3.73 & 14.24 \\
+M32 & Novelty: demographics & 70/30 & 0.4733 & 0.4378 & -- & 3.74 & 14.28 \\
+M33 & Novelty: temporal transformer & 70/30 & 0.5832 & 0.4948 & -- & 13.19 & 50.30 \\
+M34 & Novelty: curriculum & 70/30 & 0.5754 & 0.5268 & -- & 3.63 & 13.86 \\
+M35 & Novelty: physics loss & 70/30 & 0.6864 & 0.6420 & -- & 3.63 & 13.86 \\
+M36 & Compression: distillation & 70/30 & 0.5052 & 0.2155 & -- & 0.00 & 0.02 \\
+M37 & Novelty: AST LoRA & 70/30 & 0.6753 & 0.6599 & -- & 3.64 & 13.89 \\
 \hline
 \end{tabular}
 \end{table}
+
+% Excluded from this table (SYNTHETIC_DATA_REMEDIATION.md item 4):
+%   M16: no committed notebook outputs; recording-level (851 wavs), no train/test split -- distilled and scored on the same rows. SYNTHETIC_DATA_REMEDIATION.md item 4.
+%   M18: no committed notebook outputs; recording-level (851 wavs), no train/test split. SYNTHETIC_DATA_REMEDIATION.md item 4.
+%   M20: no committed notebook outputs; temperature fitted and ECE measured on the same 851 rows. SYNTHETIC_DATA_REMEDIATION.md item 4.
+%   M21: no committed notebook outputs; keeps only the first annotation line per recording and labels the whole 8 s clip with it. SYNTHETIC_DATA_REMEDIATION.md item 4.
+%   M22: ran the retired patient_id fallback split (11 test patients / 492 cycles) while recording itself as official. Superseded by M22_v2.

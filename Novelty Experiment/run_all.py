@@ -28,6 +28,10 @@ EXPERIMENTS = [
     ("N6_physics_bottleneck.py", [], "CPU only (3 of 4 modes need --features)"),
     ("N7_clinician_intervention.py", [], "CPU only"),
     ("N8_pediatric_fragility.py", [], "CPU only (full test needs --sprsound_dir)"),
+    ("N9_clinician_reliability.py", [],
+     "CPU only; needs the returned clinician sheet"),
+    ("N10_gate_vs_clinician.py", [],
+     "CPU only; needs the clinician sheet + ICBHI audio (ICBHI_AUDIO_DIR)"),
 ]
 
 PASSTHROUGH = {"--features": ("N1", "N2", "N3", "N4", "N5", "N6", "N7"),

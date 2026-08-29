@@ -21,7 +21,7 @@ hypothetical one:
 
 | Check | Catches | Found in |
 |---|---|---|
-| **`synthetic_data_not_real_dataset`** | **a Dataset that fabricates its input instead of loading audio** | **M11, M13, M15, M17, M18, M19, M20, M21, M24** |
+| `synthetic_data_not_real_dataset` | a Dataset that fabricates its input instead of loading audio | M11, M13, M15, M17, M18, M19, M20, M21, M24 — **all re-run on real audio; 0 findings as of 2026-08-29** |
 | `model_may_be_randomly_initialised` | a fallback that proceeds with an untrained model | M15, M17, M18, M19 |
 | `discrimination_at_or_below_chance` | AUROC ≤ 0.5 — a coin flip does as well | M6, M15, M19 |
 | `comparison_against_subchance_baseline` | "beats baseline by N%" where the baseline is below chance | M15 |
@@ -40,35 +40,40 @@ hypothetical one:
 
 ## Current state
 
-As of the last run: **30 CRITICAL, 8 WARNING, 7 INFO** across 34 files.
+As of the 2026-08-29 run: **19 CRITICAL, 86 WARNING, 43 INFO** across 52 files.
 
-### The headline finding
+### The synthetic-data finding is closed
 
-**Every model downstream of M12 — except M6 — is running on synthetically generated data, not
-ICBHI.** M11, M13, M15, M17, M18, M19, M20, M21 and M24 all build their inputs with
-`torch.randn` / `np.random` inside the Dataset instead of loading audio. M15's class is even
-*named* `ICBHI_OWL_Dataset` while returning `torch.randn(1, n_mels, 801) * 0.5`; M11's is named
-`SyntheticICBHIDataset` outright.
+The earlier headline here — *"every model downstream of M12 except M6 runs on `torch.randn` data"* —
+**no longer holds.** M11, M13, M15, M17, M19 and M24 have all been re-run on real ICBHI audio, and
+the tool now reports **zero `synthetic_data_not_real_dataset` findings**. Their committed results
+carry real cycle counts:
 
-That single fact explains every other anomaly at once:
-
-| Symptom | Cause |
+| Model | Evidence in `results_M*.json` |
 |---|---|
-| M21 accuracy = 1.0 | synthetic data with the class label added directly into fixed frequency bands |
-| M18 accuracy 0.28 flat across a 62× sweep | noise in, constant class out |
-| M19 OOD AUROC 0.517 / 0.483 | noise |
-| M15 AUROC 0.618 | noise + known/unknown label priors that happen to differ |
+| M11 | 3210 train / 1965 test cycles, 75 / 26 patients |
+| M13 | v4 — 3216 train cycles, 43-patient test matrix (v1–v3 were synthetic) |
+| M15 | v6 — 6311 known / 587 unknown cycles, 126-entry real diagnosis map |
+| M17 | v2 — 2927 / 3384 known cycles, 42 test patients |
+| M19 | real Coswara / SPRSound audio |
+| M24 | 4758 train / 2140 eval cycles |
 
-So the correct reading is **not** "the mechanism is at chance." It is **"the mechanism has never
-been evaluated."** These are pipeline-scaffolding runs that were committed as results. The work is
-earlier than the checklist claims, not failed — which is a far more recoverable position.
+What replaced it is narrower and is tracked in `SYNTHETIC_DATA_REMEDIATION.md`:
+
+| Item | Status |
+|---|---|
+| M28's hardcoded benchmark table (numbers no run produced) | ✅ fixed 2026-08-29 — table now derived from `df_master` |
+| M15 v6's `pid % 3` diagnosis-label fallback | ✅ fixed 2026-08-29 — now raises |
+| Silent all-zero spectrogram on load failure (39 files) | ✅ fixed 2026-08-29 — now raises |
+| M16 / M18 / M20 / M21 provenance + no train/test split | ⬜ open — needs GPU re-runs (item 4) |
 
 ### What is real
 
 | Status | Models |
 |---|---|
-| ✅ Real data, trustworthy | **M1, M2, M3, M4, M6, M12** |
-| 🔴 Synthetic — not results | M11, M13, M15, M17, M18, M19, M20, M21, M24 |
+| ✅ Real data, trustworthy | **M1, M2, M3, M4, M6, M11, M12, M13, M15, M17, M19, M22_v2, M24, M29, M30_v2, M31–M37, M39** |
+| 🟡 Real audio, but provenance unproven and no train/test split | M16, M18, M20, M21 — see `SYNTHETIC_DATA_REMEDIATION.md` item 4 |
+| 🔴 Synthetic — not results | *(none)* |
 
 **M6 is one real downstream result, and it is a genuine negative.** It loads real audio (19/19
 cells executed, 72 train / 32 known-test / 19 unknown-test patients) and reports
