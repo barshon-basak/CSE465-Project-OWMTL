@@ -300,7 +300,8 @@ def main():
         "directed_interventions": directed,
         "clinician": clinician,
     }
-    C.save_result(EXP_ID, doc)
+    # Each bottleneck mode is a different experiment and must not overwrite the others.
+    C.save_result(EXP_ID if mode == "independent" else f"{EXP_ID}_{mode}", doc)
     return doc
 
 

@@ -131,12 +131,22 @@ def probe_concepts(E, X, names, groups, n_splits=5, seed=0, n_boot=1000, n_perm=
 
 
 # ------------------------------------------------------------------- LoRA (no `peft` dep)
-def inject_lora(model, targets=("query", "value"), r=8, alpha=16.0):
+def inject_lora(model, targets=("q_proj", "v_proj", "query", "value"), r=8, alpha=16.0):
     """Wrap every nn.Linear whose attribute name is in `targets` with a LoRA adapter and
     freeze everything else.
 
     Hand-rolled on purpose: the repo already carries this exact pattern in M37, and adding
     the `peft` dependency to buy 30 lines is not worth the install surface on Kaggle.
+
+    NAMING: transformers >= 5 renamed AST's attention projections to q_proj/k_proj/v_proj/
+    o_proj; 4.x called them query/key/value. Both spellings are targeted so the script
+    works on either. Adapting Q and V (not K, not the MLP) is the standard LoRA placement.
+
+    This RAISES if it injects nothing. An earlier run silently matched zero modules and
+    trained only the classifier head - producing a "LoRA" result that was really a linear
+    probe. A hand-rolled adapter must fail loudly or it will quietly answer the wrong
+    question.
+
     Returns (n_trainable, n_total).
     """
     import torch
@@ -157,12 +167,22 @@ def inject_lora(model, targets=("query", "value"), r=8, alpha=16.0):
 
     for p in model.parameters():
         p.requires_grad = False
+    n_injected = 0
     for mod in model.modules():
         for name, child in list(mod.named_children()):
             if name in targets and isinstance(child, nn.Linear):
                 setattr(mod, name, LoRALinear(child, r, alpha))
+                n_injected += 1
+    if n_injected == 0:
+        seen = sorted({n.split(".")[-1] for n, c in model.named_modules()
+                       if isinstance(c, nn.Linear)})
+        raise RuntimeError(
+            f"LoRA injected 0 adapters - none of {targets} matched this model. "
+            f"Linear submodule names present: {seen}. Refusing to run: training would "
+            "silently reduce to a linear probe on a frozen backbone.")
     n_tr = sum(p.numel() for p in model.parameters() if p.requires_grad)
     n_all = sum(p.numel() for p in model.parameters())
+    print(f"  LoRA adapters injected: {n_injected}")
     return n_tr, n_all
 
 
@@ -180,7 +200,14 @@ def _cycle_index(audio_dir):
         if diag:
             break
     if diag is None:
-        raise FileNotFoundError("diagnosis file not found next to the audio directory")
+        # ICBHI's diagnosis table is not shipped with every audio mirror. The label plays no
+        # part in extracting an embedding, and concepts_all.npz already stores the exact
+        # patient->diagnosis pairing notebook 01 used, so derive it rather than block.
+        from make_m2_features import derive_diagnosis_file
+        diag, n_pat = derive_diagnosis_file(
+            os.path.join(C.RESULTS_DIR, "derived_patient_diagnosis.txt"))
+        print(f"  [note] no ICBHI diagnosis file on disk - derived one for {n_pat} "
+              "patients from concepts_all.npz (does not affect embeddings)")
     return build_cycle_index(audio_dir, split_file, diag)
 
 
@@ -192,9 +219,13 @@ def stage_embed(args, model=None, tag="frozen"):
 
     os.makedirs(EMB_DIR, exist_ok=True)
     recs = _cycle_index(args.audio_dir)
-    C.banner(f"N1 stage=embed ({tag})", f"{len(recs)} cycles | model={FM_NAME}")
-
+    limited = bool(getattr(args, "limit", None))
+    if limited:
+        recs = recs[:args.limit]
     dev = "cuda" if torch.cuda.is_available() else "cpu"
+    C.banner(f"N1 stage=embed ({tag})",
+             f"{len(recs)} cycles | model={FM_NAME} | device={dev}"
+             + ("  [LIMITED - writes nothing]" if limited else ""))
     fe = ASTFeatureExtractor.from_pretrained(FM_NAME)
     if model is None:
         model = ASTModel.from_pretrained(FM_NAME)
@@ -219,6 +250,10 @@ def stage_embed(args, model=None, tag="frozen"):
         if (i // args.batch_size) % 20 == 0:
             print(f"  {i + len(chunk)}/{len(recs)}")
 
+    if limited:
+        print(f"\n  --limit {args.limit}: wiring OK, embeddings {out.shape}. "
+              "Nothing written.\n  Re-run without --limit for the full pass.")
+        return None
     path = os.path.join(EMB_DIR, f"ast_{tag}.npy")
     np.save(path, out)
     np.save(os.path.join(EMB_DIR, "cycle_patients.npy"),
@@ -292,6 +327,49 @@ def stage_lora(args):
     return stage_embed(args, model=model["backbone"], tag="lora")
 
 
+def make_figure(out):
+    """Per-concept probe score with CI, one row group per embedding space.
+
+    The random control is drawn in red on the same axis - a probe result is only
+    interpretable next to it.
+    """
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    spaces = list(out["spaces"])
+    if not spaces:
+        return
+    names = [r["concept"] for r in out["spaces"][spaces[0]]["per_concept"]]
+    fig, axes = plt.subplots(1, len(spaces), figsize=(5.2 * len(spaces), 6), squeeze=False,
+                             sharey=True)
+    for ax, sp in zip(axes[0], spaces):
+        rows = {r["concept"]: r for r in out["spaces"][sp]["per_concept"]}
+        y = np.arange(len(names))
+        ctrl = sp == "random_control"
+        for i, nm in enumerate(names):
+            r = rows.get(nm, {})
+            if r.get("score") is None:
+                continue
+            lo, hi = r["ci95"]
+            col = "tab:red" if ctrl else ("tab:green" if lo > r["chance"] else "0.6")
+            ax.plot([lo, hi], [i, i], color=col, lw=2)
+            ax.plot(r["score"], i, "o", color=col, ms=5)
+        chance = rows[names[0]].get("chance", 0.0) if names else 0.0
+        ax.axvline(chance, color="k", ls="--", lw=1)
+        ax.set_yticks(y)
+        ax.set_yticklabels(names, fontsize=8)
+        ax.set_xlabel("probe score (R2 / AUROC), 95% CI")
+        ax.set_title(f"{sp}\n{out['spaces'][sp]['n_above_chance']}"
+                     f"/{out['spaces'][sp]['n_probeable']} above chance")
+        ax.grid(alpha=0.3, axis="x")
+    fig.suptitle("N1 - is each physics concept linearly readable from the embedding?",
+                 fontsize=11)
+    fig.tight_layout()
+    C.save_figure(fig, "N1_fm_concept_probing.png")
+    plt.close(fig)
+
+
 def stage_probe(args):
     """Probe every available embedding for the 14 concepts and write the comparison."""
     C.banner("N1 stage=probe", "linear read-out of 14 physics concepts, patient-grouped CV")
@@ -347,6 +425,11 @@ def stage_probe(args):
                         if delta and np.mean(list(delta.values())) < 0 else
                         "Task adaptation PRESERVES or improves concept encoding.")}
 
+    try:
+        make_figure(out)
+    except Exception as ex:
+        print(f"  [warn] figure skipped: {ex}")
+
     C.save_result(EXP_ID, out)
     return out
 
@@ -387,6 +470,8 @@ def main():
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--n_boot", type=int, default=1000)
     ap.add_argument("--n_perm", type=int, default=200)
+    ap.add_argument("--limit", type=int, default=None,
+                    help="embed only N cycles as a GPU wiring check; writes nothing")
     ap.add_argument("--dry-run", dest="dry", action="store_true")
     args = ap.parse_args()
 

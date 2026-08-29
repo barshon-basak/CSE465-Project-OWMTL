@@ -42,6 +42,9 @@ def main():
     ap.add_argument("--audio_dir", default=None)
     ap.add_argument("--only", nargs="*", default=None,
                     help="run only these, e.g. --only N2 N6")
+    ap.add_argument("--summary-only", dest="summary_only", action="store_true",
+                    help="rebuild RUN_SUMMARY.json from the existing results/ files "
+                         "without re-running anything (N5 alone costs ~25 min to redo)")
     args = ap.parse_args()
 
     summary = []
@@ -55,8 +58,11 @@ def main():
             if val and tag in applies:
                 cmd += [flag, val]
 
-        print(f"\n{'=' * 78}\n>>> {tag}  ({needs})\n{'=' * 78}")
-        r = subprocess.run(cmd, cwd=HERE)
+        if args.summary_only:
+            r = subprocess.CompletedProcess(cmd, 0)
+        else:
+            print(f"\n{'=' * 78}\n>>> {tag}  ({needs})\n{'=' * 78}")
+            r = subprocess.run(cmd, cwd=HERE)
         # A blocked experiment writes <id>_BLOCKED.json instead, and that is still a
         # result - "could not run, here is exactly what it needs" is auditable.
         status = "NOT WRITTEN"

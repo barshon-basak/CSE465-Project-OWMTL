@@ -105,12 +105,16 @@ def patient_bootstrap_ci(rows_a, rows_b, groups, n_boot=2000, seed=0):
             "resampled_unit": "patient"}
 
 
-def permutation_null(C_mat, F_mat, y, groups, n_perm=20, seed=0):
+def permutation_null(C_mat, F_mat, y, groups, n_perm=5, seed=0):
     """Null distribution of the leakage estimate when features carry no information.
 
     Feature ROWS are permuted across patients, so f keeps its marginal distribution and
     its dimensionality (both of which drive the estimator's positive bias) but loses any
-    link to y. n_perm is small on purpose - each replicate refits the CV model twice.
+    link to y. n_perm is small on purpose: each replicate refits LogisticRegressionCV on
+    ~780 dimensions (5 outer folds x 10 Cs x 5 inner folds), which costs minutes, not
+    seconds - a 20-permutation null runs for hours. 5 replicates pin the null MEAN, which
+    is the number the observed leakage must be compared against. The null CI at n_perm=5 is
+    indicative only; raise --n_perm before quoting an interval.
     """
     rng = np.random.default_rng(seed)
     base = held_out_logprob_rows(C_mat, y, groups)
@@ -153,14 +157,78 @@ def drop_one_concepts(C_mat, y, groups, names, seed=0):
                     "already carry. Report it; do not quietly keep it in the bottleneck."}
 
 
+def make_figure(doc):
+    """Drop-one concept importance, plus the leakage estimate against its null if present."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    imp = doc.get("concept_importance") or {}
+    rows = imp.get("per_concept") or []
+    if not rows:
+        return
+    has_leak = "headline" in doc
+    fig, axes = plt.subplots(1, 2 if has_leak else 1,
+                             figsize=(13 if has_leak else 8, 5.5), squeeze=False)
+
+    ax = axes[0][0]
+    rows = sorted(rows, key=lambda r: r["bits_lost_if_removed"])
+    vals = [r["bits_lost_if_removed"] for r in rows]
+    cols = ["tab:red" if v <= 0.001 else "tab:blue" for v in vals]
+    ax.barh(np.arange(len(rows)), vals, color=cols)
+    ax.axvline(0, color="k", lw=1)
+    ax.set_yticks(np.arange(len(rows)))
+    ax.set_yticklabels([r["concept"] for r in rows], fontsize=8)
+    ax.set_xlabel("held-out bits lost if this concept is removed")
+    ax.set_title("N5 - drop-one concept importance\nred = dead (<= 0.001 bits)")
+    ax.grid(alpha=0.3, axis="x")
+
+    if has_leak:
+        ax = axes[0][1]
+        obs = doc["headline"]["leakage_bits"]
+        ci = doc.get("leakage_ci", {}).get("ci95_bits")
+        null = doc.get("permutation_null") or {}
+        ax.axhline(0, color="k", lw=1)
+        if ci:
+            ax.plot([0, 0], ci, color="tab:blue", lw=3)
+        ax.plot(0, obs, "o", color="tab:blue", ms=9, label=f"observed {obs} bits")
+        if null.get("null_mean_bits") is not None:
+            nm = null["null_mean_bits"]
+            ax.plot(1, nm, "s", color="tab:red", ms=9,
+                    label=f"permutation null {nm} bits")
+            ncl = null.get("null_ci95_bits")
+            if ncl:
+                ax.plot([1, 1], ncl, color="tab:red", lw=3)
+        ax.set_xlim(-0.6, 1.6)
+        ax.set_xticks([0, 1])
+        ax.set_xticklabels(["observed", "null (shuffled f)"])
+        ax.set_ylabel("leakage I(y;f|c), bits")
+        ax.set_title("N5 - leakage vs the estimator's own bias")
+        ax.legend(fontsize=8)
+        ax.grid(alpha=0.3, axis="y")
+
+    fig.tight_layout()
+    C.save_figure(fig, "N5_leakage_audit.png")
+    plt.close(fig)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--concepts", default=None)
     ap.add_argument("--features", default=None)
-    ap.add_argument("--n_perm", type=int, default=20)
+    ap.add_argument("--figure-only", dest="figure_only", action="store_true",
+                    help="redraw the figure from the saved JSON without recomputing "
+                         "(the permutation null costs minutes per replicate)")
+    ap.add_argument("--n_perm", type=int, default=5)
     ap.add_argument("--n_boot", type=int, default=2000)
     ap.add_argument("--seed", type=int, default=42)
     args = ap.parse_args()
+
+    if args.figure_only:
+        import json
+        with open(os.path.join(C.RESULTS_DIR, f"{EXP_ID}.json"), encoding="utf-8") as fh:
+            make_figure(json.load(fh))
+        return
 
     C.banner("N5 - Concept Leakage / Faithfulness Audit (hardened)",
              "reproduce the headline, then put a CI, a null and a per-concept ranking on it")
@@ -229,6 +297,11 @@ def main():
 
     print("\n  -- drop-one-concept importance")
     doc["concept_importance"] = drop_one_concepts(Xc, y, groups, names, args.seed)
+
+    try:
+        make_figure(doc)
+    except Exception as ex:
+        print(f"  [warn] figure skipped: {ex}")
 
     C.save_result(EXP_ID, doc)
     return doc

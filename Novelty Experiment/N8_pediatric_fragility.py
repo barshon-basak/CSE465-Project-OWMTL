@@ -94,50 +94,155 @@ def mmd_rbf(X, Y, gamma=None):
     return float(Kxx.sum() / (n * (n - 1)) + Kyy.sum() / (m * (m - 1)) - 2 * Kxy.mean())
 
 
-def extract_sprsound_concepts(wav_dir, sr=16000, max_files=None, cycle_s=8.0):
-    """Run the SAME extractors on pediatric audio.
+def extract_sprsound_concepts(root, sr=16000, max_files=None):
+    """Run the SAME extractors on pediatric audio, on a matched acoustic unit.
 
     Using owmtl.concept_extractors verbatim is the whole point: a re-implementation would
     make every adult-vs-child difference uninterpretable (is it the airway or the code?).
-    SPRSound ships whole recordings; each is cut into fixed windows because its per-event
-    annotation format differs from ICBHI's and mixing annotation conventions would
-    reintroduce exactly the confound this test is trying to isolate.
+
+    UNIT MATCHING. ICBHI concepts were computed on RAW, UNPADDED respiratory cycles
+    (notebook 01: `extract_concept_vector(load_cycle_waveform(...))`). SPRSound ships
+    record-level wavs with a JSON of typed events carrying start/end in MILLISECONDS, so
+    each annotated event is cut the same way. Slicing SPRSound into arbitrary fixed windows
+    instead would compare one breath cycle against several, and the whole frequency
+    comparison would be measuring segmentation rather than airways.
+
+    Records marked "Poor Quality" are dropped - they are annotated as unusable by the
+    corpus authors, and keeping them would import their noise into the adult-vs-child
+    contrast.
+
+    Filenames encode metadata: <patientID>_<age>_<sex>_<position>_<recordID>.wav
+    The age is what makes the within-cohort gradient test below possible.
     """
+    import json as _json
     import soundfile as sf
     from owmtl.concept_extractors import extract_concept_vector, CONCEPT_NAMES
 
-    files = sorted(glob.glob(os.path.join(wav_dir, "**", "*.wav"), recursive=True))
+    jsons = sorted(glob.glob(os.path.join(root, "**", "*.json"), recursive=True))
+    pairs = []
+    for j in jsons:
+        w = j.replace("_json", "_wav").replace(".json", ".wav")
+        if os.path.isfile(w):
+            pairs.append((j, w))
+    if not pairs:
+        raise FileNotFoundError(
+            f"no matching <*_json>/<*_wav> pairs under {root!r}. Point --sprsound_dir at "
+            "the SPRSound checkout root (the folder containing BioCAS2022/).")
     if max_files:
-        files = files[:max_files]
-    if not files:
-        raise FileNotFoundError(f"no .wav files under {wav_dir!r}")
+        pairs = pairs[:max_files]
 
-    rows, ids = [], []
-    for i, f in enumerate(files):
+    rows, pids, ages, types = [], [], [], []
+    n_poor = n_noage = 0
+    for i, (jf, wf) in enumerate(pairs):
         try:
-            y, fs = sf.read(f, dtype="float32")
+            meta = _json.load(open(jf, encoding="utf-8"))
+            if meta.get("record_annotation") == "Poor Quality":
+                n_poor += 1
+                continue
+            events = meta.get("event_annotation") or []
+            if not events:
+                continue
+            parts = os.path.basename(wf)[:-4].split("_")
+            pid = parts[0]
+            try:
+                age = float(parts[1])
+            except (IndexError, ValueError):
+                age = float("nan")
+                n_noage += 1
+
+            y, fs = sf.read(wf, dtype="float32")
             if y.ndim > 1:
                 y = y.mean(1)
             if fs != sr:
-                from scipy.signal import resample_poly
                 from math import gcd
+                from scipy.signal import resample_poly
                 g = gcd(int(fs), int(sr))
                 y = resample_poly(y, sr // g, fs // g)
-            win = int(cycle_s * sr)
-            for s0 in range(0, max(len(y) - win // 2, 1), win):
-                seg = y[s0:s0 + win]
-                if len(seg) < win // 2:
+
+            for e in events:
+                s0 = int(float(e["start"]) / 1000.0 * sr)      # ms -> samples
+                s1 = int(float(e["end"]) / 1000.0 * sr)
+                seg = y[max(s0, 0):min(s1, len(y))]
+                if len(seg) < int(0.05 * sr):                  # < 50 ms is not a cycle
                     continue
                 rows.append(extract_concept_vector(seg, sr=sr))
-                ids.append(os.path.basename(f))
+                pids.append(pid)
+                ages.append(age)
+                types.append(e.get("type", "?"))
         except Exception as ex:
             if i < 5:
-                print(f"    warn {os.path.basename(f)}: {ex}")
-        if (i + 1) % 100 == 0:
-            print(f"    {i + 1}/{len(files)} files")
+                print(f"    warn {os.path.basename(wf)}: {ex}")
+        if (i + 1) % 300 == 0:
+            print(f"    {i + 1}/{len(pairs)} records -> {len(rows)} events")
+
     if not rows:
         raise RuntimeError("no concept vectors extracted from SPRSound")
-    return np.asarray(rows, dtype=np.float32), np.asarray(ids), list(CONCEPT_NAMES)
+    print(f"    dropped {n_poor} 'Poor Quality' records; {n_noage} without a parseable age")
+    return (np.asarray(rows, dtype=np.float32), np.asarray(pids), np.asarray(ages),
+            np.asarray(types), list(CONCEPT_NAMES))
+
+
+# Within-cohort gradient predictions, DERIVED from PHYSICS_PREDICTIONS so the two can never
+# drift apart. If a concept is "higher in children", then as a child grows toward adult
+# size it must DECREASE with age - the same physics, tested with a continuous predictor.
+AGE_PREDICTIONS = {k: ("negative" if v == "higher" else "positive")
+                   for k, v in PHYSICS_PREDICTIONS.items()}
+
+
+def age_gradient_test(X, ages, pids, names, n_boot=1000, seed=0):
+    """Spearman correlation of each concept with AGE, within the pediatric cohort only.
+
+    WHY THIS IS THE STRONGER TEST. The adult-vs-child comparison is confounded: different
+    corpus, different stethoscopes, different recording protocol, different annotators. Any
+    of those could move a spectral concept, and no amount of bootstrapping fixes it.
+
+    The within-SPRSound age gradient has NONE of those confounds - same corpus, same
+    devices, same protocol, same annotators - and it tests exactly the same physics. If
+    resonant frequency really scales inversely with airway size, the frequency concepts
+    must fall with age INSIDE the pediatric cohort too. Patient-level bootstrap, because
+    events from one child are not independent.
+    """
+    from scipy import stats
+
+    ok = np.isfinite(ages)
+    X, ages, pids = X[ok], ages[ok], pids[ok]
+    uniq = np.unique(pids)
+    idx_by_p = {p: np.flatnonzero(pids == p) for p in uniq}
+    rng = np.random.default_rng(seed)
+
+    rows, matched, tested = [], 0, 0
+    for j, nm in enumerate(names):
+        v = X[:, j]
+        m = np.isfinite(v)
+        if m.sum() < 50 or np.std(v[m]) == 0:
+            rows.append({"concept": nm, "skipped": "degenerate"})
+            continue
+        rho, p = stats.spearmanr(ages[m], v[m])
+        boots = []
+        for _ in range(min(n_boot, 500)):
+            pick = rng.choice(uniq, len(uniq), replace=True)
+            ii = np.concatenate([idx_by_p[q] for q in pick])
+            ii = ii[np.isfinite(X[ii, j])]
+            if len(ii) > 30:
+                r2, _ = stats.spearmanr(ages[ii], X[ii, j])
+                if r2 == r2:
+                    boots.append(r2)
+        lo, hi = (np.percentile(boots, [2.5, 97.5]) if boots
+                  else (float("nan"), float("nan")))
+        row = {"concept": nm, "spearman_rho": round(float(rho), 4),
+               "rho_ci95_patient_bootstrap": [round(float(lo), 4), round(float(hi), 4)],
+               "p": float(f"{p:.3e}"),
+               "excludes_zero": bool(lo > 0 or hi < 0)}
+        if nm in AGE_PREDICTIONS:
+            pred = AGE_PREDICTIONS[nm]
+            observed = "negative" if rho < 0 else "positive"
+            row["prereg"] = {"predicted": pred, "observed": observed,
+                             "direction_matched": pred == observed}
+            tested += 1
+            matched += int(pred == observed)
+        rows.append(row)
+
+    return rows, verdict_from_predictions(rows, "within-cohort age gradient")
 
 
 def compare(adult, child, names, n_boot=2000, seed=0):
@@ -181,19 +286,57 @@ def compare(adult, child, names, n_boot=2000, seed=0):
             matched += int(pred == observed)
         rows.append(row)
 
-    sign_test = None
-    if tested:
-        p = float(stats.binomtest(matched, tested, 0.5, alternative="greater").pvalue)
-        sign_test = {
-            "n_predictions": tested, "n_matched": matched,
+    return rows, verdict_from_predictions(rows, "cross-corpus")
+
+
+def verdict_from_predictions(rows, arm_label):
+    """Judge the pre-registered mechanism on PER-CONCEPT evidence, not the sign test.
+
+    WHY NOT THE SIGN TEST. With only 4 pre-registered predictions a one-sided binomial
+    floors at p = 0.5^4 = 0.0625 - even a PERFECT 4/4 cannot reach p < 0.05. Using it as
+    the primary criterion hardcodes "not supported" no matter what the data say. It is
+    reported below for completeness, with that floor stated, but the criterion that
+    actually carries information is per concept: did the direction match AND does its
+    interval exclude zero?
+    """
+    from scipy import stats
+
+    pre = [r for r in rows if "prereg" in r]
+    if not pre:
+        return None
+    tested = len(pre)
+    matched = sum(r["prereg"]["direction_matched"] for r in pre)
+    confirmed = [r["concept"] for r in pre
+                 if r["prereg"]["direction_matched"] and r.get("excludes_zero")
+                 or (r["prereg"]["direction_matched"] and r.get("shift_excludes_zero"))]
+    contradicted = [r["concept"] for r in pre
+                    if not r["prereg"]["direction_matched"]
+                    and (r.get("excludes_zero") or r.get("shift_excludes_zero"))]
+    p = float(stats.binomtest(matched, tested, 0.5, alternative="greater").pvalue)
+
+    if len(confirmed) >= 3 and not contradicted:
+        v = (f"SUPPORTED ({arm_label}): {len(confirmed)}/{tested} pre-registered concepts "
+             "moved in the predicted direction with intervals excluding zero, and none "
+             "moved against it.")
+    elif len(confirmed) >= 3:
+        v = (f"MOSTLY SUPPORTED ({arm_label}): {len(confirmed)}/{tested} confirmed with "
+             f"intervals excluding zero, but {contradicted} moved against prediction. "
+             "Report both.")
+    elif len(confirmed) >= 2:
+        v = (f"MIXED ({arm_label}): only {len(confirmed)}/{tested} pre-registered concepts "
+             "confirmed. Not enough to claim the mechanism.")
+    else:
+        v = (f"NOT SUPPORTED ({arm_label}): {len(confirmed)}/{tested} confirmed. Report the "
+             "shift as an unexplained distribution difference, not as physics fragility.")
+
+    return {"n_predictions": tested, "n_matched": matched,
+            "confirmed_with_ci_excluding_zero": confirmed,
+            "contradicted_with_ci_excluding_zero": contradicted,
             "binomial_p_one_sided": round(p, 4),
-            "verdict": ("the pre-registered frequency-scaling mechanism is SUPPORTED"
-                        if p < 0.05 else
-                        f"only {matched}/{tested} pre-registered signs matched "
-                        f"(p={p:.3f}) - the frequency-scaling mechanism is NOT supported; "
-                        "report the MMD as an unexplained distribution shift, not as "
-                        "physics fragility")}
-    return rows, sign_test
+            "binomial_floor_note": ("With 4 predictions the one-sided binomial cannot go "
+                                    "below p = 0.0625 even at 4/4, so it is reported as "
+                                    "secondary, never as the criterion."),
+            "verdict": v}
 
 
 def make_figure(rows, names):
@@ -286,12 +429,15 @@ def main():
         return doc
 
     print(f"\n  extracting concepts from {args.sprsound_dir} with the SAME extractors")
-    child, ids, cnames = extract_sprsound_concepts(args.sprsound_dir,
-                                                   max_files=args.max_files)
+    child, cpid, cage, ctype, cnames = extract_sprsound_concepts(
+        args.sprsound_dir, max_files=args.max_files)
     if cnames != names:
         return C.blocked(EXP_ID, "concept vocabulary mismatch between the two corpora",
                          [f"ICBHI: {names}", f"SPRSound: {cnames}"])
-    print(f"  pediatric segments: {len(child)}")
+    finite_age = cage[np.isfinite(cage)]
+    print(f"  pediatric events: {len(child)} | children: {len(np.unique(cpid))} | "
+          f"age {finite_age.min():.1f}-{finite_age.max():.1f} y "
+          f"(median {np.median(finite_age):.1f})")
 
     rows, sign_test = compare(adult, child, names, args.n_boot, args.seed)
     for r in rows:
@@ -305,9 +451,28 @@ def main():
         print(f"    {r['concept']:26s} d={r['cohens_d']:+.3f} CI{r['cohens_d_ci95']} "
               f"AUROC {r['adult_vs_child_auroc']:.3f}{tag}")
 
-    print(f"\n  sign test: {sign_test['n_matched']}/{sign_test['n_predictions']} matched, "
-          f"p={sign_test['binomial_p_one_sided']}")
+    print(f"\n  cross-corpus: {sign_test['n_matched']}/{sign_test['n_predictions']} "
+          f"directions matched | confirmed (CI excludes zero): "
+          f"{sign_test['confirmed_with_ci_excluding_zero']}")
     print(f"  {sign_test['verdict']}")
+
+    # The confound-free arm: same corpus, same devices, same protocol, continuous predictor.
+    print("\n  -- within-cohort AGE GRADIENT (no cross-corpus confound)")
+    age_rows, age_sign = age_gradient_test(child, cage, cpid, names, seed=args.seed)
+    for r in age_rows:
+        if "spearman_rho" not in r:
+            continue
+        tag = ""
+        if "prereg" in r:
+            tag = (f"  [prereg {r['prereg']['predicted']}/{r['prereg']['observed']} "
+                   f"{'MATCH' if r['prereg']['direction_matched'] else 'MISS'}]")
+        print(f"    {r['concept']:26s} rho={r['spearman_rho']:+.3f} "
+              f"CI{r['rho_ci95_patient_bootstrap']}{tag}")
+    if age_sign:
+        print(f"\n  age gradient: {age_sign['n_matched']}/{age_sign['n_predictions']} "
+              f"directions matched | confirmed (CI excludes zero): "
+              f"{age_sign['confirmed_with_ci_excluding_zero']}")
+        print(f"  {age_sign['verdict']}")
 
     # MMD with a CI - the Gap7 row, hardened.
     rng = np.random.default_rng(args.seed)
@@ -329,10 +494,25 @@ def main():
 
     doc.update({"status": "OK",
                 "dataset_info": dict(doc["dataset_info"],
-                                     n_pediatric_segments=int(len(child)),
+                                     n_pediatric_events=int(len(child)),
+                                     n_children=int(len(np.unique(cpid))),
+                                     age_years={"min": round(float(finite_age.min()), 1),
+                                                "max": round(float(finite_age.max()), 1),
+                                                "median": round(float(np.median(finite_age)), 1)},
+                                     pediatric_unit="annotated respiratory event "
+                                                    "(matched to ICBHI's annotated cycle)",
                                      sprsound_dir=args.sprsound_dir),
                 "per_concept_shift": rows,
                 "prereg_sign_test": sign_test,
+                "age_gradient": {
+                    "predictions": AGE_PREDICTIONS,
+                    "per_concept": age_rows,
+                    "sign_test": age_sign,
+                    "why_this_is_the_stronger_arm":
+                        "The cross-corpus comparison confounds airway size with corpus, "
+                        "device, protocol and annotator. The within-SPRSound age gradient "
+                        "holds all of those fixed and tests the same physics with a "
+                        "continuous predictor."},
                 "concept_space_mmd": {"mmd2": round(mmd, 4),
                                       "ci95": [round(float(lo), 4), round(float(hi), 4)],
                                       "space": "14-d physics concepts (not embeddings)"}})

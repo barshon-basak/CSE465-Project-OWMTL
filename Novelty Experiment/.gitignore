@@ -1,0 +1,5 @@
+# Generated inputs — regenerate with make_m2_features.py / N1 --stage embed|lora
+M2_features.npy
+embeddings/
+results/_*.log
+__pycache__/
