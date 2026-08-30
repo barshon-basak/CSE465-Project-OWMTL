@@ -100,7 +100,10 @@ def main():
     verified, skipped_disease, unverifiable = [], [], []
 
     for path in sorted(glob.glob("**/results_M*.json", recursive=True)):
-        if "Archive_Work_Plan" in path:
+        # Archived runs are superseded by a corrected re-run. They must not pad this table:
+        # the inflation figure is a claim about DISTINCT models, not about how many times a
+        # model was re-run before it was right.
+        if "Archive_Work_Plan" in path or "Archive_Files" in path:
             continue
         try:
             with open(path) as f:

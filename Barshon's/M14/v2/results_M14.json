@@ -809,5 +809,14 @@
       "disease_weight": null,
       "consistency_weight": null
     }
+  },
+  "efficiency": {
+    "total_params": null,
+    "model_size_mb": null,
+    "training_time_total_s": null
+  },
+  "audit_notes": {
+    "efficiency_not_applicable": "conformal wrapper over M15's scores - no network of its own",
+    "training_time_not_recoverable": "not recorded by the original run and not recoverable from a checkpoint; re-run the model to obtain it"
   }
 }

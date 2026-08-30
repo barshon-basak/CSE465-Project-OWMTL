@@ -60,5 +60,14 @@
   },
   "interpretation_guard": "This is evidence about WHERE THE MODEL LOOKS, not clinical validation. This project measured clinician-vs-ICBHI agreement at kappa 0.035 on crackles (N9) and found task adaptation degrades 13/14 acoustic concepts (N1). Attributions aligned to labels of that reliability cannot certify clinical reasoning.",
   "figure": "M44_xai_panels_P4_zero.png",
-  "analysed_checkpoint": "../M45/best_M45_P4.pth"
+  "analysed_checkpoint": "../M45/best_M45_P4.pth",
+  "efficiency": {
+    "total_params": null,
+    "model_size_mb": null,
+    "training_time_total_s": null
+  },
+  "audit_notes": {
+    "efficiency_not_applicable": "XAI analysis of M22_v2 - explains a model, does not train one",
+    "training_time_not_recoverable": "not recorded by the original run and not recoverable from a checkpoint; re-run the model to obtain it"
+  }
 }

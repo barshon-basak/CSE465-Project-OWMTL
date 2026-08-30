@@ -601,5 +601,14 @@
       "test_patients": 38.0,
       "confusion_total": 2749.0
     }
-  ]
+  ],
+  "efficiency": {
+    "total_params": null,
+    "model_size_mb": null,
+    "training_time_total_s": null
+  },
+  "audit_notes": {
+    "efficiency_not_applicable": "master merge of other models' results",
+    "training_time_not_recoverable": "not recorded by the original run and not recoverable from a checkpoint; re-run the model to obtain it"
+  }
 }

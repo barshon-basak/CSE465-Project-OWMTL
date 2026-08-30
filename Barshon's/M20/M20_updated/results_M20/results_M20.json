@@ -58,7 +58,9 @@
   "efficiency": {
     "total_params": 4153556,
     "trainable_params": 1,
-    "gpu_name": "Tesla T4"
+    "gpu_name": "Tesla T4",
+    "model_size_mb": null,
+    "training_time_total_s": null
   },
   "dataset_info": {
     "dataset": "ICBHI_2017",
@@ -305,5 +307,9 @@
         "count": 1856
       }
     ]
+  },
+  "audit_notes": {
+    "efficiency_not_applicable": "temperature scaling on frozen logits",
+    "training_time_not_recoverable": "not recorded by the original run and not recoverable from a checkpoint; re-run the model to obtain it"
   }
 }

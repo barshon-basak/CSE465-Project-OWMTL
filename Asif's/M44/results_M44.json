@@ -61,5 +61,14 @@
     "band_pointing": "The model attends LESS to the 100-1000 Hz wheeze band when a wheeze is present (-0.0534, CI [-0.0785, -0.0256], p=0.001). Both groups sit above the 0.5547 uniform baseline, so the model does concentrate on the physiological band in general \u2014 but the CONTRAST runs backwards from what a wheeze detector should show.",
     "tiling": "Attribution is largely inconsistent across identical repeated audio (mean r=0.098, median 0.18; only 32.1% of cycles exceed r=0.5). The 8 s input contains the same cycle tiled ~3x, so a model reading acoustics should attribute alike to each copy. It does not \u2014 a substantial part of the attribution tracks position in the window rather than sound.",
     "together": "Neither measure supports the reading that this model localises adventitious sounds. That is consistent with N1 (task adaptation degrades 13/14 acoustic concepts) and with the corrected-split Se of 0.41 \u2014 the model separates classes without attending to the acoustics the labels name."
+  },
+  "efficiency": {
+    "total_params": null,
+    "model_size_mb": null,
+    "training_time_total_s": null
+  },
+  "audit_notes": {
+    "efficiency_not_applicable": "XAI analysis of M22_v2 - explains a model, does not train one",
+    "training_time_not_recoverable": "not recorded by the original run and not recoverable from a checkpoint; re-run the model to obtain it"
   }
 }

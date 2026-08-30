@@ -12,7 +12,7 @@ Automated protocol-compliance and result-validity audit across every results fil
 |---|---|---|
 | 🔴 CRITICAL | 10 | The result does not support the claim made on it |
 | 🟡 WARNING | 99 | Needs resolving before submission |
-| ⚪ INFO | 66 | Worth knowing, not blocking |
+| ⚪ INFO | 75 | Worth knowing, not blocking |
 
 **Models with critical findings:** M14, M15, M19, M21, M33, M35, M36, M6
 
@@ -166,9 +166,9 @@ Automated protocol-compliance and result-validity audit across every results fil
 
 ### M11
 
-**`schema_missing_blocks`** — Missing §4 block(s): efficiency, best_epoch, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.
+**`schema_missing_blocks`** — Missing §4 block(s): best_epoch, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.
 
-> `efficiency, best_epoch, ablation, training_history`
+> `best_epoch, ablation, training_history`
 
 <sub>source: `Barshon's\M11\results_M11.json`</sub>
 
@@ -184,9 +184,9 @@ Automated protocol-compliance and result-validity audit across every results fil
 
 ### M12
 
-**`schema_missing_blocks`** — Missing §4 block(s): config, environment, efficiency, best_epoch, best_metrics, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.
+**`schema_missing_blocks`** — Missing §4 block(s): config, environment, best_epoch, best_metrics, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.
 
-> `config, environment, efficiency, best_epoch, best_metrics, ablation, training_history`
+> `config, environment, best_epoch, best_metrics, ablation, training_history`
 
 <sub>source: `Asif's\M12_v2\results_M12_v2.json`</sub>
 
@@ -202,9 +202,9 @@ Automated protocol-compliance and result-validity audit across every results fil
 
 ### M14
 
-**`schema_missing_blocks`** — Missing §4 block(s): efficiency, best_epoch, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.
+**`schema_missing_blocks`** — Missing §4 block(s): best_epoch, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.
 
-> `efficiency, best_epoch, training_history`
+> `best_epoch, training_history`
 
 <sub>source: `Barshon's\M14\v2\results_M14.json`</sub>
 
@@ -256,9 +256,9 @@ Automated protocol-compliance and result-validity audit across every results fil
 
 ### M17
 
-**`schema_missing_blocks`** — Missing §4 block(s): efficiency, best_epoch, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.
+**`schema_missing_blocks`** — Missing §4 block(s): best_epoch, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.
 
-> `efficiency, best_epoch, training_history`
+> `best_epoch, training_history`
 
 <sub>source: `Barshon's\M17\results_M17.json`</sub>
 
@@ -342,9 +342,9 @@ Automated protocol-compliance and result-validity audit across every results fil
 
 ### M24
 
-**`schema_missing_blocks`** — Missing §4 block(s): efficiency, best_epoch, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.
+**`schema_missing_blocks`** — Missing §4 block(s): best_epoch, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.
 
-> `efficiency, best_epoch, ablation, training_history`
+> `best_epoch, ablation, training_history`
 
 <sub>source: `Barshon's\M24\results_M24.json`</sub>
 
@@ -372,9 +372,9 @@ Automated protocol-compliance and result-validity audit across every results fil
 
 ### M28
 
-**`schema_missing_blocks`** — Missing §4 block(s): config, environment, dataset_info, efficiency, best_epoch, best_metrics, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.
+**`schema_missing_blocks`** — Missing §4 block(s): config, environment, dataset_info, best_epoch, best_metrics, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.
 
-> `config, environment, dataset_info, efficiency, best_epoch, best_metrics, ablation, training_history`
+> `config, environment, dataset_info, best_epoch, best_metrics, ablation, training_history`
 
 <sub>source: `Barshon's\M28\results_M28.json`</sub>
 
@@ -586,9 +586,9 @@ Automated protocol-compliance and result-validity audit across every results fil
 
 ### M44
 
-**`schema_missing_blocks`** — Missing §4 block(s): config, environment, efficiency, best_epoch, best_metrics, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.
+**`schema_missing_blocks`** — Missing §4 block(s): config, environment, best_epoch, best_metrics, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.
 
-> `config, environment, efficiency, best_epoch, best_metrics, ablation, training_history`
+> `config, environment, best_epoch, best_metrics, ablation, training_history`
 
 <sub>source: `Asif's\M44\results_M44.json`</sub>
 
@@ -602,9 +602,9 @@ Automated protocol-compliance and result-validity audit across every results fil
 
 <sub>source: `Asif's\M44\results_M44.json`</sub>
 
-**`schema_missing_blocks`** — Missing §4 block(s): config, environment, efficiency, best_epoch, best_metrics, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.
+**`schema_missing_blocks`** — Missing §4 block(s): config, environment, best_epoch, best_metrics, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.
 
-> `config, environment, efficiency, best_epoch, best_metrics, ablation, training_history`
+> `config, environment, best_epoch, best_metrics, ablation, training_history`
 
 <sub>source: `Asif's\M44\results_M44_A0_wrap.json`</sub>
 
@@ -618,9 +618,9 @@ Automated protocol-compliance and result-validity audit across every results fil
 
 <sub>source: `Asif's\M44\results_M44_A0_wrap.json`</sub>
 
-**`schema_missing_blocks`** — Missing §4 block(s): config, environment, efficiency, best_epoch, best_metrics, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.
+**`schema_missing_blocks`** — Missing §4 block(s): config, environment, best_epoch, best_metrics, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.
 
-> `config, environment, efficiency, best_epoch, best_metrics, ablation, training_history`
+> `config, environment, best_epoch, best_metrics, ablation, training_history`
 
 <sub>source: `Asif's\M44\results_M44_P4_zero.json`</sub>
 
@@ -760,11 +760,19 @@ Automated protocol-compliance and result-validity audit across every results fil
 
 ### M11
 
+**`no_inference_latency`** — `inference_time_ms_per_sample` not measured. Recommended by §4 and it feeds the efficiency columns of the ablation table.
+
+<sub>source: `Barshon's\M11\results_M11.json`</sub>
+
 **`patient_independence_not_asserted`** — Split is declared patient-independent ('patient_independent_60_20_20') but `patient_leakage_verified` is not set, so nothing checked it at runtime.
 
 <sub>source: `Barshon's\M11\results_M11.json`</sub>
 
 ### M12
+
+**`no_inference_latency`** — `inference_time_ms_per_sample` not measured. Recommended by §4 and it feeds the efficiency columns of the ablation table.
+
+<sub>source: `Asif's\M12_v2\results_M12_v2.json`</sub>
 
 **`patient_independence_not_asserted`** — Split is declared patient-independent ('official_icbhi_60_40_patient_disjoint') but `patient_leakage_verified` is not set, so nothing checked it at runtime.
 
@@ -783,6 +791,10 @@ Automated protocol-compliance and result-validity audit across every results fil
 <sub>source: `Barshon's\M13\results_M13.json`</sub>
 
 ### M14
+
+**`no_inference_latency`** — `inference_time_ms_per_sample` not measured. Recommended by §4 and it feeds the efficiency columns of the ablation table.
+
+<sub>source: `Barshon's\M14\v2\results_M14.json`</sub>
 
 **`cites_subchance_reference_value`** — `baseline_comparisons.reference_m6_openmax_auroc` = 0.4516 is cited here as context from another model's already-audited result (it is at or below chance). This is not a claim about M14's own performance -- see that other model's audit entry for the underlying problem -- but do not treat it as a validity benchmark for M14.
 
@@ -814,6 +826,10 @@ Automated protocol-compliance and result-validity audit across every results fil
 
 <sub>source: `Barshon's\M17\results_M17.json`</sub>
 
+**`no_inference_latency`** — `inference_time_ms_per_sample` not measured. Recommended by §4 and it feeds the efficiency columns of the ablation table.
+
+<sub>source: `Barshon's\M17\results_M17.json`</sub>
+
 ### M18
 
 **`no_inference_latency`** — `inference_time_ms_per_sample` not measured. Recommended by §4 and it feeds the efficiency columns of the ablation table.
@@ -840,9 +856,19 @@ Automated protocol-compliance and result-validity audit across every results fil
 
 ### M24
 
+**`no_inference_latency`** — `inference_time_ms_per_sample` not measured. Recommended by §4 and it feeds the efficiency columns of the ablation table.
+
+<sub>source: `Barshon's\M24\results_M24.json`</sub>
+
 **`patient_independence_not_asserted`** — Split is declared patient-independent ('patient_independent_70_30') but `patient_leakage_verified` is not set, so nothing checked it at runtime.
 
 <sub>source: `Barshon's\M24\results_M24.json`</sub>
+
+### M28
+
+**`no_inference_latency`** — `inference_time_ms_per_sample` not measured. Recommended by §4 and it feeds the efficiency columns of the ablation table.
+
+<sub>source: `Barshon's\M28\results_M28.json`</sub>
 
 ### M29
 
@@ -958,13 +984,25 @@ Automated protocol-compliance and result-validity audit across every results fil
 
 ### M44
 
-**`patient_independence_not_asserted`** — Split is declared patient-independent ('official_60_40_patient_independent_corrected') but `patient_leakage_verified` is not set, so nothing checked it at runtime.
+**`no_inference_latency`** — `inference_time_ms_per_sample` not measured. Recommended by §4 and it feeds the efficiency columns of the ablation table.
 
 <sub>source: `Asif's\M44\results_M44.json`</sub>
 
 **`patient_independence_not_asserted`** — Split is declared patient-independent ('official_60_40_patient_independent_corrected') but `patient_leakage_verified` is not set, so nothing checked it at runtime.
 
+<sub>source: `Asif's\M44\results_M44.json`</sub>
+
+**`no_inference_latency`** — `inference_time_ms_per_sample` not measured. Recommended by §4 and it feeds the efficiency columns of the ablation table.
+
 <sub>source: `Asif's\M44\results_M44_A0_wrap.json`</sub>
+
+**`patient_independence_not_asserted`** — Split is declared patient-independent ('official_60_40_patient_independent_corrected') but `patient_leakage_verified` is not set, so nothing checked it at runtime.
+
+<sub>source: `Asif's\M44\results_M44_A0_wrap.json`</sub>
+
+**`no_inference_latency`** — `inference_time_ms_per_sample` not measured. Recommended by §4 and it feeds the efficiency columns of the ablation table.
+
+<sub>source: `Asif's\M44\results_M44_P4_zero.json`</sub>
 
 **`patient_independence_not_asserted`** — Split is declared patient-independent ('official_60_40_patient_independent_corrected') but `patient_leakage_verified` is not set, so nothing checked it at runtime.
 

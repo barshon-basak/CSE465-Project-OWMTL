@@ -150,5 +150,14 @@
     "what_would_settle_it": "Retrain M2 and M3 from scratch on the corrected split \u2014 two training runs, not an inference pass.",
     "expected_outcome": "Probably another null. Two independent pairs at ~49 test patients have now produced deltas of 0.040 and 0.042, both with intervals spanning zero.",
     "decision": "Deferred. Marginal information is low against four RTK requirements with zero implementation. Revisit if the backbone choice is challenged."
+  },
+  "efficiency": {
+    "total_params": null,
+    "model_size_mb": null,
+    "training_time_total_s": null
+  },
+  "audit_notes": {
+    "efficiency_not_applicable": "backbone re-decision - inference only over frozen checkpoints",
+    "training_time_not_recoverable": "not recorded by the original run and not recoverable from a checkpoint; re-run the model to obtain it"
   }
 }

@@ -14,8 +14,8 @@
         "severity": "WARNING",
         "model": "M12",
         "check": "schema_missing_blocks",
-        "message": "Missing \u00a74 block(s): config, environment, efficiency, best_epoch, best_metrics, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
-        "evidence": "config, environment, efficiency, best_epoch, best_metrics, ablation, training_history",
+        "message": "Missing \u00a74 block(s): config, environment, best_epoch, best_metrics, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
+        "evidence": "config, environment, best_epoch, best_metrics, ablation, training_history",
         "source": "Asif's\\M12_v2\\results_M12_v2.json"
       },
       {
@@ -31,6 +31,14 @@
         "model": "M12",
         "check": "schema_missing_ablation",
         "message": "No \u00a74.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.",
+        "evidence": "",
+        "source": "Asif's\\M12_v2\\results_M12_v2.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M12",
+        "check": "no_inference_latency",
+        "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
         "evidence": "",
         "source": "Asif's\\M12_v2\\results_M12_v2.json"
       },
@@ -256,8 +264,8 @@
         "severity": "WARNING",
         "model": "M44",
         "check": "schema_missing_blocks",
-        "message": "Missing \u00a74 block(s): config, environment, efficiency, best_epoch, best_metrics, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
-        "evidence": "config, environment, efficiency, best_epoch, best_metrics, ablation, training_history",
+        "message": "Missing \u00a74 block(s): config, environment, best_epoch, best_metrics, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
+        "evidence": "config, environment, best_epoch, best_metrics, ablation, training_history",
         "source": "Asif's\\M44\\results_M44.json"
       },
       {
@@ -273,6 +281,14 @@
         "model": "M44",
         "check": "schema_missing_ablation",
         "message": "No \u00a74.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.",
+        "evidence": "",
+        "source": "Asif's\\M44\\results_M44.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M44",
+        "check": "no_inference_latency",
+        "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
         "evidence": "",
         "source": "Asif's\\M44\\results_M44.json"
       },
@@ -295,8 +311,8 @@
         "severity": "WARNING",
         "model": "M44",
         "check": "schema_missing_blocks",
-        "message": "Missing \u00a74 block(s): config, environment, efficiency, best_epoch, best_metrics, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
-        "evidence": "config, environment, efficiency, best_epoch, best_metrics, ablation, training_history",
+        "message": "Missing \u00a74 block(s): config, environment, best_epoch, best_metrics, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
+        "evidence": "config, environment, best_epoch, best_metrics, ablation, training_history",
         "source": "Asif's\\M44\\results_M44_A0_wrap.json"
       },
       {
@@ -312,6 +328,14 @@
         "model": "M44",
         "check": "schema_missing_ablation",
         "message": "No \u00a74.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.",
+        "evidence": "",
+        "source": "Asif's\\M44\\results_M44_A0_wrap.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M44",
+        "check": "no_inference_latency",
+        "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
         "evidence": "",
         "source": "Asif's\\M44\\results_M44_A0_wrap.json"
       },
@@ -334,8 +358,8 @@
         "severity": "WARNING",
         "model": "M44",
         "check": "schema_missing_blocks",
-        "message": "Missing \u00a74 block(s): config, environment, efficiency, best_epoch, best_metrics, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
-        "evidence": "config, environment, efficiency, best_epoch, best_metrics, ablation, training_history",
+        "message": "Missing \u00a74 block(s): config, environment, best_epoch, best_metrics, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
+        "evidence": "config, environment, best_epoch, best_metrics, ablation, training_history",
         "source": "Asif's\\M44\\results_M44_P4_zero.json"
       },
       {
@@ -351,6 +375,14 @@
         "model": "M44",
         "check": "schema_missing_ablation",
         "message": "No \u00a74.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.",
+        "evidence": "",
+        "source": "Asif's\\M44\\results_M44_P4_zero.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M44",
+        "check": "no_inference_latency",
+        "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
         "evidence": "",
         "source": "Asif's\\M44\\results_M44_P4_zero.json"
       },
@@ -702,8 +734,8 @@
         "severity": "WARNING",
         "model": "M11",
         "check": "schema_missing_blocks",
-        "message": "Missing \u00a74 block(s): efficiency, best_epoch, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
-        "evidence": "efficiency, best_epoch, ablation, training_history",
+        "message": "Missing \u00a74 block(s): best_epoch, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
+        "evidence": "best_epoch, ablation, training_history",
         "source": "Barshon's\\M11\\results_M11.json"
       },
       {
@@ -719,6 +751,14 @@
         "model": "M11",
         "check": "schema_missing_ablation",
         "message": "No \u00a74.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.",
+        "evidence": "",
+        "source": "Barshon's\\M11\\results_M11.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M11",
+        "check": "no_inference_latency",
+        "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
         "evidence": "",
         "source": "Barshon's\\M11\\results_M11.json"
       },
@@ -764,8 +804,8 @@
         "severity": "WARNING",
         "model": "M14",
         "check": "schema_missing_blocks",
-        "message": "Missing \u00a74 block(s): efficiency, best_epoch, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
-        "evidence": "efficiency, best_epoch, training_history",
+        "message": "Missing \u00a74 block(s): best_epoch, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
+        "evidence": "best_epoch, training_history",
         "source": "Barshon's\\M14\\v2\\results_M14.json"
       },
       {
@@ -774,6 +814,14 @@
         "check": "schema_missing_metrics",
         "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
         "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
+        "source": "Barshon's\\M14\\v2\\results_M14.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M14",
+        "check": "no_inference_latency",
+        "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
+        "evidence": "",
         "source": "Barshon's\\M14\\v2\\results_M14.json"
       },
       {
@@ -897,8 +945,8 @@
         "severity": "WARNING",
         "model": "M17",
         "check": "schema_missing_blocks",
-        "message": "Missing \u00a74 block(s): efficiency, best_epoch, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
-        "evidence": "efficiency, best_epoch, training_history",
+        "message": "Missing \u00a74 block(s): best_epoch, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
+        "evidence": "best_epoch, training_history",
         "source": "Barshon's\\M17\\results_M17.json"
       },
       {
@@ -915,6 +963,14 @@
         "check": "schema_incomplete_ablation",
         "message": "`ablation` block missing: component_flags, loss_weights.",
         "evidence": "component_flags, loss_weights",
+        "source": "Barshon's\\M17\\results_M17.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M17",
+        "check": "no_inference_latency",
+        "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
+        "evidence": "",
         "source": "Barshon's\\M17\\results_M17.json"
       },
       {
@@ -1115,8 +1171,8 @@
         "severity": "WARNING",
         "model": "M24",
         "check": "schema_missing_blocks",
-        "message": "Missing \u00a74 block(s): efficiency, best_epoch, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
-        "evidence": "efficiency, best_epoch, ablation, training_history",
+        "message": "Missing \u00a74 block(s): best_epoch, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
+        "evidence": "best_epoch, ablation, training_history",
         "source": "Barshon's\\M24\\results_M24.json"
       },
       {
@@ -1132,6 +1188,14 @@
         "model": "M24",
         "check": "schema_missing_ablation",
         "message": "No \u00a74.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.",
+        "evidence": "",
+        "source": "Barshon's\\M24\\results_M24.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M24",
+        "check": "no_inference_latency",
+        "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
         "evidence": "",
         "source": "Barshon's\\M24\\results_M24.json"
       },
@@ -1170,8 +1234,8 @@
         "severity": "WARNING",
         "model": "M28",
         "check": "schema_missing_blocks",
-        "message": "Missing \u00a74 block(s): config, environment, dataset_info, efficiency, best_epoch, best_metrics, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
-        "evidence": "config, environment, dataset_info, efficiency, best_epoch, best_metrics, ablation, training_history",
+        "message": "Missing \u00a74 block(s): config, environment, dataset_info, best_epoch, best_metrics, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
+        "evidence": "config, environment, dataset_info, best_epoch, best_metrics, ablation, training_history",
         "source": "Barshon's\\M28\\results_M28.json"
       },
       {
@@ -1187,6 +1251,14 @@
         "model": "M28",
         "check": "schema_missing_ablation",
         "message": "No \u00a74.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.",
+        "evidence": "",
+        "source": "Barshon's\\M28\\results_M28.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M28",
+        "check": "no_inference_latency",
+        "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
         "evidence": "",
         "source": "Barshon's\\M28\\results_M28.json"
       },

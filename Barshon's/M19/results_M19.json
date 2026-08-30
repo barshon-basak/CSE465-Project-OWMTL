@@ -47,7 +47,9 @@
   "efficiency": {
     "total_params": 4153556,
     "trainable_params": 0,
-    "gpu_name": "Tesla T4"
+    "gpu_name": "Tesla T4",
+    "model_size_mb": null,
+    "training_time_total_s": null
   },
   "dataset_info": {
     "dataset": "ICBHI_Coswara_SPRSound",
@@ -110,5 +112,9 @@
       "disease_weight": null,
       "consistency_weight": null
     }
+  },
+  "audit_notes": {
+    "efficiency_not_applicable": "cross-dataset evaluation of an existing checkpoint",
+    "training_time_not_recoverable": "not recorded by the original run and not recoverable from a checkpoint; re-run the model to obtain it"
   }
 }

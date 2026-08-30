@@ -60,7 +60,10 @@
     "best_compressed_params": 4153556,
     "best_model_size_mb": 15.84,
     "best_latency_ms": 0.072,
-    "gpu_name": "Tesla T4"
+    "gpu_name": "Tesla T4",
+    "total_params": null,
+    "model_size_mb": null,
+    "training_time_total_s": null
   },
   "dataset_info": {
     "dataset": "ICBHI_2017",
@@ -639,5 +642,9 @@
         "latency_ms_per_sample": 129.984
       }
     ]
+  },
+  "audit_notes": {
+    "efficiency_not_applicable": "compression sweep - per-config sizes are in the sweep CSV",
+    "training_time_not_recoverable": "not recorded by the original run and not recoverable from a checkpoint; re-run the model to obtain it"
   }
 }

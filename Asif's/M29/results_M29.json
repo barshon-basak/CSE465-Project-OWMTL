@@ -177,5 +177,8 @@
     },
     "purpose": "Mitigates Novelty Search v2 Phase 2 Attack 1: 'the paper does not show that this signal is better than simpler baselines'. Any M15 claim must clear these numbers, not only M6's."
   },
-  "training_history": []
+  "training_history": [],
+  "audit_notes": {
+    "efficiency_not_applicable": "post-hoc OOD scoring over frozen M12 embeddings"
+  }
 }

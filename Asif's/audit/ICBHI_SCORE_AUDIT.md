@@ -30,11 +30,9 @@ This matters because the ~135 published ICBHI papers use the official metric. As
 | M3_v2 | 0.6075 | **0.5200** | +0.0875 | 0.4266 | 0.6135 | `official_60_40_patient_independent_corrected` |
 | M3 | 0.5639 | **0.5132** | +0.0507 | 0.1980 | 0.8284 | `official_icbhi_60_40_patient_disjoint` |
 | M36 | 0.5137 | **0.5052** | +0.0085 | 0.0932 | 0.9171 | `patient_independent_70_30` |
+| M21 | 0.5022 | **0.4997** | +0.0025 | 0.0186 | 0.9808 | `official_60_40_patient_independent_corrected` |
 | M32 | 0.6547 | **0.4733** | +0.1814 | 0.5721 | 0.3745 | `patient_independent_70_30` |
 | M2 | 0.5480 | **0.4720** | +0.0760 | 0.2005 | 0.7435 | `official_icbhi_60_40_patient_disjoint` |
-| M2 | 0.5780 | **0.4671** | +0.1109 | 0.2991 | 0.6352 | `official_icbhi_60_40_patient_disjoint` |
-| M3 | 0.6239 | **0.4490** | +0.1749 | 0.4902 | 0.4079 | `official_icbhi_60_40_patient_disjoint` |
-| M2 | 0.6167 | **0.4139** | +0.2028 | 0.5030 | 0.3249 | `official_icbhi_60_40_patient_disjoint` |
 | M33 | 0.5506 | **0.3330** | +0.2176 | 0.6660 | 0.0000 | `patient_independent_70_30` |
 
 Published ICBHI SOTA on the official 60/40 split is roughly **0.60–0.65**. Read the Official column against that, not the Reported column.
@@ -44,7 +42,6 @@ Published ICBHI SOTA on the official 60/40 split is roughly **0.60–0.65**. Read 
 These report an `icbhi_score` but commit no 4×4 confusion matrix, so the number cannot be checked by us or by a reviewer:
 
 - **M15** — `Barshon's\M15\v6\results_M15.json` (reports 0.0000)
-- **M30** — `Barshon's\M30\results_M30.json` (reports 0.8213)
 
 ## Not applicable
 

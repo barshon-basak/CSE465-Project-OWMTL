@@ -73,15 +73,19 @@
     ]
   },
   "efficiency": {
-    "total_params": 2228996,
+    "total_params": 2263160,
     "trainable_params": 5124,
     "training_time_total_s": 450.6,
-    "gpu_name": "NVIDIA GeForce RTX 4050 Laptop GPU"
+    "gpu_name": "NVIDIA GeForce RTX 4050 Laptop GPU",
+    "model_size_mb": 9.053
   },
   "ablation": {
     "ablation_group": "component_and_preprocessing_ablation",
     "ablation_role": "variant",
     "baseline_model_id": "M22_v2",
     "variable_changed": "frozen backbone, classifier only"
+  },
+  "audit_notes": {
+    "efficiency_source": "total_params counted from best_M45_A4.pth; model_size_mb = params x 4 bytes (fp32), per Model_Training_Protocol.md section 3"
   }
 }
