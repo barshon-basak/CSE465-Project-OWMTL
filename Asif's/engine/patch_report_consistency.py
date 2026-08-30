@@ -9,7 +9,10 @@ Fix two places where patch_official_metric.py left the notebooks self-inconsiste
    did not correspond to the epoch actually selected. The Se/Sp panel had the same problem: it
    plotted macro-averaged Se/Sp labelled simply "Se"/"Sp".
 
-2. The M12 ABLATION TABLE compared the new run against M1/M4 reference rows that are
+2. Each notebook's OWN row in its primary summary table -- the one printed first, before any
+   cross-model comparison -- was built from `final_metrics["icbhi_score"]`, the macro alias,
+   even after checkpoint selection and every other display had switched to the official score.
+   The M12 ABLATION TABLE compared the new run against M1/M4 reference rows that are
    (a) macro-metric numbers and (b) computed on a DIFFERENT split -- the audit records M1 as
    `patient_independent_60_40` and the old M2/M3/M22 as `..._patient_id_fallback`, i.e. the
    11-patient bug. Printing a "M2 vs M1" delta across that gap produces a number that looks
@@ -23,6 +26,14 @@ Fix two places where patch_official_metric.py left the notebooks self-inconsiste
    actually ran cell 16 on Colab after M2's v3/v4 GPU runs. TABLE_OLD/TABLE_NEW now span both
    blocks so the two can't drift apart again; the spread print survives as an informational
    line, no longer gated on the deleted variable.
+
+   NOTE (2026-08-29, second post-hoc): fix #1 above corrected the PLOTS but missed that each
+   notebook's own row in its OWN primary table (`m2_row`/`m3_row`/`m22`) was populated from the
+   same macro alias -- so M2's printed ABLATION TABLE showed 0.5480 in its ICBHI column on the
+   very same run whose corrected score, printed three lines later by fix #2, was 0.4720. Not a
+   crash, so nothing caught it until the numbers were compared by eye. ROW_SUBS below fixes the
+   dict construction in all three notebooks so the row a reader sees FIRST already matches the
+   number the corrected-comparison block prints after it.
 
 Idempotent.
 """
@@ -105,6 +116,14 @@ if sweep_results:
           "the cross-split M1 comparison this used to gate on is no longer computed, see above)")'''
 
 
+ROW_SUBS = [
+ ('''"icbhi": final_metrics["icbhi_score"], "params": total_params,''',
+  '''"icbhi": final_metrics["icbhi_score_official"], "params": total_params,'''),
+ ('''"sp": final_metrics["specificity_macro"], "icbhi": final_metrics["icbhi_score"],''',
+  '''"sp": final_metrics["specificity_macro"], "icbhi": final_metrics["icbhi_score_official"],'''),
+]
+
+
 def patch_one(mid, path, dry):
     nb = json.load(open(path))
     if MARKER in json.dumps(nb):
@@ -120,6 +139,10 @@ def patch_one(mid, path, dry):
             if old in s:
                 s = s.replace(old, new, 1)
                 done.append("plot")
+        for old, new in ROW_SUBS:
+            if old in s:
+                s = s.replace(old, new, 1)
+                done.append("row")
         if TABLE_OLD.replace("M2 vs. M1", f"{mid} vs. M1") in s:
             s = s.replace(TABLE_OLD.replace("M2 vs. M1", f"{mid} vs. M1"), TABLE_NEW, 1)
             done.append("table")
@@ -134,7 +157,7 @@ def patch_one(mid, path, dry):
     if not dry:
         json.dump(nb, open(path, "w"), indent=1)
     print(f"[{mid}] {'would patch' if dry else 'patched'} — {done.count('plot')} plot fix(es), "
-          f"{done.count('table')} table fix(es)")
+          f"{done.count('row')} row fix(es), {done.count('table')} table fix(es)")
     return bool(done)
 
 
