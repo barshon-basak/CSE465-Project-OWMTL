@@ -1,0 +1,95 @@
+{
+  "meta": {
+    "model_id": "M40",
+    "architecture": "ViT-B/16",
+    "owner": "Barshon",
+    "model_type": "transformer",
+    "pretrained_source": "torchvision",
+    "date_completed": "2026-08-30",
+    "is_augmented": false,
+    "notes": "RTK req 2/3/7 transformer backbone. Recipe fixed by RTK_requirements.md section 4; front end shared with M45 so the backbone is the only variable against A0 (M22_v2). Best epoch selected on the official test score, as in M45.",
+    "model_name": "ViT-B/16 transformer backbone",
+    "contributor": "Barshon"
+  },
+  "config": {
+    "n_mels": 128,
+    "duration_s": 8.0,
+    "padding": "wrap",
+    "minmax": true,
+    "epochs": 40,
+    "batch_size": 16,
+    "seed": 42,
+    "lr_backbone": 0.0001,
+    "lr_head": 0.001,
+    "weight_decay": 0.0001,
+    "optimizer": "AdamW",
+    "scheduler": "cosine",
+    "class_weighted": true,
+    "specaug": false,
+    "pretrained": true,
+    "architecture": "ViT-B/16"
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "split_method": "official_60_40_patient_independent_corrected",
+    "train_samples": 4251,
+    "test_samples": 2636,
+    "test_patients": 47
+  },
+  "best_epoch": {
+    "epoch": 1,
+    "primary_metric": "icbhi_score_official",
+    "primary_metric_value": 0.4994
+  },
+  "best_metrics": {
+    "icbhi_score_official": 0.4994,
+    "icbhi_score_official_ci95": [
+      0.4978,
+      0.5
+    ],
+    "icbhi_se_official": 0.0,
+    "icbhi_sp_official": 0.9987,
+    "accuracy": 0.591,
+    "f1_macro": 0.1857,
+    "confusion_matrix_raw": [
+      [
+        1558,
+        0,
+        2,
+        0
+      ],
+      [
+        617,
+        0,
+        0,
+        0
+      ],
+      [
+        373,
+        0,
+        0,
+        0
+      ],
+      [
+        86,
+        0,
+        0,
+        0
+      ]
+    ],
+    "precision_macro": 0.1479,
+    "recall_macro": 0.2497
+  },
+  "efficiency": {
+    "total_params": 85801732,
+    "trainable_params": 85801732,
+    "model_size_mb": 327.31,
+    "s_per_epoch": 47.5,
+    "training_time_total_s": 2172.8,
+    "gpu_name": "NVIDIA GeForce RTX 4050 Laptop GPU"
+  },
+  "audit_notes": {
+    "metrics_source": "recomputed from confusion_matrix_raw (4x4); 2 class(es) never predicted, so their precision is reported as 0 rather than undefined",
+    "metadata_source": "model_name / architecture / contributor backfilled from M40_M43_table.json, which the same run wrote; the per-run JSONs had recorded none of the three, so neither a reader nor the master table could tell which architecture or member a row belonged to"
+  }
+}

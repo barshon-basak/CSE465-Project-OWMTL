@@ -32,16 +32,16 @@ models, one owned per member.
 
 | # | Requirement | Status today | Gap |
 |---|---|---|---|
-| 1 | ALL preprocessing techniques | 🟡 Partial — `Model_Training_Protocol.md` §2 fixes SR/mel/window/freq; notebooks do load → pad/crop → log-mel → normalize → class-weighted loss | No band-pass filter, no silence trim, no denoising, no per-recording normalization variant, no documented preprocessing ablation. Nothing tabulated. |
-| 2 | Pre-trained DL model, one per member | 🟡 M3 MobileNetV2 (Asif) is committed; M4 AST was run but never exported a JSON. M1/M2 are **trained from scratch** — they do not count. M40–M43 are pre-trained and cover all four members once run | Run `M40_M43_transformers/`; M47 CNN gap-fills stay optional |
-| 3 | ≥ X = 4 transformer models | 🟡 **6 of 8 runs done.** `M40_M43_transformers/` — M41 Swin-T **0.5304**/0.5291 and M42 DeiT-S 0.5149/0.4981 trained cleanly (both below the 0.5602 M22_v2 baseline, which is the expected and reportable trade-off). **M40 ViT-B/16 collapsed to all-Normal** in both runs. M43 AST runs on Kaggle (`M43_AST_kaggle.ipynb`) — 1212 patches need 16 GB. Prior state: M4 had no committed JSON, M23 undocumented, M33_v2 is a transformer *head*, M37_v2 applies LoRA to the **M2 CNN** not an AST | Run M43 on Kaggle; decide whether to re-run M40 with warmup or report the collapse |
-| 4 | Accuracy / precision / recall / F1 for ALL models | 🟡 Schema exists (§3) and Asif's runs + M31–M37 comply; **17 of 39 results JSONs are missing required fields** | Backfill or re-export (list in §5) |
-| 5 | Model size / params / training time for ALL models | 🟡 Same story — present in Asif's runs + M31–M37, absent in M11 / M14 / M15v4 / M17 / M18 / M20 / M24 / M28 / Gap7 / M7 | Backfill |
-| 6 | Normalized CM + train/val loss & accuracy vs. epoch for BEST model | 🟡 Curves + CM exist per model; "BEST" is **undefined and currently ambiguous** (M22 = 0.6495 official 60/40; M35 = 0.6864 but on the easier 70/30 split — not comparable) | Fix the definition (§6), then regenerate publication-grade plots |
+| 1 | ALL preprocessing techniques | ✅ **Closed 2026-08-30.** §3b done: every implemented stage is individually ablated and reported (P1 band-pass 0.5513, P2 denoising 0.5248, P3 amplitude norm **0.5764 — the only gain**, plus A5/A6/P4/P5). §3a resolved by amendment: the canonical module `owmtl/features.py` already exists and is now marked as a reference implementation the runs do not import | None. The as-run chain is `m45_ablation.py::log_mel`; do not reconcile by changing the runs |
+| 2 | Pre-trained DL model, one per member | ✅ **Closed 2026-08-30.** Asif M3 MobileNetV2, Barshon M40 ViT-B/16, Farhana M41 Swin-T, Sami M42 DeiT-S — all ImageNet-pretrained, all on the corrected split. Architecture and contributor are now recorded **inside** each results JSON, not only in the summary table | — |
+| 3 | ≥ X = 4 transformer models | 🔴 **3 of 4 architectures.** ViT-B/16 (collapsed to all-Normal, Se=0.0000, reported as a finding), Swin-T 0.5304 — best transformer — and DeiT-S 0.5149, each with a clean+SpecAugment pair, all below the 0.5602 CNN baseline | **Needs M43 (AST).** X = group size = 4; without it the count is short and Asif owns no transformer |
+| 4 | Accuracy / precision / recall / F1 for ALL models | ✅ **Closed 2026-08-30.** 14 files recomputed from their committed confusion matrices by `Asif's/audit/backfill_metrics.py`; 15 analysis/other-metric-family files carry a written exemption the audit now honours. `schema_missing_metrics` warnings: **0** | — |
+| 5 | Model size / params / training time for ALL models | 🟡 **Mostly closed.** `Asif's/audit/backfill_efficiency.py` recovered params + size from checkpoints for 9 files and marked 11 analysis artefacts N/A | `training_time_total_s` is **not recoverable** after the fact and is written as null with a reason — never invented. M7's ensemble (10 checkpoints) left unmapped |
+| 6 | Normalized CM + train/val loss & accuracy vs. epoch for BEST model | ✅ **Closed 2026-08-30.** Best = **M22_v2, 0.5602** under §6's rule. Both figures regenerated from its committed JSON by `Asif's/M22_v2/make_paper_figures.py`, so no figure can drift from the table | Re-declare only if M43 or a corrected M35 beats it |
 | 7 | Augmentation on training samples + results | ✅ Strongest item — M22 (SpecAugment, +0.036 official), M24-CB (class-balancing), M7 clean-vs-aug pairs | Just needs one consolidated table + the same treatment on the new transformers |
 | 8 | Novelties + results | ✅ Plenty — M31 GradNorm, M32 demographic fusion, M33_v2 temporal transformer, M34 curriculum, M35 physics-informed loss, M37 LoRA, M13 prototypical head, M14 conformal, M15 cross-task, M29/M38 open-set, M39 concept gate | All on the 70/30 split → **not comparable to the backbone table**. Needs the honest split-annotated presentation (§8) |
-| 9 | XAI for BEST model | 🔴 **Nothing exists.** Only mentioned in archived plans | Build it (§9) |
-| 10 | Ablation study for BEST model | 🟡 §4.1 defines the ablation metadata schema and M12 is a clean backbone *selection*, but no component-wise ablation run exists | Build it (§10) |
+| 9 | XAI for BEST model | ✅ **Closed.** `Asif's/M44/` — Grad-CAM + occlusion on M22_v2, 400 cycles, 4-panel figure. Band pointing: the model attends **less** to 100–1000 Hz when a wheeze is present (−0.053, CI [−0.079, −0.026], p=0.001); tiling consistency r=0.098 | The planned pointing game is **not implementable** — ICBHI annotates per cycle, and the crop *is* the window, so the hit rate is 100% by construction |
+| 10 | Ablation study for BEST model | ✅ **12 rows**, A0–A6 + P1–P5, one variable each, corrected split, each paired-tested against A0 twice (`M45_paired_tests.json`) | **Only A4 (frozen backbone, −0.1008) differs from A0 at patient level.** Six of ten rows flip verdict between cycle- and patient-level testing — reported as a finding |
 
 ---
 
@@ -53,12 +53,12 @@ models, one owned per member.
 | **M41** | Swin-T on log-mel | Farhana | 1 notebook + run |
 | **M42** | DeiT-S **or** CvT-13 on log-mel | Sami | 1 notebook + run |
 | **M43** | AST re-run, official split, JSON committed (fixes the M4 hole) | Asif | re-run |
-| **M44** | XAI pack for the best model | owner of the best model | 1 notebook |
-| **M45** | Ablation study for the best model | owner of the best model | 1 notebook |
-| **M46** | Preprocessing ablation (6 rows) | Asif | 1 notebook |
+| **M44** | XAI pack for the best model | Asif | ✅ done |
+| **M45** | Ablation study for the best model | Asif | ✅ done, 12 rows + paired tests |
+| **M46** | Preprocessing ablation (P1–P3) | Asif | ✅ done — run 2026-08-30, folded into M45's 12-row table |
 | **M47** | Pre-trained CNN gap-fill (ResNet50 / EfficientNet-B0 / DenseNet121), only if a member wants a separate CNN entry | as needed | 1–2 runs |
-| **T1** | Results-JSON backfill sweep | Barshon | script, no GPU |
-| **T2** | Master table + figure pack | Sami | script |
+| **T1** | Results-JSON backfill sweep | Barshon | ✅ done — three scripts in `Asif's/audit/` |
+| **T2** | Master table + figure pack | Sami | ✅ done — M28 re-run 2026-08-30, 39 models with a split column |
 
 Everything else in the repo stays where it is. **Do not start new mechanisms** — the pivot document's
 stop-list still holds.
@@ -70,10 +70,31 @@ stop-list still holds.
 Read this as: *the preprocessing pipeline must be complete, explicit, and shown to matter.* Two
 deliverables.
 
-### 3a. One canonical preprocessing module
+### 3a. One canonical preprocessing module — ✅ **resolved 2026-08-30 by amendment, read this first**
 
-Write `Asif's/owmtl/preprocessing.py` (or extend what is there) so every new notebook imports the same
-function instead of re-implementing the chain. Stages, in order:
+**The module already exists: `Asif's/owmtl/features.py`.** It carries `AudioConfig`, the
+`PREPROCESSING_STAGES` vocabulary, and `bandpass` / `fix_length` / `peak_normalise` / `log_mel` /
+`mfcc` / `ast_fbank` / `fit_norm_stats` / `spec_augment`. Nothing needs to be written.
+
+Two things were found when it was audited, and **the requirement is closed by recording them, not by
+refactoring**:
+
+1. **Nothing imports it.** Only `owmtl.icbhi` is imported anywhere; every model script re-implements
+   its own log-mel. The eleven stages below are therefore a *specification*, satisfied across several
+   files rather than by one shared import.
+2. **Its defaults disagree with the committed runs** — reflect padding vs `np.tile`, no min-max vs
+   per-sample min-max, band-pass on vs never applied, denoising absent. A model trained through it
+   would not reproduce any number in the paper.
+
+**Decision.** `features.py` stays as the written reference and now carries a warning block saying so.
+The **as-run** chain is `Asif's/M45/m45_ablation.py::log_mel`, and requirement 1 is satisfied by §3b:
+every stage that exists is individually ablated and reported (rows A5, A6, P1–P5), which is what
+*"the preprocessing pipeline must be complete, explicit, and shown to matter"* actually asks for.
+
+**Do not** reconcile the module by changing the runs — that invalidates every committed result. If
+the module is ever adopted, reconcile its defaults to the as-run chain first.
+
+The eleven specified stages, in order, for reference:
 
 1. **Load & resample** → 16 kHz mono (`librosa.load(sr=16000)`).
 2. **Band-pass filter** → 4th-order Butterworth 50–2000 Hz (`scipy.signal.filtfilt`, zero-phase).

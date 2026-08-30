@@ -817,6 +817,7 @@
   },
   "audit_notes": {
     "efficiency_not_applicable": "conformal wrapper over M15's scores - no network of its own",
-    "training_time_not_recoverable": "not recorded by the original run and not recoverable from a checkpoint; re-run the model to obtain it"
+    "training_time_not_recoverable": "not recorded by the original run and not recoverable from a checkpoint; re-run the model to obtain it",
+    "metrics_not_applicable": "conformal wrapper over M15's scores - no network of its own. Accuracy/precision/recall/F1 are undefined for this file; it is not an incomplete model record."
   }
 }

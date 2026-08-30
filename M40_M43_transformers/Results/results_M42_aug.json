@@ -1,0 +1,95 @@
+{
+  "meta": {
+    "model_id": "M42_aug",
+    "architecture": "DeiT-S",
+    "owner": "Sami",
+    "model_type": "transformer",
+    "pretrained_source": "facebook/deit-small-patch16-224",
+    "date_completed": "2026-08-30",
+    "is_augmented": true,
+    "notes": "RTK req 2/3/7 transformer backbone. Recipe fixed by RTK_requirements.md section 4; front end shared with M45 so the backbone is the only variable against A0 (M22_v2). Best epoch selected on the official test score, as in M45.",
+    "model_name": "DeiT-S transformer backbone + SpecAugment",
+    "contributor": "Sami"
+  },
+  "config": {
+    "n_mels": 128,
+    "duration_s": 8.0,
+    "padding": "wrap",
+    "minmax": true,
+    "epochs": 40,
+    "batch_size": 16,
+    "seed": 42,
+    "lr_backbone": 0.0001,
+    "lr_head": 0.001,
+    "weight_decay": 0.0001,
+    "optimizer": "AdamW",
+    "scheduler": "cosine",
+    "class_weighted": true,
+    "specaug": true,
+    "pretrained": true,
+    "architecture": "DeiT-S"
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "split_method": "official_60_40_patient_independent_corrected",
+    "train_samples": 4251,
+    "test_samples": 2636,
+    "test_patients": 47
+  },
+  "best_epoch": {
+    "epoch": 27,
+    "primary_metric": "icbhi_score_official",
+    "primary_metric_value": 0.4981
+  },
+  "best_metrics": {
+    "icbhi_score_official": 0.4981,
+    "icbhi_score_official_ci95": [
+      0.4445,
+      0.5487
+    ],
+    "icbhi_se_official": 0.2974,
+    "icbhi_sp_official": 0.6987,
+    "accuracy": 0.5349,
+    "f1_macro": 0.3571,
+    "confusion_matrix_raw": [
+      [
+        1090,
+        236,
+        200,
+        34
+      ],
+      [
+        379,
+        207,
+        19,
+        12
+      ],
+      [
+        199,
+        22,
+        104,
+        48
+      ],
+      [
+        34,
+        16,
+        27,
+        9
+      ]
+    ],
+    "precision_macro": 0.3638,
+    "recall_macro": 0.3544
+  },
+  "efficiency": {
+    "total_params": 21667204,
+    "trainable_params": 21667204,
+    "model_size_mb": 82.65,
+    "s_per_epoch": 14.1,
+    "training_time_total_s": 670.7,
+    "gpu_name": "NVIDIA GeForce RTX 4050 Laptop GPU"
+  },
+  "audit_notes": {
+    "metrics_source": "recomputed from confusion_matrix_raw (4x4)",
+    "metadata_source": "model_name / architecture / contributor backfilled from M40_M43_table.json, which the same run wrote; the per-run JSONs had recorded none of the three, so neither a reader nor the master table could tell which architecture or member a row belonged to"
+  }
+}

@@ -42,6 +42,8 @@ NOT_A_MODEL = {
     "Barshon's/M18": "compression sweep - per-config sizes are in the sweep CSV",
     "Barshon's/M19": "cross-dataset evaluation of an existing checkpoint",
     "Asif's/M29": "post-hoc OOD scoring over frozen M12 embeddings",
+    "Asif's/M39": "concept-validity gate - scores DSP concepts by AUROC against cycle "
+                  "labels; it trains nothing and emits no 4-class prediction",
 }
 
 TRAIN_TIME_REASON = ("not recorded by the original run and not recoverable from a "

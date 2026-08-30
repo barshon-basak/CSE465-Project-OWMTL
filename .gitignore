@@ -104,3 +104,33 @@ desktop.ini
 # Large regenerable inputs (M2_features.npy, embeddings/) stay ignored.
 !Novelty Experiment/results/
 !Novelty Experiment/results/**
+
+# M28 writes its outputs twice - once at the top of Barshon's/M28/ (tracked) and once
+# into results_M28/ plus a zip bundle. The duplicates are regenerable; keep one copy.
+Barshon's/M28/results_M28/
+Barshon's/M28/M28_master_results_bundle.zip
+
+# ─── Model `Results/` directories are EVIDENCE too ───────────────────
+# Found 2026-08-30: `core.ignorecase = true` on Windows makes the blanket `results/`
+# rule above match `Results/` as well, so it was hiding three directories that hold the
+# numbers behind most of the paper's tables:
+#     Asif's/M22_v2/Results          the best model (0.5602) and its verbatim-official
+#                                    companion run (0.5641)
+#     Asif's/M3_v2/Results           the no-augmentation control, ablation row A1
+#     M40_M43_transformers/Results   all six ViT / Swin-T / DeiT-S runs
+# This is the same fault as the Novelty Experiment one above, from the same rule, found
+# the same way. Track the evidence; keep the regenerable weights and arrays ignored.
+!**/Results/
+!**/Results/**
+**/Results/*.pth
+**/Results/*.npy
+**/Results/cache/
+
+# ─── M48 core-pipeline ablation ──────────────────────────────────────
+# Same trap as the two above: the blanket `*.npy` rule would have hidden the per-cycle
+# prediction dumps, which are the INPUT to every paired test in Tier A — a few tens of KB
+# each, and not regenerable without the GPU run that produced them. Track those; keep the
+# spectrogram cache (regenerable, ~1 GB) and the checkpoints ignored.
+!M48_core_pipeline_ablation/preds_M48_*.npy
+M48_core_pipeline_ablation/cache/
+M48_core_pipeline_ablation/*.pth

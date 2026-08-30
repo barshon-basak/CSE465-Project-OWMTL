@@ -37,7 +37,7 @@
 %=======================================================================
 \title{Corrected Evaluation Baselines for Respiratory Sound\\
 Classification on ICBHI 2017: Metric Inflation, Split\\
-Provenance, and a Label-Reliability Ceiling}
+Provenance, and a Retracted Ceiling}
 
 \author{Asif~\pending{full name},
         Barshon~Basak,
@@ -55,30 +55,47 @@ Respiratory sound classification on the ICBHI 2017 database has become a saturat
 benchmark, with well over a hundred published systems reporting a single headline
 score. This paper asks a prior question: how much of that score is a property of the
 model, and how much is a property of how it was measured. We audit our own
-multi-model respiratory sound pipeline and report three measurement faults, each
-recovered from committed confusion matrices rather than asserted. First, a
+multi-model respiratory sound pipeline and report four measurement faults, each
+recovered from committed confusion matrices rather than asserted, and we measure what
+each is worth rather than assuming they matter equally. First, a
 macro-averaged variant of the challenge score inflated our results by an average of
-eleven points across fifteen committed runs, and by twenty-two points at worst.
+nine and a half points across twenty committed runs, and by twenty-two points at worst.
 Second, a silently substituted patient-identifier rule produced a test partition of
 eleven patients and seven percent of the respiratory cycles while being recorded as
-the official sixty-forty split; the two architectures we have since evaluated on the
-true split score roughly twenty points lower. Third, the published split assigns
+the official sixty-forty split; re-run unchanged on the true split, the same
+architectures lose eight to fourteen points. Third, the published split assigns
 recordings rather than patients, so two patients appear on both sides of it and it is
-not patient independent as it is routinely described. We then report a pre-registered
+not patient independent as it is routinely described---though repairing that leakage
+moves our best model by four tenths of a point, well inside its own confidence
+interval, so we report it as a validity fault and explicitly not as a source of
+inflation. Fourth, the same split file names a recording whose device suffix does not
+match the released audio, so a pipeline joining the two on the file stem drops it
+silently. Two of the four change the number materially and two do not, and saying which
+is which is part of the contribution. We then report a pre-registered
 validity gate for physics-derived acoustic concepts, run twice and failed twice, and
 read that failure against published human performance on the same labels, where seven
 senior physicians reach a score below fifty percent and twelve physicians agree on
-detailed adventitious sound descriptions only poorly. A linear probe then separates the
-two readings of that failure: a foundation model never exposed to respiratory audio
-already encodes thirteen of our fourteen acoustic concepts, so the information is
-present and the failure is one of reference rather than representation---and adapting
-that model to the benchmark with a third of a percent of its parameters degrades
-thirteen of the fourteen. We further report a non-replication of our own: an
-interpretability cost we had recorded from a single random initialisation reverses sign
-across five, and we withdraw it. We release the corrected split loader, a canonical
-score format with paired significance tests, and the audit tool that detects all three
-faults. The contribution is a measurement rather than a mechanism: concept-level
-validation against these labels is bounded by the reliability of the labels themselves.
+detailed adventitious sound descriptions only poorly. Two probes then locate that failure. A foundation model never exposed to
+respiratory audio already encodes thirteen of our fourteen acoustic concepts, so the
+information is present; adapting that model to the benchmark with a third of a percent
+of its parameters degrades thirteen of the fourteen. A supervised probe on the same
+unadapted representation, fitted on the training patients alone, then reaches an area
+under the curve of 0.71 for crackles and 0.76 for wheezes on the identical test cycles
+the gate failed on, above the threshold that gate had set. The labels are therefore
+learnable, and we retract---against a reading pre-registered before the probe was
+run---the claim that label reliability bounds concept-level detection. Our detectors
+were weak, and we say so. What survives is sharper: on the same cycles a physician
+agrees with these labels at $\kappa=0.035$ for crackles, reproducing the twenty-three
+percent sensitivity of the published seven-physician study, so machines reproduce this
+reference standard substantially better than trained listeners agree with it. We
+further report a non-replication of our own: an interpretability cost we had recorded
+from a single random initialisation reverses sign across five, and we withdraw it. We
+release the corrected split loader, a canonical score format with paired significance
+tests, and the audit tool that detects all four faults. Evaluated on the published
+partition our best model reaches 0.5641, level with the strongest convolutional systems
+in the literature; its sensitivity matches systems six points ahead of it on the
+composite score, and the whole of its deficit is specificity. The contribution is a
+measurement rather than a mechanism.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -110,9 +127,9 @@ transformer branch with an attention-based dual-stream fusion of mel-filterbank 
 mel-spectrogram representations. A 2025 study in \emph{Biomedical Signal Processing
 and Control}~\cite{bspc2025fusion} fuses time-domain and two-dimensional spectral
 features through co-attention and reports a further gain on the same four-class task.
-A technique review of the corpus~\cite{electronics2025review} counts more than 135
-publications built on it, which is the clearest available evidence that the benchmark
-is crowded rather than unsolved.
+A technique review of the corpus~\cite{electronics2025review} surveys well over a
+hundred publications built on it, which is the clearest available evidence that the
+benchmark is crowded rather than unsolved.
 
 A parallel line of work asks what a model should do when the input does not belong to
 any trained class. Cho and Lee~\cite{cho2025openset} give the only open-set
@@ -127,16 +144,20 @@ Concept-based interpretability, in which a model is forced to route its predicti
 through named human-meaningful quantities~\cite{koh2020cbm}, is the natural endpoint
 of that trend, and it is the direction this project originally set out to take.
 
-Two studies sit uneasily beside all of the above. Tzeng
+Three studies sit uneasily beside all of the above. Tzeng
 \emph{et al.}~\cite{tzeng2025jmir} had seven senior physicians blindly annotate a
 random quarter of the ICBHI test set; on clean audio they reached a 47.77\% ICBHI
 score at 23.23\% sensitivity, missing roughly three quarters of the cycles the
 database marks abnormal, at a mean self-rated confidence of 2.88 out of 5.
-Aviles-Solis \emph{et al.}~\cite{aviles2016kappa} had twelve physicians classify lung
+Melbye \emph{et al.}~\cite{melbye2016kappa} had twelve physicians classify lung
 sounds from audiovisual recordings and found agreement on \emph{detailed}
 adventitious-sound descriptions---the fine-versus-coarse crackle distinction among
 them---at $\kappa < 0.40$, rising to $\kappa = 0.62$ and $\kappa = 0.59$ only when
-categories were collapsed to ``crackles'' and ``wheezes''.
+categories were collapsed to ``crackles'' and ``wheezes''. Huang
+\emph{et al.}~\cite{huang2024crackles} compared physicians against a trained model on a
+separate clinical breath-sound archive and concluded that crackles are unreliable as a
+physical finding for \emph{both}, a weakness the two share rather than one the model
+introduces.
 
 \textbf{The gap.} The architectural literature validates detectors \emph{against}
 ICBHI labels without characterising what those labels can support, and it reports a
@@ -359,10 +380,14 @@ bins and two time masks of at most 80 of the 801 frames---applied to
 $\tilde{S}$ at load time, with the clean and augmented runs sharing seed 42 so that
 the difference between them isolates the augmentation.
 
-\pending{The band-pass filter, silence trimming, spectral-gating denoising and
-per-cycle amplitude normalisation are specified in the project protocol but are not
-yet implemented in the committed notebooks. Either implement and re-run, or delete
-them from this subsection --- do not describe a stage the code does not perform.}
+Three stages that appear in the project's written protocol are absent from the model
+described above: an explicit band-pass filter, spectral-gating denoising, and per-cycle
+amplitude normalisation. The mel filterbank's 50--2000\,Hz limits bound the band
+implicitly, so the first is partially subsumed; the other two were simply not performed.
+They have since been implemented and are held \emph{off} in this configuration, because
+switching one on would move the baseline every ablation delta is measured against. Rather
+than leave them as a gap, Section~\ref{subsec:ablation} reports each as an addition to
+this pipeline and states what it buys---which for two of the three is negative.
 
 \subsection{Applied Models}
 \label{subsec:models}
@@ -382,14 +407,17 @@ MobileNetV2, DenseNet121, and two further variants), scored by mean validation
 performance across folds, so the backbone choice is itself a measured decision rather
 than a default.
 
-\emph{Transformer backbones.} \pending{Four pre-trained transformer backbones --- ViT-B/16
-(Barshon), Swin-T (Farhana), DeiT-S or CvT-13 (Sami), and an AST re-run with a committed
-result record (Asif) --- are required by the course specification and are not yet
-complete. Fixed settings for comparability: 128$\times$801 log-mel resized to the model's
-native resolution, three-channel replication with ImageNet normalisation, the same
-class-weighted loss as (3), seed 42, AdamW at 1e-4 backbone / 1e-3 head, cosine
-schedule, at most 40 epochs, early stopping on validation macro F1; clean run first,
-then the SpecAugment pair.}
+\emph{Transformer backbones.} Three ImageNet-pretrained transformers---ViT-B/16,
+Swin-T and DeiT-S---are trained on the corrected partition under settings fixed in
+advance so that they stay comparable to each other and to the convolutional rows:
+128$\times$801 log-mel resized to the model's native resolution, three-channel
+replication with ImageNet normalisation, the class-weighted loss of (\ref{eq:weights}),
+seed 42, AdamW at $10^{-4}$ on the backbone and $10^{-3}$ on the head, cosine schedule,
+at most 40 epochs, early stopping on validation macro F1, and a clean run followed by a
+SpecAugment pair. A fourth, an Audio Spectrogram Transformer, is in progress and is not
+reported. We fixed the settings before running and did not tune them afterwards, which
+is why the collapse reported in Section~\ref{subsec:split_audit} is reported rather than
+repaired.
 
 \emph{Physics-derived concept extractors.} Nine acoustic quantities are computed per
 cycle directly from the waveform by digital signal processing, with no learned
@@ -478,9 +506,9 @@ useless. A gate that cannot fail is not a gate.
 
 Table~\ref{tab:metricaudit} recomputes the official score from the committed raw
 confusion matrix of every run in the project that reports one, and
-Fig.~\ref{fig:inflation} plots the same comparison. Across fifteen verifiable runs the
-mean inflation is $\Delta = 0.1084$, the maximum is $0.2176$, and the minimum is
-$0.0085$.
+Fig.~\ref{fig:inflation} plots the same comparison. Across twenty verifiable runs the
+mean inflation is $\Delta = 0.0948$, the maximum is $0.2176$, and the minimum is
+$0.0025$.
 
 \begin{table}[!t]
 \centering
@@ -503,29 +531,36 @@ M30-v2 & fallback & 0.6777 & \best{0.5975} & 0.0802 & 0.4852 & 0.7098 \\
 M3     & fallback & 0.6984 & \best{0.5895} & 0.1089 & 0.5359 & 0.6431 \\
 M33-v2 & 70/30    & 0.6806 & \best{0.5832} & 0.0974 & 0.6190 & 0.5473 \\
 M34    & 70/30    & 0.7046 & \best{0.5754} & 0.1292 & 0.6340 & 0.5168 \\
+M22-v2 & official & 0.6140 & \best{0.5602} & 0.0538 & 0.4089 & 0.7115 \\
 M31    & 70/30    & 0.6377 & \best{0.5535} & 0.0842 & 0.5456 & 0.5614 \\
+M3-v2  & official & 0.6075 & \best{0.5200} & 0.0875 & 0.4266 & 0.6135 \\
+M3     & official & 0.5639 & \best{0.5132} & 0.0507 & 0.1980 & 0.8284 \\
 M36    & 70/30    & 0.5137 & \best{0.5052} & 0.0085 & 0.0932 & 0.9171 \\
+M21    & official & 0.5022 & \best{0.4997} & 0.0025 & 0.0186 & 0.9808 \\
 M32    & 70/30    & 0.6547 & \best{0.4733} & 0.1814 & 0.5721 & 0.3745 \\
+M2     & official & 0.5480 & \best{0.4720} & 0.0760 & 0.2005 & 0.7435 \\
 M33    & 70/30    & 0.5506 & \best{0.3330} & 0.2176 & 0.6660 & 0.0000 \\
 \midrule
-\multicolumn{4}{l}{Mean inflation} & 0.1084 & & \\
+\multicolumn{4}{l}{Mean inflation} & 0.0948 & & \\
 \bottomrule
 \end{tabular}
 
 \vspace{2pt}
-\footnotesize Two further runs report a score but commit no confusion matrix and are
-therefore excluded as unverifiable. One disease-head run is excluded because the
+\footnotesize ``Official'' denotes the corrected patient-independent 60/40 partition of
+Section~\ref{subsec:split_audit}. One further run reports a score but commits no
+confusion matrix and is therefore excluded as unverifiable; superseded re-runs of a
+model already listed are excluded so that every row is a distinct model. One disease-head run is excluded because the
 challenge score is a sound-event metric and does not apply to it.
 \end{table}
 
 \begin{figure}[!t]
 \centering
 \includegraphics[width=0.92\linewidth]{fig_metric_inflation.png}
-\caption{Reported versus official ICBHI score for the fifteen verifiable runs of
+\caption{Reported versus official ICBHI score for the twenty verifiable runs of
 Table~\ref{tab:metricaudit}, sorted by the official score. The shaded band marks the
-published state of the art on this benchmark. Under the macro variant, eleven of
-fifteen runs appear to sit at or above the top of that band; under the official
-metric, one does.}
+published state of the art on this benchmark. Under the macro variant, twelve of the
+twenty runs appear at or above 0.65, the upper edge of that band; under the official
+metric, three do.}
 \label{fig:inflation}
 \end{figure}
 
@@ -554,10 +589,12 @@ The resulting test partition held 11 patients and 492 of 6{,}898 cycles---7.1\% 
 the data, not 40\%.
 
 Table~\ref{tab:baselines} shows what that costs. On the fallback partition the
-backbone suite spans 0.5895 to 0.6495, which sits squarely inside the 0.60--0.65 band
-reported by the published literature. The only two architectures we have so far
-evaluated on the true official partition score 0.4139 and 0.4490---roughly twenty
-points lower, and far below anything the field reports.
+backbone suite spans 0.5895 to 0.6495, a band that would place four of five models
+above the strongest result published on the official split at the time the runs were
+made. Evaluated on the real partition, the same architectures span 0.4720 to 0.5641:
+MobileNetV2 with SpecAugment loses 0.0854 and the tuned scratch CNN loses 0.1418.
+Nothing in the suite, including three ImageNet-pretrained transformers, reaches the band
+the fallback partition appeared to place it in.
 
 \begin{table}[!t]
 \centering
@@ -576,36 +613,106 @@ M3     & MobileNetV2             & 0.5895 & 0.5359 & 0.6431 & 0.5915 & 0.4904 & 
 M22    & MobileNetV2 + SpecAug.  & \best{0.6495} & 0.5696 & 0.7294 & 0.6524 & 0.5253 & 2{,}228{,}996 & 31.4 \\
 M30-v2 & Gated M2+M3 fusion      & 0.5975 & 0.4852 & 0.7098 & 0.6016 & 0.4675 & 7{,}957{,}724 & --- \\
 \midrule
-\multicolumn{9}{l}{\emph{Official partition (49 test patients, 2{,}756 cycles)}}\\
-M2     & 2D CNN (scratch)        & 0.4139 & 0.5030 & 0.3249 & 0.4009 & 0.3597 & 421{,}732   & 13.2 \\
-M3     & DenseNet121             & \best{0.4490} & 0.4902 & 0.4079 & 0.4430 & 0.3816 & 6{,}957{,}956 & 50.1 \\
+\multicolumn{9}{l}{\emph{Published partition, verbatim --- not patient-independent}}\\
+\multicolumn{9}{l}{\emph{(49 test patients, 2{,}756 cycles)}}\\
+M22-off & MobileNetV2 + SpecAug. & \best{0.5641} & 0.4562 & 0.6719 & 0.5798 & 0.4459 & 2{,}228{,}996 & 23.9 \\
+\midrule
+\multicolumn{9}{l}{\emph{Corrected official partition, overlap dropped from train}}\\
+\multicolumn{9}{l}{\emph{(49 test patients, 2{,}756 cycles)}}\\
+M2     & 2D CNN (scratch, w32)   & 0.4720 & 0.2005 & 0.7435 & 0.5116 & 0.2884 & 421{,}732     & 10.2 \\
+M3     & MobileNetV3-Small       & \best{0.5132} & 0.1980 & 0.8284 & 0.5591 & 0.3500 & 929{,}316     & 10.8 \\
+\midrule
+\multicolumn{9}{l}{\emph{Corrected official partition, overlap reassigned to train}}\\
+\multicolumn{9}{l}{\emph{(47 test patients, 2{,}636 cycles)}}\\
+M22-v2 & MobileNetV2 + SpecAug.  & \best{0.5602} & 0.4089 & 0.7115 & 0.5880 & 0.4141 & 2{,}228{,}996 & 23.5 \\
+M41    & Swin-T                  & 0.5304 & 0.3429 & 0.7179 & 0.5649 & 0.3820 & 27{,}522{,}430 & 26.2 \\
+M42    & DeiT-S                  & 0.5149 & 0.2946 & 0.7353 & 0.5554 & 0.3422 & 21{,}667{,}204 & 14.1 \\
+M3-v2  & MobileNetV2             & 0.5200 & 0.4266 & 0.6135 & 0.5372 & 0.3985 & 2{,}228{,}996 & 33.0 \\
+M40    & ViT-B/16                & 0.4994 & 0.0000 & 0.9987 & 0.5910 & 0.1857 & 85{,}801{,}732 & 47.5 \\
 \bottomrule
 \end{tabular}
 
 \vspace{2pt}
-\footnotesize All runs: Tesla T4, seed 42, class-weighted loss of (\ref{eq:weights}),
-40 epochs. The two official-partition scores were recomputed by us from committed
-confusion matrices; they were not present in the original records.
+\footnotesize Seed 42 and the class-weighted loss of (\ref{eq:weights}) throughout.
+The three lower blocks are three distinct treatments of the same published split. The
+published split is not patient-independent, and the two admissible repairs---dropping the
+two overlapping patients' training recordings, or reassigning their recordings to
+train---leave 2{,}756 and 2{,}636 test cycles respectively; the verbatim block applies no
+repair at all and is reported \emph{only} because it is what the published literature
+evaluates on. Scores are comparable within a block and not across blocks, which is the
+same discipline this section applies to the fallback rows. M22-off is not eligible to be
+the paper's best model under the rule of Section~\ref{subsec:ablation}, which requires the
+corrected partition. M40's $Se = 0.0000$ is a collapse to the majority class, reported
+rather than retuned.
 \end{table}
 
-We state the limit of this comparison plainly, because it is the paper's most
-attackable claim. The two partitions do not carry the same architectures: the
-official-partition rows are a scratch CNN and DenseNet121, while the fallback rows
-are dominated by MobileNetV2 variants. The twenty-point gap therefore conflates
-partition difficulty with architecture, and cannot be attributed to the split alone
-on this evidence. What can be said without qualification is narrower and still
-serious: a 7.1\% test partition drawn from 11 patients was recorded, for months, as a
-40\% official partition, and every score computed on it was read against a literature
-that used the real thing. \pending{Re-run M2, M3 and M22 unchanged on the corrected
-partition. This is the single highest-value remaining experiment in the project: it
-converts the paragraph above from a caveat into a matched, one-variable measurement.}
+The single best model has now been run on all three treatments of the split, which
+separates two faults that an earlier version of this analysis reported as one.
+MobileNetV2 with SpecAugment scores 0.6495 on the fallback partition, 0.5641 on the
+published partition verbatim, and 0.5602 on the corrected one. The two differences are
+not the same size and do not carry the same weight.
+
+The first, $-0.0854$, is what the silent fallback was worth. It is corroborated by the
+tuned scratch CNN, which falls from 0.6138 to 0.4720, and it is the same order as the
+one controlled figure in the literature: RespireNet reports 0.562 on the official split
+and 0.685 under five-fold cross-validation with the same model, a swing of $0.123$
+\cite{respirenet2021}. We still decline to call it exactly one-variable, because the
+re-runs also select their checkpoint on the official metric rather than the macro
+variant, and a checkpoint chosen on the wrong metric is not the same model; the drop is
+reported as split provenance plus metric-correct selection together.
+
+The second, $-0.0039$, is what repairing the benchmark's patient leakage was worth, and
+here the comparison \emph{is} exactly one-variable: same architecture, same seed, same
+schedule, same class weights, same selection metric, differing only in whether the two
+overlapping patients are reassigned to train. It is a fortieth of the first difference,
+it sits deep inside the verbatim run's patient-level bootstrap interval of
+$[0.5121, 0.6144]$, and the two runs selected different epochs, 26 against 38. We
+therefore state plainly that \textbf{correcting the published split's patient leakage does
+not measurably change the score at this sample size}. The leakage is a validity fault, not
+a source of inflation, and we resist the temptation to present it as the latter. What the
+repair does change is the operating point rather than the composite: sensitivity falls
+from 0.4562 to 0.4089 while specificity rises from 0.6719 to 0.7115, two shifts of
+comparable size that nearly cancel in the average---an illustration of the same case for
+reporting $Se$ and $Sp$ separately that Section~\ref{subsec:protocol} makes.
 
 The third fault is a property of the benchmark rather than of our code. The published
 split list assigns recordings, so patient 156 contributes 9 training and 8 test
-recordings and patient 218 contributes 4 and 4. Any work describing the published
-ICBHI split as patient-independent is, strictly, describing something else. Our
-corrected loader reports both modes, refuses to call the corrected one ``official'',
-and raises rather than substituting a fallback when the split file is missing.
+recordings and patient 218 contributes 4 and 4, and 120 of the 2{,}756 published test
+cycles---4.4\%---belong to a patient the model may have trained on. Any work describing
+the published ICBHI split as patient-independent is, strictly, describing something else.
+The same file carries a fourth, smaller defect that surfaced only when we ran against it
+verbatim: it lists \texttt{226\_1b1\_Pl\_sc\_Meditron}, while the released audio contains
+\texttt{226\_1b1\_Pl\_sc\_LittC2SE}. The device suffix disagrees, so any pipeline that
+joins audio to split assignment on the file stem silently drops that recording and its
+eleven cycles. It falls on the training side, so it does not affect the comparability of
+the verbatim row, but it is the same class of fault as the other three: a provenance
+defect that is invisible unless a run is made to assert its own partition rather than
+assume it. Our corrected loader reports all modes by name, refuses to call the corrected
+one ``official'', reports unmatched stems rather than skipping them silently, and raises
+rather than substituting a fallback when the split file is missing.
+
+Having identified the defect, we measured what it is worth, and the answer is not the one
+the defect's existence suggests. We trained the same architecture and recipe twice: once on
+the published split verbatim, once with the two dual-side patients reassigned to training.
+The verbatim run scores 0.5641 and the corrected run 0.5602, but those are different test
+sets---2{,}756 cycles against 2{,}636---so the gap is not a measurement of anything. Scored
+on the 2{,}636 cycles both runs share, the verbatim-trained model reaches 0.5675 against the
+corrected model's 0.5602, a difference of $+0.0073$ whose paired patient-level interval is
+$[-0.020, +0.030]$ ($p = 0.562$). The two are indistinguishable.
+
+The direct test is more pointed still. If training on patients 156 and 218 helped the model
+on those patients, it should score better on their 120 test cycles than on everyone else's.
+It scores \emph{worse}: 0.4875 against 0.5675, and 42.5\% accuracy against 58.7\%. Whatever
+those two patients contribute, an unearned advantage is not it; they are simply harder than
+average, and with $n = 2$ patients that is a description rather than a result.
+
+We report this because it bounds our own criticism. The published split is not
+patient-independent, and describing it as such remains wrong---but on this corpus the defect
+does not inflate the headline score, and a reader entitled to ask ``how much does this
+actually matter'' deserves the measured answer rather than the implication. Of the three
+faults in this section, the metric (Table~\ref{tab:metricaudit}, $+0.0948$ mean) and the
+split fallback ($-0.089$ on the best model) change what the numbers mean. This one changes
+what they may be called.
 
 \subsection{Effect of Data Augmentation}
 \label{subsec:augmentation}
@@ -622,22 +729,42 @@ difference between them is attributable to the augmentation alone.
 \toprule
 Run & Configuration & ICBHI & $Se$ & $Sp$ & F1$_{\text{macro}}$ \\
 \midrule
-M3  & MobileNetV2, clean        & 0.5895 & 0.5359 & 0.6431 & 0.4904 \\
-M22 & MobileNetV2 + SpecAugment & \best{0.6495} & 0.5696 & 0.7294 & 0.5253 \\
+\multicolumn{6}{l}{\emph{Fallback partition (492 cycles)}}\\
+M3     & MobileNetV2, clean        & 0.5895 & 0.5359 & 0.6431 & 0.4904 \\
+M22    & MobileNetV2 + SpecAugment & \best{0.6495} & 0.5696 & 0.7294 & 0.5253 \\
+       & $\Delta$                  & \best{+0.0600} & +0.0337 & +0.0863 & +0.0349 \\
 \midrule
-    & $\Delta$                  & \best{+0.0600} & +0.0337 & +0.0863 & +0.0349 \\
+\multicolumn{6}{l}{\emph{Corrected partition, 2{,}636 cycles}}\\
+M3-v2  & MobileNetV2, clean        & 0.5200 & 0.4266 & 0.6135 & 0.3985 \\
+M22-v2 & MobileNetV2 + SpecAugment & \best{0.5602} & 0.4089 & 0.7115 & 0.4141 \\
+       & $\Delta$                  & \best{+0.0402} & $-0.0177$ & +0.0980 & +0.0156 \\
+\midrule
+M41    & Swin-T, clean             & 0.5304 & 0.3429 & 0.7179 & 0.3820 \\
+M41-a  & Swin-T + SpecAugment      & 0.5291 & 0.3569 & 0.7013 & 0.4058 \\
+       & $\Delta$                  & $-0.0013$ & +0.0140 & $-0.0166$ & +0.0238 \\
+\midrule
+M42    & DeiT-S, clean             & 0.5149 & 0.2946 & 0.7353 & 0.3422 \\
+M42-a  & DeiT-S + SpecAugment      & 0.4981 & 0.2974 & 0.6987 & 0.3571 \\
+       & $\Delta$                  & $-0.0168$ & +0.0028 & $-0.0366$ & +0.0149 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-SpecAugment is the project's most reliable single intervention, worth $+0.0600$
-official score, and it improves specificity roughly two and a half times as much as
-sensitivity. That asymmetry is worth noting rather than glossing: masking makes the
-model more conservative about calling a cycle abnormal, which raises the metric on
-this class distribution but is the opposite of what a screening application wants.
-\pending{Repeat this clean-versus-augmented pair for each of the four transformer
-backbones once they exist; the paired $\Delta$ column is what the course requirement
-asks for and what makes the augmentation claim general rather than anecdotal.}
+SpecAugment is the project's most reliable single intervention on the convolutional
+backbone, worth $+0.0600$ official score on the fallback partition and $+0.0402$ on the
+corrected one, and in both cases it improves specificity several times as much as
+sensitivity---on the corrected partition sensitivity actually falls by 0.0177 while
+specificity rises by 0.0980. That asymmetry is worth stating rather than glossing:
+masking makes the model more conservative about calling a cycle abnormal, which raises
+this metric on this class distribution but is the opposite of what a screening
+application wants.
+
+Repeating the pair on the transformers shows the effect does not generalise. Swin-T
+loses 0.0013 and DeiT-S loses 0.0168 of official score under the identical recipe, while
+both gain macro F1 (+0.0238 and +0.0149). The augmentation is therefore not a free
+improvement but an operating-point shift whose sign on the challenge metric depends on
+the backbone, and reporting only the convolutional pair would have made a
+backbone-specific result look like a general one.
 
 \subsection{Extension Models}
 \label{subsec:novelty}
@@ -686,9 +813,10 @@ parameters, which is the strongest efficiency argument in the suite. M35's
 physics-informed auxiliary loss is the best number the project has produced by any
 metric, but its own revision regressed to 0.6719 with a best epoch of 1---a pattern
 the repository audit flags automatically, and one that should be read as instability
-rather than as a second confirmation. \pending{Re-run M35 on the corrected official
-partition. It is the one number that would change the story if it survives the harder
-split, and it is a single job.}
+rather than as a second confirmation. Neither has been re-run on the corrected
+partition, so neither enters Table~\ref{tab:baselines}; re-running the physics-informed
+loss there is the one outstanding experiment that could change the ranking, and we
+decline to imply the result by leaving its 70/30 number where a corrected one belongs.
 
 \subsection{Concept Validity Gate}
 \label{subsec:conceptgate}
@@ -791,8 +919,9 @@ recording already encodes thirteen of the fourteen concepts, several strongly---
 duration ratio at $R^2=0.777$, spectral flatness at $0.759$, rhonchi presence at
 $0.648$---while the random control recovers nothing at all. The acoustic structure our
 detectors were built to measure is present and linearly accessible. The gate failure in
-Section~\ref{subsec:conceptgate} is therefore not a representational failure, which is
-the strongest available evidence that it is a referential one.
+Section~\ref{subsec:conceptgate} is therefore not a representational failure.
+Section~\ref{subsec:ceiling} closes the remaining alternative by showing that the labels
+are reachable too, which leaves the detectors themselves.
 
 The second row is the more uncomfortable result. Adapting 0.34\% of the parameters to
 the ICBHI task \emph{reduces} concept recoverability on thirteen of the fourteen
@@ -810,11 +939,75 @@ everywhere). It was already the concept that never functioned on real audio, and
 targets the fine-versus-coarse distinction on which physicians themselves agree at
 $\kappa<0.40$. Three independent lines of evidence now say the same thing about it.
 
-\subsection{The Label-Reliability Ceiling}
+\subsection{What These Labels Actually Support}
 \label{subsec:ceiling}
 
-Table~\ref{tab:human} collects the published human reference points for this exact
-task. They reframe the previous subsection.
+The previous subsection established that the acoustic information is present in a
+learned representation. It did not establish that the \emph{labels} can be reached from
+it. That is the question the gate could not answer about itself, and answering it
+decides whether our gate failure is a statement about our detectors or about the
+benchmark. We registered the readings before running the experiment.
+
+A supervised probe is the right instrument because it is strictly easier than the task
+the gate set: it is allowed to see the labels. If a model given that advantage still
+cannot clear 0.65, the threshold is unreachable here and the gate failure is a property
+of the reference standard. If it clears it comfortably, the reference standard is not
+the binding constraint and our detectors simply were not good enough. We fit a
+standardised logistic probe on the 79 training patients and score it on the same 2{,}636
+test cycles from the same 47 test patients that the gate was scored on, with intervals
+bootstrapped over patients. Three feature spaces are compared: the frozen AudioSet AST
+embedding of Section~\ref{subsec:probe}, which has never seen a respiratory corpus and
+is therefore the arm no circularity can be alleged against; our own M2 encoder, which
+was trained on these very labels and is reported as the optimistic bound it is; and our
+fourteen physics concepts used as a vector rather than as the single score the gate
+thresholded.
+
+\begin{table}[!t]
+\centering
+\caption{What a supervised probe reaches on the ICBHI cycle labels, on the identical
+test cycles the concept gate failed on. Intervals are 95\% patient-level bootstrap.}
+\label{tab:ceiling}
+\begin{tabular}{lcc}
+\toprule
+Feature space & Crackle AUROC & Wheeze AUROC \\
+\midrule
+Concept gate, single score (\S\ref{subsec:conceptgate}) & 0.5580 & 0.5729 \\
+\midrule
+Our 14 concepts, as a vector   & \best{0.6608} & 0.5815 \\
+                               & \footnotesize[0.601, 0.713] & \footnotesize[0.492, 0.675] \\
+AST frozen, AudioSet only      & \best{0.7115} & \best{0.7621} \\
+                               & \footnotesize[0.638, 0.771] & \footnotesize[0.702, 0.815] \\
+M2 encoder (trained on these labels) & \best{0.7451} & \best{0.8673} \\
+                               & \footnotesize[0.694, 0.795] & \footnotesize[0.806, 0.918] \\
+\bottomrule
+\end{tabular}
+
+\vspace{2pt}
+\footnotesize Bold marks values at or above the 0.65 gate threshold. Readings were
+pre-registered before the experiment ran: $\ge 0.80$, the labels support a strong
+detector and our extractors are weak; $0.65$--$0.80$, usable but hard; $<0.65$, the
+threshold is unreachable on this reference standard.
+\end{table}
+
+The pre-registered ``no ceiling'' branch fires, and we report it as such. A network that
+has never heard a stethoscope recording supports crackle detection at 0.71 and wheeze
+detection at 0.76 on the exact cycles our extractors failed on. These labels are
+learnable well above the threshold the gate set. We therefore retract the reading that
+this paper's earlier drafts, and our own decision record, had placed on the gate
+failure: label reliability is \emph{not} the binding constraint on concept-level
+detection here. Our detectors were weak. Writing the ``no ceiling'' branch down in
+advance is what makes that concession evidence rather than a change of story.
+
+A second result falls out of the same table, and it is a criticism of our own
+experimental design rather than of the data. The gate thresholded a single hand-built
+scalar. The same fourteen concepts, used as a vector, reach 0.6608 on crackles---above
+the threshold the scalar failed. Part of what the gate measured was the scalar
+summarisation, not the concept vocabulary. A validity gate for a concept suite should
+therefore be posed over the suite, not over one score at a time, and we report ours as
+an example of the difference that choice makes.
+
+What the human data now supports is a different and sharper claim.
+Table~\ref{tab:human} collects the published reference points alongside our own.
 
 \begin{table}[!t]
 \centering
@@ -829,7 +1022,7 @@ Tzeng \emph{et al.}~\cite{tzeng2025jmir} & 7 physicians, ICBHI score, clean audi
                                           & \quad specificity & 72.32\% \\
                                           & \quad self-rated confidence (of 5) & 2.88 \\
 \midrule
-Aviles-Solis \emph{et al.}~\cite{aviles2016kappa} & 12 physicians, detailed descriptions & $\kappa < 0.40$ \\
+Melbye \emph{et al.}~\cite{melbye2016kappa} & 12 physicians, detailed descriptions & $\kappa < 0.40$ \\
                                           & \quad collapsed to ``crackles'' & $\kappa = 0.62$ \\
                                           & \quad collapsed to ``wheezes'' & $\kappa = 0.59$ \\
 \bottomrule
@@ -837,32 +1030,48 @@ Aviles-Solis \emph{et al.}~\cite{aviles2016kappa} & 12 physicians, detailed desc
 \end{table}
 
 Seven senior physicians, blind, on clean ICBHI audio, reach an ICBHI score of 47.77\%
-and miss roughly 77\% of the cycles the database marks abnormal. Our best backbone on
-the fallback partition scores 0.6495 and our best on the true partition 0.4490; the
-latter is close to the physician figure. Read alone, a 0.5580 concept AUROC looks like
-failure. Read against a reference standard that experts reproduce this poorly, it
-looks like a measurement of the reference standard.
+and miss roughly 77\% of the cycles the database marks abnormal. Our own listening
+study reproduces that figure independently. One physician answered 116 of 132 blind
+clips---the 16 blanks are exactly the 16 clips they marked unusable---with 12 clips
+silently repeated to measure self-consistency, 8 of which were answered both times. Against the ICBHI labels they reach
+$\kappa = 0.035$ on crackles (95\% CI $[-0.157, 0.210]$, an interval containing zero)
+and $\kappa = 0.266$ on wheezes, at a sensitivity of 0.231 that lands within a
+percentage point of Tzeng \emph{et al.}'s 0.2323. Their agreement \emph{with
+themselves} on the repeated clips is $\kappa = 0.714$ and $0.600$, so the disagreement
+with ICBHI is not inattention: the rater is self-consistent and still does not
+reproduce the reference standard.
 
-The agreement data sharpens the point. Our fine crackle ratio was targeting the
-fine-versus-coarse distinction, on which twelve physicians agree at $\kappa < 0.40$.
-Its ceiling was set before a line of signal processing was written. Collapsing to
-presence-only categories raises agreement to $\kappa \approx 0.6$, which is exactly
-the boundary between the two of our nine concepts that ICBHI can validate and the
-five that it cannot.
+Placing that beside Table~\ref{tab:ceiling} gives the finding this section actually
+supports. A frozen AudioSet model reaches 0.76 on the wheeze labels having never heard
+a stethoscope, while a self-consistent physician agrees with those same labels at
+$\kappa = 0.035$ on crackles. \emph{Machines reproduce this reference standard
+substantially better than trained listeners agree with it.} That is not a ceiling
+argument and it is not a claim that the labels are wrong; it says that whatever ICBHI's
+cycle annotations encode is more accessible to a spectrogram model than it is
+reproducible by ear. For a benchmark whose labels are routinely described as a clinical
+reference, that gap is worth reporting on its own.
 
-We scope the claim deliberately. We are not claiming that ICBHI's labels are wrong,
-that the benchmark should be abandoned, or that concept-based methods cannot work for
-auscultation. We claim that concept-level validation \emph{against these cycle
-labels} is bounded in a way the literature does not currently report, and we supply
-the protocol and tooling to measure that bound.
+One concept remains bounded by human agreement, and only one. Our fine crackle ratio
+targeted the fine-versus-coarse distinction, on which twelve physicians agree at
+$\kappa < 0.40$; no representation in Section~\ref{subsec:probe} recovers it, and it is
+constant across the clinician-labelled subset, so it cannot be validated here by any
+route. Collapsing to presence-only categories raises human agreement to
+$\kappa \approx 0.6$, and it is the presence-only concepts that both the probe and
+Table~\ref{tab:ceiling} recover well.
 
-\pending{Our own clinician listening study --- one physician, 120 blind clips plus 12
-hidden duplicates, shipped with six calibration exemplars that the published
-seven-physician study did not report providing --- is in flight. When the labels
-return, add: intra-rater agreement from the hidden duplicates, clinician-versus-ICBHI
-agreement, and the first fine/coarse crackle reference on this corpus. State the
-$n=1$ limitation explicitly; the published $n=7$ and $n=12$ studies carry the
-reliability argument, and ours adds the fine-grained reference neither has.}
+We scope the claim deliberately. We are not claiming that ICBHI's labels are wrong, that
+the benchmark should be abandoned, or that concept-based methods cannot work for
+auscultation---and we are no longer claiming, as an earlier draft did, that label
+reliability bounds concept-level detection. We claim that these labels are learnable by
+a model well above the threshold our gate set, that a self-consistent clinician
+nonetheless reproduces them poorly, and that our own physics-derived detectors did not
+reach what the labels support. We release the protocol, the tooling and the 132
+fine-grained annotated cycles that let others check each part.
+
+The listening study is a single rater, so no inter-rater agreement is computable from
+it; the published $n=7$ and $n=12$ studies carry the population claim, ours adds the
+first fine/coarse crackle reference on this corpus, and the bound on what the labels
+support comes from Table~\ref{tab:ceiling} rather than from any rater count.
 
 \subsection{The Concept Bottleneck and a Non-Replication}
 \label{subsec:bottleneck}
@@ -1038,23 +1247,50 @@ pass is not evidence of absence.
 \subsection{Interpretability Analysis}
 \label{subsec:xai}
 
-\pending{No interpretability analysis exists yet. Build one notebook producing, for
-the best model under the corrected partition: (i) Grad-CAM over the final
-convolutional block, overlaid on the log-mel spectrogram; (ii) occlusion sensitivity
-as a model-agnostic cross-check; (iii) a four-panel figure with one correctly
-classified example of each class plus at least one misclassification. The analysis
-that lifts this above decoration: ICBHI annotates crackle and wheeze event
-\emph{times}, so measure whether the Grad-CAM mass falls inside the annotated event
-window and report that pointing-game hit rate as a number. Given this paper's own
-finding, phrase the result as evidence about where the model looks, never as clinical
-validation.}
+We apply Grad-CAM over the final convolutional block of the best model and occlusion
+sensitivity as a model-agnostic cross-check, on 400 test cycles under the corrected
+partition. Fig.~\ref{fig:xai} shows one correctly classified example of each class
+alongside a misclassification.
+
+The analysis we had planned was a pointing game: ICBHI annotates crackle and wheeze
+events, so we intended to measure whether the attribution mass falls inside the
+annotated event window. It is not implementable on this corpus, and the reason is worth
+recording. ICBHI annotates one row per respiratory \emph{cycle}---start, end, and
+whether that cycle contains a crackle or a wheeze---not where inside the cycle the event
+occurs. Our pipeline crops to exactly that window, so the annotated window \emph{is} the
+model input and the hit rate is 100\% by construction. There is no finer temporal
+reference in the corpus to score against, which is the same absence of a fine-grained
+reference standard that Section~\ref{subsec:ceiling} reports from the other direction.
+
+We substitute two measurements that the annotations do support. The first is band
+pointing: what fraction of the attribution mass falls in the 100--1000\,Hz range where
+wheezes live. If the model were listening for wheezes where a clinician would, cycles
+labelled wheeze should draw \emph{more} mass into that band. They draw less---0.714
+against 0.767 for cycles without a wheeze, a difference of $-0.053$ with a
+patient-bootstrap interval of $[-0.079, -0.026]$ and $p = 0.001$, against a uniform
+baseline of 0.555. The second is a consistency check that needs no annotation at all.
+Cycles shorter than 8\,s are wrap-padded, so the same audio appears two or three times
+in one input; a model keying on the sound should attribute identically to each
+repetition. Across 361 evaluable cycles the mean correlation between repetitions is
+$0.098$ (median $0.180$), and only 32\% exceed $0.5$. The model is partly keying on
+position within the input window rather than on the sound in it.
+
+Two caveats bound this. MobileNetV2 downsamples by 32, so the final block is a
+$4 \times 26$ grid---roughly 500\,Hz by 0.31\,s per cell---and every map in
+Fig.~\ref{fig:xai} is that grid bilinearly upsampled: the apparent detail is
+interpolation, not measurement. And this is evidence about \emph{where the model looks},
+not clinical validation. Attributions aligned to a reference standard that a
+self-consistent clinician reproduces at $\kappa = 0.035$ could not certify clinical
+reasoning even if they had pointed the other way.
 
 \begin{figure}[!t]
 \centering
-\fbox{\begin{minipage}[c][4cm][c]{0.9\linewidth}\centering
-\textit{Fig.~5 --- interpretability panel, pending}\end{minipage}}
-\caption{Grad-CAM and occlusion-sensitivity maps for the best model, with the
-pointing-game hit rate against annotated event windows. \pending{figure}}
+\includegraphics[width=\linewidth]{fig_xai_panels.png}
+\caption{Grad-CAM and occlusion-sensitivity maps for the best model on the corrected
+partition: one correctly classified example per class and one misclassification, each
+showing the log-mel input, the Grad-CAM overlay and the occlusion map. Grad-CAM is
+computed on a $4 \times 26$ grid and upsampled, so fine structure in the overlay is
+interpolation.}
 \label{fig:xai}
 \end{figure}
 
@@ -1063,26 +1299,51 @@ pointing-game hit rate against annotated event windows. \pending{figure}}
 
 We define the best model once, in advance, to avoid selecting it after the fact:
 \emph{the highest official ICBHI score on the corrected 60/40 partition, among runs
-that commit a raw confusion matrix}. Under that rule the current best is M22,
-MobileNetV2 with SpecAugment, at 0.6495---with the caveat, carried explicitly from
-Section~\ref{subsec:split_audit}, that this score is on the fallback partition and
-must be re-established once the corrected re-runs land. M35's 0.6864 is on the 70/30
-partition and cannot be ranked against it; we say so rather than quietly promoting it.
+that commit a raw confusion matrix}. Under that rule the reference model is M22-v2,
+MobileNetV2 with SpecAugment on the corrected partition, at 0.5602. It is not the
+largest number the project has produced, and that is the point of fixing the rule in
+advance: M22's 0.6495 is on the fallback partition and M35's 0.6864 is on the 70/30
+partition, so neither can be ranked against it. The three transformers are also ranked
+by the same rule and all fall below it, with the best of them, Swin-T, at 0.5304 for
+twelve times the parameters.
+
+One row of the ablation that follows complicates this, and we report the complication
+rather than quietly resolving it. Row P3---M22-v2 with per-cycle peak amplitude
+normalisation added---scores 0.5764 on the same partition and commits a confusion matrix,
+so the letter of the rule selects it. Its advantage over M22-v2 is $+0.0162$ with a
+patient-level paired interval of $[-0.017, +0.046]$ and $p = 0.367$: not distinguishable
+from the reference at the unit of analysis this paper argues is the correct one. We
+therefore continue to use M22-v2 as the reference model for the diagnostics below and for
+Table~\ref{tab:comparison}, on the grounds that a selection rule should not be settled by
+a difference the data cannot support, and we record P3 as the one preprocessing stage
+worth adopting on the evidence available, pending a multi-seed confirmation this project
+has not run. Naming the tie-break after seeing the number is a deviation from the
+discipline of fixing the rule in advance, and we flag it as one rather than presenting
+the outcome as though the rule had produced it.
 
 Fig.~\ref{fig:cm} and Fig.~\ref{fig:curves} give the required diagnostics for that
-model. The confusion matrix shows where the imbalance bites: Normal and Crackle are
-recovered at 0.729 and 0.640, while Both---35 test cycles---reaches 0.286, with most
-of its mass falling into Wheeze and Crackle. The training curves show a clean
-overfitting signature, with validation loss reaching its minimum at epoch 9 and
-rising monotonically thereafter while training loss continues to fall; early stopping
-on the validation metric is doing real work here, and a report of the final-epoch
-model would have been substantially worse.
+model, both drawn from its committed confusion matrix and per-epoch history so that no
+number in the figures can drift from the table. The confusion matrix shows where the
+imbalance bites: Normal is recovered at 0.712 and Crackle at 0.519, while Wheeze reaches
+0.295 and Both---86 test cycles---reaches 0.116, with most of the mass of both minority
+classes falling into Normal and Crackle.
+
+The training curves record a disagreement worth stating rather than smoothing. Validation
+loss reaches its minimum at epoch 5 and rises thereafter, the ordinary overfitting
+signature, but the checkpoint is selected at epoch 38 because selection is on the
+official ICBHI score, as the protocol requires. The two criteria disagree by 33 epochs:
+the model keeps improving on the challenge metric long after it has stopped improving on
+the loss it is trained with. This is a direct consequence of the metric correction of
+Section~\ref{subsec:metric_audit}---cross-entropy on a corpus that is 59\% Normal and the
+balanced $(Se+Sp)/2$ do not optimise the same thing---and it is why every corrected re-run
+here selects on the reported metric rather than on validation loss.
 
 \begin{figure}[!t]
 \centering
 \includegraphics[width=0.66\linewidth]{fig_confusion_best.png}
-\caption{Row-normalized confusion matrix of the best model (M22, MobileNetV2 +
-SpecAugment), with raw counts in parentheses. Test partition: 492 cycles.}
+\caption{Row-normalized confusion matrix of the best model (M22-v2, MobileNetV2 +
+SpecAugment), with raw counts in parentheses. Corrected partition: 2{,}636 test cycles
+from 47 patients.}
 \label{fig:cm}
 \end{figure}
 
@@ -1090,15 +1351,16 @@ SpecAugment), with raw counts in parentheses. Test partition: 492 cycles.}
 \centering
 \includegraphics[width=\linewidth]{fig_curves_best.png}
 \caption{Training and validation loss (left) and accuracy (right) versus epoch for the
-best model. The dashed line marks the selected epoch. Validation loss diverges from
-epoch 9 onward while training loss continues to fall.}
+best model (M22-v2). The dashed line marks the selected epoch, 38, chosen on the official
+ICBHI score. Validation loss reaches its minimum at epoch 5 and rises thereafter, so the
+two selection criteria disagree by 33 epochs.}
 \label{fig:curves}
 \end{figure}
 
-Table~\ref{tab:ablation} is the ablation study. One row exists as a completed
-one-variable experiment; the remainder are specified and pending. We list them
-in the table rather than omitting them so that the design is auditable and the
-missing evidence is visible.
+Table~\ref{tab:ablation} is the ablation study. All eleven rows are completed
+one-variable experiments on the corrected partition, and each is paired against A0 by a
+patient-level bootstrap so that the table reports what is distinguishable rather than
+only what is different.
 
 \begin{table}[!t]
 \centering
@@ -1109,28 +1371,74 @@ changed per row, all on the corrected partition.}
 \toprule
 Row & Change from full model & ICBHI & $\Delta$ & Isolates \\
 \midrule
-A0 & Full model (reference)          & 0.6495 & ---      & --- \\
-A1 & $-$ SpecAugment                 & 0.5895 & $-0.0600$ & Augmentation \\
-A2 & $-$ ImageNet initialisation     & \pending{run} & & Transfer learning \\
-A3 & $-$ class-weighted loss         & \pending{run} & & Imbalance handling \\
-A4 & Frozen backbone, head only      & \pending{run} & & Value of fine-tuning \\
-A5 & 64 mel bins instead of 128      & \pending{run} & & Input resolution \\
-A6 & 4~s cycles instead of 8~s       & \pending{run} & & Temporal context \\
+A0 & Full model (reference)          & \best{0.5602} & ---       & --- \\
+A1 & $-$ SpecAugment                 & 0.5200 & $-0.0402$ & Augmentation \\
+A2 & $-$ ImageNet initialisation     & 0.4999 & $-0.0603$ & Transfer learning \\
+A3 & $-$ class-weighted loss         & 0.5497 & $-0.0105$ & Imbalance handling \\
+A4 & Frozen backbone, head only      & 0.4595 & $-0.1007$ & Value of fine-tuning \\
+A5 & 64 mel bins instead of 128      & 0.5427 & $-0.0175$ & Input resolution \\
+A6 & 4~s cycles instead of 8~s       & 0.5224 & $-0.0378$ & Temporal context \\
 \midrule
-P1 & $-$ band-pass filter            & \pending{run} & & Filtering \\
-P2 & $-$ denoising                   & \pending{run} & & Noise suppression \\
-P3 & $-$ amplitude normalisation     & \pending{run} & & Device gain \\
-P4 & Zero-padding instead of cyclic  & \pending{run} & & Padding policy \\
-P5 & $-$ spectrogram standardisation & \pending{run} & & Input scaling \\
+P4 & Zero-padding instead of cyclic  & 0.5291 & $-0.0311$ & Padding policy \\
+P5 & $-$ spectrogram standardisation & 0.5539 & $-0.0063$ & Input scaling \\
+\midrule
+\multicolumn{5}{l}{\emph{Added stages --- read the sign in the opposite direction}}\\
+P1 & $+$ band-pass filter            & 0.5513 & $-0.0089$ & Filtering \\
+P2 & $+$ spectral-gating denoising   & 0.5248 & $-0.0355$ & Noise suppression \\
+P3 & $+$ amplitude normalisation     & \best{0.5764} & $+0.0162$ & Device gain \\
 \bottomrule
 \end{tabular}
 
 \vspace{2pt}
-\footnotesize Row A1 is the completed comparison of Table~\ref{tab:augmentation}.
-Report every filled row with $Se$, $Sp$, macro F1, parameters and seconds per epoch.
-If a removal \emph{improves} the score, report it --- the project already carries two
-regressions in its record, and that consistency is what makes the rest credible.
+\footnotesize All rows on the corrected partition, 2{,}636 test cycles from 47 patients,
+one variable changed from A0. Row A1 is the corrected-partition comparison of
+Table~\ref{tab:augmentation}. Rows A1--A6, P4 and P5 \emph{remove or replace} a stage the
+full model has; rows P1--P3 \emph{add} one it does not, since those three stages were
+absent from the pipeline entirely (Section~\ref{subsec:preprocessing}). Turning them on in
+the baseline instead would have changed A0 and invalidated every other delta in the table,
+so they are reported as additions and their sign reads the other way: a positive delta is
+a recommendation to adopt. \textbf{Only row A4 is shown to differ from A0 by a paired
+patient-level test}; every other interval spans zero --- see the text.
 \end{table}
+
+Two things in this table are worth more than the ordering. The first is that of the
+three preprocessing stages our own protocol specified and our pipeline never implemented,
+only one helps: per-cycle amplitude normalisation gains $+0.0162$, while an explicit
+band-pass costs $-0.0089$ and spectral-gating denoising costs $-0.0355$. The band-pass
+result is the least surprising --- the mel filterbank's 50--2000\,Hz limits already bound
+the band, so an explicit Butterworth stage mostly re-does work the front end had done ---
+but the denoising result is a caution worth reporting: the stage a reviewer is most likely
+to ask for is the one that hurt most.
+
+The second is a disagreement between two ways of testing the same ten rows, and it is
+the more useful finding. We tested every row against A0 twice: with McNemar over the
+2{,}636 paired cycle predictions, and with a paired bootstrap over the 47 test patients,
+resampling patients and rescoring both models on each resample.
+
+Scored per cycle, seven of the ten rows are significant at $\alpha = 0.05$. Scored per
+patient, \emph{one} is: A4, freezing the backbone, at $-0.1008$ with an interval of
+$[-0.154, -0.052]$. Every other interval spans zero, including rows whose cycle-level
+$p$-values are vanishingly small --- A2 and A6 both return $p < 10^{-15}$ per cycle and
+$[-0.130, +0.003]$ and $[-0.092, +0.009]$ per patient. Six of the ten rows flip verdict
+between the two units.
+
+The reason is not subtle, which is what makes it worth reporting: cycles within a patient
+are not independent, so a cycle-level test answers a question about 2{,}636 correlated
+draws and reports the answer as though they were 2{,}636 independent ones. The effective
+sample size of this ablation is 47, not 2{,}636. An ablation table reporting cycle-level
+significance would have licensed six conclusions this data does not support, and it would
+have looked more rigorous than the table that does not.
+
+That has a direct consequence for this subsection's own headline. P3's 0.5764 is the
+highest score in the table, above the A0 baseline the best-model rule selected. We do
+\emph{not} promote it. By the score P3 leads; by the paired test the two are
+indistinguishable on 47 patients, and a single un-replicated row that is not shown to beat
+its own baseline is a lead, not a model. Amplitude normalisation is worth adopting and
+re-running properly. It is not worth a re-declaration on this evidence.
+
+The one conclusion the ablation does support is therefore A4's: fine-tuning the backbone
+rather than freezing it is worth $0.10$ of official score, and it is the only component
+whose contribution this test set is large enough to establish.
 
 \subsection{Comparison with Existing Works}
 \label{subsec:comparison}
@@ -1145,46 +1453,134 @@ comparison.
 \caption{Comparison of the proposed system with existing work on ICBHI 2017. All
 scores are the official challenge metric of (\ref{eq:official}).}
 \label{tab:comparison}
-\begin{tabular}{lllrl}
+\begin{tabular}{llrrr}
 \toprule
-Source & Method & Partition & ICBHI & Notes \\
+Source & Method & $Se$ & $Sp$ & ICBHI \\
 \midrule
-Suma \emph{et al.}~\cite{suma2025mtl}        & MTL MobileNet          & \pending{verify} & \pending{verify} & Closed-set MTL \\
-ADFF-Net~\cite{adffnet2025}                  & AST dual-stream fusion & \pending{verify} & \pending{verify} & Attention fusion \\
-Fusion~\cite{bspc2025fusion}                 & Time + 2D co-attention & \pending{verify} & \pending{verify} & Reports $+1.00\%$ \\
-Cho and Lee~\cite{cho2025openset}            & Open-set prototypes    & \pending{verify} & \pending{verify} & Only open-set work \\
-Tzeng \emph{et al.}~\cite{tzeng2025jmir}     & 7 senior physicians    & 25\% of test     & 0.4777 & Human reference \\
+\multicolumn{5}{l}{\emph{Published partition, official metric --- directly comparable}}\\
+Gairola \emph{et al.}~\cite{respirenet2021}  & ResNet34, ImageNet       & 0.401 & 0.723 & 0.5620 \\
+Moummad and Farrugia~\cite{scl2023}          & CNN6, supervised contrast & 0.392 & 0.760 & 0.5755 \\
+Niizumi \emph{et al.}~\cite{frozenfm2025}    & M2D, \emph{frozen} probe & 0.466 & 0.722 & 0.5938 \\
+Bae \emph{et al.}~\cite{bae2023patchmix}     & AST, Patch-Mix contrast  & 0.431 & 0.817 & 0.6237 \\
+Kim \emph{et al.}~\cite{bts2024}             & CLAP, BTS                & 0.457 & 0.814 & 0.6354 \\
+Jeong \emph{et al.}~\cite{pafa2025}          & BEATs, PAFA              & 0.476 & 0.821 & \best{0.6484} \\
+Tzeng \emph{et al.}~\cite{tzeng2025jmir}     & 7 senior physicians      & 0.232 & 0.723 & 0.4777 \\
+\addlinespace
+\multirow{3}{*}{This work} & MobileNetV2 + SpecAugment & 0.456 & 0.672 & 0.5641 \\
+                           & MobileNetV3-Small (M3)    & 0.198 & 0.828 & 0.5132 \\
+                           & 2D CNN, scratch (M2)      & 0.201 & 0.744 & 0.4720 \\
 \midrule
-\multirow{2}{*}{This work} & MobileNetV2 + SpecAugment & fallback  & 0.6495 & Not the official split \\
-                           & DenseNet121               & official  & 0.4490 & Recomputed by us \\
+\multicolumn{5}{l}{\emph{Corrected patient-independent partition --- not comparable to the above}}\\
+\multirow{3}{*}{This work} & MobileNetV2 + SpecAugment & 0.409 & 0.712 & 0.5602 \\
+                           & Swin-T                    & 0.343 & 0.718 & 0.5304 \\
+                           & MobileNetV2, no augment.  & 0.427 & 0.614 & 0.5200 \\
+\midrule
+\multicolumn{5}{l}{\emph{Identifier-fallback partition --- reported only for the audit}}\\
+This work & MobileNetV2 + SpecAugment & --- & --- & 0.6495 \\
 \bottomrule
 \end{tabular}
 
 \vspace{2pt}
-\footnotesize \pending{Fill the four verify cells from the publisher record, not from
-a search result, and confirm each reported score is the official metric on a stated
-partition. If a paper does not state its partition precisely, say so in the Notes
-column --- that absence is itself evidence for this paper's argument.}
+\footnotesize Published rows are the official 60/40 partition, 2{,}756 test cycles from
+49 patients, under (\ref{eq:official}); our verbatim rows are the identical partition and
+metric. Two works we cite elsewhere are deliberately absent, because they do not report a
+number this table can hold: Suma \emph{et al.}~\cite{suma2025mtl} report accuracy rather
+than the challenge score, and Cho and Lee~\cite{cho2025openset} report an accuracy
+improvement over a semi-supervised baseline rather than an absolute score. Excluding them
+is not a slight; it is the argument of this paper applied to our own table. Every
+published row was taken from the reporting paper's own results table and cross-checked
+against at least one independent citation of the same number.
 \end{table}
 
-The honest reading of this table is that our corrected numbers do not lead it. That
-is the point. Our uncorrected numbers would have led it, and they were wrong twice
-over. A system reporting 0.7227 on a 7.1\% test partition under a non-standard metric
-is not state of the art; it is an unaudited measurement, and the literature it would
-have been compared against may contain the same class of error.
+Read on the partition the literature actually uses, our best model reaches 0.5641. It
+places above RespireNet, the strongest ImageNet-pretrained convolutional system in
+Table~\ref{tab:comparison}, and below every audio-pretrained one, 8.4 points short of the
+strongest system in the table. The composite score, however, conceals the more informative
+comparison. Our sensitivity of 0.456 is not behind the field at all: it exceeds RespireNet
+at 0.401, supervised contrastive pretraining at 0.392 and Patch-Mix at 0.431, and is level
+with BTS at 0.457, trailing only the frozen M2D probe at 0.466 and PAFA at 0.476. The
+deficit is specificity, 0.672 against a field spanning 0.722 to 0.821. We are not uniformly
+weaker than the published systems; we occupy a different operating point, detecting
+abnormal cycles at the field's rate while over-calling them on normal ones---the direction
+a class-weighted loss and SpecAugment push a model, and the direction a screening
+application would prefer, though the challenge metric does not reward it. This is the
+concrete payoff of the reporting discipline of Section~\ref{subsec:protocol}: under the
+composite alone our system reads simply as worse, and the distinction disappears.
+
+The honest reading of the rest of the table is that our numbers do not lead it, and that
+is the point. Our uncorrected numbers would have led it, and they were wrong twice over. A
+system reporting 0.7227 on a 7.1\% test partition under a non-standard metric is not state
+of the art; it is an unaudited measurement, and it would have been compared against a
+literature evaluated on 2{,}756 cycles under (\ref{eq:official}).
+
+\subsection{What the Gap Is Made Of}
+\label{subsec:pretraining}
+
+An eight-point deficit invites the assumption that it is a matter of scale or
+tuning. On this benchmark it is neither. Five measurements, four of them ours, converge
+on a single cause, and it is the pretraining corpus rather than the architecture.
+
+The first is visible in Table~\ref{tab:comparison}, and the ordering there is not mixed:
+every published system that outscores ours is built on an audio-domain-pretrained
+backbone---AudioSet, CLAP or BEATs---and the only one below ours is the sole
+ImageNet-pretrained convolutional entry. The transition in the literature is usually narrated as the arrival of
+transformers, but the two changes are confounded in every paper that reports it: the
+transformers that appear on this benchmark are also the first models pretrained on
+audio.
+
+The second separates them. Niizumi \emph{et al.}~\cite{frozenfm2025} evaluate
+AudioSet-pretrained encoders on the official partition with the encoder \emph{frozen} and
+a single linear layer trained on top, and reach 0.5938. That is above every model in this
+paper, all of which were fully fine-tuned, and it is achieved without adapting the
+representation to respiratory audio at all. The same work reports that a
+respiratory-specific foundation model pretrained on 140{,}000 respiratory sounds
+underperforms general models pretrained on two million diverse ones, which places the
+weight on corpus scale and diversity rather than domain match.
+
+The third is ours and is the control the literature lacks. Because our transformers are
+ImageNet-pretrained rather than AudioSet-pretrained, Table~\ref{tab:baselines} isolates
+architecture from pretraining corpus: Swin-T at 27.5M parameters reaches 0.5304, DeiT-S at
+21.7M reaches 0.5149, and ViT-B/16 at 85.8M collapses to the majority class, while a
+2.2M-parameter MobileNetV2 reaches 0.5602 on the same partition under the same recipe.
+Twelve to thirty-nine times the parameters, and every one of them worse. Transformer
+capacity without an audio prior buys nothing here, and the ViT-B collapse is the expected
+endpoint of that trend rather than an anomaly: 85.8M parameters fitted to 4{,}251 training
+cycles with no in-domain initialisation.
+
+The fourth is the ablation. Removing ImageNet initialisation costs 0.0603, the largest
+single-component effect in Table~\ref{tab:ablation} other than removing fine-tuning
+altogether. Pretraining is already the dominant term when the corpus is merely images.
+
+The fifth is Section~\ref{subsec:ceiling}. A frozen AudioSet representation that has never
+heard a stethoscope recovers the crackle and wheeze labels at 0.7115 and 0.7621 on the
+same cycles our physics-derived detectors reached 0.5580 and 0.5729 on. That result is the
+concept-level instance of the same finding, and read beside \cite{frozenfm2025} it is a
+replication rather than a curiosity.
+
+The practical reading is that the most valuable single change available to this system is
+not a larger model, a longer schedule or a better augmentation, but an encoder pretrained
+on general audio. That is a cheap conclusion to state and an expensive one to have had to
+establish, and it is worth stating precisely because the confound it resolves is present
+throughout the benchmark's published history.
 
 \subsection{Limitations}
 \label{subsec:limitations}
 
-Seven limitations bound the claims above. The corrected-partition evidence currently
-rests on two architectures, not a matched re-run of the full suite, so the size of the
-split effect is estimated rather than measured. The concept extractors are one
-implementation, and a better one may exist; the probe of
-Section~\ref{subsec:probe} narrows this---the information is demonstrably present in a
-learned representation---but it does not establish that a hand-built detector can reach
-0.65 on these labels, and we do not claim it. The reliability argument leans on two
-published studies plus a single-clinician study still in flight, against the $n=7$ and
-$n=12$ of the literature.
+Seven limitations bound the claims above. The split effect is now measured rather than
+estimated for one model, which was run on all three treatments of the partition, but not
+for the suite: the fallback comparison rests on two architectures and remains confounded
+with metric-correct checkpoint selection. Only the leakage-repair difference, $-0.0039$,
+is a clean one-variable measurement, and being a null at one seed it bounds the effect
+loosely rather than establishing its absence. The concept extractors are one
+implementation and a weak one, which Section~\ref{subsec:ceiling} establishes rather
+than concedes: a supervised probe clears the gate threshold on the same cycles, so the
+gap is ours. What that probe does not show is that a \emph{hand-built} detector can
+reach 0.65 on these labels---a learned probe and a physics-derived score are not the
+same object---so the practical ceiling for interpretable, non-learned concept detection
+on this corpus remains open. Our probe is also linear and single-recipe; a different
+head could move the number in either direction. The human side rests on two published
+studies plus our single-clinician study, against the $n=7$ and $n=12$ of the literature,
+and a single rater cannot yield inter-rater agreement.
 
 The bottleneck comparison of Section~\ref{subsec:bottleneck} is run on 43 test patients,
 where the intervals are wide enough that the ordering between adjacent variants carries
@@ -1203,38 +1599,53 @@ ICBHI-specific, so the scope of the claim is that benchmark and no further.
 \section{Conclusions}
 \label{sec:conclusion}
 
-We audited our own respiratory sound pipeline on ICBHI 2017 and found three
-measurement faults, each of which independently changes what our results appear to
-say. A macro-averaged variant of the challenge score inflated fifteen committed runs
-by 0.1084 on average and 0.2176 at worst, and masked two outright model collapses
-that the official metric exposes immediately. A silent split fallback substituted an
-11-patient, 7.1\% test partition for the official 40\% one. The published official
-split assigns recordings rather than patients and is not patient-independent. We
+We audited our own respiratory sound pipeline on ICBHI 2017 and found four
+measurement faults, and we then measured what each was worth rather than assuming they
+mattered equally. A macro-averaged variant of the challenge score inflated twenty
+committed runs by 0.0948 on average and 0.2176 at worst, and masked two outright model
+collapses that the official metric exposes immediately. A silent split fallback
+substituted an 11-patient, 7.1\% test partition for the official 40\% one, worth 0.0854
+on the best model. The published official split assigns recordings rather than patients
+and is not patient-independent, which places 4.4\% of its test cycles in patients the
+model may have trained on---but repairing that leakage moved the score by 0.0039, well
+inside the run's own confidence interval, so we report it as a validity fault and
+explicitly not as a source of inflation. The same split file names a recording whose
+device suffix does not match the released audio, so a pipeline joining on the file stem
+drops it without saying so. Ranking the faults honestly is part of the contribution: two
+of the four change the number materially and two do not. We
 supplied corrected baselines under the official metric, a pre-registered
 concept-validity gate that was run twice and failed twice under a threshold chosen so
 that it \emph{could} fail, and a reading of that failure against a reference standard
-that seven senior physicians reproduce at a 47.77\% ICBHI score. A linear probe then
-showed that the acoustic information those detectors were built to capture is present
-and linearly accessible in a foundation model that has never heard a stethoscope, which
-locates the failure at the labels rather than at the representation---and that adapting
-that model to the benchmark degrades thirteen of the fourteen concepts, worst of all the
-one concept that carries diagnostic signal. We also withdrew one of our own results: an
-interpretability cost recorded from a single random initialisation reversed sign across
-five, and a mechanism verdict was being produced by a sign test whose design floor made
-it incapable of ever supporting the hypothesis. The contribution is a
-measurement rather than a mechanism: concept-level validation against ICBHI cycle
-labels is bounded by the reliability of those labels, and we release the corrected
-split loader, the canonical score format with paired significance tests, and the audit
-tool that detects all three faults.
+that seven senior physicians reproduce at a 47.77\% ICBHI score. Two probes then located that failure. The acoustic information those
+detectors were built to capture is present and linearly accessible in a foundation model
+that has never heard a stethoscope, and adapting that model to the benchmark degrades
+thirteen of the fourteen concepts, worst of all the one concept that carries diagnostic
+signal. A supervised probe on that same unadapted representation then reached 0.71 and
+0.76 on the crackle and wheeze labels, on the identical cycles the gate failed on and
+above the threshold it set. We therefore withdrew the reading we had placed on our own
+negative result: these labels are learnable, label reliability is not the binding
+constraint, and our detectors were weak. What replaces it is a sharper comparison---a
+self-consistent physician agrees with the same cycle labels at $\kappa=0.035$ on
+crackles, so this reference standard is reproduced better by a spectrogram model than by
+a trained ear. We withdrew two further results of our own: an interpretability cost
+recorded from a single random initialisation reversed sign across five, and a mechanism
+verdict was being produced by a sign test whose design floor made it incapable of ever
+supporting the hypothesis. The contribution is a measurement rather than a mechanism,
+and we release the corrected split loader, the canonical score format with paired
+significance tests, and the audit tool that detects all three faults.
 
-Three directions follow. The first is the matched re-run: evaluating the full backbone
-suite unchanged on the corrected partition converts this paper's largest caveat into a
-one-variable measurement of what split provenance is actually worth, and is a
-prerequisite for any ranking claim. The second is extending the reliability
-measurement beyond a single clinician---a multi-rater study with published calibration
-exemplars would establish whether the fine-versus-coarse crackle distinction is
-learnable on this corpus at all, or whether it should be retired from concept-based
-work on it. The third is applying the audit to the wider literature: the three fault
+Three directions follow. The first is to finish the matched re-run: the best model has
+now been evaluated on all three treatments of the partition, which is what allowed the
+two split faults to be separated, but the remaining backbones have not, and until they
+are the fallback comparison stays confounded with checkpoint selection. The same
+exercise would also settle whether the operating-point difference we report against the
+literature---comparable sensitivity, deficient specificity---is a property of this
+backbone and loss or of the corrected partition itself. The second follows from the gap between what a model recovers from these labels and
+what a clinician reproduces of them: a multi-rater study with published calibration
+exemplars would establish whether that gap is a property of this rater, of the
+annotation protocol, or of auscultation by ear, and would settle whether the
+fine-versus-coarse crackle distinction should be retired from concept-based work on this
+corpus. The third is applying the audit to the wider literature: the three fault
 classes described here are detectable from a committed confusion matrix and a stated
 partition, and a survey of how many published ICBHI systems supply either would
 establish whether these are our errors or the field's.

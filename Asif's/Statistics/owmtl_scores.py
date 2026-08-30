@@ -156,6 +156,11 @@ def align(a, b, require_full=False):
 
 
 # --------------------------------------------------------------------- statistics
+def _logsumexp(vals):
+    m = max(vals)
+    return m + math.log(sum(math.exp(v - m) for v in vals))
+
+
 def _norm_sf2(z):
     """Two-sided normal tail probability, without scipy."""
     return math.erfc(abs(float(z)) / math.sqrt(2.0))
@@ -275,14 +280,26 @@ def mcnemar(y, pred_a, pred_b, names=("A", "B")):
     n10 = int(np.sum(a_ok & ~b_ok))     # only A right
     n = n01 + n10
     if n == 0:
-        p, stat = 1.0, 0.0
-    else:
-        # binomial two-sided exact test at q=0.5
+        p, stat, kind = 1.0, 0.0, "degenerate_no_discordant_pairs"
+    elif n <= 1000:
+        # binomial two-sided exact test at q=0.5, computed in log space. The direct form
+        # sum(comb(n, i)) / 2**n overflows a float at n around 1030, which is reachable
+        # whenever two cycle-level models are compared on this corpus (n can exceed 800).
+        # It raised OverflowError rather than returning a wrong number, but it raised it
+        # inside a paired comparison that callers had no reason to expect to fail.
         k = min(n01, n10)
-        tail = sum(math.comb(n, i) for i in range(k + 1)) / (2.0 ** n)
-        p = min(1.0, 2.0 * tail)
-        stat = (abs(n01 - n10) - 1.0) ** 2 / n      # continuity-corrected chi2, reported only
-    return {"test": "mcnemar_exact", "name_a": names[0], "name_b": names[1],
+        log_tail = _logsumexp([math.lgamma(n + 1) - math.lgamma(i + 1)
+                               - math.lgamma(n - i + 1) - n * math.log(2.0)
+                               for i in range(k + 1)])
+        p = min(1.0, 2.0 * math.exp(log_tail))
+        stat = (abs(n01 - n10) - 1.0) ** 2 / n
+        kind = "mcnemar_exact"
+    else:
+        # Beyond that the normal approximation is indistinguishable from exact and cheap.
+        stat = (abs(n01 - n10) - 1.0) ** 2 / n
+        p = float(_norm_sf2(math.sqrt(stat)))
+        kind = "mcnemar_chi2_continuity_corrected"
+    return {"test": kind, "name_a": names[0], "name_b": names[1],
             "acc_a": float(a_ok.mean()), "acc_b": float(b_ok.mean()),
             "only_a_correct": n10, "only_b_correct": n01, "discordant": n,
             "chi2_cc": float(stat), "p_value": float(p),

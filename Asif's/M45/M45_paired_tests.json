@@ -1,0 +1,138 @@
+{
+  "baseline": "A0 (M22_v2)",
+  "baseline_official": 0.5602,
+  "split": "official_60_40_patient_independent_corrected",
+  "n_test_cycles": 2636,
+  "n_test_patients": 47,
+  "unit_note": "The patient-level interval decides. The cycle-level McNemar is reported beside it because the two disagree, and that disagreement is itself a finding about unit of analysis.",
+  "rows": {
+    "A2": {
+      "official": 0.4999,
+      "delta_vs_A0": -0.0603,
+      "patient_paired_ci95": [
+        -0.13,
+        0.0029
+      ],
+      "patient_paired_p": 0.0625,
+      "cycle_mcnemar_p": 0.0,
+      "cycle_mcnemar_significant": true,
+      "verdict": "NOT shown to differ from A0"
+    },
+    "A3": {
+      "official": 0.5497,
+      "delta_vs_A0": -0.0106,
+      "patient_paired_ci95": [
+        -0.0487,
+        0.0229
+      ],
+      "patient_paired_p": 0.5625,
+      "cycle_mcnemar_p": 0.149655,
+      "cycle_mcnemar_significant": false,
+      "verdict": "NOT shown to differ from A0"
+    },
+    "A4": {
+      "official": 0.4595,
+      "delta_vs_A0": -0.1008,
+      "patient_paired_ci95": [
+        -0.1538,
+        -0.0516
+      ],
+      "patient_paired_p": 0.0,
+      "cycle_mcnemar_p": 0.0,
+      "cycle_mcnemar_significant": true,
+      "verdict": "differs from A0"
+    },
+    "A5": {
+      "official": 0.5427,
+      "delta_vs_A0": -0.0176,
+      "patient_paired_ci95": [
+        -0.0614,
+        0.0199
+      ],
+      "patient_paired_p": 0.3915,
+      "cycle_mcnemar_p": 0.026053,
+      "cycle_mcnemar_significant": true,
+      "verdict": "NOT shown to differ from A0"
+    },
+    "A6": {
+      "official": 0.5224,
+      "delta_vs_A0": -0.0379,
+      "patient_paired_ci95": [
+        -0.0918,
+        0.0094
+      ],
+      "patient_paired_p": 0.1265,
+      "cycle_mcnemar_p": 0.0,
+      "cycle_mcnemar_significant": true,
+      "verdict": "NOT shown to differ from A0"
+    },
+    "P1": {
+      "official": 0.5513,
+      "delta_vs_A0": -0.0089,
+      "patient_paired_ci95": [
+        -0.0585,
+        0.0343
+      ],
+      "patient_paired_p": 0.686,
+      "cycle_mcnemar_p": 0.128244,
+      "cycle_mcnemar_significant": false,
+      "verdict": "NOT shown to differ from A0"
+    },
+    "P2": {
+      "official": 0.5248,
+      "delta_vs_A0": -0.0355,
+      "patient_paired_ci95": [
+        -0.0892,
+        0.0109
+      ],
+      "patient_paired_p": 0.138,
+      "cycle_mcnemar_p": 7e-06,
+      "cycle_mcnemar_significant": true,
+      "verdict": "NOT shown to differ from A0"
+    },
+    "P3": {
+      "official": 0.5764,
+      "delta_vs_A0": 0.0162,
+      "patient_paired_ci95": [
+        -0.0171,
+        0.0463
+      ],
+      "patient_paired_p": 0.367,
+      "cycle_mcnemar_p": 0.040162,
+      "cycle_mcnemar_significant": true,
+      "verdict": "NOT shown to differ from A0"
+    },
+    "P4": {
+      "official": 0.5291,
+      "delta_vs_A0": -0.0312,
+      "patient_paired_ci95": [
+        -0.0677,
+        0.0055
+      ],
+      "patient_paired_p": 0.0955,
+      "cycle_mcnemar_p": 2.7e-05,
+      "cycle_mcnemar_significant": true,
+      "verdict": "NOT shown to differ from A0"
+    },
+    "P5": {
+      "official": 0.5539,
+      "delta_vs_A0": -0.0063,
+      "patient_paired_ci95": [
+        -0.0413,
+        0.0267
+      ],
+      "patient_paired_p": 0.717,
+      "cycle_mcnemar_p": 0.428035,
+      "cycle_mcnemar_significant": false,
+      "verdict": "NOT shown to differ from A0"
+    }
+  },
+  "unit_disagreement": [
+    "A2",
+    "A5",
+    "A6",
+    "P2",
+    "P3",
+    "P4"
+  ]
+}

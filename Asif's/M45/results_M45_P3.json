@@ -1,0 +1,97 @@
+{
+  "meta": {
+    "model_id": "M45_P3",
+    "row": "P3",
+    "variable_changed": "+ per-cycle peak amplitude normalisation",
+    "baseline_model_id": "M22_v2",
+    "date_completed": "2026-08-30",
+    "is_augmented": true,
+    "notes": "M45 ablation row. One variable changed from the M22_v2 recipe."
+  },
+  "config": {
+    "n_mels": 128,
+    "duration_s": 8.0,
+    "padding": "wrap",
+    "minmax": true,
+    "bandpass": false,
+    "denoise": false,
+    "ampnorm": true,
+    "pretrained": true,
+    "freeze": false,
+    "class_weighted": true,
+    "specaug": true,
+    "lr": 0.0005,
+    "batch_size": 16,
+    "epochs": 40,
+    "dropout": 0.3,
+    "seed": 42
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "split_method": "official_60_40_patient_independent_corrected",
+    "train_samples": 4251,
+    "test_samples": 2636,
+    "test_patients": 47
+  },
+  "best_epoch": {
+    "epoch": 23,
+    "primary_metric": "icbhi_score_official",
+    "primary_metric_value": 0.5764
+  },
+  "best_metrics": {
+    "icbhi_score_official": 0.5764,
+    "icbhi_score_official_ci95": [
+      0.5138,
+      0.6324
+    ],
+    "icbhi_se_official": 0.3996,
+    "icbhi_sp_official": 0.7532,
+    "accuracy": 0.6089,
+    "f1_macro": 0.4217,
+    "confusion_matrix_raw": [
+      [
+        1175,
+        231,
+        112,
+        42
+      ],
+      [
+        277,
+        308,
+        14,
+        18
+      ],
+      [
+        189,
+        40,
+        113,
+        31
+      ],
+      [
+        40,
+        15,
+        22,
+        9
+      ]
+    ],
+    "precision_macro": 0.4351,
+    "recall_macro": 0.415
+  },
+  "efficiency": {
+    "total_params": 2263160,
+    "trainable_params": 2228996,
+    "training_time_total_s": 1067.1,
+    "gpu_name": "Tesla T4",
+    "model_size_mb": 9.053
+  },
+  "ablation": {
+    "ablation_group": "component_and_preprocessing_ablation",
+    "ablation_role": "variant",
+    "baseline_model_id": "M22_v2",
+    "variable_changed": "+ per-cycle peak amplitude normalisation"
+  },
+  "audit_notes": {
+    "metrics_source": "recomputed from confusion_matrix_raw (4x4)",
+    "efficiency_source": "total_params counted from best_M45_P3.pth; model_size_mb = params x 4 bytes (fp32), per Model_Training_Protocol.md section 3"
+  }
+}

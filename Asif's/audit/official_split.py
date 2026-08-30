@@ -154,9 +154,40 @@ def load_split(path=None, mode="patient_independent"):
     return mapping, info
 
 
+def cross_check_audio(audio_dir, path=None):
+    """Compare the split file's stems against the .wav stems actually on disk.
+
+    A third defect in the published split file, found 2026-08-30 by running a model
+    against it verbatim: it lists `226_1b1_Pl_sc_Meditron` while the released audio
+    contains `226_1b1_Pl_sc_LittC2SE`. The device suffix disagrees, so any pipeline that
+    joins audio to split assignment on the file stem drops that recording -- silently,
+    unless it is looking. Returns (only_in_split, only_on_disk, near_misses), where a
+    near miss is a pair whose leading patient/session/location fields agree but whose
+    device suffix does not.
+    """
+    import glob as _glob
+    listed = {stem for stem, _ in _parse(path or find_split_file())}
+    on_disk = {os.path.splitext(os.path.basename(w))[0]
+               for w in _glob.glob(os.path.join(audio_dir, "*.wav"))}
+
+    only_in_split = sorted(listed - on_disk)
+    only_on_disk = sorted(on_disk - listed)
+
+    def key(stem):                       # patient_session_location, minus the device
+        return "_".join(stem.split("_")[:4])
+
+    by_key = {}
+    for s in only_on_disk:
+        by_key.setdefault(key(s), []).append(s)
+    near = sorted((s, d) for s in only_in_split for d in by_key.get(key(s), []))
+    return only_in_split, only_on_disk, near
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--file", default=None)
+    ap.add_argument("--audio-dir", default=None,
+                    help="directory of ICBHI .wav files; enables the stem cross-check")
     a = ap.parse_args()
     i = audit(a.file)
 
@@ -180,6 +211,25 @@ def main():
     print(f"\nCorrection moves {i['test_recordings_moved']} of {o['test']} test recordings "
           f"({i['test_recordings_moved'] / o['test'] * 100:.1f}%) into train.")
     print()
+
+    if a.audio_dir:
+        only_split, only_disk, near = cross_check_audio(a.audio_dir, i["path"])
+        print("Stem cross-check against the audio directory:")
+        if not only_split and not only_disk:
+            print("  every stem in the split file has a matching .wav, and vice versa.")
+        else:
+            print(f"  {len(only_split)} listed in the split file with no .wav on disk")
+            print(f"  {len(only_disk)} .wav on disk absent from the split file")
+            for s, d in near:
+                print(f"  DEVICE-SUFFIX MISMATCH: split says {s!r}, audio has {d!r}")
+            for s in only_split:
+                if not any(s == p for p, _ in near):
+                    print(f"  unmatched in split file : {s}")
+            for d in only_disk:
+                if not any(d == q for _, q in near):
+                    print(f"  unmatched on disk       : {d}")
+            print("  A stem join drops these recordings. Report the count; never skip silently.")
+        print()
     print("=" * 76)
     print("WHAT THIS MEANS")
     print("=" * 76)

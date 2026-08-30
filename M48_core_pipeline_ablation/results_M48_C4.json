@@ -1,0 +1,211 @@
+{
+  "experiment": "M48_C4_probe_vs_clinician",
+  "status": "OK",
+  "question": "Does the frozen-AST probe agree with ICBHI on the very cycles where the physician does not?",
+  "prereg": {
+    "fixed_utc": "2026-08-30",
+    "before_running": true,
+    "readings": {
+      ">0.5, CI excludes 0.5": "machine sides with ICBHI - the direct form of the paper's headline",
+      "CI spans 0.5": "UNDECIDED at this n; report as undecided",
+      "<0.5, CI excludes 0.5": "machine sides with the physician; this softens the headline and we say so"
+    }
+  },
+  "estimator": "frozen AudioSet AST embedding (768-d, never saw a respiratory corpus) -> logistic probe, standardised, class_weight=balanced, patient-grouped 5-fold CV so every clip is out-of-sample",
+  "reused_unchanged": [
+    "N10 clip->row mapping (verified against clip_key.csv)",
+    "N9 label binarisation",
+    "N11 linear probe",
+    "N1 frozen AST embedding"
+  ],
+  "mapping": {
+    "clips_mapped": 132,
+    "verified_against_clip_key": true,
+    "clips_not_in_cycle_index": 0
+  },
+  "comparability_warning": {
+    "headline": "ABSOLUTE AUROC HERE IS NOT COMPARABLE TO N11's 2,636-CYCLE NUMBERS, AND CANNOT OVERTURN THE G2 FAILURE.",
+    "why": "The listening pack keeps cycles >= 0.9 s and sorts each stratum longest-first, so these clips are systematically longer - and easier for any detector - than the corpus, and abnormal strata are over-sampled.",
+    "what_is_unaffected": "The AGREE-vs-DISAGREE contrast is internal to this subset, so the selection applies equally to both halves. The contrast is the result; the level is not."
+  },
+  "n11_anchor": {
+    "ast_frozen_train_test_crackle": 0.7115,
+    "ast_frozen_train_test_wheeze": 0.7621,
+    "note": "N11's strict train-fit / test-score numbers on all 2,636 test cycles, for reference only"
+  },
+  "results": {
+    "crackle": {
+      "n_clips_scored": 108,
+      "clinician_vs_icbhi_agreement": 0.5278,
+      "n_agree": 57,
+      "n_disagree": 51,
+      "test_split_clips": 33,
+      "probe_vs_icbhi_all_clips": {
+        "n": 108,
+        "n_positive": 52,
+        "prevalence": 0.4815,
+        "auroc": 0.6786,
+        "auroc_ci95": [
+          0.5779,
+          0.7782
+        ],
+        "verdict_vs_chance": "ABOVE CHANCE (CI excludes chance)"
+      },
+      "probe_vs_clinician_all_clips": {
+        "n": 108,
+        "n_positive": 23,
+        "prevalence": 0.213,
+        "auroc": 0.5097,
+        "auroc_ci95": [
+          0.3535,
+          0.6645
+        ],
+        "verdict_vs_chance": "NOT SHOWN TO BEAT CHANCE (CI spans chance) - do not write 'beats'"
+      },
+      "dsp_concept_vs_icbhi_all_clips": {
+        "n": 108,
+        "n_positive": 52,
+        "prevalence": 0.4815,
+        "auroc": 0.5251,
+        "auroc_ci95": [
+          0.4131,
+          0.6338
+        ],
+        "verdict_vs_chance": "NOT SHOWN TO BEAT CHANCE (CI spans chance) - do not write 'beats'"
+      },
+      "dsp_concept_vs_clinician_all_clips": {
+        "n": 108,
+        "n_positive": 23,
+        "prevalence": 0.213,
+        "auroc": 0.5581,
+        "auroc_ci95": [
+          0.4184,
+          0.6852
+        ],
+        "verdict_vs_chance": "NOT SHOWN TO BEAT CHANCE (CI spans chance) - do not write 'beats'"
+      },
+      "on_clips_where_they_AGREE": {
+        "n": 57,
+        "n_positive": 12,
+        "prevalence": 0.2105,
+        "auroc": 0.6296,
+        "auroc_ci95": [
+          0.4203,
+          0.8241
+        ],
+        "verdict_vs_chance": "NOT SHOWN TO BEAT CHANCE (CI spans chance) - do not write 'beats'"
+      },
+      "on_clips_where_they_DISAGREE": {
+        "n": 51,
+        "n_positive": 40,
+        "prevalence": 0.7843,
+        "auroc": 0.6,
+        "auroc_ci95": [
+          0.3409,
+          0.8477
+        ],
+        "verdict_vs_chance": "NOT SHOWN TO BEAT CHANCE (CI spans chance) - do not write 'beats'"
+      },
+      "paired_icbhi_minus_clinician": {
+        "diff": 0.1689,
+        "ci95": [
+          -0.0253,
+          0.3612
+        ],
+        "p_two_sided": 0.0868,
+        "n_boot": 5000,
+        "verdict": "NOT SHOWN to differ on these clips"
+      },
+      "reading": "UNDECIDED at this n - the interval spans chance. State it as undecided and do not use it as support in either direction.",
+      "anchor_grouped_cv_all_6898_cycles": 0.6362,
+      "anchor_strict_train_test_2636_cycles": 0.7115
+    },
+    "wheeze": {
+      "n_clips_scored": 110,
+      "clinician_vs_icbhi_agreement": 0.7182,
+      "n_agree": 79,
+      "n_disagree": 31,
+      "test_split_clips": 33,
+      "probe_vs_icbhi_all_clips": {
+        "n": 110,
+        "n_positive": 37,
+        "prevalence": 0.3364,
+        "auroc": 0.7519,
+        "auroc_ci95": [
+          0.6361,
+          0.8571
+        ],
+        "verdict_vs_chance": "ABOVE CHANCE (CI excludes chance)"
+      },
+      "probe_vs_clinician_all_clips": {
+        "n": 110,
+        "n_positive": 16,
+        "prevalence": 0.1455,
+        "auroc": 0.5828,
+        "auroc_ci95": [
+          0.4119,
+          0.746
+        ],
+        "verdict_vs_chance": "NOT SHOWN TO BEAT CHANCE (CI spans chance) - do not write 'beats'"
+      },
+      "dsp_concept_vs_icbhi_all_clips": {
+        "n": 110,
+        "n_positive": 37,
+        "prevalence": 0.3364,
+        "auroc": 0.736,
+        "auroc_ci95": [
+          0.6224,
+          0.8401
+        ],
+        "verdict_vs_chance": "ABOVE CHANCE (CI excludes chance)"
+      },
+      "dsp_concept_vs_clinician_all_clips": {
+        "n": 110,
+        "n_positive": 16,
+        "prevalence": 0.1455,
+        "auroc": 0.8334,
+        "auroc_ci95": [
+          0.7221,
+          0.9269
+        ],
+        "verdict_vs_chance": "ABOVE CHANCE (CI excludes chance)"
+      },
+      "on_clips_where_they_AGREE": {
+        "n": 79,
+        "n_positive": 11,
+        "prevalence": 0.1392,
+        "auroc": 0.6745,
+        "auroc_ci95": [
+          0.4378,
+          0.881
+        ],
+        "verdict_vs_chance": "NOT SHOWN TO BEAT CHANCE (CI spans chance) - do not write 'beats'"
+      },
+      "on_clips_where_they_DISAGREE": {
+        "n": 31,
+        "n_positive": 26,
+        "prevalence": 0.8387,
+        "auroc": 0.7,
+        "auroc_ci95": [
+          0.4615,
+          0.9002
+        ],
+        "verdict_vs_chance": "NOT SHOWN TO BEAT CHANCE (CI spans chance) - do not write 'beats'"
+      },
+      "paired_icbhi_minus_clinician": {
+        "diff": 0.1692,
+        "ci95": [
+          0.0024,
+          0.3442
+        ],
+        "p_two_sided": 0.0456,
+        "n_boot": 5000,
+        "verdict": "ICBHI is reproduced BETTER than the clinician on the same clips"
+      },
+      "reading": "UNDECIDED at this n - the interval spans chance. State it as undecided and do not use it as support in either direction.",
+      "anchor_grouped_cv_all_6898_cycles": 0.8132,
+      "anchor_strict_train_test_2636_cycles": 0.7621
+    }
+  },
+  "generated_utc": "2026-08-30T09:56:02Z"
+}

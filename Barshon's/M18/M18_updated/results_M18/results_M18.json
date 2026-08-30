@@ -521,7 +521,11 @@
           ]
         ]
       }
-    ]
+    ],
+    "accuracy": 0.8983,
+    "precision_macro": 0.3878,
+    "recall_macro": 0.4045,
+    "f1_macro": 0.3949
   },
   "ablation": {
     "ablation_group": "model_compression",
@@ -645,6 +649,7 @@
   },
   "audit_notes": {
     "efficiency_not_applicable": "compression sweep - per-config sizes are in the sweep CSV",
-    "training_time_not_recoverable": "not recorded by the original run and not recoverable from a checkpoint; re-run the model to obtain it"
+    "training_time_not_recoverable": "not recorded by the original run and not recoverable from a checkpoint; re-run the model to obtain it",
+    "metrics_source": "recomputed from confusion_matrix_raw (4x4)"
   }
 }

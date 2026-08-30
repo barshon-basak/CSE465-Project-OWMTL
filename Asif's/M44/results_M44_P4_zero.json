@@ -68,6 +68,7 @@
   },
   "audit_notes": {
     "efficiency_not_applicable": "XAI analysis of M22_v2 - explains a model, does not train one",
-    "training_time_not_recoverable": "not recorded by the original run and not recoverable from a checkpoint; re-run the model to obtain it"
+    "training_time_not_recoverable": "not recorded by the original run and not recoverable from a checkpoint; re-run the model to obtain it",
+    "metrics_not_applicable": "XAI analysis of M22_v2 - explains a model, does not train one. Accuracy/precision/recall/F1 are undefined for this file; it is not an incomplete model record."
   }
 }

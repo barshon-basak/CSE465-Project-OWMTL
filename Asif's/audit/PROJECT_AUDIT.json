@@ -19,10 +19,10 @@
         "source": "Asif's\\M12_v2\\results_M12_v2.json"
       },
       {
-        "severity": "WARNING",
+        "severity": "INFO",
         "model": "M12",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro, specificity_macro, icbhi_score.",
+        "check": "metrics_not_applicable",
+        "message": "Missing \u00a73 metric(s) accuracy, precision_macro, recall_macro, f1_macro, specificity_macro, icbhi_score, with a recorded reason: backbone re-decision - inference only over frozen checkpoints. Accuracy/precision/recall/F1 are undefined for this file; it is not an incomplete model record.",
         "evidence": "accuracy, precision_macro, recall_macro, f1_macro, specificity_macro, icbhi_score",
         "source": "Asif's\\M12_v2\\results_M12_v2.json"
       },
@@ -74,15 +74,38 @@
     ]
   },
   {
+    "model_id": "M22",
+    "path": "Asif's\\M22_v2\\Results\\results_M22_v2_official.json",
+    "kind": "protocol",
+    "findings": [
+      {
+        "severity": "WARNING",
+        "model": "M22",
+        "check": "no_better_than_majority_class",
+        "message": "Accuracy 0.5798 is not meaningfully above the majority-class rate 0.5729 (always predicting the largest class). The model may be learning little; report macro-F1 rather than accuracy and check the per-class breakdown.",
+        "evidence": "accuracy=0.5798, majority prior=0.5729",
+        "source": "Asif's\\M22_v2\\Results\\results_M22_v2_official.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M22",
+        "check": "non_patient_independent_by_design",
+        "message": "Run declares itself NOT patient-independent and names the overlapping patients [156, 218]. This is the published ICBHI partition reproduced verbatim for comparability. Valid to report against the literature; NOT eligible as the project's best model, and it must never be described as patient-independent.",
+        "evidence": "",
+        "source": "Asif's\\M22_v2\\Results\\results_M22_v2_official.json"
+      }
+    ]
+  },
+  {
     "model_id": "M29",
     "path": "Asif's\\M29\\results_M29.json",
     "kind": "protocol",
     "findings": [
       {
-        "severity": "WARNING",
+        "severity": "INFO",
         "model": "M29",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
+        "check": "metrics_not_applicable",
+        "message": "Missing \u00a73 metric(s) accuracy, precision_macro, recall_macro, f1_macro, with a recorded reason: post-hoc OOD scoring over frozen M12 embeddings. Accuracy/precision/recall/F1 are undefined for this file; it is not an incomplete model record.",
         "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
         "source": "Asif's\\M29\\results_M29.json"
       },
@@ -154,10 +177,10 @@
     "kind": "protocol",
     "findings": [
       {
-        "severity": "WARNING",
+        "severity": "INFO",
         "model": "M39",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
+        "check": "metrics_not_applicable",
+        "message": "Missing \u00a73 metric(s) accuracy, precision_macro, recall_macro, f1_macro, with a recorded reason: concept-validity gate - scores DSP concepts by AUROC against cycle labels; it trains nothing and emits no 4-class prediction. Accuracy/precision/recall/F1 are undefined for this file; it is not an incomplete model record.",
         "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
         "source": "Asif's\\M39\\2nd_run_handoff\\results_M39.json"
       },
@@ -185,10 +208,10 @@
     "kind": "protocol",
     "findings": [
       {
-        "severity": "WARNING",
+        "severity": "INFO",
         "model": "M39",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
+        "check": "metrics_not_applicable",
+        "message": "Missing \u00a73 metric(s) accuracy, precision_macro, recall_macro, f1_macro, with a recorded reason: concept-validity gate - scores DSP concepts by AUROC against cycle labels; it trains nothing and emits no 4-class prediction. Accuracy/precision/recall/F1 are undefined for this file; it is not an incomplete model record.",
         "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
         "source": "Asif's\\M39\\M39_handoff\\results_M39.json"
       },
@@ -269,10 +292,10 @@
         "source": "Asif's\\M44\\results_M44.json"
       },
       {
-        "severity": "WARNING",
+        "severity": "INFO",
         "model": "M44",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
+        "check": "metrics_not_applicable",
+        "message": "Missing \u00a73 metric(s) accuracy, precision_macro, recall_macro, f1_macro, with a recorded reason: XAI analysis of M22_v2 - explains a model, does not train one. Accuracy/precision/recall/F1 are undefined for this file; it is not an incomplete model record.",
         "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
         "source": "Asif's\\M44\\results_M44.json"
       },
@@ -316,10 +339,10 @@
         "source": "Asif's\\M44\\results_M44_A0_wrap.json"
       },
       {
-        "severity": "WARNING",
+        "severity": "INFO",
         "model": "M44",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
+        "check": "metrics_not_applicable",
+        "message": "Missing \u00a73 metric(s) accuracy, precision_macro, recall_macro, f1_macro, with a recorded reason: XAI analysis of M22_v2 - explains a model, does not train one. Accuracy/precision/recall/F1 are undefined for this file; it is not an incomplete model record.",
         "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
         "source": "Asif's\\M44\\results_M44_A0_wrap.json"
       },
@@ -363,10 +386,10 @@
         "source": "Asif's\\M44\\results_M44_P4_zero.json"
       },
       {
-        "severity": "WARNING",
+        "severity": "INFO",
         "model": "M44",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
+        "check": "metrics_not_applicable",
+        "message": "Missing \u00a73 metric(s) accuracy, precision_macro, recall_macro, f1_macro, with a recorded reason: XAI analysis of M22_v2 - explains a model, does not train one. Accuracy/precision/recall/F1 are undefined for this file; it is not an incomplete model record.",
         "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
         "source": "Asif's\\M44\\results_M44_P4_zero.json"
       },
@@ -410,14 +433,6 @@
         "source": "Asif's\\M45\\results_M45_A2.json"
       },
       {
-        "severity": "WARNING",
-        "model": "M45",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: precision_macro, recall_macro.",
-        "evidence": "precision_macro, recall_macro",
-        "source": "Asif's\\M45\\results_M45_A2.json"
-      },
-      {
         "severity": "INFO",
         "model": "M45",
         "check": "schema_incomplete_ablation",
@@ -454,14 +469,6 @@
         "check": "schema_missing_blocks",
         "message": "Missing \u00a74 block(s): environment, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
         "evidence": "environment, training_history",
-        "source": "Asif's\\M45\\results_M45_A3.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M45",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: precision_macro, recall_macro.",
-        "evidence": "precision_macro, recall_macro",
         "source": "Asif's\\M45\\results_M45_A3.json"
       },
       {
@@ -504,14 +511,6 @@
         "source": "Asif's\\M45\\results_M45_A4.json"
       },
       {
-        "severity": "WARNING",
-        "model": "M45",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: precision_macro, recall_macro.",
-        "evidence": "precision_macro, recall_macro",
-        "source": "Asif's\\M45\\results_M45_A4.json"
-      },
-      {
         "severity": "INFO",
         "model": "M45",
         "check": "schema_incomplete_ablation",
@@ -548,14 +547,6 @@
         "check": "schema_missing_blocks",
         "message": "Missing \u00a74 block(s): environment, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
         "evidence": "environment, training_history",
-        "source": "Asif's\\M45\\results_M45_A5.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M45",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: precision_macro, recall_macro.",
-        "evidence": "precision_macro, recall_macro",
         "source": "Asif's\\M45\\results_M45_A5.json"
       },
       {
@@ -598,14 +589,6 @@
         "source": "Asif's\\M45\\results_M45_A6.json"
       },
       {
-        "severity": "WARNING",
-        "model": "M45",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: precision_macro, recall_macro.",
-        "evidence": "precision_macro, recall_macro",
-        "source": "Asif's\\M45\\results_M45_A6.json"
-      },
-      {
         "severity": "INFO",
         "model": "M45",
         "check": "schema_incomplete_ablation",
@@ -633,6 +616,123 @@
   },
   {
     "model_id": "M45",
+    "path": "Asif's\\M45\\results_M45_P1.json",
+    "kind": "protocol",
+    "findings": [
+      {
+        "severity": "WARNING",
+        "model": "M45",
+        "check": "schema_missing_blocks",
+        "message": "Missing \u00a74 block(s): environment, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
+        "evidence": "environment, training_history",
+        "source": "Asif's\\M45\\results_M45_P1.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M45",
+        "check": "schema_incomplete_ablation",
+        "message": "`ablation` block missing: component_flags, loss_weights.",
+        "evidence": "component_flags, loss_weights",
+        "source": "Asif's\\M45\\results_M45_P1.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M45",
+        "check": "no_inference_latency",
+        "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
+        "evidence": "",
+        "source": "Asif's\\M45\\results_M45_P1.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M45",
+        "check": "patient_independence_not_asserted",
+        "message": "Split is declared patient-independent ('official_60_40_patient_independent_corrected') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
+        "evidence": "",
+        "source": "Asif's\\M45\\results_M45_P1.json"
+      }
+    ]
+  },
+  {
+    "model_id": "M45",
+    "path": "Asif's\\M45\\results_M45_P2.json",
+    "kind": "protocol",
+    "findings": [
+      {
+        "severity": "WARNING",
+        "model": "M45",
+        "check": "schema_missing_blocks",
+        "message": "Missing \u00a74 block(s): environment, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
+        "evidence": "environment, training_history",
+        "source": "Asif's\\M45\\results_M45_P2.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M45",
+        "check": "schema_incomplete_ablation",
+        "message": "`ablation` block missing: component_flags, loss_weights.",
+        "evidence": "component_flags, loss_weights",
+        "source": "Asif's\\M45\\results_M45_P2.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M45",
+        "check": "no_inference_latency",
+        "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
+        "evidence": "",
+        "source": "Asif's\\M45\\results_M45_P2.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M45",
+        "check": "patient_independence_not_asserted",
+        "message": "Split is declared patient-independent ('official_60_40_patient_independent_corrected') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
+        "evidence": "",
+        "source": "Asif's\\M45\\results_M45_P2.json"
+      }
+    ]
+  },
+  {
+    "model_id": "M45",
+    "path": "Asif's\\M45\\results_M45_P3.json",
+    "kind": "protocol",
+    "findings": [
+      {
+        "severity": "WARNING",
+        "model": "M45",
+        "check": "schema_missing_blocks",
+        "message": "Missing \u00a74 block(s): environment, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
+        "evidence": "environment, training_history",
+        "source": "Asif's\\M45\\results_M45_P3.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M45",
+        "check": "schema_incomplete_ablation",
+        "message": "`ablation` block missing: component_flags, loss_weights.",
+        "evidence": "component_flags, loss_weights",
+        "source": "Asif's\\M45\\results_M45_P3.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M45",
+        "check": "no_inference_latency",
+        "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
+        "evidence": "",
+        "source": "Asif's\\M45\\results_M45_P3.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M45",
+        "check": "patient_independence_not_asserted",
+        "message": "Split is declared patient-independent ('official_60_40_patient_independent_corrected') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
+        "evidence": "",
+        "source": "Asif's\\M45\\results_M45_P3.json"
+      }
+    ]
+  },
+  {
+    "model_id": "M45",
     "path": "Asif's\\M45\\results_M45_P4.json",
     "kind": "protocol",
     "findings": [
@@ -642,14 +742,6 @@
         "check": "schema_missing_blocks",
         "message": "Missing \u00a74 block(s): environment, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
         "evidence": "environment, training_history",
-        "source": "Asif's\\M45\\results_M45_P4.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M45",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: precision_macro, recall_macro.",
-        "evidence": "precision_macro, recall_macro",
         "source": "Asif's\\M45\\results_M45_P4.json"
       },
       {
@@ -692,14 +784,6 @@
         "source": "Asif's\\M45\\results_M45_P5.json"
       },
       {
-        "severity": "WARNING",
-        "model": "M45",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: precision_macro, recall_macro.",
-        "evidence": "precision_macro, recall_macro",
-        "source": "Asif's\\M45\\results_M45_P5.json"
-      },
-      {
         "severity": "INFO",
         "model": "M45",
         "check": "schema_incomplete_ablation",
@@ -739,10 +823,10 @@
         "source": "Barshon's\\M11\\results_M11.json"
       },
       {
-        "severity": "WARNING",
+        "severity": "INFO",
         "model": "M11",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
+        "check": "metrics_not_applicable",
+        "message": "Missing \u00a73 metric(s) accuracy, precision_macro, recall_macro, f1_macro, with a recorded reason: post-hoc calibrators fitted on frozen logits. Accuracy/precision/recall/F1 are undefined for this file; it is not an incomplete model record.",
         "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
         "source": "Barshon's\\M11\\results_M11.json"
       },
@@ -809,10 +893,10 @@
         "source": "Barshon's\\M14\\v2\\results_M14.json"
       },
       {
-        "severity": "WARNING",
+        "severity": "INFO",
         "model": "M14",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
+        "check": "metrics_not_applicable",
+        "message": "Missing \u00a73 metric(s) accuracy, precision_macro, recall_macro, f1_macro, with a recorded reason: conformal wrapper over M15's scores - no network of its own. Accuracy/precision/recall/F1 are undefined for this file; it is not an incomplete model record.",
         "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
         "source": "Barshon's\\M14\\v2\\results_M14.json"
       },
@@ -950,10 +1034,10 @@
         "source": "Barshon's\\M17\\results_M17.json"
       },
       {
-        "severity": "WARNING",
+        "severity": "INFO",
         "model": "M17",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
+        "check": "metrics_not_applicable",
+        "message": "Missing \u00a73 metric(s) accuracy, precision_macro, recall_macro, f1_macro, with a recorded reason: continual-learning forgetting curve - reports stage-0 retention and stage-2 plasticity accuracy plus AUROC, not 4-class metrics. Accuracy/precision/recall/F1 are undefined for this file; it is not an incomplete model record.",
         "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
         "source": "Barshon's\\M17\\results_M17.json"
       },
@@ -997,14 +1081,6 @@
         "source": "Barshon's\\M18\\M18_updated\\results_M18\\results_M18.json"
       },
       {
-        "severity": "WARNING",
-        "model": "M18",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
-        "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
-        "source": "Barshon's\\M18\\M18_updated\\results_M18\\results_M18.json"
-      },
-      {
         "severity": "INFO",
         "model": "M18",
         "check": "no_inference_latency",
@@ -1028,10 +1104,10 @@
         "source": "Barshon's\\M19\\results_M19.json"
       },
       {
-        "severity": "WARNING",
+        "severity": "INFO",
         "model": "M19",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
+        "check": "metrics_not_applicable",
+        "message": "Missing \u00a73 metric(s) accuracy, precision_macro, recall_macro, f1_macro, with a recorded reason: cross-dataset evaluation of an existing checkpoint. Accuracy/precision/recall/F1 are undefined for this file; it is not an incomplete model record.",
         "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
         "source": "Barshon's\\M19\\results_M19.json"
       },
@@ -1176,10 +1252,10 @@
         "source": "Barshon's\\M24\\results_M24.json"
       },
       {
-        "severity": "WARNING",
+        "severity": "INFO",
         "model": "M24",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
+        "check": "metrics_not_applicable",
+        "message": "Missing \u00a73 metric(s) accuracy, precision_macro, recall_macro, f1_macro, with a recorded reason: open-world disease recognition - reports AUROC, AUPR and FPR@95TPR over known/unknown patients, not 4-class metrics. Accuracy/precision/recall/F1 are undefined for this file; it is not an incomplete model record.",
         "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
         "source": "Barshon's\\M24\\results_M24.json"
       },
@@ -1239,10 +1315,10 @@
         "source": "Barshon's\\M28\\results_M28.json"
       },
       {
-        "severity": "WARNING",
+        "severity": "INFO",
         "model": "M28",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
+        "check": "metrics_not_applicable",
+        "message": "Missing \u00a73 metric(s) accuracy, precision_macro, recall_macro, f1_macro, with a recorded reason: master merge of other models' results. Accuracy/precision/recall/F1 are undefined for this file; it is not an incomplete model record.",
         "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
         "source": "Barshon's\\M28\\results_M28.json"
       },
@@ -1501,14 +1577,6 @@
       {
         "severity": "WARNING",
         "model": "M40",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: precision_macro, recall_macro.",
-        "evidence": "precision_macro, recall_macro",
-        "source": "M40_M43_transformers\\Results\\results_M40.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M40",
         "check": "schema_missing_ablation",
         "message": "No \u00a74.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.",
         "evidence": "",
@@ -1543,14 +1611,6 @@
         "check": "schema_missing_blocks",
         "message": "Missing \u00a74 block(s): environment, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
         "evidence": "environment, ablation, training_history",
-        "source": "M40_M43_transformers\\Results\\results_M40_aug.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M40",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: precision_macro, recall_macro.",
-        "evidence": "precision_macro, recall_macro",
         "source": "M40_M43_transformers\\Results\\results_M40_aug.json"
       },
       {
@@ -1595,14 +1655,6 @@
       {
         "severity": "WARNING",
         "model": "M41",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: precision_macro, recall_macro.",
-        "evidence": "precision_macro, recall_macro",
-        "source": "M40_M43_transformers\\Results\\results_M41.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M41",
         "check": "schema_missing_ablation",
         "message": "No \u00a74.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.",
         "evidence": "",
@@ -1637,14 +1689,6 @@
         "check": "schema_missing_blocks",
         "message": "Missing \u00a74 block(s): environment, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
         "evidence": "environment, ablation, training_history",
-        "source": "M40_M43_transformers\\Results\\results_M41_aug.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M41",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: precision_macro, recall_macro.",
-        "evidence": "precision_macro, recall_macro",
         "source": "M40_M43_transformers\\Results\\results_M41_aug.json"
       },
       {
@@ -1689,14 +1733,6 @@
       {
         "severity": "WARNING",
         "model": "M42",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: precision_macro, recall_macro.",
-        "evidence": "precision_macro, recall_macro",
-        "source": "M40_M43_transformers\\Results\\results_M42.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M42",
         "check": "schema_missing_ablation",
         "message": "No \u00a74.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.",
         "evidence": "",
@@ -1731,14 +1767,6 @@
         "check": "schema_missing_blocks",
         "message": "Missing \u00a74 block(s): environment, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
         "evidence": "environment, ablation, training_history",
-        "source": "M40_M43_transformers\\Results\\results_M42_aug.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M42",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: precision_macro, recall_macro.",
-        "evidence": "precision_macro, recall_macro",
         "source": "M40_M43_transformers\\Results\\results_M42_aug.json"
       },
       {
@@ -1781,10 +1809,10 @@
         "source": "Sami's\\M7\\M7_handoff\\results_M7.json"
       },
       {
-        "severity": "WARNING",
+        "severity": "INFO",
         "model": "M7",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
+        "check": "metrics_not_applicable",
+        "message": "Missing \u00a73 metric(s) accuracy, precision_macro, recall_macro, f1_macro, with a recorded reason: deep ensemble handoff - carries per-member results and ensemble disagreement; it has no single top-level best_metrics block by design. Accuracy/precision/recall/F1 are undefined for this file; it is not an incomplete model record.",
         "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
         "source": "Sami's\\M7\\M7_handoff\\results_M7.json"
       },
@@ -1820,10 +1848,10 @@
         "source": "Sami's\\M7\\M7_handoff\\results_M7_aug.json"
       },
       {
-        "severity": "WARNING",
+        "severity": "INFO",
         "model": "M7",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
+        "check": "metrics_not_applicable",
+        "message": "Missing \u00a73 metric(s) accuracy, precision_macro, recall_macro, f1_macro, with a recorded reason: deep ensemble handoff - carries per-member results and ensemble disagreement; it has no single top-level best_metrics block by design. Accuracy/precision/recall/F1 are undefined for this file; it is not an incomplete model record.",
         "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
         "source": "Sami's\\M7\\M7_handoff\\results_M7_aug.json"
       },

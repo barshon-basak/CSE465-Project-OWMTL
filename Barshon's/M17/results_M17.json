@@ -247,6 +247,7 @@
   },
   "audit_notes": {
     "efficiency_source": "total_params counted from best_model.pth; model_size_mb = params x 4 bytes (fp32), per Model_Training_Protocol.md section 3",
-    "training_time_not_recoverable": "not recorded by the original run and not recoverable from a checkpoint; re-run the model to obtain it"
+    "training_time_not_recoverable": "not recorded by the original run and not recoverable from a checkpoint; re-run the model to obtain it",
+    "metrics_not_applicable": "continual-learning forgetting curve - reports stage-0 retention and stage-2 plasticity accuracy plus AUROC, not 4-class metrics. Accuracy/precision/recall/F1 are undefined for this file; it is not an incomplete model record."
   }
 }

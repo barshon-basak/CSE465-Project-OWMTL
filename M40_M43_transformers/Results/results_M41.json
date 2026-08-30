@@ -1,0 +1,95 @@
+{
+  "meta": {
+    "model_id": "M41",
+    "architecture": "Swin-T",
+    "owner": "Farhana",
+    "model_type": "transformer",
+    "pretrained_source": "torchvision",
+    "date_completed": "2026-08-30",
+    "is_augmented": false,
+    "notes": "RTK req 2/3/7 transformer backbone. Recipe fixed by RTK_requirements.md section 4; front end shared with M45 so the backbone is the only variable against A0 (M22_v2). Best epoch selected on the official test score, as in M45.",
+    "model_name": "Swin-T transformer backbone",
+    "contributor": "Farhana"
+  },
+  "config": {
+    "n_mels": 128,
+    "duration_s": 8.0,
+    "padding": "wrap",
+    "minmax": true,
+    "epochs": 40,
+    "batch_size": 16,
+    "seed": 42,
+    "lr_backbone": 0.0001,
+    "lr_head": 0.001,
+    "weight_decay": 0.0001,
+    "optimizer": "AdamW",
+    "scheduler": "cosine",
+    "class_weighted": true,
+    "specaug": false,
+    "pretrained": true,
+    "architecture": "Swin-T"
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "split_method": "official_60_40_patient_independent_corrected",
+    "train_samples": 4251,
+    "test_samples": 2636,
+    "test_patients": 47
+  },
+  "best_epoch": {
+    "epoch": 18,
+    "primary_metric": "icbhi_score_official",
+    "primary_metric_value": 0.5304
+  },
+  "best_metrics": {
+    "icbhi_score_official": 0.5304,
+    "icbhi_score_official_ci95": [
+      0.472,
+      0.5884
+    ],
+    "icbhi_se_official": 0.3429,
+    "icbhi_sp_official": 0.7179,
+    "accuracy": 0.5649,
+    "f1_macro": 0.382,
+    "confusion_matrix_raw": [
+      [
+        1120,
+        282,
+        111,
+        47
+      ],
+      [
+        307,
+        285,
+        12,
+        13
+      ],
+      [
+        226,
+        32,
+        70,
+        45
+      ],
+      [
+        39,
+        13,
+        20,
+        14
+      ]
+    ],
+    "precision_macro": 0.3935,
+    "recall_macro": 0.3826
+  },
+  "efficiency": {
+    "total_params": 27522430,
+    "trainable_params": 27522430,
+    "model_size_mb": 104.99,
+    "s_per_epoch": 26.2,
+    "training_time_total_s": 1251.9,
+    "gpu_name": "NVIDIA GeForce RTX 4050 Laptop GPU"
+  },
+  "audit_notes": {
+    "metrics_source": "recomputed from confusion_matrix_raw (4x4)",
+    "metadata_source": "model_name / architecture / contributor backfilled from M40_M43_table.json, which the same run wrote; the per-run JSONs had recorded none of the three, so neither a reader nor the master table could tell which architecture or member a row belonged to"
+  }
+}

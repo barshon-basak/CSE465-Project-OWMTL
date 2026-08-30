@@ -179,6 +179,7 @@
   },
   "training_history": [],
   "audit_notes": {
-    "efficiency_not_applicable": "post-hoc OOD scoring over frozen M12 embeddings"
+    "efficiency_not_applicable": "post-hoc OOD scoring over frozen M12 embeddings",
+    "metrics_not_applicable": "post-hoc OOD scoring over frozen M12 embeddings. Accuracy/precision/recall/F1 are undefined for this file; it is not an incomplete model record."
   }
 }

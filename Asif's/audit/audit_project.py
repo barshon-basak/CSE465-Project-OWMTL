@@ -361,6 +361,29 @@ def check_patient_independence(mid, payload, src, findings):
     verified = di.get("patient_leakage_verified")
     if verified is True:
         return
+
+    # A run may deliberately reproduce a non-patient-independent partition in order to be
+    # directly comparable to published work -- the published ICBHI split is one. That is
+    # legitimate provided the run says so and names the overlapping patients, so it is
+    # reported as INFO rather than as an unasserted-independence warning.
+    if di.get("is_patient_independent") is False:
+        overlap = di.get("overlap_patients_present_in_both") or []
+        if overlap:
+            findings.append(Finding(
+                INFO, mid, "non_patient_independent_by_design",
+                f"Run declares itself NOT patient-independent and names the overlapping "
+                f"patients {sorted(overlap)}. This is the published ICBHI partition "
+                f"reproduced verbatim for comparability. Valid to report against the "
+                f"literature; NOT eligible as the project's best model, and it must never "
+                f"be described as patient-independent.", "", src))
+        else:
+            findings.append(Finding(
+                WARNING, mid, "non_patient_independent_unnamed",
+                "Run declares `is_patient_independent: false` but does not populate "
+                "`overlap_patients_present_in_both`, so the leakage is asserted without "
+                "being characterised. Name the patients or set the field.", "", src))
+        return
+
     if "patient" not in split and "lopo" not in split:
         findings.append(Finding(
             WARNING, mid, "patient_independence_unclear",
@@ -499,7 +522,17 @@ def check_schema(mid, payload, src, findings):
     if mid in SOUND_EVENT_MODELS:
         needed += SOUND_EVENT_EXTRA
     missing_metrics = [m for m in needed if m not in bm]
-    if missing_metrics:
+    # A file can carry a written reason why these metrics do not describe it - an XAI pack,
+    # a calibrator, an open-set scorer. Without honouring that, the audit reports a
+    # permanent warning that nobody can ever clear, and a real gap becomes indistinguishable
+    # from a category error. backfill_metrics.py is what writes the marker.
+    exempt = (payload.get("audit_notes") or {}).get("metrics_not_applicable")
+    if missing_metrics and exempt:
+        findings.append(Finding(
+            INFO, mid, "metrics_not_applicable",
+            f"Missing §3 metric(s) {', '.join(missing_metrics)}, with a recorded reason: "
+            f"{exempt}", ", ".join(missing_metrics), src))
+    elif missing_metrics:
         findings.append(Finding(
             WARNING, mid, "schema_missing_metrics",
             f"Missing §3 metric(s) in `best_metrics`: {', '.join(missing_metrics)}.",

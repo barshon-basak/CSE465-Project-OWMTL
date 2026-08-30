@@ -61,8 +61,8 @@
 | M42 | DeiT-S transformer backbone | Sami | ✅ real (below baseline) | Official 0.5149 clean / 0.4981 SpecAug |
 | M43 | AST transformer backbone (closes the M4 hole) | Asif | 🟡 notebook ready, not run | `M40_M43_transformers/M43_AST_kaggle.ipynb` (Kaggle: 1212 patches need 16 GB) |
 | M44 | XAI pack (Grad-CAM + occlusion) on M22_v2 | Asif | ✅ real | Attends *less* to the wheeze band when a wheeze is present |
-| M45 | Component + preprocessing ablation, 9 rows | Asif | ✅ real | A0 0.5602 → A4 frozen-backbone 0.4595 |
-| M46 | Preprocessing ablation P1–P3 | — | 🔴 stages never implemented | band-pass / denoise / amplitude-norm absent from the pipeline |
+| M45 | Component + preprocessing ablation, 12 rows | Asif | ✅ real | A0 0.5602; **A4 frozen-backbone 0.4595 is the only row that differs from A0 at patient level** |
+| M46 | Preprocessing ablation P1–P3 | Asif | ✅ real | band-pass 0.5513 / denoise 0.5248 / **amplitude-norm 0.5764 (+0.0162, the only gain)**; none differs from A0 at patient level |
 | N11 | Supervised ceiling on ICBHI cycle labels | — | ✅ real | **AST frozen 0.7115 crackle / 0.7621 wheeze — the ceiling claim is retracted** |
 | M24-CB | Class-balancing augmentation | Barshon | ✅ real | SpecAug on Healthy/URTI |
 | M21 | Curriculum (SNR pacing) | Barshon | 🔴 implausible (metrics=1.0) | train/test leak suspected |

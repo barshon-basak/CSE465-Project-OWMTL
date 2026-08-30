@@ -13,7 +13,8 @@
       "se": 0.4089,
       "sp": 0.7115,
       "f1_macro": 0.4141,
-      "delta_vs_A0": null
+      "delta_vs_A0": null,
+      "direction": "remove"
     },
     {
       "row": "A1",
@@ -26,7 +27,8 @@
       "se": 0.4266,
       "sp": 0.6135,
       "f1_macro": 0.3985,
-      "delta_vs_A0": -0.0402
+      "delta_vs_A0": -0.0402,
+      "direction": "remove"
     },
     {
       "row": "A2",
@@ -39,7 +41,8 @@
       "se": 0.3736,
       "sp": 0.6263,
       "f1_macro": 0.3784,
-      "delta_vs_A0": -0.0603
+      "delta_vs_A0": -0.0603,
+      "direction": "remove"
     },
     {
       "row": "A3",
@@ -52,7 +55,8 @@
       "se": 0.4275,
       "sp": 0.6718,
       "f1_macro": 0.4294,
-      "delta_vs_A0": -0.0105
+      "delta_vs_A0": -0.0105,
+      "direction": "remove"
     },
     {
       "row": "A4",
@@ -65,7 +69,8 @@
       "se": 0.4349,
       "sp": 0.484,
       "f1_macro": 0.3374,
-      "delta_vs_A0": -0.1007
+      "delta_vs_A0": -0.1007,
+      "direction": "remove"
     },
     {
       "row": "A5",
@@ -78,7 +83,8 @@
       "se": 0.4238,
       "sp": 0.6615,
       "f1_macro": 0.4043,
-      "delta_vs_A0": -0.0175
+      "delta_vs_A0": -0.0175,
+      "direction": "remove"
     },
     {
       "row": "A6",
@@ -91,7 +97,50 @@
       "se": 0.4954,
       "sp": 0.5494,
       "f1_macro": 0.4058,
-      "delta_vs_A0": -0.0378
+      "delta_vs_A0": -0.0378,
+      "direction": "remove"
+    },
+    {
+      "row": "P1",
+      "variable_changed": "+ band-pass filter (50-2000 Hz Butterworth)",
+      "icbhi_score_official": 0.5513,
+      "ci95": [
+        0.4922,
+        0.6011
+      ],
+      "se": 0.4442,
+      "sp": 0.6583,
+      "f1_macro": 0.4077,
+      "delta_vs_A0": -0.0089,
+      "direction": "add"
+    },
+    {
+      "row": "P2",
+      "variable_changed": "+ spectral-gating denoising",
+      "icbhi_score_official": 0.5248,
+      "ci95": [
+        0.458,
+        0.5876
+      ],
+      "se": 0.4572,
+      "sp": 0.5923,
+      "f1_macro": 0.3983,
+      "delta_vs_A0": -0.0354,
+      "direction": "add"
+    },
+    {
+      "row": "P3",
+      "variable_changed": "+ per-cycle peak amplitude normalisation",
+      "icbhi_score_official": 0.5764,
+      "ci95": [
+        0.5138,
+        0.6324
+      ],
+      "se": 0.3996,
+      "sp": 0.7532,
+      "f1_macro": 0.4217,
+      "delta_vs_A0": 0.0162,
+      "direction": "add"
     },
     {
       "row": "P4",
@@ -104,7 +153,8 @@
       "se": 0.4684,
       "sp": 0.5897,
       "f1_macro": 0.3841,
-      "delta_vs_A0": -0.0311
+      "delta_vs_A0": -0.0311,
+      "direction": "remove"
     },
     {
       "row": "P5",
@@ -117,12 +167,10 @@
       "se": 0.4136,
       "sp": 0.6942,
       "f1_macro": 0.4128,
-      "delta_vs_A0": -0.0063
+      "delta_vs_A0": -0.0063,
+      "direction": "remove"
     }
   ],
-  "not_applicable": {
-    "P1": "band-pass filter \u2014 never implemented; the mel fmin/fmax bounds the band implicitly",
-    "P2": "denoising \u2014 never implemented in this pipeline",
-    "P3": "amplitude normalisation \u2014 never implemented (per-spectrogram min-max is row P5)"
-  }
+  "row_direction_note": "P1-P3 ADD a stage that BASE does not have; every other row REMOVES or replaces one. Their deltas read in opposite directions.",
+  "not_applicable": {}
 }

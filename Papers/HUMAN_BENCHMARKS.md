@@ -47,9 +47,19 @@ kill-search verdict is unaffected.
 This matters more than §1 for our fine-grained concepts, because it bounds what *any* ground truth
 on this task can be worth.
 
-**Aviles-Solis et al. (2016), "Wheezes, crackles and rhonchi: simplifying description of lung sounds
+> ⚠️ **Attribution corrected 2026-08-30.** This paper was cited throughout the project as
+> "Aviles-Solis et al. (2016)". **The first author is Melbye.** Aviles-Solis is a co-author on
+> other lung-sound papers from the same Tromsø group, which is where the slip came from. The
+> error is repeated in `DECISION_2026-08-16_PIVOT.md`, `CLINICIAN_RESULTS_v1.md`, `M39/README.md`
+> and `PAPER_OUTLINE.md`; those are dated records and were left as written. `DRAFT_PAPER/main.tex`
+> and `references.bib` are corrected. **Cite Melbye, not Aviles-Solis.**
+
+**Melbye, H., García-Marcos, L., Brand, P. L. P., Everard, M. L., Priftis, K. N., and
+Pasterkamp, H. (2016). "Wheezes, crackles and rhonchi: simplifying description of lung sounds
 increases the agreement on their classification: a study of 12 physicians' classification of lung
-sounds from video recordings"** — PMID 27158515.
+sounds from video recordings."** *BMJ Open Respiratory Research* **3**(1):e000136.
+DOI [10.1136/bmjresp-2016-000136](https://doi.org/10.1136/bmjresp-2016-000136) · PMID 27158515.
+Author list, venue and volume verified against the OpenAlex record for that DOI, 2026-08-30.
 
 - 20 audiovisual recordings from the ERS lung-sound repository
 - 12 observers (6 paediatricians, 6 adult physicians), 10 predefined sound categories

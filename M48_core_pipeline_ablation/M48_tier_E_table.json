@@ -1,0 +1,103 @@
+{
+  "table": "M48 Tier E \u2014 evaluation-protocol ablation",
+  "baseline": "E0 = M22_v2 on the corrected official 60/40 split, official metric",
+  "baseline_official": 0.5602,
+  "generated_utc": "2026-08-30T09:49:52Z",
+  "metric_note": "every score in this table is RECOMPUTED from the run's committed confusion_matrix_raw, never transcribed",
+  "row_kind_note": "RESCORE rows change the rule applied to fixed predictions. RERUN rows change the split, which necessarily changes the test set, so the model is retrained with every other setting held fixed.",
+  "rows": [
+    {
+      "row": "E0",
+      "kind": "baseline",
+      "removed": "none \u2014 full corrected protocol",
+      "reported": 0.5602,
+      "delta": null,
+      "se": 0.4089,
+      "sp": 0.7115,
+      "hypothesis": "reference: M22_v2, corrected patient-independent 60/40, official metric, raw matrix committed",
+      "evidence": "results_M22_v2.json"
+    },
+    {
+      "row": "E1",
+      "kind": "rescore",
+      "removed": "- official metric (report the macro variant instead)",
+      "reported": 0.614,
+      "delta": 0.0538,
+      "se": 0.4089,
+      "sp": 0.7115,
+      "hypothesis": "the metric alone inflates the score, non-uniformly, so it does not cancel in a comparison and can reorder models",
+      "evidence": "same predictions rescored; suite-wide over 20 verifiable runs: mean 0.0948, max 0.2176, min 0.0025"
+    },
+    {
+      "row": "E2",
+      "kind": "rerun",
+      "removed": "- official split (silent patient-id <= 111 fallback)",
+      "reported": 0.6495,
+      "delta": 0.0893,
+      "se": 0.5696,
+      "sp": 0.7294,
+      "hypothesis": "a silently substituted split is worth more than any architectural choice in the paper; 11 test patients and 7.1% of cycles read as a 40% test set",
+      "evidence": "results_M22.json \u2014 same architecture, seed and schedule; split only"
+    },
+    {
+      "row": "E3",
+      "kind": "rerun",
+      "removed": "- patient independence (published split verbatim, 2 patients leak)",
+      "reported": 0.5641,
+      "delta": 0.0039,
+      "se": 0.4562,
+      "sp": 0.6719,
+      "hypothesis": "the leak is a VALIDITY fault, not a source of inflation \u2014 and reporting this null honestly is what makes E1 and E2 credible",
+      "evidence": "results_M22_v2_official.json \u2014 patients 156, 218 on both sides"
+    },
+    {
+      "row": "E1+E2",
+      "kind": "rescore of E2",
+      "removed": "both \u2014 the unaudited pipeline, as it would have been published",
+      "reported": 0.7077,
+      "delta": 0.1475,
+      "se": 0.5696,
+      "sp": 0.7294,
+      "hypothesis": "the two faults compound rather than cancel; this row is the single number that states what the correction was worth",
+      "evidence": "results_M22.json rescored under the macro variant"
+    }
+  ],
+  "E5_unit_of_analysis": {
+    "n_rows": 10,
+    "significant_at_cycle_level": 7,
+    "significant_at_patient_level": 1,
+    "rows_that_flip_verdict": [
+      "A2",
+      "A5",
+      "A6",
+      "P2",
+      "P3",
+      "P4"
+    ],
+    "n_test_cycles": 2636,
+    "n_test_patients": 47,
+    "effective_sample_size": 47
+  },
+  "suite_wide_metric_inflation": {
+    "n_verifiable_runs": 20,
+    "mean": 0.0948,
+    "max": 0.2176,
+    "min": 0.0025,
+    "source": "ICBHI_SCORE_AUDIT.json"
+  },
+  "E4_device_suffix_join": {
+    "only_in_split": [
+      "226_1b1_Pl_sc_Meditron"
+    ],
+    "only_on_disk": [
+      "226_1b1_Pl_sc_LittC2SE"
+    ],
+    "near_misses": [
+      [
+        "226_1b1_Pl_sc_Meditron",
+        "226_1b1_Pl_sc_LittC2SE"
+      ]
+    ],
+    "recordings_silently_dropped_by_a_stem_join": 1
+  }
+}

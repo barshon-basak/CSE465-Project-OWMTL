@@ -1743,5 +1743,8 @@
       "has_ensemble": true,
       "n_ensemble_members": 5
     }
+  },
+  "audit_notes": {
+    "metrics_not_applicable": "deep ensemble handoff - carries per-member results and ensemble disagreement; it has no single top-level best_metrics block by design. Accuracy/precision/recall/F1 are undefined for this file; it is not an incomplete model record."
   }
 }

@@ -1,0 +1,33 @@
+{
+  "comparison": "M22_v2 (SpecAugment) vs M3_v2 (clean)",
+  "split_method": "official_60_40_patient_independent_corrected",
+  "n_test_cycles": 2636,
+  "n_test_patients": 47,
+  "icbhi_score_official": {
+    "augmented": 0.5602,
+    "clean": 0.52
+  },
+  "se_sp": {
+    "augmented": [
+      0.4089,
+      0.7115
+    ],
+    "clean": [
+      0.4266,
+      0.6135
+    ]
+  },
+  "delta": 0.0402,
+  "delta_ci95_patient_bootstrap": [
+    -0.0009,
+    0.0874
+  ],
+  "delta_p_bootstrap": 0.056,
+  "mcnemar": {
+    "b": 494,
+    "c": 360,
+    "p_exact": 5.115e-06
+  },
+  "prior_claim_on_fallback_split": 0.036,
+  "verdict": "NOT shown to differ \u2014 CI spans zero"
+}

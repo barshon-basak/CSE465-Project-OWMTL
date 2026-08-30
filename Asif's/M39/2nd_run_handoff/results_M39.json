@@ -190,5 +190,8 @@
     }
   },
   "training_history": [],
-  "raw_scores_file": "scores_M39.csv"
+  "raw_scores_file": "scores_M39.csv",
+  "audit_notes": {
+    "metrics_not_applicable": "concept-validity gate - scores DSP concepts by AUROC against cycle labels; it trains nothing and emits no 4-class prediction. Accuracy/precision/recall/F1 are undefined for this file; it is not an incomplete model record."
+  }
 }

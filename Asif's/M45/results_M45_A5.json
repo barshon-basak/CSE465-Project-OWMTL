@@ -70,7 +70,9 @@
         32,
         7
       ]
-    ]
+    ],
+    "precision_macro": 0.4018,
+    "recall_macro": 0.4074
   },
   "efficiency": {
     "total_params": 2263160,
@@ -86,6 +88,7 @@
     "variable_changed": "64 mels instead of 128"
   },
   "audit_notes": {
-    "efficiency_source": "total_params counted from best_M45_A5.pth; model_size_mb = params x 4 bytes (fp32), per Model_Training_Protocol.md section 3"
+    "efficiency_source": "total_params counted from best_M45_A5.pth; model_size_mb = params x 4 bytes (fp32), per Model_Training_Protocol.md section 3",
+    "metrics_source": "recomputed from confusion_matrix_raw (4x4)"
   }
 }

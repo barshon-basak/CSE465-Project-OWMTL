@@ -24,17 +24,20 @@ explicitly marked ⏳ pending. Nothing is written that we hope to be able to say
 ## Working title
 
 > **What can a concept detector actually be validated against? Corrected evaluation baselines and a
-> reliability ceiling for adventitious-sound detection on ICBHI**
+> retracted ceiling for adventitious-sound detection on ICBHI**
 
-Alternative, if the clinician data lands strongly:
-*"Label reliability bounds concept-level respiratory sound analysis: a corrected protocol, a
-negative result, and a clinician-referenced ceiling"*
+Alternative, and the stronger framing after N11:
+*"Machines reproduce ICBHI's cycle labels better than clinicians agree with them: a corrected
+evaluation protocol, a failed concept gate, and the retraction of our own ceiling claim"*
 
 ## The one-sentence claim
 
-Concept-level validation on ICBHI is bounded by the reliability of its cycle labels; we quantify
-that bound, show a clinically-grounded DSP concept suite fails against it under a pre-registered
-gate, and supply the corrected evaluation protocol and tooling the field needs to measure either.
+ICBHI's cycle labels are learnable well above the threshold our pre-registered gate set — a probe on
+a frozen AudioSet embedding that never saw a respiratory corpus reaches AUROC 0.71 / 0.76 on the
+same test cycles our physics-derived detectors failed on at 0.56 / 0.57 — so we retract our own
+label-reliability ceiling claim, report that our detectors were weak, and show instead that a
+self-consistent clinician agrees with those same labels at κ = 0.035; we supply the corrected
+evaluation protocol and tooling that makes each part checkable.
 
 ## Target venue
 
@@ -56,7 +59,8 @@ contribution, which is a recognised category.
 - **Contributions** (four, all evidenced):
   1. Three evaluation errors, found in our own pipeline, with corrected baselines.
   2. A pre-registered concept-validity gate, run twice, failing both times.
-  3. A reliability ceiling from published human benchmarks + our own clinician study.
+  3. A supervised ceiling estimate that **refutes our own earlier claim** (the labels are
+     learnable), plus the human-agreement comparison it turns into the real finding.
   4. Released tooling: canonical score format, paired DeLong/McNemar/bootstrap, corrected split
      loader, audit tool.
 
@@ -114,24 +118,40 @@ under the macro metric.
 - **Two runs, then stop.** State explicitly that the test split was read twice and no third
   revision was attempted. This is the paper's methodological spine.
 
-### 6. The reliability ceiling
-- 7 senior physicians, blind, clean ICBHI: **47.77% ICBHI score, 23.23% sensitivity**, confidence
-  2.88/5 (Tzeng 2025).
-- 12 physicians: **κ < 0.40** for detailed adventitious-sound descriptions; κ = 0.62 / 0.59 for
-  combined crackle / wheeze (Aviles-Solis 2016).
-- ⏳ **Our clinician study** — one physician, 120 blind clips + 12 hidden duplicates, *with*
-  calibration exemplars the JMIR study did not report giving. Yields: intra-rater agreement,
-  clinician-vs-ICBHI agreement, and the first fine/coarse crackle reference on ICBHI.
-- **The argument:** `crackle_fine_ratio` targeted a distinction humans agree on at κ < 0.40. Its
-  ceiling was set before any DSP was written. Generalise carefully — this bounds *concept-level
-  validation against these labels*, not respiratory ML overall.
-- ⏳ **Inter-rater (second clinician, ~30 shared clips) — in flight.** Interpretation
-  **pre-registered 2026-08-18 before the labels existed**, three outcomes fixed in advance
-  (`INTER_RATER_READINGS`): (A) raters agree with each other but not ICBHI → the labels are the
-  outlier; (B) raters disagree with each other → the ceiling is the task's; (C) everyone agrees →
-  **no ceiling, our extractors are simply weak, and we say so.** Writing (C) down in advance is
-  what makes (A) or (B) worth believing. Report the pre-registration itself in the methods —
-  reviewers of a reliability paper will weight it heavily.
+### 6. What these labels actually support *(rewritten 2026-08-30 — the ceiling is retracted)*
+- **N11, pre-registered, decides the question G2 could not.** A logistic probe fitted on the 79
+  train patients, scored on the same 2,636 test cycles / 47 test patients:
+
+  | space | crackle | wheeze |
+  |---|---:|---:|
+  | our gate, single score | 0.5580 | 0.5729 |
+  | our 14 concepts as a vector | **0.6608** | 0.5815 |
+  | AST frozen (never saw ICBHI) | **0.7115** | **0.7621** |
+  | M2 encoder (trained on these labels) | **0.7451** | **0.8673** |
+
+  The pre-registered **"no ceiling"** branch fired. **Retract the ceiling claim.** Our extractors
+  were weak — say it plainly; that concession is what the gate discipline was for.
+- **Second finding from the same table:** the gate thresholded one hand-built *scalar*. The same 14
+  concepts *as a vector* clear 0.65 on crackle. A validity gate for a concept suite should be posed
+  over the suite. Report this as a criticism of our own design.
+- **What replaces the ceiling, and it is sharper:** 7 senior physicians reach **47.77%** ICBHI score
+  and 23.23% sensitivity (Tzeng 2025); our own rater answers 116/132 clips, agrees with ICBHI at
+  **κ 0.035** (crackle, CI spans 0) / **0.266** (wheeze) at Se 0.231 — within a point of Tzeng —
+  while agreeing with *themselves* at κ 0.714 / 0.600 on the 8 answered hidden duplicates.
+  **Machines reproduce this reference standard substantially better than trained listeners agree
+  with it.**
+- **Still bounded by human agreement, but only one concept:** `fine_crackle_ratio` — κ < 0.40 among
+  12 physicians (Aviles-Solis 2016), R² ≈ 0 in every representation, constant on the clinician
+  subset. Not estimable by any route here.
+- **Scope:** not a claim that ICBHI's labels are wrong, and no longer a claim that reliability bounds
+  detection.
+- ❌ **Inter-rater (second clinician) — dropped 2026-08-30.** No second rater is available, and N11
+  removed the need for one: it bounds the reference standard directly, which was the only job the
+  second rater had. Note the shape of the outcome — the pre-registered `INTER_RATER_READINGS`
+  branch (C), *"no ceiling, our extractors are simply weak, and we say so"*, is the branch that
+  fired, just via a probe instead of a rater. **Report the pre-registration in the methods anyway**;
+  a reliability paper that names the outcome that would refute it, and then reports that outcome,
+  is worth more than one that never risked it. Single-rater goes to Limitations.
 
 ### 7. Discussion
 - What a corrected baseline table looks like ⏳ (needs M2/M3/M22 re-run on the corrected split).
@@ -163,8 +183,9 @@ report. Here is the corrected protocol, a pre-registered negative result, and th
 - ✅ Statistics: CIs + pairwise tests over the open-set suite
 
 **Needed**
-1. ⏳ **Second clinician, ~30 shared clips** — in flight, pre-registered. The only genuinely new
-   evidence still outstanding, and the one reviewers will ask for by name.
+1. ✅ **Second clinician — dropped, not outstanding.** N11 replaces it (see §6). If a reviewer asks
+   for inter-rater agreement, the answer is that the ceiling question it would have addressed is
+   answered by a supervised probe on the full test set rather than by 30 shared clips.
 2. ⏳ **M2/M3/M22 re-run on the corrected official split** — §7's baseline table needs real numbers,
    and their current ones are on the 11-patient split. **Highest-priority compute.**
    Notebooks are now patched (`patch_official_metric.py`) to (a) compute and **select checkpoints

@@ -9,16 +9,20 @@ WHY ONE SCRIPT FOR TWO REQUIREMENTS
     RTK_requirements.md section 10 says so directly: "Merge M45 and M46 into one ablation
     section in the report; they are the same kind of evidence."
 
-ROWS THAT THE SPEC ASKS FOR BUT THAT CANNOT BE RUN
-    RTK section 3b lists six preprocessing rows. Three of them ablate stages THAT DO NOT
-    EXIST in this pipeline:
-        P1  - band-pass filter        never implemented (the mel fmin/fmax bounds the band
-                                      implicitly; there is no explicit Butterworth stage)
-        P2  - denoising               never implemented
-        P3  - amplitude normalisation never implemented (the per-spectrogram min-max is a
-                                      different stage; it is row P5 below)
-    Section 3a asks for those stages to be WRITTEN first. You cannot remove what was never
-    added, so they are reported as NOT APPLICABLE rather than silently skipped.
+THE THREE MISSING STAGES ARE NOW ROWS, BUT THEY ADD RATHER THAN REMOVE
+    RTK section 3b lists six preprocessing rows. Three of them ablate stages that did not
+    exist in this pipeline: an explicit band-pass filter, denoising, and per-cycle
+    amplitude normalisation. Section 3a asks for those stages to be written first.
+
+    They are now implemented (`bandpass`, `denoise`, `ampnorm` in the config), and they are
+    OFF in BASE. That is deliberate. Turning any of them on in BASE would change A0, and
+    every delta in this table is measured against A0 — a silent baseline change would
+    invalidate the seven rows already run and the paper table built from them.
+
+    So P1-P3 are ADD rows, not REMOVE rows: each turns one stage on and reports what it
+    buys. Read their delta in the opposite direction to A1-A6 and P4-P5. A positive delta
+    on an ADD row is a recommendation to adopt the stage; a negative one is evidence that
+    the stage is not missing from this pipeline by oversight but by merit.
 
 A ROW THE SPEC DID NOT ASK FOR, ADDED ON EVIDENCE
     P4_zeropad. M44 measured attribution consistency across the wrap-padded repetitions of
@@ -68,6 +72,7 @@ LABEL_OF = {(0, 0): 0, (1, 0): 1, (0, 1): 2, (1, 1): 3}
 SR = 16000
 
 BASE = dict(n_mels=128, duration_s=8.0, padding="wrap", minmax=True,
+            bandpass=False, denoise=False, ampnorm=False,
             pretrained=True, freeze=False, class_weighted=True, specaug=True,
             lr=5e-4, batch_size=16, epochs=40, dropout=0.3, seed=42)
 
@@ -79,18 +84,19 @@ ROWS = {
     "A6": dict(duration_s=4.0, _desc="4 s cycles instead of 8 s"),
     "P4": dict(padding="zero", _desc="zero-padding instead of cyclic tiling"),
     "P5": dict(minmax=False, _desc="- per-spectrogram min-max normalisation"),
+    # ADD rows - see the docstring. Delta reads in the opposite direction to the rows above.
+    "P1": dict(bandpass=True, _desc="+ band-pass filter (50-2000 Hz Butterworth)"),
+    "P2": dict(denoise=True, _desc="+ spectral-gating denoising"),
+    "P3": dict(ampnorm=True, _desc="+ per-cycle peak amplitude normalisation"),
 }
+ADD_ROWS = {"P1", "P2", "P3"}
 REUSED = {
     "A0": (os.path.join(REPO, "Asif's", "M22_v2", "Results", "results_M22_v2.json"),
            "baseline (M22_v2): MobileNetV2 + SpecAugment"),
     "A1": (os.path.join(REPO, "Asif's", "M3_v2", "Results", "results_M3_v2.json"),
            "- SpecAugment (M3_v2)"),
 }
-NOT_APPLICABLE = {
-    "P1": "band-pass filter — never implemented; the mel fmin/fmax bounds the band implicitly",
-    "P2": "denoising — never implemented in this pipeline",
-    "P3": "amplitude normalisation — never implemented (per-spectrogram min-max is row P5)",
-}
+NOT_APPLICABLE = {}   # P1-P3 were the entries here; they are ADD rows now (see docstring)
 
 
 # ---------------------------------------------------------------- data
@@ -125,8 +131,48 @@ def corrected_split_index(audio_dir, split_file):
     return rows
 
 
+def butter_bandpass(a, lo=50.0, hi=2000.0, order=4):
+    """Zero-phase 4th-order Butterworth band-pass (RTK section 3a stage 2).
+
+    filtfilt, not lfilter: a causal filter shifts transients in time, and crackles are
+    transients whose timing is the thing being measured.
+    """
+    from scipy.signal import butter, filtfilt
+    nyq = SR / 2.0
+    hi = min(hi, nyq * 0.999)
+    b, a_ = butter(order, [lo / nyq, hi / nyq], btype="band")
+    return filtfilt(b, a_, a).astype(np.float32)
+
+
+def peak_normalise(a):
+    """Per-cycle peak normalisation (RTK section 3a stage 5) - removes device gain."""
+    m = float(np.max(np.abs(a)))
+    return (a / m).astype(np.float32) if m > 1e-8 else a
+
+
+def spectral_gate(power, floor_pct=25.0, over=2.0):
+    """Spectral-subtraction denoising on the power spectrogram (RTK section 3a stage 6).
+
+    The noise floor is estimated per frequency bin as a low percentile over time, which
+    assumes the noise is stationary within a cycle and the adventitious sound is not.
+    Subtracted with an over-subtraction factor and floored at zero rather than at a small
+    epsilon, so a bin that is pure noise becomes silent instead of becoming a small
+    positive number the log stretches back into visible structure.
+
+    The percentile and the factor are tied together and were set by the self-test, not by
+    taste. Spectrogram power in a stationary bin is roughly exponential, so the 25th
+    percentile sits near 0.29 of the mean; over=2.0 therefore subtracts a little over half
+    the expected floor. An earlier setting (10th percentile, over=1.5) removed under 5% of
+    it and would have shipped as a stage that measurably did nothing. Pushing harder is
+    possible but buys musical noise, which a CNN can learn as texture, so this stays
+    deliberately conservative.
+    """
+    noise = np.percentile(power, floor_pct, axis=1, keepdims=True)
+    return np.maximum(power - over * noise, 0.0)
+
+
 def log_mel(wav, start, end, cfg):
-    """The M22 preprocessing, with the two ablatable stages switchable."""
+    """The M22 preprocessing, with every ablatable stage switchable."""
     import librosa
     n_mels, dur = cfg["n_mels"], cfg["duration_s"]
     n_samples = int(SR * dur)
@@ -143,6 +189,9 @@ def log_mel(wav, start, end, cfg):
         # Empty decode is a failed read, not a silent zero cycle.
         raise RuntimeError(f"empty audio decoded from {wav}")
 
+    if cfg.get("bandpass"):
+        a = butter_bandpass(a)
+
     if len(a) < n_samples:
         if cfg["padding"] == "wrap":                       # tile the cycle (the default)
             a = np.tile(a, math.ceil(n_samples / len(a)))[:n_samples]
@@ -151,9 +200,19 @@ def log_mel(wav, start, end, cfg):
     else:
         a = a[:n_samples]
 
-    m = librosa.feature.melspectrogram(y=a, sr=SR, n_mels=n_mels, n_fft=1024,
-                                       hop_length=160, win_length=400, fmin=50,
-                                       fmax=2000, power=2.0)
+    if cfg.get("ampnorm"):
+        a = peak_normalise(a)
+
+    if cfg.get("denoise"):
+        # Gate in the linear STFT domain, then project through the mel filterbank, so the
+        # subtraction happens at the resolution the noise was estimated at.
+        spec = np.abs(librosa.stft(a, n_fft=1024, hop_length=160, win_length=400)) ** 2
+        m = librosa.feature.melspectrogram(S=spectral_gate(spec), sr=SR, n_mels=n_mels,
+                                           n_fft=1024, fmin=50, fmax=2000)
+    else:
+        m = librosa.feature.melspectrogram(y=a, sr=SR, n_mels=n_mels, n_fft=1024,
+                                           hop_length=160, win_length=400, fmin=50,
+                                           fmax=2000, power=2.0)
     lm = librosa.power_to_db(m, ref=np.max)
     if cfg["minmax"]:
         lm = (lm - lm.min()) / (lm.max() - lm.min() + 1e-8)
@@ -165,7 +224,11 @@ def log_mel(wav, start, end, cfg):
 
 
 def build_cache(rows, cfg, tag):
-    key = f"{cfg['n_mels']}m_{cfg['duration_s']}s_{cfg['padding']}_{int(cfg['minmax'])}"
+    # Every stage that changes the pixels must be in the key. A cache hit on a stale key
+    # would train the new row on the old row's spectrograms and report it as a result.
+    key = (f"{cfg['n_mels']}m_{cfg['duration_s']}s_{cfg['padding']}_{int(cfg['minmax'])}"
+           f"_bp{int(cfg.get('bandpass', False))}_dn{int(cfg.get('denoise', False))}"
+           f"_an{int(cfg.get('ampnorm', False))}")
     n_frames = 1 + int(SR * cfg["duration_s"]) // 160
     path = os.path.join(HERE, "cache", f"{tag}_{key}.npy")
     os.makedirs(os.path.dirname(path), exist_ok=True)
@@ -366,7 +429,8 @@ def summarise():
     print("  " + "-" * 96)
     for rid, desc, sc, ci, se, sp, f1 in rows:
         dl = f"{sc-base:+.4f}" if base is not None and rid != "A0" else "—"
-        print(f"  {rid:4s} {desc[:44]:44s} {sc:8.4f} {dl:>8s} {se:6.3f} {sp:6.3f} {f1:6.3f}")
+        mark = " (add)" if rid in ADD_ROWS else ""
+        print(f"  {rid:4s} {desc[:44]:44s} {sc:8.4f} {dl:>8s} {se:6.3f} {sp:6.3f} {f1:6.3f}{mark}")
     print("  " + "-" * 96)
     for rid, why in NOT_APPLICABLE.items():
         print(f"  {rid:4s} NOT APPLICABLE — {why}")
@@ -374,15 +438,65 @@ def summarise():
     json.dump({"baseline": "A0 (M22_v2)", "split": "official_60_40_patient_independent_corrected",
                "rows": [{"row": r[0], "variable_changed": r[1], "icbhi_score_official": r[2],
                          "ci95": r[3], "se": r[4], "sp": r[5], "f1_macro": r[6],
-                         "delta_vs_A0": (round(r[2]-base, 4) if base and r[0] != "A0" else None)}
+                         "delta_vs_A0": (round(r[2]-base, 4) if base and r[0] != "A0" else None),
+                         "direction": ("add" if r[0] in ADD_ROWS else "remove")}
                         for r in rows],
+               "row_direction_note": "P1-P3 ADD a stage that BASE does not have; every other "
+                                     "row REMOVES or replaces one. Their deltas read in "
+                                     "opposite directions.",
                "not_applicable": NOT_APPLICABLE},
               open(os.path.join(HERE, "M45_ablation_table.json"), "w"), indent=2)
     print(f"\n  wrote M45_ablation_table.json")
 
 
+def selftest():
+    """Prove the three new stages do what their names say, without touching ICBHI.
+
+    A preprocessing stage that silently does nothing would show up as a delta of ~0 and be
+    reported as "the stage does not help", which is the wrong conclusion from a no-op.
+    """
+    ok = True
+    t = np.arange(int(SR * 1.0)) / SR
+
+    lo = np.sin(2 * np.pi * 500 * t).astype(np.float32)      # inside the band
+    hi = np.sin(2 * np.pi * 6000 * t).astype(np.float32)     # outside it
+    keep = float(np.std(butter_bandpass(lo)) / np.std(lo))
+    kill = float(np.std(butter_bandpass(hi)) / np.std(hi))
+    print(f"  band-pass    500 Hz kept {keep:.3f} (want ~1) | 6 kHz kept {kill:.4f} (want ~0)")
+    ok &= keep > 0.9 and kill < 0.05
+
+    quiet = (lo * 0.01).astype(np.float32)
+    peak = float(np.max(np.abs(peak_normalise(quiet))))
+    print(f"  peak norm    max |a| = {peak:.4f} (want 1.0)")
+    ok &= abs(peak - 1.0) < 1e-3
+
+    # Exponential, not squared-Gaussian: that is the distribution of power in a
+    # stationary STFT bin, and the percentile the gate keys on depends on which it is.
+    rng = np.random.default_rng(0)
+    noise = rng.exponential(1.0, (64, 100))                  # stationary noise floor
+    noise[:, 50] += 400.0                                    # one transient frame
+    gated = spectral_gate(noise)
+    floor_left = float(gated[:, :50].mean() / noise[:, :50].mean())
+    transient_left = float(gated[:, 50].mean() / noise[:, 50].mean())
+    print(f"  spectral gate  floor kept {floor_left:.3f} (want <0.6) | "
+          f"transient kept {transient_left:.3f} (want >0.9)")
+    ok &= floor_left < 0.6 and transient_left > 0.9
+
+    keys = set()
+    for r in ("A2", "P1", "P2", "P3", "P4"):
+        cfg = dict(BASE); cfg.update({k: v for k, v in ROWS[r].items() if not k.startswith("_")})
+        keys.add((f"{cfg['n_mels']}m_{cfg['duration_s']}s_{cfg['padding']}_{int(cfg['minmax'])}"
+                  f"_bp{int(cfg['bandpass'])}_dn{int(cfg['denoise'])}_an{int(cfg['ampnorm'])}"))
+    print(f"  cache keys   {len(keys)} distinct across A2/P1/P2/P3/P4 (want 5)")
+    ok &= len(keys) == 5
+
+    print("\n  SELFTEST", "PASS" if ok else "FAIL")
+    return 0 if ok else 1
+
+
 def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument("--selftest", action="store_true")
     ap.add_argument("--row", choices=list(ROWS))
     ap.add_argument("--all", action="store_true")
     ap.add_argument("--summarise", action="store_true")
@@ -392,6 +506,8 @@ def main():
                     default=os.path.join(REPO, "Asif's", "ICBHI_challenge_train_test.txt"))
     args = ap.parse_args()
 
+    if args.selftest:
+        return selftest()
     if args.summarise:
         return summarise()
     rows = corrected_split_index(args.audio_dir, args.split_file)

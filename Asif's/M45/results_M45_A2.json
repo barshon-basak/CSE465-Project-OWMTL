@@ -70,7 +70,9 @@
         34,
         10
       ]
-    ]
+    ],
+    "precision_macro": 0.3792,
+    "recall_macro": 0.3919
   },
   "efficiency": {
     "total_params": 2263160,
@@ -86,6 +88,7 @@
     "variable_changed": "- ImageNet pre-training (random init)"
   },
   "audit_notes": {
-    "efficiency_source": "total_params counted from best_M45_A2.pth; model_size_mb = params x 4 bytes (fp32), per Model_Training_Protocol.md section 3"
+    "efficiency_source": "total_params counted from best_M45_A2.pth; model_size_mb = params x 4 bytes (fp32), per Model_Training_Protocol.md section 3",
+    "metrics_source": "recomputed from confusion_matrix_raw (4x4)"
   }
 }

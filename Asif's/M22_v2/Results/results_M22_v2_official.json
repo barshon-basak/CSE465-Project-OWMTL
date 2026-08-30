@@ -1,0 +1,528 @@
+{
+  "meta": {
+    "model_id": "M22_v2_official",
+    "model_name": "MobileNetV2 + SpecAugment (published official split, verbatim)",
+    "contributor": "OWMTL team",
+    "date_completed": "2026-08-30",
+    "is_augmented": true,
+    "augmentation_method": "SpecAugment (2 freq masks <=24 bins, 2 time masks <=80 frames), training split only",
+    "notes": "PUBLISHED ICBHI SPLIT, VERBATIM (539/381 recordings; 2,756 test cycles from 49 test patients) so that the score is directly comparable to published work on this benchmark. NOT patient-independent: patients 156 and 218 have recordings in both train and test. Companion run to M22_v2, which is this same model, seed and schedule on the corrected patient-independent split; the two differ by the split and nothing else. Re-run of M22 on the CORRECTED official split. The original M22 executed a silent patient-id fallback (11 test patients / 492 cycles) while recording itself as the official 60/40 split (Model_Training_Protocol.md section 1). Architecture, optimiser, schedule, class weights, seed and every SpecAugment parameter are identical to that run; ONLY the split changed. Primary metric is icbhi_score_official with a patient-level bootstrap CI."
+  },
+  "config": {
+    "sample_rate": 16000,
+    "n_mels": 128,
+    "n_fft": 1024,
+    "hop_length": 160,
+    "win_length": 400,
+    "f_min": 50,
+    "f_max": 2000,
+    "duration_s": 8.0,
+    "batch_size": 16,
+    "num_epochs": 40,
+    "lr": 0.0005,
+    "optimizer": "Adam",
+    "scheduler": "CosineAnnealingLR",
+    "weight_decay": 0.0001,
+    "grad_clip": 5.0,
+    "architecture": "mobilenet_v2_pretrained_imagenet",
+    "dropout": 0.3,
+    "loss": "inverse_frequency_weighted_CrossEntropyLoss",
+    "seed": 42
+  },
+  "environment": {
+    "platform": "Kaggle",
+    "gpu_name": "Tesla T4",
+    "pytorch_version": "2.10.0+cu128",
+    "python_version": "3.12.13"
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "data_source": "real_audio",
+    "train_samples": 4131,
+    "test_samples": 2756,
+    "train_patients": 79,
+    "test_patients": 49,
+    "train_recordings": 539,
+    "test_recordings": 381,
+    "split_method": "official_60_40_published_verbatim_NOT_patient_independent",
+    "split_policy": "none_published_verbatim",
+    "split_file": "ICBHI_challenge_train_test.txt",
+    "patient_leakage_verified": false,
+    "is_patient_independent": false,
+    "overlap_patients_reassigned_to_train": [],
+    "overlap_patients_present_in_both": [
+      156,
+      218
+    ],
+    "comparable_to_published_icbhi_split": true
+  },
+  "efficiency": {
+    "total_params": 2228996,
+    "trainable_params": 2228996,
+    "model_size_mb": 8.74,
+    "training_time_total_s": 854.3,
+    "training_time_per_epoch_s_avg": 32.9,
+    "gpu_name": "Tesla T4",
+    "inference_time_ms_per_sample": 5.362
+  },
+  "best_epoch": {
+    "epoch": 26,
+    "primary_metric": "icbhi_score_official",
+    "primary_metric_value": 0.5641
+  },
+  "best_metrics": {
+    "accuracy": 0.5798,
+    "precision_macro": 0.4463,
+    "recall_macro": 0.4472,
+    "f1_macro": 0.4459,
+    "specificity_macro": 0.8245,
+    "icbhi_score": 0.6358,
+    "icbhi_score_official": 0.5641,
+    "icbhi_se_official": 0.4562,
+    "icbhi_sp_official": 0.6719,
+    "per_class": {
+      "Normal": {
+        "precision": 0.6962,
+        "recall": 0.6719,
+        "f1": 0.6839,
+        "specificity": 0.6066,
+        "support": 1579
+      },
+      "Crackle": {
+        "precision": 0.4946,
+        "recall": 0.5655,
+        "f1": 0.5277,
+        "specificity": 0.822,
+        "support": 649
+      },
+      "Wheeze": {
+        "precision": 0.405,
+        "recall": 0.3766,
+        "f1": 0.3903,
+        "specificity": 0.9102,
+        "support": 385
+      },
+      "Both": {
+        "precision": 0.1894,
+        "recall": 0.1748,
+        "f1": 0.1818,
+        "specificity": 0.9591,
+        "support": 143
+      }
+    },
+    "confusion_matrix_raw": [
+      [
+        1061,
+        326,
+        156,
+        36
+      ],
+      [
+        251,
+        367,
+        8,
+        23
+      ],
+      [
+        158,
+        34,
+        145,
+        48
+      ],
+      [
+        54,
+        15,
+        49,
+        25
+      ]
+    ],
+    "confusion_matrix_normalized": [
+      [
+        0.6719,
+        0.2065,
+        0.0988,
+        0.0228
+      ],
+      [
+        0.3867,
+        0.5655,
+        0.0123,
+        0.0354
+      ],
+      [
+        0.4104,
+        0.0883,
+        0.3766,
+        0.1247
+      ],
+      [
+        0.3776,
+        0.1049,
+        0.3427,
+        0.1748
+      ]
+    ],
+    "icbhi_score_official_ci95": [
+      0.5121,
+      0.6144
+    ],
+    "ci_method": "patient-level bootstrap, B=1000, 49 test patients"
+  },
+  "ablation": {
+    "ablation_group": "augmentation_effect",
+    "ablation_role": "variant",
+    "baseline_model_id": "M3_v2",
+    "variable_changed": "augmentation: SpecAugment (train only)",
+    "variables_held_constant": [
+      "backbone: mobilenet_v2_pretrained",
+      "loss: inverse_frequency_weighted_CE",
+      "optimizer: Adam",
+      "lr: 0.0005",
+      "scheduler: cosine",
+      "data_split: official_60_40_published_verbatim_NOT_patient_independent",
+      "seed: 42",
+      "preprocessing: 128mel_16kHz_8s"
+    ],
+    "known_deviations": [
+      "split policy differs from the original M22 run (reassign_to_train vs drop_from_train); the protocol section 1 policy is used here."
+    ],
+    "component_flags": {
+      "has_sound_event_head": true,
+      "has_disease_head": false,
+      "has_cross_task_consistency": false,
+      "has_cqkd_regularization": false,
+      "has_openmax_rejection": false,
+      "owl_stage": 0,
+      "compression_clusters": null,
+      "has_concept_bottleneck": false,
+      "bottleneck_type": null,
+      "concept_source": null,
+      "has_leakage_measurement": false,
+      "has_concept_intervention": false,
+      "concept_space_ood": false,
+      "fm_backbone": "none"
+    },
+    "loss_weights": {
+      "sound_event_weight": 1.0,
+      "disease_weight": null,
+      "consistency_weight": null
+    }
+  },
+  "training_history": [
+    {
+      "epoch": 1,
+      "train_loss": 1.2927150760369912,
+      "val_loss": 1.9947473332394017,
+      "train_accuracy": 0.4357298474945534,
+      "val_accuracy": 0.3904208998548621,
+      "train_f1_macro": 0.37826436152668236,
+      "val_f1_macro": 0.2994325113680722,
+      "val_icbhi_score_official": 0.3985836835741839,
+      "lr": 0.000499229333433282,
+      "epoch_time_s": 81.55356407165527
+    },
+    {
+      "epoch": 2,
+      "train_loss": 1.1275483441104672,
+      "val_loss": 1.327345639250967,
+      "train_accuracy": 0.5255386105059308,
+      "val_accuracy": 0.40493468795355586,
+      "train_f1_macro": 0.4655961601746961,
+      "val_f1_macro": 0.3636934711841216,
+      "val_icbhi_score_official": 0.430609265729092,
+      "lr": 0.0004969220851487844,
+      "epoch_time_s": 19.00687885284424
+    },
+    {
+      "epoch": 3,
+      "train_loss": 1.0635055967867446,
+      "val_loss": 1.5465761559686917,
+      "train_accuracy": 0.55119825708061,
+      "val_accuracy": 0.4448476052249637,
+      "train_f1_macro": 0.4958612141699584,
+      "val_f1_macro": 0.35504558424719523,
+      "val_icbhi_score_official": 0.44835330750940416,
+      "lr": 0.0004930924800994191,
+      "epoch_time_s": 19.13985323905945
+    },
+    {
+      "epoch": 4,
+      "train_loss": 1.03164601585704,
+      "val_loss": 1.5844653047221147,
+      "train_accuracy": 0.5698378116678771,
+      "val_accuracy": 0.4604499274310595,
+      "train_f1_macro": 0.505514672428667,
+      "val_f1_macro": 0.39042861406473106,
+      "val_icbhi_score_official": 0.47354186183032076,
+      "lr": 0.00048776412907378835,
+      "epoch_time_s": 19.40189552307129
+    },
+    {
+      "epoch": 5,
+      "train_loss": 1.0150253362674109,
+      "val_loss": 1.6252736053463337,
+      "train_accuracy": 0.5664488017429193,
+      "val_accuracy": 0.46407837445573297,
+      "train_f1_macro": 0.5181559295053525,
+      "val_f1_macro": 0.41075359990681076,
+      "val_icbhi_score_official": 0.47443721572917263,
+      "lr": 0.0004809698831278216,
+      "epoch_time_s": 19.63058042526245
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.9647731129842069,
+      "val_loss": 1.7241617569210568,
+      "train_accuracy": 0.5942870975550714,
+      "val_accuracy": 0.39985486211901305,
+      "train_f1_macro": 0.5494588009987834,
+      "val_f1_macro": 0.3710887574777978,
+      "val_icbhi_score_official": 0.4290962037317533,
+      "lr": 0.0004727516310470919,
+      "epoch_time_s": 19.9062397480011
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.9254293138194217,
+      "val_loss": 1.7006753659300258,
+      "train_accuracy": 0.6291454853546357,
+      "val_accuracy": 0.3559506531204644,
+      "train_f1_macro": 0.5834323679699365,
+      "val_f1_macro": 0.32740807369007874,
+      "val_icbhi_score_official": 0.3871036216096677,
+      "lr": 0.000463160041088523,
+      "epoch_time_s": 20.051966428756714
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.9158630935830084,
+      "val_loss": 1.4882116720772447,
+      "train_accuracy": 0.6199467441297507,
+      "val_accuracy": 0.4731494920174166,
+      "train_f1_macro": 0.5759275987182542,
+      "val_f1_macro": 0.4206038587719429,
+      "val_icbhi_score_official": 0.4877612547437884,
+      "lr": 0.0004522542485937368,
+      "epoch_time_s": 19.9077365398407
+    },
+    {
+      "epoch": 9,
+      "train_loss": 0.874464962174257,
+      "val_loss": 1.543378707229637,
+      "train_accuracy": 0.6492374727668845,
+      "val_accuracy": 0.5039912917271407,
+      "train_f1_macro": 0.6163298316999319,
+      "val_f1_macro": 0.37430472081943733,
+      "val_icbhi_score_official": 0.48590839948495623,
+      "lr": 0.0004401014914000077,
+      "epoch_time_s": 19.824888229370117
+    },
+    {
+      "epoch": 10,
+      "train_loss": 0.8393895456964645,
+      "val_loss": 1.73691355334311,
+      "train_accuracy": 0.6562575647542968,
+      "val_accuracy": 0.4259796806966618,
+      "train_f1_macro": 0.6253361951993408,
+      "val_f1_macro": 0.37081673069735416,
+      "val_icbhi_score_official": 0.43772743683961596,
+      "lr": 0.0004267766952966368,
+      "epoch_time_s": 19.870364665985107
+    },
+    {
+      "epoch": 11,
+      "train_loss": 0.8193887236244711,
+      "val_loss": 1.7064522274692795,
+      "train_accuracy": 0.6594045025417574,
+      "val_accuracy": 0.4455732946298984,
+      "train_f1_macro": 0.6310317714126747,
+      "val_f1_macro": 0.38469806047573696,
+      "val_icbhi_score_official": 0.4490947724568909,
+      "lr": 0.0004123620120825459,
+      "epoch_time_s": 19.90900492668152
+    },
+    {
+      "epoch": 12,
+      "train_loss": 0.7630508078180598,
+      "val_loss": 1.8632160621128857,
+      "train_accuracy": 0.690631808278867,
+      "val_accuracy": 0.42634252539912915,
+      "train_f1_macro": 0.6672961244363765,
+      "val_f1_macro": 0.3789044518764856,
+      "val_icbhi_score_official": 0.44983273992821027,
+      "lr": 0.00039694631307311823,
+      "epoch_time_s": 19.895343542099
+    },
+    {
+      "epoch": 13,
+      "train_loss": 0.7113919006338191,
+      "val_loss": 1.7179243224517526,
+      "train_accuracy": 0.7090292907286372,
+      "val_accuracy": 0.4045718432510885,
+      "train_f1_macro": 0.6935578847777737,
+      "val_f1_macro": 0.35238286759304,
+      "val_icbhi_score_official": 0.41958548988610606,
+      "lr": 0.0003806246411789871,
+      "epoch_time_s": 19.872659921646118
+    },
+    {
+      "epoch": 14,
+      "train_loss": 0.7083457156896764,
+      "val_loss": 1.9643440744657128,
+      "train_accuracy": 0.7046719922536916,
+      "val_accuracy": 0.420899854862119,
+      "train_f1_macro": 0.6889848858593024,
+      "val_f1_macro": 0.38226572636605477,
+      "val_icbhi_score_official": 0.4414057056211975,
+      "lr": 0.0003634976249348866,
+      "epoch_time_s": 19.864428520202637
+    },
+    {
+      "epoch": 15,
+      "train_loss": 0.6275660442948139,
+      "val_loss": 1.957093909361193,
+      "train_accuracy": 0.7312999273783588,
+      "val_accuracy": 0.43033381712626995,
+      "train_f1_macro": 0.7311085801143997,
+      "val_f1_macro": 0.3848297987280748,
+      "val_icbhi_score_official": 0.4495306117946734,
+      "lr": 0.00034567085809127237,
+      "epoch_time_s": 19.83480954170227
+    },
+    {
+      "epoch": 16,
+      "train_loss": 0.6052741605010226,
+      "val_loss": 1.8821077731415001,
+      "train_accuracy": 0.738804163640765,
+      "val_accuracy": 0.4851233671988389,
+      "train_f1_macro": 0.7374556255726541,
+      "val_f1_macro": 0.4129106123498295,
+      "val_icbhi_score_official": 0.4918298956729763,
+      "lr": 0.0003272542485937368,
+      "epoch_time_s": 19.83417582511902
+    },
+    {
+      "epoch": 17,
+      "train_loss": 0.5809176339851514,
+      "val_loss": 1.7198661329989768,
+      "train_accuracy": 0.7356572258533043,
+      "val_accuracy": 0.5054426705370102,
+      "train_f1_macro": 0.7394569504701703,
+      "val_f1_macro": 0.4137377101809437,
+      "val_icbhi_score_official": 0.5051283762079072,
+      "lr": 0.00030836134096397634,
+      "epoch_time_s": 19.790159702301025
+    },
+    {
+      "epoch": 18,
+      "train_loss": 0.5389576878798149,
+      "val_loss": 2.011070649411275,
+      "train_accuracy": 0.765916243040426,
+      "val_accuracy": 0.5693033381712627,
+      "train_f1_macro": 0.7737753710552986,
+      "val_f1_macro": 0.44144582001936045,
+      "val_icbhi_score_official": 0.5495038157464986,
+      "lr": 0.0002891086162600577,
+      "epoch_time_s": 19.858317613601685
+    },
+    {
+      "epoch": 19,
+      "train_loss": 0.48323317460447035,
+      "val_loss": 1.9882055826550038,
+      "train_accuracy": 0.7814088598402323,
+      "val_accuracy": 0.5312046444121916,
+      "train_f1_macro": 0.7939160991151626,
+      "val_f1_macro": 0.4253270679787219,
+      "val_icbhi_score_official": 0.5197158112288356,
+      "lr": 0.0002696147739319612,
+      "epoch_time_s": 19.849888563156128
+    },
+    {
+      "epoch": 20,
+      "train_loss": 0.4616524879420476,
+      "val_loss": 1.9351534229447775,
+      "train_accuracy": 0.7952069716775599,
+      "val_accuracy": 0.5794629898403484,
+      "train_f1_macro": 0.8081362136557271,
+      "val_f1_macro": 0.4535231906872102,
+      "val_icbhi_score_official": 0.5579375759692179,
+      "lr": 0.00024999999999999995,
+      "epoch_time_s": 19.874030590057373
+    },
+    {
+      "epoch": 21,
+      "train_loss": 0.4403044289955069,
+      "val_loss": 1.8043576621481574,
+      "train_accuracy": 0.8022270636649722,
+      "val_accuracy": 0.52322206095791,
+      "train_f1_macro": 0.8187740240671353,
+      "val_f1_macro": 0.4256482340129348,
+      "val_icbhi_score_official": 0.5250787873765862,
+      "lr": 0.00023038522606803874,
+      "epoch_time_s": 19.89630436897278
+    },
+    {
+      "epoch": 22,
+      "train_loss": 0.43657756075389276,
+      "val_loss": 2.079240746860337,
+      "train_accuracy": 0.8109416606148633,
+      "val_accuracy": 0.5761973875181422,
+      "train_f1_macro": 0.8246397430498303,
+      "val_f1_macro": 0.45338092095094795,
+      "val_icbhi_score_official": 0.5604953071940932,
+      "lr": 0.0002108913837399423,
+      "epoch_time_s": 19.873278856277466
+    },
+    {
+      "epoch": 23,
+      "train_loss": 0.38193602141428445,
+      "val_loss": 2.1826664319745817,
+      "train_accuracy": 0.8191721132897604,
+      "val_accuracy": 0.5620464441219158,
+      "train_f1_macro": 0.8400919622647073,
+      "val_f1_macro": 0.42572884542931566,
+      "val_icbhi_score_official": 0.5416565553733879,
+      "lr": 0.0001916386590360236,
+      "epoch_time_s": 19.84968328475952
+    },
+    {
+      "epoch": 24,
+      "train_loss": 0.3606408535875064,
+      "val_loss": 2.176242724720643,
+      "train_accuracy": 0.8358750907770516,
+      "val_accuracy": 0.5420899854862119,
+      "train_f1_macro": 0.8550483170240484,
+      "val_f1_macro": 0.4385785979612004,
+      "val_icbhi_score_official": 0.5394900034060037,
+      "lr": 0.0001727457514062631,
+      "epoch_time_s": 19.922585487365723
+    },
+    {
+      "epoch": 25,
+      "train_loss": 0.3456798511248644,
+      "val_loss": 2.4153717410222173,
+      "train_accuracy": 0.8458000484144275,
+      "val_accuracy": 0.5856313497822931,
+      "train_f1_macro": 0.8627512742620304,
+      "val_f1_macro": 0.427691462033649,
+      "val_icbhi_score_official": 0.5592109263307763,
+      "lr": 0.00015432914190872753,
+      "epoch_time_s": 19.894331216812134
+    },
+    {
+      "epoch": 26,
+      "train_loss": 0.32960410367429643,
+      "val_loss": 2.6734125472453836,
+      "train_accuracy": 0.8576615831517792,
+      "val_accuracy": 0.5798258345428157,
+      "train_f1_macro": 0.8721107458263457,
+      "val_f1_macro": 0.44591500043372484,
+      "val_icbhi_score_official": 0.5640944792069661,
+      "lr": 0.00013650237506511326,
+      "epoch_time_s": 19.89992642402649
+    }
+  ],
+  "audit_notes": {
+    "checkpoint_not_in_repo": "This run's own best_model.pth and training figures are NOT committed. The best_model.pth beside this file (md5 8a03582c347e...) belongs to the CORRECTED-split run (results_M22_v2.json), not to this one. Loading it as this run's weights would silently score the wrong model. What is committed and sufficient for every claim made from this run is preds_M22_v2_official.csv plus the confusion matrix in this file; the run cannot be re-scored from a checkpoint without re-training it."
+  }
+}

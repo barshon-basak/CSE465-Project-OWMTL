@@ -1,10 +1,34 @@
 """
 Shared audio preprocessing for the OWMTL project.
 
-This is the pipeline every member imports, so the seven preprocessing stages are
-named explicitly here and echoed into each run's results JSON. The Aug 8
-assignment marks "apply ALL the preprocessing techniques" as a separate item —
-`PREPROCESSING_STAGES` is the list to put on that slide.
+⚠️ READ THIS BEFORE CITING OR RUNNING ANYTHING HERE (added 2026-08-30)
+
+    This module is a REFERENCE implementation. It is NOT the chain that produced
+    the committed results. An audit on 2026-08-30 found that nothing in the repo
+    imports it — every model script re-implements its own log-mel — and that its
+    defaults disagree with what the runs actually did:
+
+        stage            this module              what the runs did
+        padding          reflect (or tile)        np.tile (wrap), always
+        spectrogram      power_to_db, no rescale  + per-sample min-max to [0,1]
+        band-pass        ON, stage 3              never applied until M45 row P1
+        denoising        absent                   added as M45 row P2
+
+    So a model trained through this module would not reproduce any number in the
+    paper, and describing the paper's pipeline from this file would misdescribe
+    it. The AS-RUN chain is `Asif's/M45/m45_ablation.py::log_mel`, whose stages
+    are individually ablated in `M45_ablation_table.json` (rows A5, A6, P1-P5).
+
+    Kept, not deleted: the stage vocabulary and AudioConfig below are the
+    project's written specification, and the gap between the specification and
+    the runs is itself recorded in the paper's preprocessing section. If this
+    module is ever adopted, its defaults must be reconciled with the as-run chain
+    FIRST, or the new runs will silently disagree with the committed table.
+
+The seven preprocessing stages are named explicitly here so they can be echoed
+into each run's results JSON. The Aug 8 assignment marks "apply ALL the
+preprocessing techniques" as a separate item — `PREPROCESSING_STAGES` is the list
+to put on that slide.
 
     1. resample          -> mono, 16 kHz
     2. cycle segmentation-> slice [start, end) from the annotation file
