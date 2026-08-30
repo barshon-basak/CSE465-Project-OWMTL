@@ -1,0 +1,63 @@
+{
+  "table": "M48 Tier A \u2014 seed band, selection criterion, feature-extractor null",
+  "baseline": "M45 A0 (M22_v2) = 0.5602 on the corrected official 60/40 split",
+  "generated_utc": "2026-08-30T11:14:45Z",
+  "rows_completed": [
+    "A0_s1",
+    "A0_s2",
+    "A0_s42",
+    "A24"
+  ],
+  "seed_band": {
+    "n_seeds": 3,
+    "seeds": [
+      42,
+      1,
+      2
+    ],
+    "scores": [
+      0.554,
+      0.5681,
+      0.5657
+    ],
+    "mean": 0.5626,
+    "sd": 0.0075,
+    "range": 0.0141,
+    "m45_A0_reference": 0.5602,
+    "reading": "Any M45 delta smaller than this spread is not distinguishable from run-to-run noise, whatever its sign."
+  },
+  "A7_selection_criterion": {
+    "A0_s1": {
+      "epochs_apart": 19,
+      "by_score": 0.5681,
+      "by_loss": 0.4666,
+      "delta": 0.1015
+    },
+    "A0_s2": {
+      "epochs_apart": 17,
+      "by_score": 0.5657,
+      "by_loss": 0.4665,
+      "delta": 0.0992
+    },
+    "A0_s42": {
+      "epochs_apart": 15,
+      "by_score": 0.554,
+      "by_loss": 0.4788,
+      "delta": 0.0752
+    },
+    "A24": {
+      "epochs_apart": 0,
+      "by_score": 0.4979,
+      "by_loss": 0.4979,
+      "delta": 0.0
+    }
+  },
+  "A24_feature_extractor_null": {
+    "score": 0.4979,
+    "vs_A0_m45": -0.0623,
+    "m45_A2_random_init": 0.4999,
+    "m45_A4_frozen_pretrained": 0.4595,
+    "reading": "A4 froze a PRETRAINED backbone, so its -0.1007 mixes the value of fine-tuning with the value of pretraining. This row freezes a RANDOM one and separates them."
+  },
+  "selection_caveat": "m45_ablation.py monitors the TEST set each epoch; there is no separate validation split. 'select on loss' therefore means test loss. Optimistic, and equally so for every row, so the seed band and the A2+A4 delta are unaffected \u2014 but A7 must be reported as two criteria on one monitoring set, never as a clean train/val/test result."
+}

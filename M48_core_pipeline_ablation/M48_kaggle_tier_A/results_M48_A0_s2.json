@@ -1,0 +1,496 @@
+{
+  "meta": {
+    "model_id": "M48_A0_s2",
+    "row": "A0_s2",
+    "variable_changed": "A0 baseline, seed 2 (replicate)",
+    "baseline_model_id": "M22_v2",
+    "date_completed": "2026-08-30",
+    "is_augmented": true,
+    "notes": "M48 Tier A row. Harness reuses Asif's/M45/m45_ablation.py for data, preprocessing, caching and metrics without modification."
+  },
+  "config": {
+    "n_mels": 128,
+    "duration_s": 8.0,
+    "padding": "wrap",
+    "minmax": true,
+    "bandpass": false,
+    "denoise": false,
+    "ampnorm": false,
+    "pretrained": true,
+    "freeze": false,
+    "class_weighted": true,
+    "specaug": true,
+    "lr": 0.0005,
+    "batch_size": 16,
+    "epochs": 40,
+    "dropout": 0.3,
+    "seed": 2
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "data_source": "real_audio",
+    "split_method": "official_60_40_patient_independent_corrected",
+    "train_samples": 4251,
+    "test_samples": 2636,
+    "test_patients": 47
+  },
+  "selection_caveat": "m45_ablation.py monitors the TEST set each epoch; there is no separate validation split. 'select on loss' therefore means test loss. Optimistic, and equally so for every row, so the seed band and the A2+A4 delta are unaffected \u2014 but A7 must be reported as two criteria on one monitoring set, never as a clean train/val/test result.",
+  "best_epoch": {
+    "epoch": 21,
+    "primary_metric": "icbhi_score_official",
+    "primary_metric_value": 0.5657
+  },
+  "best_metrics": {
+    "epoch": 21,
+    "icbhi_score_official": 0.5657,
+    "icbhi_score_official_ci95": [
+      0.5182,
+      0.6093
+    ],
+    "icbhi_se_official": 0.434,
+    "icbhi_sp_official": 0.6974,
+    "accuracy": 0.5899,
+    "f1_macro": 0.4365,
+    "confusion_matrix_raw": [
+      [
+        1088,
+        269,
+        178,
+        25
+      ],
+      [
+        296,
+        288,
+        13,
+        20
+      ],
+      [
+        134,
+        39,
+        167,
+        33
+      ],
+      [
+        30,
+        19,
+        25,
+        12
+      ]
+    ]
+  },
+  "selection": {
+    "by_official_score": {
+      "epoch": 21,
+      "icbhi_score_official": 0.5657,
+      "icbhi_score_official_ci95": [
+        0.5182,
+        0.6093
+      ],
+      "icbhi_se_official": 0.434,
+      "icbhi_sp_official": 0.6974,
+      "accuracy": 0.5899,
+      "f1_macro": 0.4365,
+      "confusion_matrix_raw": [
+        [
+          1088,
+          269,
+          178,
+          25
+        ],
+        [
+          296,
+          288,
+          13,
+          20
+        ],
+        [
+          134,
+          39,
+          167,
+          33
+        ],
+        [
+          30,
+          19,
+          25,
+          12
+        ]
+      ]
+    },
+    "by_min_eval_loss": {
+      "epoch": 4,
+      "icbhi_score_official": 0.4665,
+      "icbhi_score_official_ci95": [
+        0.4068,
+        0.5295
+      ],
+      "icbhi_se_official": 0.4991,
+      "icbhi_sp_official": 0.434,
+      "accuracy": 0.4605,
+      "f1_macro": 0.3794,
+      "confusion_matrix_raw": [
+        [
+          677,
+          451,
+          305,
+          127
+        ],
+        [
+          161,
+          356,
+          23,
+          77
+        ],
+        [
+          64,
+          46,
+          147,
+          116
+        ],
+        [
+          8,
+          18,
+          26,
+          34
+        ]
+      ]
+    },
+    "epochs_apart": 17,
+    "A7_delta_score_minus_loss": 0.0992
+  },
+  "training_history": [
+    {
+      "epoch": 1,
+      "train_loss": 1.25354,
+      "train_accuracy_augmented": 0.45801,
+      "eval_loss": 1.54647,
+      "eval_accuracy": 0.41426,
+      "icbhi_score_official": 0.44717
+    },
+    {
+      "epoch": 2,
+      "train_loss": 1.11382,
+      "train_accuracy_augmented": 0.52082,
+      "eval_loss": 1.43364,
+      "eval_accuracy": 0.42071,
+      "icbhi_score_official": 0.44383
+    },
+    {
+      "epoch": 3,
+      "train_loss": 1.06605,
+      "train_accuracy_augmented": 0.55305,
+      "eval_loss": 1.6188,
+      "eval_accuracy": 0.43513,
+      "icbhi_score_official": 0.44202
+    },
+    {
+      "epoch": 4,
+      "train_loss": 1.02557,
+      "train_accuracy_augmented": 0.58104,
+      "eval_loss": 1.2814,
+      "eval_accuracy": 0.46055,
+      "icbhi_score_official": 0.46652
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.98828,
+      "train_accuracy_augmented": 0.60104,
+      "eval_loss": 1.48544,
+      "eval_accuracy": 0.39871,
+      "icbhi_score_official": 0.42942
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.9608,
+      "train_accuracy_augmented": 0.60903,
+      "eval_loss": 1.532,
+      "eval_accuracy": 0.44044,
+      "icbhi_score_official": 0.45372
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.92128,
+      "train_accuracy_augmented": 0.61727,
+      "eval_loss": 1.63532,
+      "eval_accuracy": 0.52693,
+      "icbhi_score_official": 0.52204
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.84316,
+      "train_accuracy_augmented": 0.65161,
+      "eval_loss": 1.73668,
+      "eval_accuracy": 0.44082,
+      "icbhi_score_official": 0.45764
+    },
+    {
+      "epoch": 9,
+      "train_loss": 0.8506,
+      "train_accuracy_augmented": 0.6382,
+      "eval_loss": 1.44567,
+      "eval_accuracy": 0.50114,
+      "icbhi_score_official": 0.48914
+    },
+    {
+      "epoch": 10,
+      "train_loss": 0.81274,
+      "train_accuracy_augmented": 0.65984,
+      "eval_loss": 1.47438,
+      "eval_accuracy": 0.51328,
+      "icbhi_score_official": 0.51799
+    },
+    {
+      "epoch": 11,
+      "train_loss": 0.7731,
+      "train_accuracy_augmented": 0.67937,
+      "eval_loss": 1.53082,
+      "eval_accuracy": 0.52466,
+      "icbhi_score_official": 0.5204
+    },
+    {
+      "epoch": 12,
+      "train_loss": 0.72333,
+      "train_accuracy_augmented": 0.69631,
+      "eval_loss": 1.71129,
+      "eval_accuracy": 0.44879,
+      "icbhi_score_official": 0.47807
+    },
+    {
+      "epoch": 13,
+      "train_loss": 0.70434,
+      "train_accuracy_augmented": 0.70689,
+      "eval_loss": 1.53599,
+      "eval_accuracy": 0.47155,
+      "icbhi_score_official": 0.46947
+    },
+    {
+      "epoch": 14,
+      "train_loss": 0.66363,
+      "train_accuracy_augmented": 0.72571,
+      "eval_loss": 1.7831,
+      "eval_accuracy": 0.49621,
+      "icbhi_score_official": 0.49679
+    },
+    {
+      "epoch": 15,
+      "train_loss": 0.61789,
+      "train_accuracy_augmented": 0.74218,
+      "eval_loss": 1.88734,
+      "eval_accuracy": 0.4541,
+      "icbhi_score_official": 0.47722
+    },
+    {
+      "epoch": 16,
+      "train_loss": 0.59107,
+      "train_accuracy_augmented": 0.73818,
+      "eval_loss": 2.02608,
+      "eval_accuracy": 0.49583,
+      "icbhi_score_official": 0.50094
+    },
+    {
+      "epoch": 17,
+      "train_loss": 0.54252,
+      "train_accuracy_augmented": 0.75088,
+      "eval_loss": 1.68248,
+      "eval_accuracy": 0.52959,
+      "icbhi_score_official": 0.52154
+    },
+    {
+      "epoch": 18,
+      "train_loss": 0.50665,
+      "train_accuracy_augmented": 0.76688,
+      "eval_loss": 1.75975,
+      "eval_accuracy": 0.53983,
+      "icbhi_score_official": 0.54317
+    },
+    {
+      "epoch": 19,
+      "train_loss": 0.48789,
+      "train_accuracy_augmented": 0.78123,
+      "eval_loss": 1.94621,
+      "eval_accuracy": 0.478,
+      "icbhi_score_official": 0.47709
+    },
+    {
+      "epoch": 20,
+      "train_loss": 0.44896,
+      "train_accuracy_augmented": 0.80075,
+      "eval_loss": 2.03209,
+      "eval_accuracy": 0.51517,
+      "icbhi_score_official": 0.51628
+    },
+    {
+      "epoch": 21,
+      "train_loss": 0.42647,
+      "train_accuracy_augmented": 0.80099,
+      "eval_loss": 1.87081,
+      "eval_accuracy": 0.58991,
+      "icbhi_score_official": 0.56573
+    },
+    {
+      "epoch": 22,
+      "train_loss": 0.43144,
+      "train_accuracy_augmented": 0.82075,
+      "eval_loss": 2.07358,
+      "eval_accuracy": 0.50038,
+      "icbhi_score_official": 0.50854
+    },
+    {
+      "epoch": 23,
+      "train_loss": 0.35395,
+      "train_accuracy_augmented": 0.84263,
+      "eval_loss": 1.94914,
+      "eval_accuracy": 0.55311,
+      "icbhi_score_official": 0.52685
+    },
+    {
+      "epoch": 24,
+      "train_loss": 0.34335,
+      "train_accuracy_augmented": 0.84968,
+      "eval_loss": 2.27887,
+      "eval_accuracy": 0.51366,
+      "icbhi_score_official": 0.51572
+    },
+    {
+      "epoch": 25,
+      "train_loss": 0.3249,
+      "train_accuracy_augmented": 0.85862,
+      "eval_loss": 2.52024,
+      "eval_accuracy": 0.5148,
+      "icbhi_score_official": 0.51495
+    },
+    {
+      "epoch": 26,
+      "train_loss": 0.31655,
+      "train_accuracy_augmented": 0.85933,
+      "eval_loss": 2.40922,
+      "eval_accuracy": 0.55311,
+      "icbhi_score_official": 0.53665
+    },
+    {
+      "epoch": 27,
+      "train_loss": 0.2766,
+      "train_accuracy_augmented": 0.8812,
+      "eval_loss": 2.46312,
+      "eval_accuracy": 0.52959,
+      "icbhi_score_official": 0.52918
+    },
+    {
+      "epoch": 28,
+      "train_loss": 0.28563,
+      "train_accuracy_augmented": 0.88897,
+      "eval_loss": 2.6166,
+      "eval_accuracy": 0.56677,
+      "icbhi_score_official": 0.54286
+    },
+    {
+      "epoch": 29,
+      "train_loss": 0.22383,
+      "train_accuracy_augmented": 0.90661,
+      "eval_loss": 2.73024,
+      "eval_accuracy": 0.5607,
+      "icbhi_score_official": 0.5471
+    },
+    {
+      "epoch": 30,
+      "train_loss": 0.2231,
+      "train_accuracy_augmented": 0.90567,
+      "eval_loss": 2.61406,
+      "eval_accuracy": 0.57549,
+      "icbhi_score_official": 0.54951
+    },
+    {
+      "epoch": 31,
+      "train_loss": 0.20472,
+      "train_accuracy_augmented": 0.91202,
+      "eval_loss": 2.64885,
+      "eval_accuracy": 0.58536,
+      "icbhi_score_official": 0.55972
+    },
+    {
+      "epoch": 32,
+      "train_loss": 0.19594,
+      "train_accuracy_augmented": 0.92331,
+      "eval_loss": 2.72417,
+      "eval_accuracy": 0.58687,
+      "icbhi_score_official": 0.55855
+    },
+    {
+      "epoch": 33,
+      "train_loss": 0.19808,
+      "train_accuracy_augmented": 0.91555,
+      "eval_loss": 2.58497,
+      "eval_accuracy": 0.58763,
+      "icbhi_score_official": 0.56063
+    },
+    {
+      "epoch": 34,
+      "train_loss": 0.21246,
+      "train_accuracy_augmented": 0.92896,
+      "eval_loss": 2.72075,
+      "eval_accuracy": 0.57018,
+      "icbhi_score_official": 0.54949
+    },
+    {
+      "epoch": 35,
+      "train_loss": 0.17797,
+      "train_accuracy_augmented": 0.92966,
+      "eval_loss": 2.79874,
+      "eval_accuracy": 0.55577,
+      "icbhi_score_official": 0.53818
+    },
+    {
+      "epoch": 36,
+      "train_loss": 0.16133,
+      "train_accuracy_augmented": 0.93602,
+      "eval_loss": 2.72004,
+      "eval_accuracy": 0.57132,
+      "icbhi_score_official": 0.54613
+    },
+    {
+      "epoch": 37,
+      "train_loss": 0.15667,
+      "train_accuracy_augmented": 0.9379,
+      "eval_loss": 2.7179,
+      "eval_accuracy": 0.56715,
+      "icbhi_score_official": 0.54246
+    },
+    {
+      "epoch": 38,
+      "train_loss": 0.16726,
+      "train_accuracy_augmented": 0.93672,
+      "eval_loss": 2.71263,
+      "eval_accuracy": 0.57398,
+      "icbhi_score_official": 0.55443
+    },
+    {
+      "epoch": 39,
+      "train_loss": 0.16308,
+      "train_accuracy_augmented": 0.93531,
+      "eval_loss": 2.83203,
+      "eval_accuracy": 0.5698,
+      "icbhi_score_official": 0.54802
+    },
+    {
+      "epoch": 40,
+      "train_loss": 0.13904,
+      "train_accuracy_augmented": 0.94284,
+      "eval_loss": 2.84291,
+      "eval_accuracy": 0.57132,
+      "icbhi_score_official": 0.55175
+    }
+  ],
+  "efficiency": {
+    "total_params": 2228996,
+    "trainable_params": 2228996,
+    "training_time_total_s": 1042.6,
+    "s_per_epoch": 26.06,
+    "gpu_name": "Tesla T4"
+  },
+  "ablation": {
+    "ablation_group": "M48_seed_band_and_selection_criterion",
+    "ablation_role": "variant",
+    "baseline_model_id": "M22_v2",
+    "variable_changed": "A0 baseline, seed 2 (replicate)"
+  }
+}
