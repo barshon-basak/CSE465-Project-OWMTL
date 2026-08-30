@@ -1,0 +1,37 @@
+  test cycles 2636 | rows to run: ['P4']
+
+==========================================================================
+  P4: zero-padding instead of cyclic tiling
+==========================================================================
+    building cache train_128m_8.0s_zero_1.npy ...
+      1500/4251
+      3000/4251
+    building cache test_128m_8.0s_zero_1.npy ...
+      1500/2636
+    ep 10/40  official 0.4182  (best 0.5072)
+    ep 20/40  official 0.4946  (best 0.5072)
+    ep 30/40  official 0.4932  (best 0.5291)
+    ep 40/40  official 0.5031  (best 0.5291)
+    -> official 0.5291 [0.4775, 0.5812]  Se 0.4684 Sp 0.5897  (875s)
+
+====================================================================================================
+  M45 — ABLATION TABLE (baseline A0 = M22_v2, corrected official split)
+====================================================================================================
+  row  variable changed                             official    delta     Se     Sp     F1
+  ------------------------------------------------------------------------------------------------
+  A0   baseline (M22_v2): MobileNetV2 + SpecAugment   0.5602        —  0.409  0.712  0.414
+  A1   - SpecAugment (M3_v2)                          0.5200  -0.0402  0.427  0.614  0.399
+  A2   - ImageNet pre-training (random init)          0.4999  -0.0603  0.374  0.626  0.378
+  A3   - class-weighted loss (plain CE)               0.5497  -0.0105  0.427  0.672  0.429
+  A4   frozen backbone, classifier only               0.4595  -0.1007  0.435  0.484  0.337
+  A5   64 mels instead of 128                         0.5427  -0.0175  0.424  0.661  0.404
+  A6   4 s cycles instead of 8 s                      0.5224  -0.0378  0.495  0.549  0.406
+  P4   zero-padding instead of cyclic tiling          0.5291  -0.0311  0.468  0.590  0.384
+  P5   - per-spectrogram min-max normalisation        0.5539  -0.0063  0.414  0.694  0.413
+  ------------------------------------------------------------------------------------------------
+  P1   NOT APPLICABLE — band-pass filter — never implemented; the mel fmin/fmax bounds the band implicitly
+  P2   NOT APPLICABLE — denoising — never implemented in this pipeline
+  P3   NOT APPLICABLE — amplitude normalisation — never implemented (per-spectrogram min-max is row P5)
+====================================================================================================
+
+  wrote M45_ablation_table.json

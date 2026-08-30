@@ -54,7 +54,11 @@
 | M35_v2 | Physics loss (re-run) | Barshon | 🔴 broken (best epoch 1) | Official 0.6719, regressed |
 | M36 | Multistage distillation | Barshon | 🔴 collapsed (Se=0.09) | Official 0.5052 |
 | M37 | Audio LoRA (PEFT on CNN) | Barshon | ✅ real | Official 0.6753, 0.23% params |
-| M37_v2 | LoRA on AST | Barshon | ⚠️ not established | — |
+| M37_v2 | LoRA — **on the M2 CNN, not on an AST** | Barshon | ⚠️ not established; title misleading | — |
+| M40 | ViT-B/16 transformer backbone | Barshon | 🔴 collapsed to all-Normal (Se=0) | 0.4994/0.5000 is the degenerate 0.5; real epochs peaked ~0.42 |
+| M41 | Swin-T transformer backbone (supersedes M23) | Farhana | ✅ real (below baseline) | Official 0.5304 clean / 0.5291 SpecAug — best transformer |
+| M42 | DeiT-S transformer backbone | Sami | ✅ real (below baseline) | Official 0.5149 clean / 0.4981 SpecAug |
+| M43 | AST transformer backbone (closes the M4 hole) | Asif | 🟡 notebook ready, not run | `M40_M43_transformers/M43_AST_kaggle.ipynb` (Kaggle: 1212 patches need 16 GB) |
 | M24-CB | Class-balancing augmentation | Barshon | ✅ real | SpecAug on Healthy/URTI |
 | M21 | Curriculum (SNR pacing) | Barshon | 🔴 implausible (metrics=1.0) | train/test leak suspected |
 | M28 | Master experiment merge | Barshon | 🟡 tooling | merges audit-clean JSONs |

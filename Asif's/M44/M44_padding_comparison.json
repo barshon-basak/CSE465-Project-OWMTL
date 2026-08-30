@@ -1,0 +1,23 @@
+{
+  "comparison": "attribution under wrap-padding (A0/M22_v2) vs zero-padding (P4)",
+  "split": "official_60_40_patient_independent_corrected",
+  "n_cycles_analysed": 400,
+  "official_icbhi": {
+    "A0_wrap": 0.5602,
+    "P4_zero": 0.5291,
+    "delta": -0.0311
+  },
+  "padding_attention": {
+    "uniform_baseline": 0.6792,
+    "A0_wrap": 0.5938,
+    "P4_zero": 0.1013,
+    "reading": "The wrap-padded model places 59.4% of its attribution on padded material \u2014 audio it manufactured by tiling \u2014 against a 67.9% uniform share. The zero-padded model places 10.1% on its padding, correctly ignoring silence. So roughly six times as much of the baseline's evidence comes from copies rather than from the recorded cycle."
+  },
+  "band_pointing": {
+    "A0_wrap": -0.0534,
+    "P4_zero": -0.0781,
+    "reading": "Both models attend LESS to the 100-1000 Hz wheeze band when a wheeze is present, and zero-padding does not fix it (-0.053 -> -0.078). The backwards contrast is not a padding artefact."
+  },
+  "conclusion": "Wrap-padding buys +0.031 official ICBHI and costs attribution quality: 59% of the baseline's evidence lands on tiled copies, and M44's tiling measure shows those copies are NOT treated equivalently (mean r=0.098). Zero-padding produces a cleaner-attending model that scores lower. KEEP wrap-padding as the default \u2014 it is field-standard on ICBHI and it wins on the reportable metric \u2014 but the paper should state that the gain is partly attributable to padding structure rather than to respiratory acoustics. The backwards wheeze-band contrast survives both schemes and is therefore a property of the model, not of the padding.",
+  "open": "A fade-in/out tiling variant, used by some published ICBHI implementations to avoid seam discontinuities, was not tested. It is the obvious third arm."
+}

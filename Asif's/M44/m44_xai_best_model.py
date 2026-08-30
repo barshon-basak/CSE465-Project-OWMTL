@@ -66,6 +66,8 @@ import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.abspath(os.path.join(HERE, "..", ".."))
 CKPT = os.path.join(REPO, "Asif's", "M22_v2", "Results", "best_model.pth")
+PADDING = "wrap"      # overridden by --padding; must match how the model was trained
+TAG = "M22_v2"        # overridden by --tag; names the output files
 CLASSES = ["Normal", "Crackle", "Wheeze", "Both"]
 LABEL_OF = {(0, 0): 0, (1, 0): 1, (0, 1): 2, (1, 1): 3}
 N_MELS, N_FRAMES, SR = 128, 801, 16000
@@ -120,7 +122,11 @@ def log_mel(wav, start, end):
     if len(a) == 0:
         # Empty decode is a failed read, not a silent zero cycle.
         raise RuntimeError(f"empty audio decoded from {wav}")
-    a = np.tile(a, math.ceil(n / len(a)))[:n] if len(a) < n else a[:n]
+    if len(a) < n:
+        a = (np.tile(a, math.ceil(n / len(a)))[:n] if PADDING == "wrap"
+             else np.pad(a, (0, n - len(a))))          # zero-pad variant
+    else:
+        a = a[:n]
     m = librosa.feature.melspectrogram(y=a, sr=SR, n_mels=N_MELS, n_fft=1024,
                                        hop_length=160, win_length=400, fmin=50,
                                        fmax=2000, power=2.0)
@@ -139,6 +145,7 @@ def load_model(device):
 
     raw = torch.load(CKPT, map_location="cpu", weights_only=False)
     sd = raw["model_state"]
+    # ablation checkpoints store the state under the same key, so this loads either
     mean = torch.tensor([0.485, 0.456, 0.406]).view(1, 3, 1, 1)
     std = torch.tensor([0.229, 0.224, 0.225]).view(1, 3, 1, 1)
 
@@ -247,6 +254,25 @@ def tiling_consistency(cam, dur_s):
     return float(np.corrcoef(a, b)[0, 1])
 
 
+def padding_attention(cam, dur_s):
+    """Share of attribution mass falling BEYOND the first (real) cycle.
+
+    Every ICBHI cycle is shorter than the 8 s input, so everything after `dur_s` is
+    padding — tiled repeats under `wrap`, silence under `zero`. This is the one measure
+    that compares the two schemes directly: how much of the model's attention lands on
+    material it manufactured rather than recorded. A model reading only the real cycle
+    scores ~0; uniform attribution scores 1 - dur_s/8.
+    """
+    cut = int(round(dur_s * SR / 160))
+    if cut < 10 or cut >= N_FRAMES:
+        return None, None
+    prof = cam.sum(axis=0)
+    tot = prof.sum()
+    if tot <= 0:
+        return None, None
+    return float(prof[cut:].sum() / tot), float(1.0 - cut / N_FRAMES)
+
+
 def patient_bootstrap_diff(vals_a, pid_a, vals_b, pid_b, n_boot=2000, seed=42):
     """CI on mean(a) - mean(b), resampling patients within each group."""
     rng = np.random.default_rng(seed)
@@ -316,7 +342,15 @@ def main():
     ap.add_argument("--n_analyse", type=int, default=400,
                     help="cycles used for the quantitative measures")
     ap.add_argument("--seed", type=int, default=42)
+    ap.add_argument("--ckpt", default=None, help="analyse a different checkpoint")
+    ap.add_argument("--padding", choices=["wrap", "zero"], default="wrap",
+                    help="MUST match how that checkpoint was trained")
+    ap.add_argument("--tag", default="M22_v2", help="names the output files")
     args = ap.parse_args()
+    global CKPT, PADDING, TAG
+    if args.ckpt:
+        CKPT = args.ckpt
+    PADDING, TAG = args.padding, args.tag
 
     import torch
     import torch.nn.functional as F
@@ -353,7 +387,9 @@ def main():
         recs.append({"i": int(i), "true": r["label"], "pred": pred,
                      "p": float(p[pred]), "pid": r["patient_id"], "dur": r["dur"],
                      "band": band_mass(cam, mel_f, *WHEEZE_BAND),
-                     "tile": tiling_consistency(cam, r["dur"])})
+                     "tile": tiling_consistency(cam, r["dur"]),
+                     "pad_attn": padding_attention(cam, r["dur"])[0],
+                     "pad_uniform": padding_attention(cam, r["dur"])[1]})
         if (n + 1) % 100 == 0:
             print(f"    {n+1}/{len(sel)}")
 
@@ -391,6 +427,24 @@ def main():
                     "partly keying on position within the 8 s window, not on the sound")
     print(f"    verdict: {tile_verdict}")
 
+    pa = np.array([r["pad_attn"] for r in recs if r["pad_attn"] is not None])
+    pu = np.array([r["pad_uniform"] for r in recs if r["pad_attn"] is not None])
+    print("\n" + "-" * 76)
+    print(f"  (c) PADDING ATTENTION — attribution mass beyond the real cycle "
+          f"[{PADDING}-padding]")
+    print("-" * 76)
+    print(f"    observed          {pa.mean():.4f}")
+    print(f"    uniform baseline  {pu.mean():.4f}   (padding is this share of the input)")
+    print(f"    ratio             {pa.mean()/pu.mean():.3f}  "
+          f"({'over' if pa.mean() > pu.mean() else 'under'}-attends the padded region)")
+    pad_verdict = ("the model attends to padding MORE than its share of the input — "
+                   "attribution is partly driven by manufactured signal"
+                   if pa.mean() > pu.mean() * 1.05 else
+                   "the model attends to padding LESS than its share of the input"
+                   if pa.mean() < pu.mean() * 0.95 else
+                   "padding attention is proportional to its share of the input")
+    print(f"    verdict: {pad_verdict}")
+
     # ---- figure: one correct example per class + one misclassification ----
     print("\n  building the panel figure ...")
     examples = []
@@ -407,7 +461,7 @@ def main():
         e["spec"] = x[0]
         e["cam"] = grad_cam(model, x, e["pred"], dev)
         e["occ"] = occlusion(model, x, e["pred"], dev)
-    panel_figure(examples, mel_f, os.path.join(HERE, "M44_xai_panels.png"))
+    panel_figure(examples, mel_f, os.path.join(HERE, f"M44_xai_panels_{TAG}.png"))
 
     doc = {
         "meta": {"model_id": "M44", "model_name": "Interpretability analysis (XAI)",
@@ -444,14 +498,23 @@ def main():
             "median_r": round(float(np.median(tiles)), 4),
             "fraction_above_0.5": round(float((tiles > 0.5).mean()), 4),
             "verdict": tile_verdict},
+        "padding_attention": {
+            "padding_scheme": PADDING,
+            "observed_mean": round(float(pa.mean()), 4),
+            "uniform_baseline_mean": round(float(pu.mean()), 4),
+            "ratio": round(float(pa.mean() / pu.mean()), 4),
+            "n": int(len(pa)),
+            "verdict": pad_verdict,
+            "note": "Share of Grad-CAM mass after the real cycle ends. Directly "
+                    "comparable between the wrap-padded and zero-padded models."},
         "interpretation_guard": (
             "This is evidence about WHERE THE MODEL LOOKS, not clinical validation. This "
             "project measured clinician-vs-ICBHI agreement at kappa 0.035 on crackles (N9) "
             "and found task adaptation degrades 13/14 acoustic concepts (N1). Attributions "
             "aligned to labels of that reliability cannot certify clinical reasoning."),
-        "figure": "M44_xai_panels.png",
+        "figure": f"M44_xai_panels_{TAG}.png", "analysed_checkpoint": CKPT,
     }
-    out = os.path.join(HERE, "results_M44.json")
+    out = os.path.join(HERE, f"results_M44_{TAG}.json")
     json.dump(doc, open(out, "w"), indent=2)
     print(f"\n  wrote {out}")
 

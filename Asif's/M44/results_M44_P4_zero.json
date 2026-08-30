@@ -1,0 +1,64 @@
+{
+  "meta": {
+    "model_id": "M44",
+    "model_name": "Interpretability analysis (XAI)",
+    "contributor": "OWMTL team",
+    "date_completed": "2026-08-30",
+    "explains_model": "M22_v2",
+    "checkpoint_epoch": 28,
+    "notes": "RTK requirement 9. Grad-CAM + occlusion on the best model under the corrected split."
+  },
+  "spec_deviation": {
+    "requested": "pointing game against annotated crackle/wheeze event windows",
+    "why_not_implementable": "ICBHI annotates one row per respiratory CYCLE (start, end, crackle, wheeze) and marks whether the cycle contains an adventitious sound, not where inside it. The pipeline crops to exactly that window, so the annotated window IS the model input and the hit rate is 100% by construction. No finer annotation exists in the corpus.",
+    "substituted": [
+      "band pointing (100-1000 Hz wheeze band)",
+      "tiling consistency across wrap-padded repetitions"
+    ]
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "split_method": "official_60_40_patient_independent_corrected",
+    "test_cycles": 2636,
+    "cycles_analysed": 400
+  },
+  "band_pointing": {
+    "band_hz": [
+      100.0,
+      1000.0
+    ],
+    "uniform_baseline": 0.5547,
+    "wheeze_positive_mean": 0.6269,
+    "wheeze_negative_mean": 0.705,
+    "n_wheeze_positive": 75,
+    "n_wheeze_negative": 325,
+    "difference": -0.0781,
+    "difference_ci95_patient_bootstrap": [
+      -0.1209,
+      -0.0345
+    ],
+    "p": 0.0,
+    "verdict": "the model attends LESS to the wheeze band when a wheeze is present"
+  },
+  "tiling_consistency": {
+    "n_evaluable": 358,
+    "mean_r": -0.1463,
+    "median_r": -0.1371,
+    "fraction_above_0.5": 0.0922,
+    "verdict": "attribution DIFFERS across identical repeated audio \u2014 the model is partly keying on position within the 8 s window, not on the sound",
+    "INVALID_FOR_THIS_MODEL": true,
+    "why": "Tiling consistency compares attribution on repetition 1 vs repetition 2 of a tiled cycle. Under zero-padding there IS no second repetition \u2014 the comparison is real audio against silence, so the -0.1463 correlation measures nothing about the model. Ignore it; measure (c) is the padding-scheme-agnostic replacement."
+  },
+  "padding_attention": {
+    "padding_scheme": "zero",
+    "observed_mean": 0.1013,
+    "uniform_baseline_mean": 0.6792,
+    "ratio": 0.1492,
+    "n": 398,
+    "verdict": "the model attends to padding LESS than its share of the input",
+    "note": "Share of Grad-CAM mass after the real cycle ends. Directly comparable between the wrap-padded and zero-padded models."
+  },
+  "interpretation_guard": "This is evidence about WHERE THE MODEL LOOKS, not clinical validation. This project measured clinician-vs-ICBHI agreement at kappa 0.035 on crackles (N9) and found task adaptation degrades 13/14 acoustic concepts (N1). Attributions aligned to labels of that reliability cannot certify clinical reasoning.",
+  "figure": "M44_xai_panels_P4_zero.png",
+  "analysed_checkpoint": "../M45/best_M45_P4.pth"
+}

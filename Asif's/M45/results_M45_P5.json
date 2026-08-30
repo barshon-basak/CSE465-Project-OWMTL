@@ -1,8 +1,8 @@
 {
   "meta": {
-    "model_id": "M45_P4",
-    "row": "P4",
-    "variable_changed": "zero-padding instead of cyclic tiling",
+    "model_id": "M45_P5",
+    "row": "P5",
+    "variable_changed": "- per-spectrogram min-max normalisation",
     "baseline_model_id": "M22_v2",
     "date_completed": "2026-08-30",
     "is_augmented": true,
@@ -11,8 +11,8 @@
   "config": {
     "n_mels": 128,
     "duration_s": 8.0,
-    "padding": "zero",
-    "minmax": true,
+    "padding": "wrap",
+    "minmax": false,
     "pretrained": true,
     "freeze": false,
     "class_weighted": true,
@@ -31,57 +31,57 @@
     "test_patients": 47
   },
   "best_epoch": {
-    "epoch": 28,
+    "epoch": 36,
     "primary_metric": "icbhi_score_official",
-    "primary_metric_value": 0.5291
+    "primary_metric_value": 0.5539
   },
   "best_metrics": {
-    "icbhi_score_official": 0.5291,
+    "icbhi_score_official": 0.5539,
     "icbhi_score_official_ci95": [
-      0.4775,
-      0.5812
+      0.5005,
+      0.6039
     ],
-    "icbhi_se_official": 0.4684,
-    "icbhi_sp_official": 0.5897,
-    "accuracy": 0.5402,
-    "f1_macro": 0.3841,
+    "icbhi_se_official": 0.4136,
+    "icbhi_sp_official": 0.6942,
+    "accuracy": 0.5797,
+    "f1_macro": 0.4128,
     "confusion_matrix_raw": [
       [
-        920,
-        400,
-        215,
-        25
+        1083,
+        284,
+        176,
+        17
       ],
       [
-        235,
-        356,
-        16,
-        10
+        291,
+        296,
+        13,
+        17
       ],
       [
-        131,
-        68,
-        145,
-        29
+        164,
+        37,
+        141,
+        31
       ],
       [
-        23,
-        26,
-        34,
-        3
+        35,
+        10,
+        33,
+        8
       ]
     ]
   },
   "efficiency": {
     "total_params": 2228996,
     "trainable_params": 2228996,
-    "training_time_total_s": 874.7,
+    "training_time_total_s": 864.4,
     "gpu_name": "NVIDIA GeForce RTX 4050 Laptop GPU"
   },
   "ablation": {
     "ablation_group": "component_and_preprocessing_ablation",
     "ablation_role": "variant",
     "baseline_model_id": "M22_v2",
-    "variable_changed": "zero-padding instead of cyclic tiling"
+    "variable_changed": "- per-spectrogram min-max normalisation"
   }
 }
