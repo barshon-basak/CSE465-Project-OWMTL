@@ -1,0 +1,838 @@
+{
+  "experiment": "N1_fm_concept_probing",
+  "status": "OK",
+  "fm": "MIT/ast-finetuned-audioset-10-10-0.4593",
+  "level": "cycle (patient-grouped CV)",
+  "n_rows": 6898,
+  "n_patients": 126,
+  "spaces": {
+    "AST_frozen": {
+      "per_concept": [
+        {
+          "concept": "crackle_presence",
+          "kind": "continuous/R2",
+          "score": 0.48,
+          "ci95": [
+            0.4628,
+            0.4965
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.0978,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "crackle_rate_hz",
+          "kind": "continuous/R2",
+          "score": 0.368,
+          "ci95": [
+            0.344,
+            0.3906
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.09,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "fine_crackle_ratio",
+          "kind": "continuous/R2",
+          "score": -0.0105,
+          "ci95": [
+            -0.082,
+            0.0188
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.0538,
+          "verdict": "NOT SHOWN TO BEAT CHANCE (CI spans chance) - do not write 'beats'"
+        },
+        {
+          "concept": "coarse_crackle_ratio",
+          "kind": "continuous/R2",
+          "score": 0.3067,
+          "ci95": [
+            0.288,
+            0.3263
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.0591,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "wheeze_presence",
+          "kind": "continuous/R2",
+          "score": 0.6566,
+          "ci95": [
+            0.6429,
+            0.6698
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.2088,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "wheeze_dominant_freq_hz",
+          "kind": "continuous/R2",
+          "score": 0.249,
+          "ci95": [
+            0.2164,
+            0.2807
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.2437,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "wheeze_duration_ratio",
+          "kind": "continuous/R2",
+          "score": 0.712,
+          "ci95": [
+            0.6981,
+            0.7256
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.3236,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "rhonchi_presence",
+          "kind": "continuous/R2",
+          "score": 0.6409,
+          "ci95": [
+            0.6245,
+            0.6549
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.1968,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "spectral_flatness",
+          "kind": "continuous/R2",
+          "score": 0.5157,
+          "ci95": [
+            0.4791,
+            0.5473
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.2377,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "papr_db",
+          "kind": "continuous/R2",
+          "score": 0.6231,
+          "ci95": [
+            0.6072,
+            0.639
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.1409,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "inspiratory_energy_fraction",
+          "kind": "continuous/R2",
+          "score": 0.1907,
+          "ci95": [
+            0.1578,
+            0.2193
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.239,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "transient_timing_centroid",
+          "kind": "continuous/R2",
+          "score": 0.2602,
+          "ci95": [
+            0.2396,
+            0.2791
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.0767,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "dominant_freq_hz",
+          "kind": "continuous/R2",
+          "score": 0.461,
+          "ci95": [
+            0.4296,
+            0.4895
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.3076,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "low_high_freq_ratio",
+          "kind": "continuous/R2",
+          "score": 0.2891,
+          "ci95": [
+            0.2511,
+            0.3202
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.1166,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        }
+      ],
+      "n_probeable": 14,
+      "n_above_chance": 13,
+      "concepts_above_chance": [
+        "crackle_presence",
+        "crackle_rate_hz",
+        "coarse_crackle_ratio",
+        "wheeze_presence",
+        "wheeze_dominant_freq_hz",
+        "wheeze_duration_ratio",
+        "rhonchi_presence",
+        "spectral_flatness",
+        "papr_db",
+        "inspiratory_energy_fraction",
+        "transient_timing_centroid",
+        "dominant_freq_hz",
+        "low_high_freq_ratio"
+      ],
+      "mean_score": 0.4102
+    },
+    "AST_lora": {
+      "per_concept": [
+        {
+          "concept": "crackle_presence",
+          "kind": "continuous/R2",
+          "score": 0.3516,
+          "ci95": [
+            0.3341,
+            0.3714
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.063,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "crackle_rate_hz",
+          "kind": "continuous/R2",
+          "score": 0.2569,
+          "ci95": [
+            0.2332,
+            0.2807
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.052,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "fine_crackle_ratio",
+          "kind": "continuous/R2",
+          "score": -0.0026,
+          "ci95": [
+            -0.0355,
+            0.0094
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.0222,
+          "verdict": "NOT SHOWN TO BEAT CHANCE (CI spans chance) - do not write 'beats'"
+        },
+        {
+          "concept": "coarse_crackle_ratio",
+          "kind": "continuous/R2",
+          "score": 0.234,
+          "ci95": [
+            0.2158,
+            0.2536
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.0231,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "wheeze_presence",
+          "kind": "continuous/R2",
+          "score": 0.5977,
+          "ci95": [
+            0.5822,
+            0.614
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.1852,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "wheeze_dominant_freq_hz",
+          "kind": "continuous/R2",
+          "score": 0.2165,
+          "ci95": [
+            0.1857,
+            0.2465
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.2182,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "wheeze_duration_ratio",
+          "kind": "continuous/R2",
+          "score": 0.6421,
+          "ci95": [
+            0.6262,
+            0.6562
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.3064,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "rhonchi_presence",
+          "kind": "continuous/R2",
+          "score": 0.4223,
+          "ci95": [
+            0.4022,
+            0.4416
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.1519,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "spectral_flatness",
+          "kind": "continuous/R2",
+          "score": 0.3619,
+          "ci95": [
+            0.3209,
+            0.3962
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.1702,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "papr_db",
+          "kind": "continuous/R2",
+          "score": 0.4811,
+          "ci95": [
+            0.4615,
+            0.5004
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.0908,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "inspiratory_energy_fraction",
+          "kind": "continuous/R2",
+          "score": 0.1848,
+          "ci95": [
+            0.159,
+            0.2087
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.0948,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "transient_timing_centroid",
+          "kind": "continuous/R2",
+          "score": 0.2019,
+          "ci95": [
+            0.1826,
+            0.2218
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.0373,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "dominant_freq_hz",
+          "kind": "continuous/R2",
+          "score": 0.2777,
+          "ci95": [
+            0.2466,
+            0.307
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.2374,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "low_high_freq_ratio",
+          "kind": "continuous/R2",
+          "score": 0.2465,
+          "ci95": [
+            0.2127,
+            0.2766
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.062,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        }
+      ],
+      "n_probeable": 14,
+      "n_above_chance": 13,
+      "concepts_above_chance": [
+        "crackle_presence",
+        "crackle_rate_hz",
+        "coarse_crackle_ratio",
+        "wheeze_presence",
+        "wheeze_dominant_freq_hz",
+        "wheeze_duration_ratio",
+        "rhonchi_presence",
+        "spectral_flatness",
+        "papr_db",
+        "inspiratory_energy_fraction",
+        "transient_timing_centroid",
+        "dominant_freq_hz",
+        "low_high_freq_ratio"
+      ],
+      "mean_score": 0.3195
+    },
+    "M2_cnn": {
+      "per_concept": [
+        {
+          "concept": "crackle_presence",
+          "kind": "continuous/R2",
+          "score": 0.5006,
+          "ci95": [
+            0.4842,
+            0.5158
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.0839,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "crackle_rate_hz",
+          "kind": "continuous/R2",
+          "score": 0.3559,
+          "ci95": [
+            0.3277,
+            0.381
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.1122,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "fine_crackle_ratio",
+          "kind": "continuous/R2",
+          "score": -0.0075,
+          "ci95": [
+            -0.117,
+            0.0357
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.0774,
+          "verdict": "NOT SHOWN TO BEAT CHANCE (CI spans chance) - do not write 'beats'"
+        },
+        {
+          "concept": "coarse_crackle_ratio",
+          "kind": "continuous/R2",
+          "score": 0.3663,
+          "ci95": [
+            0.3505,
+            0.3825
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.0488,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "wheeze_presence",
+          "kind": "continuous/R2",
+          "score": 0.6051,
+          "ci95": [
+            0.5859,
+            0.6225
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.2747,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "wheeze_dominant_freq_hz",
+          "kind": "continuous/R2",
+          "score": 0.2894,
+          "ci95": [
+            0.2466,
+            0.3282
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.3406,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "wheeze_duration_ratio",
+          "kind": "continuous/R2",
+          "score": 0.7768,
+          "ci95": [
+            0.7655,
+            0.786
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.3871,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "rhonchi_presence",
+          "kind": "continuous/R2",
+          "score": 0.6483,
+          "ci95": [
+            0.6324,
+            0.6642
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.1852,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "spectral_flatness",
+          "kind": "continuous/R2",
+          "score": 0.759,
+          "ci95": [
+            0.717,
+            0.7901
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.3287,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "papr_db",
+          "kind": "continuous/R2",
+          "score": 0.5195,
+          "ci95": [
+            0.4978,
+            0.5402
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.1775,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "inspiratory_energy_fraction",
+          "kind": "continuous/R2",
+          "score": 0.0029,
+          "ci95": [
+            -0.025,
+            0.0299
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.0785,
+          "verdict": "NOT SHOWN TO BEAT CHANCE (CI spans chance) - do not write 'beats'"
+        },
+        {
+          "concept": "transient_timing_centroid",
+          "kind": "continuous/R2",
+          "score": 0.2762,
+          "ci95": [
+            0.2582,
+            0.2948
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.0297,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "dominant_freq_hz",
+          "kind": "continuous/R2",
+          "score": 0.5481,
+          "ci95": [
+            0.4793,
+            0.6206
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.3874,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "low_high_freq_ratio",
+          "kind": "continuous/R2",
+          "score": 0.3633,
+          "ci95": [
+            0.3127,
+            0.4058
+          ],
+          "chance": 0.0,
+          "perm_p": 0.005,
+          "perm_null_mean": -0.0876,
+          "verdict": "ABOVE CHANCE (CI excludes chance)"
+        }
+      ],
+      "n_probeable": 14,
+      "n_above_chance": 12,
+      "concepts_above_chance": [
+        "crackle_presence",
+        "crackle_rate_hz",
+        "coarse_crackle_ratio",
+        "wheeze_presence",
+        "wheeze_dominant_freq_hz",
+        "wheeze_duration_ratio",
+        "rhonchi_presence",
+        "spectral_flatness",
+        "papr_db",
+        "transient_timing_centroid",
+        "dominant_freq_hz",
+        "low_high_freq_ratio"
+      ],
+      "mean_score": 0.4289
+    },
+    "random_control": {
+      "per_concept": [
+        {
+          "concept": "crackle_presence",
+          "kind": "continuous/R2",
+          "score": -0.0081,
+          "ci95": [
+            -0.0106,
+            -0.0058
+          ],
+          "chance": 0.0,
+          "perm_p": 0.1692,
+          "perm_null_mean": -0.009,
+          "verdict": "BELOW CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "crackle_rate_hz",
+          "kind": "continuous/R2",
+          "score": -0.0069,
+          "ci95": [
+            -0.009,
+            -0.005
+          ],
+          "chance": 0.0,
+          "perm_p": 0.2338,
+          "perm_null_mean": -0.0075,
+          "verdict": "BELOW CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "fine_crackle_ratio",
+          "kind": "continuous/R2",
+          "score": -0.0023,
+          "ci95": [
+            -0.0067,
+            -0.0013
+          ],
+          "chance": 0.0,
+          "perm_p": 0.4428,
+          "perm_null_mean": -0.0024,
+          "verdict": "BELOW CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "coarse_crackle_ratio",
+          "kind": "continuous/R2",
+          "score": -0.0038,
+          "ci95": [
+            -0.0062,
+            -0.0014
+          ],
+          "chance": 0.0,
+          "perm_p": 0.0796,
+          "perm_null_mean": -0.0052,
+          "verdict": "BELOW CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "wheeze_presence",
+          "kind": "continuous/R2",
+          "score": -0.0083,
+          "ci95": [
+            -0.0106,
+            -0.0063
+          ],
+          "chance": 0.0,
+          "perm_p": 0.199,
+          "perm_null_mean": -0.009,
+          "verdict": "BELOW CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "wheeze_dominant_freq_hz",
+          "kind": "continuous/R2",
+          "score": -0.0024,
+          "ci95": [
+            -0.0048,
+            -0.0004
+          ],
+          "chance": 0.0,
+          "perm_p": 0.0896,
+          "perm_null_mean": -0.0036,
+          "verdict": "BELOW CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "wheeze_duration_ratio",
+          "kind": "continuous/R2",
+          "score": -0.0061,
+          "ci95": [
+            -0.0085,
+            -0.004
+          ],
+          "chance": 0.0,
+          "perm_p": 0.0398,
+          "perm_null_mean": -0.0075,
+          "verdict": "BELOW CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "rhonchi_presence",
+          "kind": "continuous/R2",
+          "score": -0.0064,
+          "ci95": [
+            -0.0088,
+            -0.0043
+          ],
+          "chance": 0.0,
+          "perm_p": 0.2836,
+          "perm_null_mean": -0.0069,
+          "verdict": "BELOW CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "spectral_flatness",
+          "kind": "continuous/R2",
+          "score": -0.0069,
+          "ci95": [
+            -0.0095,
+            -0.0046
+          ],
+          "chance": 0.0,
+          "perm_p": 0.4328,
+          "perm_null_mean": -0.007,
+          "verdict": "BELOW CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "papr_db",
+          "kind": "continuous/R2",
+          "score": -0.0039,
+          "ci95": [
+            -0.0062,
+            -0.002
+          ],
+          "chance": 0.0,
+          "perm_p": 0.6965,
+          "perm_null_mean": -0.0035,
+          "verdict": "BELOW CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "inspiratory_energy_fraction",
+          "kind": "continuous/R2",
+          "score": -0.0049,
+          "ci95": [
+            -0.0073,
+            -0.003
+          ],
+          "chance": 0.0,
+          "perm_p": 0.0945,
+          "perm_null_mean": -0.0061,
+          "verdict": "BELOW CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "transient_timing_centroid",
+          "kind": "continuous/R2",
+          "score": -0.0059,
+          "ci95": [
+            -0.0084,
+            -0.0036
+          ],
+          "chance": 0.0,
+          "perm_p": 0.1841,
+          "perm_null_mean": -0.0067,
+          "verdict": "BELOW CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "dominant_freq_hz",
+          "kind": "continuous/R2",
+          "score": -0.0045,
+          "ci95": [
+            -0.0067,
+            -0.0029
+          ],
+          "chance": 0.0,
+          "perm_p": 0.6368,
+          "perm_null_mean": -0.0043,
+          "verdict": "BELOW CHANCE (CI excludes chance)"
+        },
+        {
+          "concept": "low_high_freq_ratio",
+          "kind": "continuous/R2",
+          "score": -0.0055,
+          "ci95": [
+            -0.009,
+            -0.0032
+          ],
+          "chance": 0.0,
+          "perm_p": 0.3085,
+          "perm_null_mean": -0.0058,
+          "verdict": "BELOW CHANCE (CI excludes chance)"
+        }
+      ],
+      "n_probeable": 14,
+      "n_above_chance": 0,
+      "concepts_above_chance": [],
+      "mean_score": -0.0054
+    }
+  },
+  "headline_lora_effect": {
+    "per_concept_delta": {
+      "crackle_presence": -0.1284,
+      "crackle_rate_hz": -0.1111,
+      "fine_crackle_ratio": 0.0079,
+      "coarse_crackle_ratio": -0.0727,
+      "wheeze_presence": -0.0589,
+      "wheeze_dominant_freq_hz": -0.0325,
+      "wheeze_duration_ratio": -0.0699,
+      "rhonchi_presence": -0.2186,
+      "spectral_flatness": -0.1538,
+      "papr_db": -0.142,
+      "inspiratory_energy_fraction": -0.0059,
+      "transient_timing_centroid": -0.0583,
+      "dominant_freq_hz": -0.1833,
+      "low_high_freq_ratio": -0.0426
+    },
+    "mean_delta": -0.0907,
+    "n_concepts_degraded": 13,
+    "reading": "Task adaptation DESTROYS concept encoding -> the model bought accuracy by ignoring the clinical sounds (faithfulness finding)."
+  },
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.14.6",
+    "numpy_version": "2.4.6",
+    "run_utc": "2026-08-29T00:46:26+00:00"
+  }
+}

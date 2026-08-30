@@ -17,10 +17,16 @@ WHAT IT MEASURES:
      cheapest sanity check that the labels mean anything.
   3. THE CEILING IMPLICATION - the project's central claim. Gate G2 asked the DSP
      extractors to reach AUROC >= 0.65 against ICBHI's crackle/wheeze labels and they
-     reached 0.5556 / 0.5818. If a trained clinician agrees with those same labels only at
-     kappa = k, then no extractor validated against them can be expected to do better. That
-     converts "our extractors are weak" into "this reference standard is the binding
-     constraint", using THIS project's own data rather than a citation.
+     reached 0.5556 / 0.5818 (14-concept engine; the pre-registered M39 gate reached
+     0.5506-0.5729). This script measures how well a CLINICIAN agrees with those labels.
+
+     SUPERSEDED READING (2026-08-30): this file originally argued that low clinician
+     agreement bounds what any extractor can achieve. N11 refutes that - a supervised probe
+     on a frozen AudioSet embedding, which never saw a respiratory corpus, reaches AUROC
+     0.71 (crackle) / 0.76 (wheeze) on these same test cycles. The labels are learnable.
+     The finding here is therefore the OPPOSITE and more interesting one: machines
+     reproduce these labels far better than a trained physician does. Do not cite this
+     script as a ceiling argument.
   4. It writes `clinician_corrections.csv` - exactly the file N7 already knows how to read,
      so N7 upgrades from SIMULATED to real with no code change.
 
@@ -470,11 +476,13 @@ def _ceiling_reading(ks):
     if k < 0.40:
         return (f"Mean clinician-vs-ICBHI kappa = {k:.3f} ({_kappa_words(k)}). A trained "
                 "listener and the ICBHI annotation disagree substantially on the SAME "
-                "cycles. An automatic extractor validated against these labels is "
-                "therefore bounded well below the 0.65 gate G2 set, and the G2 failure "
-                "(0.5556 / 0.5818) is consistent with a reference-standard limit rather "
-                "than with a uniquely weak extractor. This is the project's central claim, "
-                "now measured on its own data.")
+                "cycles. This does NOT bound what a machine can do: N11 fits a supervised "
+                "probe on a frozen AudioSet embedding - a network that never saw a "
+                "respiratory corpus - and reaches AUROC 0.71 (crackle) / 0.76 (wheeze) on "
+                "the same test cycles, well above the 0.65 gate. The finding is therefore "
+                "the sharper one: models reproduce these labels far better than a trained "
+                "physician agrees with them. Our G2 extractors were weak; the reference "
+                "standard was not the binding constraint.")
     if k < 0.60:
         return (f"Mean clinician-vs-ICBHI kappa = {k:.3f} ({_kappa_words(k)}). The labels "
                 "carry real but imperfect signal; report the extractor result against this "

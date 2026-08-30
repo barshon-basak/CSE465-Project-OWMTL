@@ -1,0 +1,263 @@
+{
+  "experiment": "N7_clinician_intervention",
+  "status": "OK",
+  "mode": "leaky",
+  "hardens": {
+    "source": "owmtl_concept_engine/.../04_concept_intervention/intervention_report.json",
+    "committed_top_sensitivity": {
+      "inspiratory_energy_fraction": 0.4376
+    },
+    "committed_dead_concept": "fine_crackle_ratio (0.0)",
+    "committed_wrong_way": "wheeze_presence->COPD mean_delta_p -0.0008",
+    "what_was_missing": "the intervention curve and any real clinician"
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "evaluation_level": "patient",
+    "split_method": "patient_independent_official_60_40",
+    "n_test_patients": 43,
+    "classes": [
+      "COPD",
+      "Healthy",
+      "URTI"
+    ]
+  },
+  "baseline_accuracy_all_concepts_true": 0.6279,
+  "sensitivity": [
+    {
+      "concept": "papr_db",
+      "sensitivity": 0.0374,
+      "delta_by_class": [
+        -0.0225,
+        -0.0125,
+        0.035
+      ]
+    },
+    {
+      "concept": "crackle_presence",
+      "sensitivity": 0.0338,
+      "delta_by_class": [
+        -0.022,
+        -0.0099,
+        0.0319
+      ]
+    },
+    {
+      "concept": "crackle_rate_hz",
+      "sensitivity": 0.0321,
+      "delta_by_class": [
+        -0.0266,
+        0.0063,
+        0.0202
+      ]
+    },
+    {
+      "concept": "coarse_crackle_ratio",
+      "sensitivity": 0.0272,
+      "delta_by_class": [
+        -0.0147,
+        -0.0103,
+        0.025
+      ]
+    },
+    {
+      "concept": "low_high_freq_ratio",
+      "sensitivity": 0.0264,
+      "delta_by_class": [
+        0.0136,
+        0.011,
+        -0.0246
+      ]
+    },
+    {
+      "concept": "transient_timing_centroid",
+      "sensitivity": 0.0239,
+      "delta_by_class": [
+        -0.0165,
+        -0.005,
+        0.0216
+      ]
+    },
+    {
+      "concept": "inspiratory_energy_fraction",
+      "sensitivity": 0.0236,
+      "delta_by_class": [
+        0.0139,
+        0.0095,
+        -0.0234
+      ]
+    },
+    {
+      "concept": "wheeze_presence",
+      "sensitivity": 0.0157,
+      "delta_by_class": [
+        -0.0003,
+        0.0124,
+        -0.0121
+      ]
+    },
+    {
+      "concept": "rhonchi_presence",
+      "sensitivity": 0.0113,
+      "delta_by_class": [
+        -0.0012,
+        0.0079,
+        -0.0067
+      ]
+    },
+    {
+      "concept": "wheeze_duration_ratio",
+      "sensitivity": 0.009,
+      "delta_by_class": [
+        0.0061,
+        -0.0024,
+        -0.0037
+      ]
+    },
+    {
+      "concept": "dominant_freq_hz",
+      "sensitivity": 0.0059,
+      "delta_by_class": [
+        -0.0013,
+        0.0049,
+        -0.0036
+      ]
+    },
+    {
+      "concept": "wheeze_dominant_freq_hz",
+      "sensitivity": 0.0046,
+      "delta_by_class": [
+        -0.0032,
+        0.0019,
+        0.0013
+      ]
+    },
+    {
+      "concept": "fine_crackle_ratio",
+      "sensitivity": 0.0016,
+      "delta_by_class": [
+        -0.0006,
+        -0.001,
+        0.0016
+      ]
+    },
+    {
+      "concept": "spectral_flatness",
+      "sensitivity": 0.0015,
+      "delta_by_class": [
+        -0.0009,
+        0.0011,
+        -0.0002
+      ]
+    }
+  ],
+  "dead_concepts": [],
+  "intervention_curve": {
+    "k": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14
+    ],
+    "curves": {
+      "by_sensitivity": [
+        0.6512,
+        0.6512,
+        0.6512,
+        0.6512,
+        0.6512,
+        0.6512,
+        0.6512,
+        0.6512,
+        0.6279,
+        0.6279,
+        0.6279,
+        0.6279,
+        0.6279,
+        0.6279,
+        0.6279
+      ],
+      "random_order": [
+        0.6512,
+        0.6512,
+        0.6512,
+        0.6512,
+        0.6512,
+        0.6512,
+        0.6512,
+        0.6512,
+        0.6512,
+        0.6512,
+        0.6481,
+        0.6481,
+        0.6465,
+        0.6411,
+        0.6279
+      ],
+      "shuffled_concepts_control": [
+        0.6512,
+        0.6512,
+        0.6512,
+        0.6512,
+        0.6512,
+        0.6512,
+        0.6496,
+        0.6504,
+        0.6465,
+        0.6395,
+        0.6372,
+        0.6372,
+        0.6388,
+        0.6426,
+        0.6512
+      ]
+    },
+    "mean_curve_by_sensitivity": 0.6403,
+    "mean_curve_random_order": 0.6482,
+    "gain_real": -0.0233,
+    "gain_shuffled_control": 0.0,
+    "verdict": "correcting concepts does NOT improve the diagnosis - accuracy is flat or falls (-0.0233 from k=0 to k=14). The bottleneck is not usefully interventionable on this corpus; the clinician demo cannot be presented as a working mechanism."
+  },
+  "directed_interventions": {
+    "crackle_presence->COPD": {
+      "asserted_value": 0.7837,
+      "mean_delta_p": -0.0102,
+      "frac_increased": 0.116,
+      "direction_ok": false
+    },
+    "wheeze_presence->COPD": {
+      "asserted_value": 0.7126,
+      "mean_delta_p": -0.0004,
+      "frac_increased": 0.279,
+      "direction_ok": false
+    },
+    "rhonchi_presence->COPD": {
+      "asserted_value": 0.9813,
+      "mean_delta_p": 0.0005,
+      "frac_increased": 0.302,
+      "direction_ok": true
+    }
+  },
+  "clinician": {
+    "source": "SIMULATED (DSP concept values used as the clinician oracle)",
+    "real_clinician_labels_present": false,
+    "how_to_supply": "drop a CSV at C:\\Users\\Barshon\\Desktop\\CSE465 Project\\CSE465-Project-OWMTL\\Novelty Experiment\\clinician_corrections.csv with columns patient,concept,value"
+  },
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.14.6",
+    "numpy_version": "2.4.6",
+    "run_utc": "2026-08-28T22:21:38+00:00"
+  }
+}

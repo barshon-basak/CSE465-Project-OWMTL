@@ -1,7 +1,7 @@
 # `req.md` — CSE465 course implementation requirements vs. this project
 
 **Written:** 2026-08-20 · **Source:** Dr. Khan's "Implementation Requirements (CSE465)" list
-**Read with:** `DECISION_2026-08-16_PIVOT.md` (what the paper is now), `Model_Training_Protocol.md`
+**Read with:** `DECISION_2026-08-30_CONSOLIDATION.md` (canonical runs, the N11 retraction, and the ordered path), `DECISION_2026-08-16_PIVOT.md` (what the paper is now), `Model_Training_Protocol.md`
 (§1 hard rules, §2 preprocessing, §3 metrics, §4.1 ablation schema, §5 plots), `Model_Training_Reference.md`
 (what every M-number already is).
 

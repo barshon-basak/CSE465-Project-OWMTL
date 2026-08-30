@@ -1,0 +1,264 @@
+{
+  "experiment": "N2_concept_space_osr",
+  "status": "OK",
+  "compares_against": {
+    "M29": "embedding-space baseline, Energy AUROC 0.6466",
+    "M38": "never run - no results JSON committed"
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "evaluation_level": "patient",
+    "split_method": "patient_independent_official_60_40",
+    "known_classes": [
+      "COPD",
+      "Healthy",
+      "URTI"
+    ],
+    "unknown_classes": [
+      "Bronchiectasis",
+      "Pneumonia",
+      "Bronchiolitis"
+    ],
+    "n_known_fit": 61,
+    "n_known_eval": 43,
+    "n_unknown": 19,
+    "unknown_group_never_fitted": true
+  },
+  "spaces": {
+    "concept_14d": {
+      "msp": {
+        "auroc": 0.612,
+        "auroc_ci95": [
+          0.4626,
+          0.7528
+        ],
+        "aupr": 0.3859,
+        "unknown_prevalence": 0.3065,
+        "unknown_recall_at_95_known_tpr": 0.0526,
+        "verdict": "NOT SHOWN TO BEAT CHANCE (CI spans chance) - do not write 'beats'"
+      },
+      "entropy": {
+        "auroc": 0.6218,
+        "auroc_ci95": [
+          0.4688,
+          0.7614
+        ],
+        "aupr": 0.39,
+        "unknown_prevalence": 0.3065,
+        "unknown_recall_at_95_known_tpr": 0.0526,
+        "verdict": "NOT SHOWN TO BEAT CHANCE (CI spans chance) - do not write 'beats'"
+      },
+      "energy": {
+        "auroc": 0.6267,
+        "auroc_ci95": [
+          0.4773,
+          0.7662
+        ],
+        "aupr": 0.3912,
+        "unknown_prevalence": 0.3065,
+        "unknown_recall_at_95_known_tpr": 0.0526,
+        "verdict": "NOT SHOWN TO BEAT CHANCE (CI spans chance) - do not write 'beats'"
+      },
+      "mahalanobis": {
+        "auroc": 0.5202,
+        "auroc_ci95": [
+          0.366,
+          0.6781
+        ],
+        "aupr": 0.3171,
+        "unknown_prevalence": 0.3065,
+        "unknown_recall_at_95_known_tpr": 0.0,
+        "verdict": "NOT SHOWN TO BEAT CHANCE (CI spans chance) - do not write 'beats'"
+      },
+      "knn": {
+        "auroc": 0.5251,
+        "auroc_ci95": [
+          0.3647,
+          0.6892
+        ],
+        "aupr": 0.3346,
+        "unknown_prevalence": 0.3065,
+        "unknown_recall_at_95_known_tpr": 0.0526,
+        "verdict": "NOT SHOWN TO BEAT CHANCE (CI spans chance) - do not write 'beats'"
+      }
+    },
+    "embedding_768d": {
+      "msp": {
+        "auroc": 0.5545,
+        "auroc_ci95": [
+          0.4076,
+          0.7038
+        ],
+        "aupr": 0.3962,
+        "unknown_prevalence": 0.3065,
+        "unknown_recall_at_95_known_tpr": 0.2105,
+        "verdict": "NOT SHOWN TO BEAT CHANCE (CI spans chance) - do not write 'beats'"
+      },
+      "entropy": {
+        "auroc": 0.5508,
+        "auroc_ci95": [
+          0.4051,
+          0.694
+        ],
+        "aupr": 0.3544,
+        "unknown_prevalence": 0.3065,
+        "unknown_recall_at_95_known_tpr": 0.0526,
+        "verdict": "NOT SHOWN TO BEAT CHANCE (CI spans chance) - do not write 'beats'"
+      },
+      "energy": {
+        "auroc": 0.6034,
+        "auroc_ci95": [
+          0.459,
+          0.743
+        ],
+        "aupr": 0.3735,
+        "unknown_prevalence": 0.3065,
+        "unknown_recall_at_95_known_tpr": 0.0526,
+        "verdict": "NOT SHOWN TO BEAT CHANCE (CI spans chance) - do not write 'beats'"
+      },
+      "mahalanobis": {
+        "auroc": 0.4859,
+        "auroc_ci95": [
+          0.339,
+          0.6267
+        ],
+        "aupr": 0.2885,
+        "unknown_prevalence": 0.3065,
+        "unknown_recall_at_95_known_tpr": 0.0,
+        "verdict": "NOT SHOWN TO BEAT CHANCE (CI spans chance) - do not write 'beats'"
+      },
+      "knn": {
+        "auroc": 0.5141,
+        "auroc_ci95": [
+          0.3574,
+          0.6561
+        ],
+        "aupr": 0.3091,
+        "unknown_prevalence": 0.3065,
+        "unknown_recall_at_95_known_tpr": 0.0,
+        "verdict": "NOT SHOWN TO BEAT CHANCE (CI spans chance) - do not write 'beats'"
+      }
+    },
+    "concat": {
+      "msp": {
+        "auroc": 0.6108,
+        "auroc_ci95": [
+          0.4639,
+          0.7503
+        ],
+        "aupr": 0.4415,
+        "unknown_prevalence": 0.3065,
+        "unknown_recall_at_95_known_tpr": 0.1053,
+        "verdict": "NOT SHOWN TO BEAT CHANCE (CI spans chance) - do not write 'beats'"
+      },
+      "entropy": {
+        "auroc": 0.6132,
+        "auroc_ci95": [
+          0.4688,
+          0.7528
+        ],
+        "aupr": 0.4365,
+        "unknown_prevalence": 0.3065,
+        "unknown_recall_at_95_known_tpr": 0.1579,
+        "verdict": "NOT SHOWN TO BEAT CHANCE (CI spans chance) - do not write 'beats'"
+      },
+      "energy": {
+        "auroc": 0.6414,
+        "auroc_ci95": [
+          0.4957,
+          0.7785
+        ],
+        "aupr": 0.4373,
+        "unknown_prevalence": 0.3065,
+        "unknown_recall_at_95_known_tpr": 0.1053,
+        "verdict": "NOT SHOWN TO BEAT CHANCE (CI spans chance) - do not write 'beats'"
+      },
+      "mahalanobis": {
+        "auroc": 0.4786,
+        "auroc_ci95": [
+          0.3292,
+          0.6206
+        ],
+        "aupr": 0.2864,
+        "unknown_prevalence": 0.3065,
+        "unknown_recall_at_95_known_tpr": 0.0,
+        "verdict": "NOT SHOWN TO BEAT CHANCE (CI spans chance) - do not write 'beats'"
+      },
+      "knn": {
+        "auroc": 0.519,
+        "auroc_ci95": [
+          0.3647,
+          0.6634
+        ],
+        "aupr": 0.3105,
+        "unknown_prevalence": 0.3065,
+        "unknown_recall_at_95_known_tpr": 0.0,
+        "verdict": "NOT SHOWN TO BEAT CHANCE (CI spans chance) - do not write 'beats'"
+      }
+    }
+  },
+  "paired_concept_minus_embedding": {
+    "msp": {
+      "diff": 0.0575,
+      "ci95": [
+        -0.1224,
+        0.2252
+      ],
+      "p_two_sided": 0.503,
+      "n_boot": 2000,
+      "reading": "NOT shown to differ (CI spans zero)"
+    },
+    "entropy": {
+      "diff": 0.071,
+      "ci95": [
+        -0.1077,
+        0.2399
+      ],
+      "p_two_sided": 0.405,
+      "n_boot": 2000,
+      "reading": "NOT shown to differ (CI spans zero)"
+    },
+    "energy": {
+      "diff": 0.0233,
+      "ci95": [
+        -0.1641,
+        0.2093
+      ],
+      "p_two_sided": 0.802,
+      "n_boot": 2000,
+      "reading": "NOT shown to differ (CI spans zero)"
+    },
+    "mahalanobis": {
+      "diff": 0.0343,
+      "ci95": [
+        -0.0894,
+        0.1714
+      ],
+      "p_two_sided": 0.625,
+      "n_boot": 2000,
+      "reading": "NOT shown to differ (CI spans zero)"
+    },
+    "knn": {
+      "diff": 0.011,
+      "ci95": [
+        -0.1347,
+        0.1616
+      ],
+      "p_two_sided": 0.895,
+      "n_boot": 2000,
+      "reading": "NOT shown to differ (CI spans zero)"
+    }
+  },
+  "best": {
+    "space": "concat",
+    "detector": "energy",
+    "auroc": 0.6414
+  },
+  "power_note": "n_unknown=19. Every CI at this sample size is wide enough to span chance; report 'not shown to beat chance', never 'beats'.",
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.14.6",
+    "numpy_version": "2.4.6",
+    "run_utc": "2026-08-28T22:11:20+00:00"
+  }
+}

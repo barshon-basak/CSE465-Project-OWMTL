@@ -1,0 +1,356 @@
+{
+  "experiment": "N6_physics_bottleneck",
+  "status": "OK",
+  "hardens": {
+    "source": "owmtl_concept_engine/.../002_concept_bottleneck_training/results_M13cbm_*.json",
+    "committed": {
+      "opaque": 0.5973,
+      "leaky": 0.5457,
+      "sequential": 0.4441,
+      "independent": 0.4542
+    },
+    "committed_note": "one seed, no CI, no control, empty schema fields"
+  },
+  "gate_context": {
+    "gate": "G2",
+    "outcome": "FAILED twice",
+    "crackle_auroc": 0.5556,
+    "wheeze_auroc": 0.5818,
+    "threshold": "AUROC >= 0.65 with CI excluding chance",
+    "decision_record": "DECISION_2026-08-16_PIVOT.md"
+  },
+  "config": {
+    "engine": "sklearn MLPClassifier",
+    "hidden_layer_sizes": [
+      64
+    ],
+    "max_iter": 2000,
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "n_boot": 2000,
+    "reference_implementation": "owmtl/bottleneck.py (torch)"
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "evaluation_level": "patient",
+    "split_method": "patient_independent_official_60_40",
+    "classes": [
+      "COPD",
+      "Healthy",
+      "URTI"
+    ],
+    "n_train_patients": 61,
+    "n_test_patients": 43
+  },
+  "modes": {
+    "independent": {
+      "mode": "independent",
+      "n_seeds": 5,
+      "accuracy_median_seed": 0.5814,
+      "accuracy_ci95": [
+        0.4419,
+        0.7209
+      ],
+      "f1_macro_median_seed": 0.5254,
+      "f1_macro_ci95": [
+        0.3334,
+        0.7
+      ],
+      "accuracy_across_seeds": {
+        "mean": 0.5535,
+        "std": 0.0271,
+        "min": 0.5116,
+        "max": 0.5814
+      },
+      "f1_across_seeds": {
+        "mean": 0.5311,
+        "std": 0.0591
+      },
+      "per_class_f1": [
+        0.7059,
+        0.3704,
+        0.5
+      ],
+      "confusion_matrix_raw": [
+        [
+          18,
+          6,
+          1
+        ],
+        [
+          8,
+          5,
+          1
+        ],
+        [
+          0,
+          2,
+          2
+        ]
+      ],
+      "efficiency": {
+        "trainable_params": 1155,
+        "training_time_total_s": 0.627,
+        "training_time_per_seed_s": 0.125,
+        "device": "cpu"
+      }
+    },
+    "sequential": {
+      "mode": "sequential",
+      "n_seeds": 5,
+      "accuracy_median_seed": 0.6744,
+      "accuracy_ci95": [
+        0.5814,
+        0.7674
+      ],
+      "f1_macro_median_seed": 0.4526,
+      "f1_macro_ci95": [
+        0.3584,
+        0.5401
+      ],
+      "accuracy_across_seeds": {
+        "mean": 0.6279,
+        "std": 0.0441,
+        "min": 0.5581,
+        "max": 0.6744
+      },
+      "f1_across_seeds": {
+        "mean": 0.4576,
+        "std": 0.0322
+      },
+      "per_class_f1": [
+        0.9231,
+        0.4348,
+        0.0
+      ],
+      "confusion_matrix_raw": [
+        [
+          24,
+          1,
+          0
+        ],
+        [
+          2,
+          5,
+          7
+        ],
+        [
+          1,
+          3,
+          0
+        ]
+      ],
+      "efficiency": {
+        "trainable_params": 1155,
+        "training_time_total_s": 0.687,
+        "training_time_per_seed_s": 0.137,
+        "device": "cpu"
+      }
+    },
+    "leaky": {
+      "mode": "leaky",
+      "n_seeds": 5,
+      "accuracy_median_seed": 0.6512,
+      "accuracy_ci95": [
+        0.5349,
+        0.7674
+      ],
+      "f1_macro_median_seed": 0.4802,
+      "f1_macro_ci95": [
+        0.3851,
+        0.5542
+      ],
+      "accuracy_across_seeds": {
+        "mean": 0.6279,
+        "std": 0.0208,
+        "min": 0.6047,
+        "max": 0.6512
+      },
+      "f1_across_seeds": {
+        "mean": 0.4823,
+        "std": 0.0212
+      },
+      "per_class_f1": [
+        0.8571,
+        0.5833,
+        0.0
+      ],
+      "confusion_matrix_raw": [
+        [
+          21,
+          0,
+          4
+        ],
+        [
+          2,
+          7,
+          5
+        ],
+        [
+          1,
+          3,
+          0
+        ]
+      ],
+      "efficiency": {
+        "trainable_params": 50307,
+        "training_time_total_s": 0.482,
+        "training_time_per_seed_s": 0.096,
+        "device": "cpu"
+      }
+    },
+    "opaque": {
+      "mode": "opaque",
+      "n_seeds": 5,
+      "accuracy_median_seed": 0.5814,
+      "accuracy_ci95": [
+        0.4419,
+        0.6977
+      ],
+      "f1_macro_median_seed": 0.4378,
+      "f1_macro_ci95": [
+        0.3316,
+        0.5206
+      ],
+      "accuracy_across_seeds": {
+        "mean": 0.5907,
+        "std": 0.0348,
+        "min": 0.5581,
+        "max": 0.6512
+      },
+      "f1_across_seeds": {
+        "mean": 0.4473,
+        "std": 0.019
+      },
+      "per_class_f1": [
+        0.7917,
+        0.5217,
+        0.0
+      ],
+      "confusion_matrix_raw": [
+        [
+          19,
+          0,
+          6
+        ],
+        [
+          3,
+          6,
+          5
+        ],
+        [
+          1,
+          3,
+          0
+        ]
+      ],
+      "efficiency": {
+        "trainable_params": 49411,
+        "training_time_total_s": 0.509,
+        "training_time_per_seed_s": 0.102,
+        "device": "cpu"
+      }
+    },
+    "independent_shuffled_concepts": {
+      "mode": "independent_shuffled_concepts",
+      "n_seeds": 5,
+      "accuracy_median_seed": 0.4884,
+      "accuracy_ci95": [
+        0.3721,
+        0.6047
+      ],
+      "f1_macro_median_seed": 0.2963,
+      "f1_macro_ci95": [
+        0.1967,
+        0.3929
+      ],
+      "accuracy_across_seeds": {
+        "mean": 0.4884,
+        "std": 0.0255,
+        "min": 0.4651,
+        "max": 0.5349
+      },
+      "f1_across_seeds": {
+        "mean": 0.3057,
+        "std": 0.0366
+      },
+      "per_class_f1": [
+        0.6667,
+        0.2222,
+        0.0
+      ],
+      "confusion_matrix_raw": [
+        [
+          19,
+          1,
+          5
+        ],
+        [
+          10,
+          2,
+          2
+        ],
+        [
+          3,
+          1,
+          0
+        ]
+      ],
+      "efficiency": {
+        "trainable_params": 1155,
+        "training_time_total_s": 0.744,
+        "training_time_per_seed_s": 0.149,
+        "device": "cpu"
+      }
+    }
+  },
+  "skipped_modes": {},
+  "shuffled_concept_control": {
+    "accuracy": {
+      "diff": 0.093,
+      "ci95": [
+        -0.093,
+        0.2791
+      ],
+      "p_two_sided": 0.389,
+      "n_boot": 2000,
+      "reading": "real concepts are NOT shown to beat shuffled concepts on this metric"
+    },
+    "f1_macro": {
+      "diff": 0.2291,
+      "ci95": [
+        0.0041,
+        0.4409
+      ],
+      "p_two_sided": 0.045,
+      "n_boot": 2000,
+      "reading": "real physics concepts beat shuffled ones"
+    },
+    "overall": "the physics concepts carry the bottleneck"
+  },
+  "interpretability_cost": {
+    "accuracy": 0.0,
+    "f1_macro": -0.0876,
+    "committed_run_reported": {
+      "accuracy": 0.2326,
+      "f1_macro": 0.1432
+    }
+  },
+  "mcnemar_independent_vs_opaque": {
+    "statistic": 0.0833,
+    "p_exact_binomial": 1.0,
+    "verdict": "bottleneck cost is NOT significant at n=43"
+  },
+  "power_note": "n_test_patients=43. Every CI here is wide; the monotone ordering across modes is the claim, not any single number.",
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.14.6",
+    "numpy_version": "2.4.6",
+    "run_utc": "2026-08-28T22:21:04+00:00"
+  }
+}

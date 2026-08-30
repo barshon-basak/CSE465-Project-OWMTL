@@ -1,0 +1,152 @@
+{
+  "experiment": "N9_clinician_reliability",
+  "status": "OK",
+  "schema_deviations": {
+    "off_schema_values_seen": [
+      "ambiguous"
+    ],
+    "n_field_instances": 12,
+    "handling": "'ambiguous' is not in the pack's declared vocabulary; it is treated as 'unsure' (excluded from agreement, never coerced to a class)."
+  },
+  "coverage": {
+    "clips_in_pack": 132,
+    "clips_answered": 116,
+    "usable_crackle_answers": 108,
+    "usable_wheeze_answers": 110,
+    "unsure_crackles": 8,
+    "unsure_wheeze": 6,
+    "unsure_rate_crackles": 0.069,
+    "unsure_rate_wheeze": 0.0517,
+    "audio_quality": {
+      "ok": 105,
+      "noisy": 7,
+      "(blank)": 3,
+      "unusable": 17
+    },
+    "confidence": {
+      "high": 106,
+      "medium": 20,
+      "low": 2,
+      "(blank)": 4
+    },
+    "invalid_rows": [],
+    "note": "'unsure' is excluded from agreement, never coerced to a class."
+  },
+  "agreement_vs_icbhi": {
+    "crackles": {
+      "label": "crackles",
+      "n": 108,
+      "n_patients": 42,
+      "cohens_kappa": 0.035,
+      "kappa_ci95_patient_bootstrap": [
+        -0.1571,
+        0.2101
+      ],
+      "raw_agreement": 0.5278,
+      "raw_agreement_ci95": [
+        0.4206,
+        0.6392
+      ],
+      "sensitivity_vs_icbhi": 0.2308,
+      "specificity_vs_icbhi": 0.8036,
+      "confusion_vs_icbhi": {
+        "tp": 12,
+        "fp": 11,
+        "fn": 40,
+        "tn": 45
+      },
+      "kappa_interpretation": "slight"
+    },
+    "wheeze": {
+      "label": "wheeze",
+      "n": 110,
+      "n_patients": 42,
+      "cohens_kappa": 0.266,
+      "kappa_ci95_patient_bootstrap": [
+        0.0357,
+        0.4437
+      ],
+      "raw_agreement": 0.7182,
+      "raw_agreement_ci95": [
+        0.61,
+        0.8317
+      ],
+      "sensitivity_vs_icbhi": 0.2973,
+      "specificity_vs_icbhi": 0.9315,
+      "confusion_vs_icbhi": {
+        "tp": 11,
+        "fp": 5,
+        "fn": 26,
+        "tn": 68
+      },
+      "kappa_interpretation": "fair"
+    }
+  },
+  "intra_rater": {
+    "crackles": {
+      "n_pairs": 8,
+      "cohens_kappa": 0.7143,
+      "raw_agreement": 0.875,
+      "interpretation": "substantial",
+      "note": "A rater's agreement with themselves upper-bounds their agreement with any reference standard. If this is low, everything below it is noise."
+    },
+    "wheeze": {
+      "n_pairs": 8,
+      "cohens_kappa": 0.6,
+      "raw_agreement": 0.875,
+      "interpretation": "substantial",
+      "note": "A rater's agreement with themselves upper-bounds their agreement with any reference standard. If this is low, everything below it is noise."
+    }
+  },
+  "ceiling_implication": {
+    "gate_G2_threshold_auroc": 0.65,
+    "gate_G2_observed_auroc": {
+      "crackle_score": 0.5556,
+      "wheeze_score": 0.5818
+    },
+    "clinician_kappa_vs_icbhi": {
+      "crackles": 0.035,
+      "wheeze": 0.266
+    },
+    "published_human_benchmark": {
+      "Tzeng_2025_JMIR_AI": "7 senior physicians score 47.77% ICBHI on this corpus",
+      "Aviles-Solis_2016": "inter-observer kappa < 0.40 on detailed adventitious sounds"
+    },
+    "reading": "Mean clinician-vs-ICBHI kappa = 0.151 (slight). A trained listener and the ICBHI annotation disagree substantially on the SAME cycles. This does NOT bound what a machine can do: N11 fits a supervised probe on a frozen AudioSet embedding - a network that never saw a respiratory corpus - and reaches AUROC 0.71 (crackle) / 0.76 (wheeze) on the same test cycles, well above the 0.65 gate. The finding is therefore the sharper one: models reproduce these labels far better than a trained physician agrees with them. Our G2 extractors were weak; the reference standard was not the binding constraint."
+  },
+  "inputs": {
+    "labels_file": "C:\\Users\\Barshon\\Desktop\\CSE465 Project\\CSE465-Project-OWMTL\\Asif's\\labels v1 - labels.csv",
+    "labels_format": "csv",
+    "key_file": "C:\\Users\\Barshon\\Desktop\\CSE465 Project\\CSE465-Project-OWMTL\\Asif's\\clip_key.csv"
+  },
+  "sensitivity_good_quality_only": {
+    "n_crackle": 99,
+    "n_wheeze": 101,
+    "crackles_kappa": 0.0231,
+    "wheeze_kappa": 0.2545,
+    "note": "clips with audio_quality == 'ok' only"
+  },
+  "release_asset": {
+    "path": "C:\\Users\\Barshon\\Desktop\\CSE465 Project\\CSE465-Project-OWMTL\\Novelty Experiment\\release_annotations\\ICBHI_clinician_annotations_v1.csv",
+    "rows": 132,
+    "readme": "C:\\Users\\Barshon\\Desktop\\CSE465 Project\\CSE465-Project-OWMTL\\Novelty Experiment\\release_annotations\\README.md",
+    "why": "Gate G0 in the roadmap named the annotated subset as the project's ceiling lever - the first fine-grained concept annotations released for ICBHI."
+  },
+  "corrections_written": {
+    "path": "C:\\Users\\Barshon\\Desktop\\CSE465 Project\\CSE465-Project-OWMTL\\Novelty Experiment\\clinician_corrections.csv",
+    "rows": 84,
+    "patients": 42,
+    "concepts": [
+      "crackle_presence",
+      "wheeze_presence"
+    ],
+    "limitation": "each patient contributes only the 1-3 cycles sampled into the pack, out of ~60 in their record - a sparse correction, not a re-labelling",
+    "next": "re-run N7; it reads this file automatically and drops the SIMULATED label"
+  },
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.14.6",
+    "numpy_version": "2.4.6",
+    "run_utc": "2026-08-30T05:54:35+00:00"
+  }
+}

@@ -1,0 +1,72 @@
+[
+  {
+    "experiment": "N1",
+    "script": "N1_fm_concept_probing.py",
+    "exit_code": 0,
+    "status": "OK",
+    "needs": "GPU + ICBHI audio for --stage embed/lora; probe alone needs cached embeddings"
+  },
+  {
+    "experiment": "N2",
+    "script": "N2_concept_space_osr.py",
+    "exit_code": 0,
+    "status": "OK",
+    "needs": "CPU only"
+  },
+  {
+    "experiment": "N3",
+    "script": "N3_prototypical_fewshot.py",
+    "exit_code": 0,
+    "status": "OK",
+    "needs": "CPU only"
+  },
+  {
+    "experiment": "N4",
+    "script": "N4_honest_operating_point.py",
+    "exit_code": 0,
+    "status": "OK",
+    "needs": "CPU only"
+  },
+  {
+    "experiment": "N5",
+    "script": "N5_leakage_audit.py",
+    "exit_code": 0,
+    "status": "OK",
+    "needs": "CPU only (full I(y;f|c) needs --features)"
+  },
+  {
+    "experiment": "N6",
+    "script": "N6_physics_bottleneck.py",
+    "exit_code": 0,
+    "status": "OK",
+    "needs": "CPU only (3 of 4 modes need --features)"
+  },
+  {
+    "experiment": "N7",
+    "script": "N7_clinician_intervention.py",
+    "exit_code": 0,
+    "status": "OK",
+    "needs": "CPU only"
+  },
+  {
+    "experiment": "N8",
+    "script": "N8_pediatric_fragility.py",
+    "exit_code": 0,
+    "status": "OK",
+    "needs": "CPU only (full test needs --sprsound_dir)"
+  },
+  {
+    "experiment": "N9",
+    "script": "N9_clinician_reliability.py",
+    "exit_code": 0,
+    "status": "OK",
+    "needs": "CPU only; needs the returned clinician sheet"
+  },
+  {
+    "experiment": "N10",
+    "script": "N10_gate_vs_clinician.py",
+    "exit_code": 0,
+    "status": "OK",
+    "needs": "CPU only; needs the clinician sheet + ICBHI audio (ICBHI_AUDIO_DIR)"
+  }
+]

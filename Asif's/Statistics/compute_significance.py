@@ -71,7 +71,7 @@ ENTRIES = [
     dict(
         model="M14v1", label="Conformal-wrapped disagreement v1",
         auc=0.4522, n_pos=19, n_neg=22, level="patient",
-        source="Barshon's/M14/v1/results_M14.json:best_metrics.auroc",
+        source="Archive_Files (v4)/M14_v1_superseded/results_M14.json:best_metrics.auroc",
     ),
     dict(
         model="M14v2", label="Conformal-wrapped disagreement v2 (test)",

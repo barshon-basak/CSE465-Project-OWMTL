@@ -1,0 +1,142 @@
+{
+  "experiment": "N10_gate_vs_clinician",
+  "status": "OK",
+  "question": "G2 failed against ICBHI labels. Does the same extractor do better against an independent clinical reference on the same clips?",
+  "gate": {
+    "threshold": 0.65,
+    "concept_engine_14concept_validation": {
+      "crackle_score": 0.5556,
+      "wheeze_score": 0.5818
+    },
+    "pre_registered_gate_M39": {
+      "run1": {
+        "crackle": 0.5506,
+        "wheeze": 0.5729
+      },
+      "run2": {
+        "crackle": 0.558,
+        "wheeze": 0.534
+      }
+    },
+    "reference": "ICBHI cycle labels",
+    "n_cycles": 2636,
+    "do_not_mix": "the M39 gate used 9 concepts, the engine 14 - different implementations of the same idea",
+    "superseded_reading": "N11 shows a supervised probe reaches 0.71-0.87 on these same labels; the failure is the extractors, not the reference standard"
+  },
+  "mapping": {
+    "clips_mapped": 132,
+    "verified_against_clip_key": true
+  },
+  "comparability_warning": {
+    "headline": "ABSOLUTE AUROC HERE IS NOT COMPARABLE TO THE ORIGINAL G2 NUMBER.",
+    "why": "The listening pack was not a random sample. build_listening_pack.py filters to cycles of duration >= 0.9 s and then sorts each stratum LONGEST-FIRST, so these 132 clips are systematically longer - and therefore easier for a DSP detector - than the 2,636-cycle test set G2 was scored on. It also over-samples abnormal strata (42 normal / 45 crackle / 28 wheeze / 17 both) relative to the corpus.",
+    "consequence": "A 'gate PASS' on this subset does NOT overturn the G2 failure and must never be reported as doing so.",
+    "what_is_valid": "The PAIRED difference - the same score, on the same clips, against two different reference standards. Selection bias affects both arms identically and cancels. That comparison is the point of this experiment; the absolute numbers are not."
+  },
+  "per_concept": {
+    "crackle": {
+      "n_clips": 108,
+      "vs_icbhi": {
+        "reference": "ICBHI cycle labels",
+        "n": 108,
+        "n_positive": 52,
+        "prevalence": 0.4815,
+        "auroc": 0.5251,
+        "auroc_ci95": [
+          0.4145,
+          0.6295
+        ],
+        "verdict_vs_chance": "NOT SHOWN TO BEAT CHANCE (CI spans chance) - do not write 'beats'",
+        "gate_threshold": 0.65,
+        "passes_gate": false
+      },
+      "vs_clinician": {
+        "reference": "clinician",
+        "n": 108,
+        "n_positive": 23,
+        "prevalence": 0.213,
+        "auroc": 0.5581,
+        "auroc_ci95": [
+          0.4171,
+          0.6931
+        ],
+        "verdict_vs_chance": "NOT SHOWN TO BEAT CHANCE (CI spans chance) - do not write 'beats'",
+        "gate_threshold": 0.65,
+        "passes_gate": false
+      },
+      "paired_difference": {
+        "auroc_clinician_minus_icbhi": 0.033,
+        "ci95": [
+          -0.1365,
+          0.1958
+        ],
+        "p_two_sided": 0.6892,
+        "reading": "NOT shown to differ between the two reference standards"
+      }
+    },
+    "wheeze": {
+      "n_clips": 110,
+      "vs_icbhi": {
+        "reference": "ICBHI cycle labels",
+        "n": 110,
+        "n_positive": 37,
+        "prevalence": 0.3364,
+        "auroc": 0.736,
+        "auroc_ci95": [
+          0.6213,
+          0.8434
+        ],
+        "verdict_vs_chance": "ABOVE CHANCE (CI excludes chance)",
+        "gate_threshold": 0.65,
+        "passes_gate": true
+      },
+      "vs_clinician": {
+        "reference": "clinician",
+        "n": 110,
+        "n_positive": 16,
+        "prevalence": 0.1455,
+        "auroc": 0.8334,
+        "auroc_ci95": [
+          0.7227,
+          0.9275
+        ],
+        "verdict_vs_chance": "ABOVE CHANCE (CI excludes chance)",
+        "gate_threshold": 0.65,
+        "passes_gate": true
+      },
+      "paired_difference": {
+        "auroc_clinician_minus_icbhi": 0.0974,
+        "ci95": [
+          -0.0447,
+          0.2499
+        ],
+        "p_two_sided": 0.1824,
+        "reading": "NOT shown to differ between the two reference standards"
+      }
+    }
+  },
+  "fine_vs_coarse": {
+    "n": 22,
+    "n_fine": 19,
+    "n_coarse": 3,
+    "degenerate_score": true,
+    "note": "fine_crackle_ratio is CONSTANT across these 22 clips (it is 99.7% zero corpus-wide), so no AUROC is estimable - the detector has nothing to validate. The first fine/coarse reference labels on this corpus now exist either way; they cannot validate a detector at this sample size.",
+    "significance": "First fine/coarse crackle reference labels on ICBHI. G2 could never test these two concepts because ICBHI carries no such label; physicians agree on the distinction at kappa < 0.40."
+  },
+  "decision": {
+    "n_better_vs_clinician": 0,
+    "n_better_vs_icbhi": 0,
+    "gate_passes": [
+      "wheeze:vs_icbhi",
+      "wheeze:vs_clinician"
+    ],
+    "verdict": "UNDECIDED: no paired difference excludes zero. The extractors do not demonstrably track either reference standard better than the other, and the G2 ambiguity recorded in DECISION_2026-08-16_PIVOT.md stands as written - now with a measurement behind it rather than an assumption.",
+    "power_note": "single rater, ~110 clips per concept; every interval here is wide and the verdict is a direction, not a measurement of effect size."
+  },
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.14.6",
+    "numpy_version": "2.4.6",
+    "run_utc": "2026-08-30T05:54:14+00:00"
+  }
+}

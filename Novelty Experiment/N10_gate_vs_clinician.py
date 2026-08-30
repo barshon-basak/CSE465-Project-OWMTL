@@ -5,7 +5,12 @@ N10 - Gate G2, re-run against the CLINICIAN reference
 THIS IS THE EXPERIMENT THE PROJECT HAS BEEN UNABLE TO RUN.
 
 Gate G2 asked whether the DSP concept extractors reproduce ICBHI's crackle/wheeze cycle
-labels at AUROC >= 0.65. It was run twice and failed twice (0.5556 / 0.5818), and
+labels at AUROC >= 0.65. The pre-registered gate (M39) was run twice and failed twice
+(crackle 0.5506 / 0.5580, wheeze 0.5729 / 0.5340); the later 14-concept engine scored
+0.5556 / 0.5818 on the same test cycles with a DIFFERENT extractor set. Those are two
+implementations, not two exports of one run - see DECISION_2026-08-30_CONSOLIDATION.md.
+N11 has since shown these labels ARE learnable (AST frozen 0.71/0.76), so read the
+numbers below as 'our extractors are weak', not as a reference-standard limit.
 `DECISION_2026-08-16_PIVOT.md` recorded the honest ambiguity that followed:
 
     1. Our extractors are weak.                          TRUE, and demonstrated twice.
@@ -190,9 +195,17 @@ def main():
            "question": ("G2 failed against ICBHI labels. Does the same extractor do better "
                         "against an independent clinical reference on the same clips?"),
            "gate": {"threshold": GATE_THRESHOLD,
-                    "original_G2_result": {"crackle_score": 0.5556, "wheeze_score": 0.5818},
-                    "original_G2_reference": "ICBHI cycle labels",
-                    "original_G2_n_cycles": 2636},
+                    "concept_engine_14concept_validation": {"crackle_score": 0.5556,
+                                                            "wheeze_score": 0.5818},
+                    "pre_registered_gate_M39": {"run1": {"crackle": 0.5506, "wheeze": 0.5729},
+                                                "run2": {"crackle": 0.5580, "wheeze": 0.5340}},
+                    "reference": "ICBHI cycle labels",
+                    "n_cycles": 2636,
+                    "do_not_mix": "the M39 gate used 9 concepts, the engine 14 - different "
+                                  "implementations of the same idea",
+                    "superseded_reading": "N11 shows a supervised probe reaches 0.71-0.87 "
+                                          "on these same labels; the failure is the "
+                                          "extractors, not the reference standard"},
            "mapping": {"clips_mapped": len(rowmap), "verified_against_clip_key": True},
            "comparability_warning": {
                "headline": "ABSOLUTE AUROC HERE IS NOT COMPARABLE TO THE ORIGINAL G2 NUMBER.",

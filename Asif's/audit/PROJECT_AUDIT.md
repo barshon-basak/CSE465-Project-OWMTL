@@ -1,6 +1,6 @@
 # OWMTL Project Audit
 
-**Generated:** 2026-08-30 by `Asif's/audit/audit_project.py` · **Files scanned:** 56
+**Generated:** 2026-08-30 by `Asif's/audit/audit_project.py` · **Files scanned:** 55
 
 Automated protocol-compliance and result-validity audit across every results file in the repository. Each check corresponds to a failure mode actually present in this repo, not a hypothetical one.
 
@@ -10,11 +10,11 @@ Automated protocol-compliance and result-validity audit across every results fil
 
 | Severity | Count | Meaning |
 |---|---|---|
-| 🔴 CRITICAL | 12 | The result does not support the claim made on it |
-| 🟡 WARNING | 94 | Needs resolving before submission |
-| ⚪ INFO | 63 | Worth knowing, not blocking |
+| 🔴 CRITICAL | 10 | The result does not support the claim made on it |
+| 🟡 WARNING | 99 | Needs resolving before submission |
+| ⚪ INFO | 66 | Worth knowing, not blocking |
 
-**Models with critical findings:** M14, M15, M19, M21, M30, M33, M35, M36, M6
+**Models with critical findings:** M14, M15, M19, M21, M33, M35, M36, M6
 
 **Files with no findings:** M12, M18, M2, M22, M35
 
@@ -31,12 +31,6 @@ Automated protocol-compliance and result-validity audit across every results fil
 <sub>source: `Barshon's\M6\result\results_M6.json`</sub>
 
 ### M14
-
-**`discrimination_at_or_below_chance`** — `best_metrics.auroc` = 0.4522 is at or below chance (0.5). A random scorer would do as well or better, so this value cannot support a detection claim.
-
-> `best_metrics.auroc = 0.4522`
-
-<sub>source: `Barshon's\M14\v1\results_M14.json`</sub>
 
 **`discrimination_at_or_below_chance`** — `best_metrics.test_auroc` = 0.4809 is at or below chance (0.5). A random scorer would do as well or better, so this value cannot support a detection claim.
 
@@ -80,14 +74,6 @@ Automated protocol-compliance and result-validity audit across every results fil
 
 <sub>source: `Barshon's\M21\M21_Updated\results_M21\results_M21.json`</sub>
 
-### M30
-
-**`icbhi_score_unverifiable`** — `icbhi_score` = 0.8213 is reported with no committed `confusion_matrix_raw`, so neither the macro nor the official ICBHI score can be independently recomputed -- not by a teammate, not by this tool, not by a reviewer who asks. Re-export this run with the confusion matrix (protocol section 4) before the number is used in any table or claim.
-
-> `icbhi_score = 0.8213, confusion_matrix_raw absent`
-
-<sub>source: `Barshon's\M30\results_M30.json`</sub>
-
 ### M33
 
 **`normal_detection_collapse`** — Official ICBHI specificity is 0.0000 -- the model almost never classifies a Normal cycle correctly, so it would flag nearly every healthy patient. The reported score is being carried by the sensitivity term.
@@ -116,69 +102,7 @@ Automated protocol-compliance and result-validity audit across every results fil
 
 ## 🟡 Warnings
 
-### ?
-
-**`schema_missing_blocks`** — Missing §4 block(s): best_epoch. The M28 merge script expects every block; absent ones must be reconstructed by hand.
-
-> `best_epoch`
-
-<sub>source: `owmtl_concept_engine\owmtl_concept_engine\notebooks\002_concept_bottleneck_training\output\results_M13cbm_independent.json`</sub>
-
-**`schema_missing_metrics`** — Missing §3 metric(s) in `best_metrics`: precision_macro, recall_macro.
-
-> `precision_macro, recall_macro`
-
-<sub>source: `owmtl_concept_engine\owmtl_concept_engine\notebooks\002_concept_bottleneck_training\output\results_M13cbm_independent.json`</sub>
-
-**`schema_missing_blocks`** — Missing §4 block(s): best_epoch. The M28 merge script expects every block; absent ones must be reconstructed by hand.
-
-> `best_epoch`
-
-<sub>source: `owmtl_concept_engine\owmtl_concept_engine\notebooks\002_concept_bottleneck_training\output\results_M13cbm_leaky.json`</sub>
-
-**`schema_missing_metrics`** — Missing §3 metric(s) in `best_metrics`: precision_macro, recall_macro.
-
-> `precision_macro, recall_macro`
-
-<sub>source: `owmtl_concept_engine\owmtl_concept_engine\notebooks\002_concept_bottleneck_training\output\results_M13cbm_leaky.json`</sub>
-
-**`schema_missing_blocks`** — Missing §4 block(s): best_epoch. The M28 merge script expects every block; absent ones must be reconstructed by hand.
-
-> `best_epoch`
-
-<sub>source: `owmtl_concept_engine\owmtl_concept_engine\notebooks\002_concept_bottleneck_training\output\results_M13cbm_opaque.json`</sub>
-
-**`schema_missing_metrics`** — Missing §3 metric(s) in `best_metrics`: precision_macro, recall_macro.
-
-> `precision_macro, recall_macro`
-
-<sub>source: `owmtl_concept_engine\owmtl_concept_engine\notebooks\002_concept_bottleneck_training\output\results_M13cbm_opaque.json`</sub>
-
-**`schema_missing_blocks`** — Missing §4 block(s): best_epoch. The M28 merge script expects every block; absent ones must be reconstructed by hand.
-
-> `best_epoch`
-
-<sub>source: `owmtl_concept_engine\owmtl_concept_engine\notebooks\002_concept_bottleneck_training\output\results_M13cbm_sequential.json`</sub>
-
-**`schema_missing_metrics`** — Missing §3 metric(s) in `best_metrics`: precision_macro, recall_macro.
-
-> `precision_macro, recall_macro`
-
-<sub>source: `owmtl_concept_engine\owmtl_concept_engine\notebooks\002_concept_bottleneck_training\output\results_M13cbm_sequential.json`</sub>
-
 ### M2
-
-**`no_better_than_majority_class`** — Accuracy 0.4009 is not meaningfully above the majority-class rate 0.5729 (always predicting the largest class). The model may be learning little; report macro-F1 rather than accuracy and check the per-class breakdown.
-
-> `accuracy=0.4009, majority prior=0.5729`
-
-<sub>source: `Asif's\M2\17aug_run_v2\results_M2.json`</sub>
-
-**`no_better_than_majority_class`** — Accuracy 0.4917 is not meaningfully above the majority-class rate 0.5729 (always predicting the largest class). The model may be learning little; report macro-F1 rather than accuracy and check the per-class breakdown.
-
-> `accuracy=0.4917, majority prior=0.5729`
-
-<sub>source: `Asif's\M2\29aug_run_v3\results_M2.json`</sub>
 
 **`no_better_than_majority_class`** — Accuracy 0.5116 is not meaningfully above the majority-class rate 0.5729 (always predicting the largest class). The model may be learning little; report macro-F1 rather than accuracy and check the per-class breakdown.
 
@@ -187,12 +111,6 @@ Automated protocol-compliance and result-validity audit across every results fil
 <sub>source: `Asif's\M2\m2_v4\results_M2.json`</sub>
 
 ### M3
-
-**`no_better_than_majority_class`** — Accuracy 0.4430 is not meaningfully above the majority-class rate 0.5729 (always predicting the largest class). The model may be learning little; report macro-F1 rather than accuracy and check the per-class breakdown.
-
-> `accuracy=0.4430, majority prior=0.5729`
-
-<sub>source: `Asif's\M3\17aug_run_result\results_M3.json`</sub>
 
 **`no_better_than_majority_class`** — Accuracy 0.5591 is not meaningfully above the majority-class rate 0.5729 (always predicting the largest class). The model may be learning little; report macro-F1 rather than accuracy and check the per-class breakdown.
 
@@ -252,17 +170,17 @@ Automated protocol-compliance and result-validity audit across every results fil
 
 > `efficiency, best_epoch, ablation, training_history`
 
-<sub>source: `Barshon's\M11\results_M11 (3).json`</sub>
+<sub>source: `Barshon's\M11\results_M11.json`</sub>
 
 **`schema_missing_metrics`** — Missing §3 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.
 
 > `accuracy, precision_macro, recall_macro, f1_macro`
 
-<sub>source: `Barshon's\M11\results_M11 (3).json`</sub>
+<sub>source: `Barshon's\M11\results_M11.json`</sub>
 
 **`schema_missing_ablation`** — No §4.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.
 
-<sub>source: `Barshon's\M11\results_M11 (3).json`</sub>
+<sub>source: `Barshon's\M11\results_M11.json`</sub>
 
 ### M12
 
@@ -283,30 +201,6 @@ Automated protocol-compliance and result-validity audit across every results fil
 <sub>source: `Asif's\M12_v2\results_M12_v2.json`</sub>
 
 ### M14
-
-**`schema_missing_blocks`** — Missing §4 block(s): efficiency, best_epoch, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.
-
-> `efficiency, best_epoch, training_history`
-
-<sub>source: `Barshon's\M14\v1\results_M14.json`</sub>
-
-**`schema_missing_metrics`** — Missing §3 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.
-
-> `accuracy, precision_macro, recall_macro, f1_macro`
-
-<sub>source: `Barshon's\M14\v1\results_M14.json`</sub>
-
-**`weak_discrimination`** — `baseline_comparisons.m15_auroc` = 0.5782 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.
-
-> `baseline_comparisons.m15_auroc = 0.5782`
-
-<sub>source: `Barshon's\M14\v1\results_M14.json`</sub>
-
-**`weak_discrimination`** — `baseline_comparisons.m29_energy_auroc` = 0.6466 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.
-
-> `baseline_comparisons.m29_energy_auroc = 0.6466`
-
-<sub>source: `Barshon's\M14\v1\results_M14.json`</sub>
 
 **`schema_missing_blocks`** — Missing §4 block(s): efficiency, best_epoch, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.
 
@@ -339,34 +233,6 @@ Automated protocol-compliance and result-validity audit across every results fil
 <sub>source: `Barshon's\M14\v2\results_M14.json`</sub>
 
 ### M15
-
-**`schema_missing_blocks`** — Missing §4 block(s): efficiency, best_epoch, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.
-
-> `efficiency, best_epoch, training_history`
-
-<sub>source: `Barshon's\M15\v4\results_M15.json`</sub>
-
-**`schema_missing_metrics`** — Missing §3 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.
-
-> `accuracy, precision_macro, recall_macro, f1_macro`
-
-<sub>source: `Barshon's\M15\v4\results_M15.json`</sub>
-
-**`weak_discrimination`** — `best_metrics.auroc` = 0.5782 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.
-
-> `best_metrics.auroc = 0.5782`
-
-<sub>source: `Barshon's\M15\v4\results_M15.json`</sub>
-
-**`weak_discrimination`** — `baseline_comparisons.m29_energy_auroc` = 0.6005 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.
-
-> `baseline_comparisons.m29_energy_auroc = 0.6005`
-
-<sub>source: `Barshon's\M15\v4\results_M15.json`</sub>
-
-**`patient_independence_unclear`** — `dataset_info.split_method` = 'None' does not state a patient-independent split, and `patient_leakage_verified` is absent. Protocol §1 calls this a research-validity requirement, not a style choice -- it should be asserted in code, not assumed.
-
-<sub>source: `Barshon's\M15\v4\results_M15.json`</sub>
 
 **`weak_discrimination`** — `best_metrics.open_set.auroc` = 0.5747 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.
 
@@ -548,12 +414,6 @@ Automated protocol-compliance and result-validity audit across every results fil
 
 <sub>source: `Asif's\M30_v2\results_M30.json`</sub>
 
-**`schema_missing_metrics`** — Missing §3 metric(s) in `best_metrics`: precision_macro, recall_macro, f1_macro.
-
-> `precision_macro, recall_macro, f1_macro`
-
-<sub>source: `Barshon's\M30\results_M30.json`</sub>
-
 ### M32
 
 **`no_better_than_majority_class`** — Accuracy 0.4802 is not meaningfully above the majority-class rate 0.4653 (always predicting the largest class). The model may be learning little; report macro-F1 rather than accuracy and check the per-class breakdown.
@@ -622,6 +482,108 @@ Automated protocol-compliance and result-validity audit across every results fil
 
 <sub>source: `Asif's\M39\M39_handoff\results_M39.json`</sub>
 
+### M40
+
+**`schema_missing_blocks`** — Missing §4 block(s): environment, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.
+
+> `environment, ablation, training_history`
+
+<sub>source: `M40_M43_transformers\Results\results_M40.json`</sub>
+
+**`schema_missing_metrics`** — Missing §3 metric(s) in `best_metrics`: precision_macro, recall_macro.
+
+> `precision_macro, recall_macro`
+
+<sub>source: `M40_M43_transformers\Results\results_M40.json`</sub>
+
+**`schema_missing_ablation`** — No §4.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.
+
+<sub>source: `M40_M43_transformers\Results\results_M40.json`</sub>
+
+**`schema_missing_blocks`** — Missing §4 block(s): environment, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.
+
+> `environment, ablation, training_history`
+
+<sub>source: `M40_M43_transformers\Results\results_M40_aug.json`</sub>
+
+**`schema_missing_metrics`** — Missing §3 metric(s) in `best_metrics`: precision_macro, recall_macro.
+
+> `precision_macro, recall_macro`
+
+<sub>source: `M40_M43_transformers\Results\results_M40_aug.json`</sub>
+
+**`schema_missing_ablation`** — No §4.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.
+
+<sub>source: `M40_M43_transformers\Results\results_M40_aug.json`</sub>
+
+### M41
+
+**`schema_missing_blocks`** — Missing §4 block(s): environment, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.
+
+> `environment, ablation, training_history`
+
+<sub>source: `M40_M43_transformers\Results\results_M41.json`</sub>
+
+**`schema_missing_metrics`** — Missing §3 metric(s) in `best_metrics`: precision_macro, recall_macro.
+
+> `precision_macro, recall_macro`
+
+<sub>source: `M40_M43_transformers\Results\results_M41.json`</sub>
+
+**`schema_missing_ablation`** — No §4.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.
+
+<sub>source: `M40_M43_transformers\Results\results_M41.json`</sub>
+
+**`schema_missing_blocks`** — Missing §4 block(s): environment, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.
+
+> `environment, ablation, training_history`
+
+<sub>source: `M40_M43_transformers\Results\results_M41_aug.json`</sub>
+
+**`schema_missing_metrics`** — Missing §3 metric(s) in `best_metrics`: precision_macro, recall_macro.
+
+> `precision_macro, recall_macro`
+
+<sub>source: `M40_M43_transformers\Results\results_M41_aug.json`</sub>
+
+**`schema_missing_ablation`** — No §4.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.
+
+<sub>source: `M40_M43_transformers\Results\results_M41_aug.json`</sub>
+
+### M42
+
+**`schema_missing_blocks`** — Missing §4 block(s): environment, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.
+
+> `environment, ablation, training_history`
+
+<sub>source: `M40_M43_transformers\Results\results_M42.json`</sub>
+
+**`schema_missing_metrics`** — Missing §3 metric(s) in `best_metrics`: precision_macro, recall_macro.
+
+> `precision_macro, recall_macro`
+
+<sub>source: `M40_M43_transformers\Results\results_M42.json`</sub>
+
+**`schema_missing_ablation`** — No §4.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.
+
+<sub>source: `M40_M43_transformers\Results\results_M42.json`</sub>
+
+**`schema_missing_blocks`** — Missing §4 block(s): environment, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.
+
+> `environment, ablation, training_history`
+
+<sub>source: `M40_M43_transformers\Results\results_M42_aug.json`</sub>
+
+**`schema_missing_metrics`** — Missing §3 metric(s) in `best_metrics`: precision_macro, recall_macro.
+
+> `precision_macro, recall_macro`
+
+<sub>source: `M40_M43_transformers\Results\results_M42_aug.json`</sub>
+
+**`schema_missing_ablation`** — No §4.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.
+
+<sub>source: `M40_M43_transformers\Results\results_M42_aug.json`</sub>
+
 ### M44
 
 **`schema_missing_blocks`** — Missing §4 block(s): config, environment, efficiency, best_epoch, best_metrics, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.
@@ -639,6 +601,38 @@ Automated protocol-compliance and result-validity audit across every results fil
 **`schema_missing_ablation`** — No §4.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.
 
 <sub>source: `Asif's\M44\results_M44.json`</sub>
+
+**`schema_missing_blocks`** — Missing §4 block(s): config, environment, efficiency, best_epoch, best_metrics, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.
+
+> `config, environment, efficiency, best_epoch, best_metrics, ablation, training_history`
+
+<sub>source: `Asif's\M44\results_M44_A0_wrap.json`</sub>
+
+**`schema_missing_metrics`** — Missing §3 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.
+
+> `accuracy, precision_macro, recall_macro, f1_macro`
+
+<sub>source: `Asif's\M44\results_M44_A0_wrap.json`</sub>
+
+**`schema_missing_ablation`** — No §4.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.
+
+<sub>source: `Asif's\M44\results_M44_A0_wrap.json`</sub>
+
+**`schema_missing_blocks`** — Missing §4 block(s): config, environment, efficiency, best_epoch, best_metrics, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.
+
+> `config, environment, efficiency, best_epoch, best_metrics, ablation, training_history`
+
+<sub>source: `Asif's\M44\results_M44_P4_zero.json`</sub>
+
+**`schema_missing_metrics`** — Missing §3 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.
+
+> `accuracy, precision_macro, recall_macro, f1_macro`
+
+<sub>source: `Asif's\M44\results_M44_P4_zero.json`</sub>
+
+**`schema_missing_ablation`** — No §4.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.
+
+<sub>source: `Asif's\M44\results_M44_P4_zero.json`</sub>
 
 ### M45
 
@@ -714,51 +708,21 @@ Automated protocol-compliance and result-validity audit across every results fil
 
 <sub>source: `Asif's\M45\results_M45_P4.json`</sub>
 
+**`schema_missing_blocks`** — Missing §4 block(s): environment, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.
+
+> `environment, training_history`
+
+<sub>source: `Asif's\M45\results_M45_P5.json`</sub>
+
+**`schema_missing_metrics`** — Missing §3 metric(s) in `best_metrics`: precision_macro, recall_macro.
+
+> `precision_macro, recall_macro`
+
+<sub>source: `Asif's\M45\results_M45_P5.json`</sub>
+
 ---
 
 ## ⚪ Informational
-
-### ?
-
-**`schema_incomplete_ablation`** — `ablation` block missing: loss_weights.
-
-> `loss_weights`
-
-<sub>source: `owmtl_concept_engine\owmtl_concept_engine\notebooks\002_concept_bottleneck_training\output\results_M13cbm_independent.json`</sub>
-
-**`patient_independence_not_asserted`** — Split is declared patient-independent ('patient_independent_official_60_40') but `patient_leakage_verified` is not set, so nothing checked it at runtime.
-
-<sub>source: `owmtl_concept_engine\owmtl_concept_engine\notebooks\002_concept_bottleneck_training\output\results_M13cbm_independent.json`</sub>
-
-**`schema_incomplete_ablation`** — `ablation` block missing: loss_weights.
-
-> `loss_weights`
-
-<sub>source: `owmtl_concept_engine\owmtl_concept_engine\notebooks\002_concept_bottleneck_training\output\results_M13cbm_leaky.json`</sub>
-
-**`patient_independence_not_asserted`** — Split is declared patient-independent ('patient_independent_official_60_40') but `patient_leakage_verified` is not set, so nothing checked it at runtime.
-
-<sub>source: `owmtl_concept_engine\owmtl_concept_engine\notebooks\002_concept_bottleneck_training\output\results_M13cbm_leaky.json`</sub>
-
-**`schema_incomplete_ablation`** — `ablation` block missing: loss_weights.
-
-> `loss_weights`
-
-<sub>source: `owmtl_concept_engine\owmtl_concept_engine\notebooks\002_concept_bottleneck_training\output\results_M13cbm_opaque.json`</sub>
-
-**`patient_independence_not_asserted`** — Split is declared patient-independent ('patient_independent_official_60_40') but `patient_leakage_verified` is not set, so nothing checked it at runtime.
-
-<sub>source: `owmtl_concept_engine\owmtl_concept_engine\notebooks\002_concept_bottleneck_training\output\results_M13cbm_opaque.json`</sub>
-
-**`schema_incomplete_ablation`** — `ablation` block missing: loss_weights.
-
-> `loss_weights`
-
-<sub>source: `owmtl_concept_engine\owmtl_concept_engine\notebooks\002_concept_bottleneck_training\output\results_M13cbm_sequential.json`</sub>
-
-**`patient_independence_not_asserted`** — Split is declared patient-independent ('patient_independent_official_60_40') but `patient_leakage_verified` is not set, so nothing checked it at runtime.
-
-<sub>source: `owmtl_concept_engine\owmtl_concept_engine\notebooks\002_concept_bottleneck_training\output\results_M13cbm_sequential.json`</sub>
 
 ### M1
 
@@ -798,7 +762,7 @@ Automated protocol-compliance and result-validity audit across every results fil
 
 **`patient_independence_not_asserted`** — Split is declared patient-independent ('patient_independent_60_20_20') but `patient_leakage_verified` is not set, so nothing checked it at runtime.
 
-<sub>source: `Barshon's\M11\results_M11 (3).json`</sub>
+<sub>source: `Barshon's\M11\results_M11.json`</sub>
 
 ### M12
 
@@ -824,16 +788,6 @@ Automated protocol-compliance and result-validity audit across every results fil
 
 > `baseline_comparisons.reference_m6_openmax_auroc = 0.4516`
 
-<sub>source: `Barshon's\M14\v1\results_M14.json`</sub>
-
-**`patient_independence_not_asserted`** — Split is declared patient-independent ('patient_independent_60_20_20') but `patient_leakage_verified` is not set, so nothing checked it at runtime.
-
-<sub>source: `Barshon's\M14\v1\results_M14.json`</sub>
-
-**`cites_subchance_reference_value`** — `baseline_comparisons.reference_m6_openmax_auroc` = 0.4516 is cited here as context from another model's already-audited result (it is at or below chance). This is not a claim about M14's own performance -- see that other model's audit entry for the underlying problem -- but do not treat it as a validity benchmark for M14.
-
-> `baseline_comparisons.reference_m6_openmax_auroc = 0.4516`
-
 <sub>source: `Barshon's\M14\v2\results_M14.json`</sub>
 
 **`patient_independence_not_asserted`** — Split is declared patient-independent ('patient_independent_60_20_20') but `patient_leakage_verified` is not set, so nothing checked it at runtime.
@@ -841,18 +795,6 @@ Automated protocol-compliance and result-validity audit across every results fil
 <sub>source: `Barshon's\M14\v2\results_M14.json`</sub>
 
 ### M15
-
-**`schema_incomplete_ablation`** — `ablation` block missing: component_flags, loss_weights.
-
-> `component_flags, loss_weights`
-
-<sub>source: `Barshon's\M15\v4\results_M15.json`</sub>
-
-**`cites_subchance_reference_value`** — `baseline_comparisons.reference_m6_openmax_auroc` = 0.4516 is cited here as context from another model's already-audited result (it is at or below chance). This is not a claim about M15's own performance -- see that other model's audit entry for the underlying problem -- but do not treat it as a validity benchmark for M15.
-
-> `baseline_comparisons.reference_m6_openmax_auroc = 0.4516`
-
-<sub>source: `Barshon's\M15\v4\results_M15.json`</sub>
 
 **`patient_independence_not_asserted`** — Split is declared patient-independent ('patient_independent') but `patient_leakage_verified` is not set, so nothing checked it at runtime.
 
@@ -914,16 +856,6 @@ Automated protocol-compliance and result-validity audit across every results fil
 
 <sub>source: `Asif's\M29\results_M29.json`</sub>
 
-### M30
-
-**`no_inference_latency`** — `inference_time_ms_per_sample` not measured. Recommended by §4 and it feeds the efficiency columns of the ablation table.
-
-<sub>source: `Barshon's\M30\results_M30.json`</sub>
-
-**`patient_independence_not_asserted`** — Split is declared patient-independent ('patient_independent_70_30') but `patient_leakage_verified` is not set, so nothing checked it at runtime.
-
-<sub>source: `Barshon's\M30\results_M30.json`</sub>
-
 ### M31
 
 **`patient_independence_not_asserted`** — Split is declared patient-independent ('patient_independent_70_30') but `patient_leakage_verified` is not set, so nothing checked it at runtime.
@@ -970,11 +902,73 @@ Automated protocol-compliance and result-validity audit across every results fil
 
 <sub>source: `Barshon's\M37_v2\results_M37.json`</sub>
 
+### M40
+
+**`no_inference_latency`** — `inference_time_ms_per_sample` not measured. Recommended by §4 and it feeds the efficiency columns of the ablation table.
+
+<sub>source: `M40_M43_transformers\Results\results_M40.json`</sub>
+
+**`patient_independence_not_asserted`** — Split is declared patient-independent ('official_60_40_patient_independent_corrected') but `patient_leakage_verified` is not set, so nothing checked it at runtime.
+
+<sub>source: `M40_M43_transformers\Results\results_M40.json`</sub>
+
+**`no_inference_latency`** — `inference_time_ms_per_sample` not measured. Recommended by §4 and it feeds the efficiency columns of the ablation table.
+
+<sub>source: `M40_M43_transformers\Results\results_M40_aug.json`</sub>
+
+**`patient_independence_not_asserted`** — Split is declared patient-independent ('official_60_40_patient_independent_corrected') but `patient_leakage_verified` is not set, so nothing checked it at runtime.
+
+<sub>source: `M40_M43_transformers\Results\results_M40_aug.json`</sub>
+
+### M41
+
+**`no_inference_latency`** — `inference_time_ms_per_sample` not measured. Recommended by §4 and it feeds the efficiency columns of the ablation table.
+
+<sub>source: `M40_M43_transformers\Results\results_M41.json`</sub>
+
+**`patient_independence_not_asserted`** — Split is declared patient-independent ('official_60_40_patient_independent_corrected') but `patient_leakage_verified` is not set, so nothing checked it at runtime.
+
+<sub>source: `M40_M43_transformers\Results\results_M41.json`</sub>
+
+**`no_inference_latency`** — `inference_time_ms_per_sample` not measured. Recommended by §4 and it feeds the efficiency columns of the ablation table.
+
+<sub>source: `M40_M43_transformers\Results\results_M41_aug.json`</sub>
+
+**`patient_independence_not_asserted`** — Split is declared patient-independent ('official_60_40_patient_independent_corrected') but `patient_leakage_verified` is not set, so nothing checked it at runtime.
+
+<sub>source: `M40_M43_transformers\Results\results_M41_aug.json`</sub>
+
+### M42
+
+**`no_inference_latency`** — `inference_time_ms_per_sample` not measured. Recommended by §4 and it feeds the efficiency columns of the ablation table.
+
+<sub>source: `M40_M43_transformers\Results\results_M42.json`</sub>
+
+**`patient_independence_not_asserted`** — Split is declared patient-independent ('official_60_40_patient_independent_corrected') but `patient_leakage_verified` is not set, so nothing checked it at runtime.
+
+<sub>source: `M40_M43_transformers\Results\results_M42.json`</sub>
+
+**`no_inference_latency`** — `inference_time_ms_per_sample` not measured. Recommended by §4 and it feeds the efficiency columns of the ablation table.
+
+<sub>source: `M40_M43_transformers\Results\results_M42_aug.json`</sub>
+
+**`patient_independence_not_asserted`** — Split is declared patient-independent ('official_60_40_patient_independent_corrected') but `patient_leakage_verified` is not set, so nothing checked it at runtime.
+
+<sub>source: `M40_M43_transformers\Results\results_M42_aug.json`</sub>
+
 ### M44
 
 **`patient_independence_not_asserted`** — Split is declared patient-independent ('official_60_40_patient_independent_corrected') but `patient_leakage_verified` is not set, so nothing checked it at runtime.
 
 <sub>source: `Asif's\M44\results_M44.json`</sub>
+
+**`patient_independence_not_asserted`** — Split is declared patient-independent ('official_60_40_patient_independent_corrected') but `patient_leakage_verified` is not set, so nothing checked it at runtime.
+
+<sub>source: `Asif's\M44\results_M44_A0_wrap.json`</sub>
+
+**`patient_independence_not_asserted`** — Split is declared patient-independent ('official_60_40_patient_independent_corrected') but `patient_leakage_verified` is not set, so nothing checked it at runtime.
+
+<sub>source: `Asif's\M44\results_M44_P4_zero.json`</sub>
 
 ### M45
 
@@ -1061,6 +1055,20 @@ Automated protocol-compliance and result-validity audit across every results fil
 **`patient_independence_not_asserted`** — Split is declared patient-independent ('official_60_40_patient_independent_corrected') but `patient_leakage_verified` is not set, so nothing checked it at runtime.
 
 <sub>source: `Asif's\M45\results_M45_P4.json`</sub>
+
+**`schema_incomplete_ablation`** — `ablation` block missing: component_flags, loss_weights.
+
+> `component_flags, loss_weights`
+
+<sub>source: `Asif's\M45\results_M45_P5.json`</sub>
+
+**`no_inference_latency`** — `inference_time_ms_per_sample` not measured. Recommended by §4 and it feeds the efficiency columns of the ablation table.
+
+<sub>source: `Asif's\M45\results_M45_P5.json`</sub>
+
+**`patient_independence_not_asserted`** — Split is declared patient-independent ('official_60_40_patient_independent_corrected') but `patient_leakage_verified` is not set, so nothing checked it at runtime.
+
+<sub>source: `Asif's\M45\results_M45_P5.json`</sub>
 
 ---
 

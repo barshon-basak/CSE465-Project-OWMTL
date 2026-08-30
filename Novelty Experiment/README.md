@@ -18,7 +18,7 @@ python run_all.py          # everything that runs CPU-only, no audio, no GPU
 
 That produces `results/*.json`, `figures/*.png` and `results/RUN_SUMMARY.json`. Nothing needs to be
 downloaded: all the CPU experiments read `concepts_all.npz`, which is already in the repo at
-`../owmtl_concept_engine/owmtl_concept_engine/notebooks/01_concept_extraction_and_validation/`.
+`../owmtl_concept_engine/notebooks/01_concept_extraction_and_validation/`.
 
 With the optional inputs:
 
@@ -44,7 +44,9 @@ All eight have run to completion. Each writes `results/<id>.json` and a figure.
 | `N6_physics_bottleneck.py` | CPU | `--features` for 3 of the 4 bottleneck modes | ✅ all 4 modes |
 | `N7_clinician_intervention.py` | CPU | nothing; `clinician_corrections.csv` upgrades it | ✅ (simulated clinician) |
 | `N8_pediatric_fragility.py` | CPU | `--sprsound_dir` for the actual comparison | ✅ both arms |
-| `N9_clinician_reliability.py` | CPU | the **returned** clinician sheet | 🔴 blocked — sheet is blank |
+| `N9_clinician_reliability.py` | CPU | the **returned** clinician sheet | ✅ 116/132 answered |
+| `N10_gate_vs_clinician.py` | CPU | N9's output | ✅ paired diff UNDECIDED |
+| `N11_supervised_ceiling.py` | CPU | `embeddings/ast_frozen.npy` (optional arms degrade loudly) | ✅ **ceiling answered: labels ARE learnable** |
 
 **N9 is what makes N7 real.** It scores the clinician listening study against ICBHI, measures
 intra-rater reliability from the 12 repeated clips, and writes `clinician_corrections.csv` — the file
@@ -109,7 +111,7 @@ NOVELTY_STATUS.md   the tracker — status, numbers, what is blocked, run log
 ```
 
 `common.py` locates and reuses the existing `owmtl` package
-(`../owmtl_concept_engine/owmtl_concept_engine/owmtl/`) rather than reimplementing it. The concept
+(`../owmtl_concept_engine/owmtl/`) rather than reimplementing it. The concept
 extractors, the leakage estimator, the bottleneck definition, the split loader and the score dumper
 all come from there. On Kaggle/Colab it also finds `/kaggle/input/.../owmtl-package`, so the same
 scripts run unchanged in a notebook.

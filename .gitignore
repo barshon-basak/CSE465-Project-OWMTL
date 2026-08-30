@@ -97,3 +97,10 @@ coverage.xml
 ehthumbs.db
 Thumbs.db
 desktop.ini
+
+# ─── Novelty Experiment results are EVIDENCE, not scratch ────────────
+# The blanket `results/` rule above was hiding every N1-N11 result JSON: the numbers
+# quoted in NOVELTY_STATUS.md and the paper existed only on one laptop. Track them.
+# Large regenerable inputs (M2_features.npy, embeddings/) stay ignored.
+!Novelty Experiment/results/
+!Novelty Experiment/results/**

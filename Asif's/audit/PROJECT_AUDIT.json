@@ -106,36 +106,6 @@
   },
   {
     "model_id": "M2",
-    "path": "Asif's\\M2\\17aug_run_v2\\results_M2.json",
-    "kind": "protocol",
-    "findings": [
-      {
-        "severity": "WARNING",
-        "model": "M2",
-        "check": "no_better_than_majority_class",
-        "message": "Accuracy 0.4009 is not meaningfully above the majority-class rate 0.5729 (always predicting the largest class). The model may be learning little; report macro-F1 rather than accuracy and check the per-class breakdown.",
-        "evidence": "accuracy=0.4009, majority prior=0.5729",
-        "source": "Asif's\\M2\\17aug_run_v2\\results_M2.json"
-      }
-    ]
-  },
-  {
-    "model_id": "M2",
-    "path": "Asif's\\M2\\29aug_run_v3\\results_M2.json",
-    "kind": "protocol",
-    "findings": [
-      {
-        "severity": "WARNING",
-        "model": "M2",
-        "check": "no_better_than_majority_class",
-        "message": "Accuracy 0.4917 is not meaningfully above the majority-class rate 0.5729 (always predicting the largest class). The model may be learning little; report macro-F1 rather than accuracy and check the per-class breakdown.",
-        "evidence": "accuracy=0.4917, majority prior=0.5729",
-        "source": "Asif's\\M2\\29aug_run_v3\\results_M2.json"
-      }
-    ]
-  },
-  {
-    "model_id": "M2",
     "path": "Asif's\\M2\\m2_v4\\results_M2.json",
     "kind": "protocol",
     "findings": [
@@ -234,21 +204,6 @@
   },
   {
     "model_id": "M3",
-    "path": "Asif's\\M3\\17aug_run_result\\results_M3.json",
-    "kind": "protocol",
-    "findings": [
-      {
-        "severity": "WARNING",
-        "model": "M3",
-        "check": "no_better_than_majority_class",
-        "message": "Accuracy 0.4430 is not meaningfully above the majority-class rate 0.5729 (always predicting the largest class). The model may be learning little; report macro-F1 rather than accuracy and check the per-class breakdown.",
-        "evidence": "accuracy=0.4430, majority prior=0.5729",
-        "source": "Asif's\\M3\\17aug_run_result\\results_M3.json"
-      }
-    ]
-  },
-  {
-    "model_id": "M3",
     "path": "Asif's\\M3\\29 aug run\\results_M3.json",
     "kind": "protocol",
     "findings": [
@@ -328,6 +283,84 @@
         "message": "Split is declared patient-independent ('official_60_40_patient_independent_corrected') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
         "evidence": "",
         "source": "Asif's\\M44\\results_M44.json"
+      }
+    ]
+  },
+  {
+    "model_id": "M44",
+    "path": "Asif's\\M44\\results_M44_A0_wrap.json",
+    "kind": "protocol",
+    "findings": [
+      {
+        "severity": "WARNING",
+        "model": "M44",
+        "check": "schema_missing_blocks",
+        "message": "Missing \u00a74 block(s): config, environment, efficiency, best_epoch, best_metrics, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
+        "evidence": "config, environment, efficiency, best_epoch, best_metrics, ablation, training_history",
+        "source": "Asif's\\M44\\results_M44_A0_wrap.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M44",
+        "check": "schema_missing_metrics",
+        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
+        "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
+        "source": "Asif's\\M44\\results_M44_A0_wrap.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M44",
+        "check": "schema_missing_ablation",
+        "message": "No \u00a74.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.",
+        "evidence": "",
+        "source": "Asif's\\M44\\results_M44_A0_wrap.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M44",
+        "check": "patient_independence_not_asserted",
+        "message": "Split is declared patient-independent ('official_60_40_patient_independent_corrected') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
+        "evidence": "",
+        "source": "Asif's\\M44\\results_M44_A0_wrap.json"
+      }
+    ]
+  },
+  {
+    "model_id": "M44",
+    "path": "Asif's\\M44\\results_M44_P4_zero.json",
+    "kind": "protocol",
+    "findings": [
+      {
+        "severity": "WARNING",
+        "model": "M44",
+        "check": "schema_missing_blocks",
+        "message": "Missing \u00a74 block(s): config, environment, efficiency, best_epoch, best_metrics, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
+        "evidence": "config, environment, efficiency, best_epoch, best_metrics, ablation, training_history",
+        "source": "Asif's\\M44\\results_M44_P4_zero.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M44",
+        "check": "schema_missing_metrics",
+        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
+        "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
+        "source": "Asif's\\M44\\results_M44_P4_zero.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M44",
+        "check": "schema_missing_ablation",
+        "message": "No \u00a74.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.",
+        "evidence": "",
+        "source": "Asif's\\M44\\results_M44_P4_zero.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M44",
+        "check": "patient_independence_not_asserted",
+        "message": "Split is declared patient-independent ('official_60_40_patient_independent_corrected') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
+        "evidence": "",
+        "source": "Asif's\\M44\\results_M44_P4_zero.json"
       }
     ]
   },
@@ -614,8 +647,55 @@
     ]
   },
   {
+    "model_id": "M45",
+    "path": "Asif's\\M45\\results_M45_P5.json",
+    "kind": "protocol",
+    "findings": [
+      {
+        "severity": "WARNING",
+        "model": "M45",
+        "check": "schema_missing_blocks",
+        "message": "Missing \u00a74 block(s): environment, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
+        "evidence": "environment, training_history",
+        "source": "Asif's\\M45\\results_M45_P5.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M45",
+        "check": "schema_missing_metrics",
+        "message": "Missing \u00a73 metric(s) in `best_metrics`: precision_macro, recall_macro.",
+        "evidence": "precision_macro, recall_macro",
+        "source": "Asif's\\M45\\results_M45_P5.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M45",
+        "check": "schema_incomplete_ablation",
+        "message": "`ablation` block missing: component_flags, loss_weights.",
+        "evidence": "component_flags, loss_weights",
+        "source": "Asif's\\M45\\results_M45_P5.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M45",
+        "check": "no_inference_latency",
+        "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
+        "evidence": "",
+        "source": "Asif's\\M45\\results_M45_P5.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M45",
+        "check": "patient_independence_not_asserted",
+        "message": "Split is declared patient-independent ('official_60_40_patient_independent_corrected') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
+        "evidence": "",
+        "source": "Asif's\\M45\\results_M45_P5.json"
+      }
+    ]
+  },
+  {
     "model_id": "M11",
-    "path": "Barshon's\\M11\\results_M11 (3).json",
+    "path": "Barshon's\\M11\\results_M11.json",
     "kind": "protocol",
     "findings": [
       {
@@ -624,7 +704,7 @@
         "check": "schema_missing_blocks",
         "message": "Missing \u00a74 block(s): efficiency, best_epoch, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
         "evidence": "efficiency, best_epoch, ablation, training_history",
-        "source": "Barshon's\\M11\\results_M11 (3).json"
+        "source": "Barshon's\\M11\\results_M11.json"
       },
       {
         "severity": "WARNING",
@@ -632,7 +712,7 @@
         "check": "schema_missing_metrics",
         "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
         "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
-        "source": "Barshon's\\M11\\results_M11 (3).json"
+        "source": "Barshon's\\M11\\results_M11.json"
       },
       {
         "severity": "WARNING",
@@ -640,7 +720,7 @@
         "check": "schema_missing_ablation",
         "message": "No \u00a74.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.",
         "evidence": "",
-        "source": "Barshon's\\M11\\results_M11 (3).json"
+        "source": "Barshon's\\M11\\results_M11.json"
       },
       {
         "severity": "INFO",
@@ -648,7 +728,7 @@
         "check": "patient_independence_not_asserted",
         "message": "Split is declared patient-independent ('patient_independent_60_20_20') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
         "evidence": "",
-        "source": "Barshon's\\M11\\results_M11 (3).json"
+        "source": "Barshon's\\M11\\results_M11.json"
       }
     ]
   },
@@ -672,69 +752,6 @@
         "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
         "evidence": "",
         "source": "Barshon's\\M13\\results_M13.json"
-      }
-    ]
-  },
-  {
-    "model_id": "M14",
-    "path": "Barshon's\\M14\\v1\\results_M14.json",
-    "kind": "protocol",
-    "findings": [
-      {
-        "severity": "WARNING",
-        "model": "M14",
-        "check": "schema_missing_blocks",
-        "message": "Missing \u00a74 block(s): efficiency, best_epoch, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
-        "evidence": "efficiency, best_epoch, training_history",
-        "source": "Barshon's\\M14\\v1\\results_M14.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M14",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
-        "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
-        "source": "Barshon's\\M14\\v1\\results_M14.json"
-      },
-      {
-        "severity": "CRITICAL",
-        "model": "M14",
-        "check": "discrimination_at_or_below_chance",
-        "message": "`best_metrics.auroc` = 0.4522 is at or below chance (0.5). A random scorer would do as well or better, so this value cannot support a detection claim.",
-        "evidence": "best_metrics.auroc = 0.4522",
-        "source": "Barshon's\\M14\\v1\\results_M14.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M14",
-        "check": "weak_discrimination",
-        "message": "`baseline_comparisons.m15_auroc` = 0.5782 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
-        "evidence": "baseline_comparisons.m15_auroc = 0.5782",
-        "source": "Barshon's\\M14\\v1\\results_M14.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M14",
-        "check": "weak_discrimination",
-        "message": "`baseline_comparisons.m29_energy_auroc` = 0.6466 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
-        "evidence": "baseline_comparisons.m29_energy_auroc = 0.6466",
-        "source": "Barshon's\\M14\\v1\\results_M14.json"
-      },
-      {
-        "severity": "INFO",
-        "model": "M14",
-        "check": "cites_subchance_reference_value",
-        "message": "`baseline_comparisons.reference_m6_openmax_auroc` = 0.4516 is cited here as context from another model's already-audited result (it is at or below chance). This is not a claim about M14's own performance -- see that other model's audit entry for the underlying problem -- but do not treat it as a validity benchmark for M14.",
-        "evidence": "baseline_comparisons.reference_m6_openmax_auroc = 0.4516",
-        "source": "Barshon's\\M14\\v1\\results_M14.json"
-      },
-      {
-        "severity": "INFO",
-        "model": "M14",
-        "check": "patient_independence_not_asserted",
-        "message": "Split is declared patient-independent ('patient_independent_60_20_20') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
-        "evidence": "",
-        "source": "Barshon's\\M14\\v1\\results_M14.json"
       }
     ]
   },
@@ -806,69 +823,6 @@
         "message": "Split is declared patient-independent ('patient_independent_60_20_20') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
         "evidence": "",
         "source": "Barshon's\\M14\\v2\\results_M14.json"
-      }
-    ]
-  },
-  {
-    "model_id": "M15",
-    "path": "Barshon's\\M15\\v4\\results_M15.json",
-    "kind": "protocol",
-    "findings": [
-      {
-        "severity": "WARNING",
-        "model": "M15",
-        "check": "schema_missing_blocks",
-        "message": "Missing \u00a74 block(s): efficiency, best_epoch, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
-        "evidence": "efficiency, best_epoch, training_history",
-        "source": "Barshon's\\M15\\v4\\results_M15.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M15",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: accuracy, precision_macro, recall_macro, f1_macro.",
-        "evidence": "accuracy, precision_macro, recall_macro, f1_macro",
-        "source": "Barshon's\\M15\\v4\\results_M15.json"
-      },
-      {
-        "severity": "INFO",
-        "model": "M15",
-        "check": "schema_incomplete_ablation",
-        "message": "`ablation` block missing: component_flags, loss_weights.",
-        "evidence": "component_flags, loss_weights",
-        "source": "Barshon's\\M15\\v4\\results_M15.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M15",
-        "check": "weak_discrimination",
-        "message": "`best_metrics.auroc` = 0.5782 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
-        "evidence": "best_metrics.auroc = 0.5782",
-        "source": "Barshon's\\M15\\v4\\results_M15.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M15",
-        "check": "weak_discrimination",
-        "message": "`baseline_comparisons.m29_energy_auroc` = 0.6005 is weak. Conventionally <0.7 AUROC is considered poor discrimination; this needs framing as a negative or preliminary result, not a validated mechanism.",
-        "evidence": "baseline_comparisons.m29_energy_auroc = 0.6005",
-        "source": "Barshon's\\M15\\v4\\results_M15.json"
-      },
-      {
-        "severity": "INFO",
-        "model": "M15",
-        "check": "cites_subchance_reference_value",
-        "message": "`baseline_comparisons.reference_m6_openmax_auroc` = 0.4516 is cited here as context from another model's already-audited result (it is at or below chance). This is not a claim about M15's own performance -- see that other model's audit entry for the underlying problem -- but do not treat it as a validity benchmark for M15.",
-        "evidence": "baseline_comparisons.reference_m6_openmax_auroc = 0.4516",
-        "source": "Barshon's\\M15\\v4\\results_M15.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "M15",
-        "check": "patient_independence_unclear",
-        "message": "`dataset_info.split_method` = 'None' does not state a patient-independent split, and `patient_leakage_verified` is absent. Protocol \u00a71 calls this a research-validity requirement, not a style choice -- it should be asserted in code, not assumed.",
-        "evidence": "",
-        "source": "Barshon's\\M15\\v4\\results_M15.json"
       }
     ]
   },
@@ -1247,45 +1201,6 @@
     ]
   },
   {
-    "model_id": "M30",
-    "path": "Barshon's\\M30\\results_M30.json",
-    "kind": "protocol",
-    "findings": [
-      {
-        "severity": "WARNING",
-        "model": "M30",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: precision_macro, recall_macro, f1_macro.",
-        "evidence": "precision_macro, recall_macro, f1_macro",
-        "source": "Barshon's\\M30\\results_M30.json"
-      },
-      {
-        "severity": "INFO",
-        "model": "M30",
-        "check": "no_inference_latency",
-        "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
-        "evidence": "",
-        "source": "Barshon's\\M30\\results_M30.json"
-      },
-      {
-        "severity": "INFO",
-        "model": "M30",
-        "check": "patient_independence_not_asserted",
-        "message": "Split is declared patient-independent ('patient_independent_70_30') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
-        "evidence": "",
-        "source": "Barshon's\\M30\\results_M30.json"
-      },
-      {
-        "severity": "CRITICAL",
-        "model": "M30",
-        "check": "icbhi_score_unverifiable",
-        "message": "`icbhi_score` = 0.8213 is reported with no committed `confusion_matrix_raw`, so neither the macro nor the official ICBHI score can be independently recomputed -- not by a teammate, not by this tool, not by a reviewer who asks. Re-export this run with the confusion matrix (protocol section 4) before the number is used in any table or claim.",
-        "evidence": "icbhi_score = 0.8213, confusion_matrix_raw absent",
-        "source": "Barshon's\\M30\\results_M30.json"
-      }
-    ]
-  },
-  {
     "model_id": "M31",
     "path": "Barshon's\\M31\\results_M31.json",
     "kind": "protocol",
@@ -1499,6 +1414,288 @@
     ]
   },
   {
+    "model_id": "M40",
+    "path": "M40_M43_transformers\\Results\\results_M40.json",
+    "kind": "protocol",
+    "findings": [
+      {
+        "severity": "WARNING",
+        "model": "M40",
+        "check": "schema_missing_blocks",
+        "message": "Missing \u00a74 block(s): environment, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
+        "evidence": "environment, ablation, training_history",
+        "source": "M40_M43_transformers\\Results\\results_M40.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M40",
+        "check": "schema_missing_metrics",
+        "message": "Missing \u00a73 metric(s) in `best_metrics`: precision_macro, recall_macro.",
+        "evidence": "precision_macro, recall_macro",
+        "source": "M40_M43_transformers\\Results\\results_M40.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M40",
+        "check": "schema_missing_ablation",
+        "message": "No \u00a74.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.",
+        "evidence": "",
+        "source": "M40_M43_transformers\\Results\\results_M40.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M40",
+        "check": "no_inference_latency",
+        "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
+        "evidence": "",
+        "source": "M40_M43_transformers\\Results\\results_M40.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M40",
+        "check": "patient_independence_not_asserted",
+        "message": "Split is declared patient-independent ('official_60_40_patient_independent_corrected') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
+        "evidence": "",
+        "source": "M40_M43_transformers\\Results\\results_M40.json"
+      }
+    ]
+  },
+  {
+    "model_id": "M40",
+    "path": "M40_M43_transformers\\Results\\results_M40_aug.json",
+    "kind": "protocol",
+    "findings": [
+      {
+        "severity": "WARNING",
+        "model": "M40",
+        "check": "schema_missing_blocks",
+        "message": "Missing \u00a74 block(s): environment, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
+        "evidence": "environment, ablation, training_history",
+        "source": "M40_M43_transformers\\Results\\results_M40_aug.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M40",
+        "check": "schema_missing_metrics",
+        "message": "Missing \u00a73 metric(s) in `best_metrics`: precision_macro, recall_macro.",
+        "evidence": "precision_macro, recall_macro",
+        "source": "M40_M43_transformers\\Results\\results_M40_aug.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M40",
+        "check": "schema_missing_ablation",
+        "message": "No \u00a74.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.",
+        "evidence": "",
+        "source": "M40_M43_transformers\\Results\\results_M40_aug.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M40",
+        "check": "no_inference_latency",
+        "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
+        "evidence": "",
+        "source": "M40_M43_transformers\\Results\\results_M40_aug.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M40",
+        "check": "patient_independence_not_asserted",
+        "message": "Split is declared patient-independent ('official_60_40_patient_independent_corrected') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
+        "evidence": "",
+        "source": "M40_M43_transformers\\Results\\results_M40_aug.json"
+      }
+    ]
+  },
+  {
+    "model_id": "M41",
+    "path": "M40_M43_transformers\\Results\\results_M41.json",
+    "kind": "protocol",
+    "findings": [
+      {
+        "severity": "WARNING",
+        "model": "M41",
+        "check": "schema_missing_blocks",
+        "message": "Missing \u00a74 block(s): environment, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
+        "evidence": "environment, ablation, training_history",
+        "source": "M40_M43_transformers\\Results\\results_M41.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M41",
+        "check": "schema_missing_metrics",
+        "message": "Missing \u00a73 metric(s) in `best_metrics`: precision_macro, recall_macro.",
+        "evidence": "precision_macro, recall_macro",
+        "source": "M40_M43_transformers\\Results\\results_M41.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M41",
+        "check": "schema_missing_ablation",
+        "message": "No \u00a74.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.",
+        "evidence": "",
+        "source": "M40_M43_transformers\\Results\\results_M41.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M41",
+        "check": "no_inference_latency",
+        "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
+        "evidence": "",
+        "source": "M40_M43_transformers\\Results\\results_M41.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M41",
+        "check": "patient_independence_not_asserted",
+        "message": "Split is declared patient-independent ('official_60_40_patient_independent_corrected') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
+        "evidence": "",
+        "source": "M40_M43_transformers\\Results\\results_M41.json"
+      }
+    ]
+  },
+  {
+    "model_id": "M41",
+    "path": "M40_M43_transformers\\Results\\results_M41_aug.json",
+    "kind": "protocol",
+    "findings": [
+      {
+        "severity": "WARNING",
+        "model": "M41",
+        "check": "schema_missing_blocks",
+        "message": "Missing \u00a74 block(s): environment, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
+        "evidence": "environment, ablation, training_history",
+        "source": "M40_M43_transformers\\Results\\results_M41_aug.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M41",
+        "check": "schema_missing_metrics",
+        "message": "Missing \u00a73 metric(s) in `best_metrics`: precision_macro, recall_macro.",
+        "evidence": "precision_macro, recall_macro",
+        "source": "M40_M43_transformers\\Results\\results_M41_aug.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M41",
+        "check": "schema_missing_ablation",
+        "message": "No \u00a74.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.",
+        "evidence": "",
+        "source": "M40_M43_transformers\\Results\\results_M41_aug.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M41",
+        "check": "no_inference_latency",
+        "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
+        "evidence": "",
+        "source": "M40_M43_transformers\\Results\\results_M41_aug.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M41",
+        "check": "patient_independence_not_asserted",
+        "message": "Split is declared patient-independent ('official_60_40_patient_independent_corrected') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
+        "evidence": "",
+        "source": "M40_M43_transformers\\Results\\results_M41_aug.json"
+      }
+    ]
+  },
+  {
+    "model_id": "M42",
+    "path": "M40_M43_transformers\\Results\\results_M42.json",
+    "kind": "protocol",
+    "findings": [
+      {
+        "severity": "WARNING",
+        "model": "M42",
+        "check": "schema_missing_blocks",
+        "message": "Missing \u00a74 block(s): environment, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
+        "evidence": "environment, ablation, training_history",
+        "source": "M40_M43_transformers\\Results\\results_M42.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M42",
+        "check": "schema_missing_metrics",
+        "message": "Missing \u00a73 metric(s) in `best_metrics`: precision_macro, recall_macro.",
+        "evidence": "precision_macro, recall_macro",
+        "source": "M40_M43_transformers\\Results\\results_M42.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M42",
+        "check": "schema_missing_ablation",
+        "message": "No \u00a74.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.",
+        "evidence": "",
+        "source": "M40_M43_transformers\\Results\\results_M42.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M42",
+        "check": "no_inference_latency",
+        "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
+        "evidence": "",
+        "source": "M40_M43_transformers\\Results\\results_M42.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M42",
+        "check": "patient_independence_not_asserted",
+        "message": "Split is declared patient-independent ('official_60_40_patient_independent_corrected') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
+        "evidence": "",
+        "source": "M40_M43_transformers\\Results\\results_M42.json"
+      }
+    ]
+  },
+  {
+    "model_id": "M42",
+    "path": "M40_M43_transformers\\Results\\results_M42_aug.json",
+    "kind": "protocol",
+    "findings": [
+      {
+        "severity": "WARNING",
+        "model": "M42",
+        "check": "schema_missing_blocks",
+        "message": "Missing \u00a74 block(s): environment, ablation, training_history. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
+        "evidence": "environment, ablation, training_history",
+        "source": "M40_M43_transformers\\Results\\results_M42_aug.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M42",
+        "check": "schema_missing_metrics",
+        "message": "Missing \u00a73 metric(s) in `best_metrics`: precision_macro, recall_macro.",
+        "evidence": "precision_macro, recall_macro",
+        "source": "M40_M43_transformers\\Results\\results_M42_aug.json"
+      },
+      {
+        "severity": "WARNING",
+        "model": "M42",
+        "check": "schema_missing_ablation",
+        "message": "No \u00a74.1 `ablation` block. Without it this run cannot be placed in the ablation table automatically at M28.",
+        "evidence": "",
+        "source": "M40_M43_transformers\\Results\\results_M42_aug.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M42",
+        "check": "no_inference_latency",
+        "message": "`inference_time_ms_per_sample` not measured. Recommended by \u00a74 and it feeds the efficiency columns of the ablation table.",
+        "evidence": "",
+        "source": "M40_M43_transformers\\Results\\results_M42_aug.json"
+      },
+      {
+        "severity": "INFO",
+        "model": "M42",
+        "check": "patient_independence_not_asserted",
+        "message": "Split is declared patient-independent ('official_60_40_patient_independent_corrected') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
+        "evidence": "",
+        "source": "M40_M43_transformers\\Results\\results_M42_aug.json"
+      }
+    ]
+  },
+  {
     "model_id": "M7",
     "path": "Sami's\\M7\\M7_handoff\\results_M7.json",
     "kind": "protocol",
@@ -1573,162 +1770,6 @@
         "message": "Split is declared patient-independent ('patient_independent_60_40_with_calibration_carveout') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
         "evidence": "",
         "source": "Sami's\\M7\\M7_handoff\\results_M7_aug.json"
-      }
-    ]
-  },
-  {
-    "model_id": "?",
-    "path": "owmtl_concept_engine\\owmtl_concept_engine\\notebooks\\002_concept_bottleneck_training\\output\\results_M13cbm_independent.json",
-    "kind": "protocol",
-    "findings": [
-      {
-        "severity": "WARNING",
-        "model": "?",
-        "check": "schema_missing_blocks",
-        "message": "Missing \u00a74 block(s): best_epoch. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
-        "evidence": "best_epoch",
-        "source": "owmtl_concept_engine\\owmtl_concept_engine\\notebooks\\002_concept_bottleneck_training\\output\\results_M13cbm_independent.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "?",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: precision_macro, recall_macro.",
-        "evidence": "precision_macro, recall_macro",
-        "source": "owmtl_concept_engine\\owmtl_concept_engine\\notebooks\\002_concept_bottleneck_training\\output\\results_M13cbm_independent.json"
-      },
-      {
-        "severity": "INFO",
-        "model": "?",
-        "check": "schema_incomplete_ablation",
-        "message": "`ablation` block missing: loss_weights.",
-        "evidence": "loss_weights",
-        "source": "owmtl_concept_engine\\owmtl_concept_engine\\notebooks\\002_concept_bottleneck_training\\output\\results_M13cbm_independent.json"
-      },
-      {
-        "severity": "INFO",
-        "model": "?",
-        "check": "patient_independence_not_asserted",
-        "message": "Split is declared patient-independent ('patient_independent_official_60_40') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
-        "evidence": "",
-        "source": "owmtl_concept_engine\\owmtl_concept_engine\\notebooks\\002_concept_bottleneck_training\\output\\results_M13cbm_independent.json"
-      }
-    ]
-  },
-  {
-    "model_id": "?",
-    "path": "owmtl_concept_engine\\owmtl_concept_engine\\notebooks\\002_concept_bottleneck_training\\output\\results_M13cbm_leaky.json",
-    "kind": "protocol",
-    "findings": [
-      {
-        "severity": "WARNING",
-        "model": "?",
-        "check": "schema_missing_blocks",
-        "message": "Missing \u00a74 block(s): best_epoch. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
-        "evidence": "best_epoch",
-        "source": "owmtl_concept_engine\\owmtl_concept_engine\\notebooks\\002_concept_bottleneck_training\\output\\results_M13cbm_leaky.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "?",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: precision_macro, recall_macro.",
-        "evidence": "precision_macro, recall_macro",
-        "source": "owmtl_concept_engine\\owmtl_concept_engine\\notebooks\\002_concept_bottleneck_training\\output\\results_M13cbm_leaky.json"
-      },
-      {
-        "severity": "INFO",
-        "model": "?",
-        "check": "schema_incomplete_ablation",
-        "message": "`ablation` block missing: loss_weights.",
-        "evidence": "loss_weights",
-        "source": "owmtl_concept_engine\\owmtl_concept_engine\\notebooks\\002_concept_bottleneck_training\\output\\results_M13cbm_leaky.json"
-      },
-      {
-        "severity": "INFO",
-        "model": "?",
-        "check": "patient_independence_not_asserted",
-        "message": "Split is declared patient-independent ('patient_independent_official_60_40') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
-        "evidence": "",
-        "source": "owmtl_concept_engine\\owmtl_concept_engine\\notebooks\\002_concept_bottleneck_training\\output\\results_M13cbm_leaky.json"
-      }
-    ]
-  },
-  {
-    "model_id": "?",
-    "path": "owmtl_concept_engine\\owmtl_concept_engine\\notebooks\\002_concept_bottleneck_training\\output\\results_M13cbm_opaque.json",
-    "kind": "protocol",
-    "findings": [
-      {
-        "severity": "WARNING",
-        "model": "?",
-        "check": "schema_missing_blocks",
-        "message": "Missing \u00a74 block(s): best_epoch. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
-        "evidence": "best_epoch",
-        "source": "owmtl_concept_engine\\owmtl_concept_engine\\notebooks\\002_concept_bottleneck_training\\output\\results_M13cbm_opaque.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "?",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: precision_macro, recall_macro.",
-        "evidence": "precision_macro, recall_macro",
-        "source": "owmtl_concept_engine\\owmtl_concept_engine\\notebooks\\002_concept_bottleneck_training\\output\\results_M13cbm_opaque.json"
-      },
-      {
-        "severity": "INFO",
-        "model": "?",
-        "check": "schema_incomplete_ablation",
-        "message": "`ablation` block missing: loss_weights.",
-        "evidence": "loss_weights",
-        "source": "owmtl_concept_engine\\owmtl_concept_engine\\notebooks\\002_concept_bottleneck_training\\output\\results_M13cbm_opaque.json"
-      },
-      {
-        "severity": "INFO",
-        "model": "?",
-        "check": "patient_independence_not_asserted",
-        "message": "Split is declared patient-independent ('patient_independent_official_60_40') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
-        "evidence": "",
-        "source": "owmtl_concept_engine\\owmtl_concept_engine\\notebooks\\002_concept_bottleneck_training\\output\\results_M13cbm_opaque.json"
-      }
-    ]
-  },
-  {
-    "model_id": "?",
-    "path": "owmtl_concept_engine\\owmtl_concept_engine\\notebooks\\002_concept_bottleneck_training\\output\\results_M13cbm_sequential.json",
-    "kind": "protocol",
-    "findings": [
-      {
-        "severity": "WARNING",
-        "model": "?",
-        "check": "schema_missing_blocks",
-        "message": "Missing \u00a74 block(s): best_epoch. The M28 merge script expects every block; absent ones must be reconstructed by hand.",
-        "evidence": "best_epoch",
-        "source": "owmtl_concept_engine\\owmtl_concept_engine\\notebooks\\002_concept_bottleneck_training\\output\\results_M13cbm_sequential.json"
-      },
-      {
-        "severity": "WARNING",
-        "model": "?",
-        "check": "schema_missing_metrics",
-        "message": "Missing \u00a73 metric(s) in `best_metrics`: precision_macro, recall_macro.",
-        "evidence": "precision_macro, recall_macro",
-        "source": "owmtl_concept_engine\\owmtl_concept_engine\\notebooks\\002_concept_bottleneck_training\\output\\results_M13cbm_sequential.json"
-      },
-      {
-        "severity": "INFO",
-        "model": "?",
-        "check": "schema_incomplete_ablation",
-        "message": "`ablation` block missing: loss_weights.",
-        "evidence": "loss_weights",
-        "source": "owmtl_concept_engine\\owmtl_concept_engine\\notebooks\\002_concept_bottleneck_training\\output\\results_M13cbm_sequential.json"
-      },
-      {
-        "severity": "INFO",
-        "model": "?",
-        "check": "patient_independence_not_asserted",
-        "message": "Split is declared patient-independent ('patient_independent_official_60_40') but `patient_leakage_verified` is not set, so nothing checked it at runtime.",
-        "evidence": "",
-        "source": "owmtl_concept_engine\\owmtl_concept_engine\\notebooks\\002_concept_bottleneck_training\\output\\results_M13cbm_sequential.json"
       }
     ]
   },

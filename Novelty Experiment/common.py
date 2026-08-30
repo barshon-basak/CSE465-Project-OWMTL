@@ -42,7 +42,7 @@ def add_owmtl_to_path():
     """Put the existing owmtl package on sys.path. Also honours a Kaggle/Colab copy so the
     same script runs unchanged inside a notebook."""
     cands = [
-        os.path.join(repo_root(), "owmtl_concept_engine", "owmtl_concept_engine"),
+        os.path.join(repo_root(), "owmtl_concept_engine"),
         "/kaggle/input/datasets/barshonbasak/owmtl-package",
         "/kaggle/working/owmtl-package",
         "/content/owmtl_concept_engine",
@@ -60,7 +60,7 @@ OWMTL_PATH = add_owmtl_to_path()
 
 # --------------------------------------------------------------------------- data loading
 CONCEPT_NPZ_CANDIDATES = [
-    os.path.join(repo_root(), "owmtl_concept_engine", "owmtl_concept_engine", "notebooks",
+    os.path.join(repo_root(), "owmtl_concept_engine", "notebooks",
                  "01_concept_extraction_and_validation", "concepts_all.npz"),
     "/kaggle/input/datasets/barshonbasak/concepts-all/concepts_all.npz",
     "/content/concepts_all.npz",

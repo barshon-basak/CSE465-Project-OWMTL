@@ -1,0 +1,90 @@
+{
+  "experiment": "N4_honest_operating_point",
+  "status": "OK",
+  "space": "m2_embedding",
+  "supersedes": {
+    "M11": "calibration, now on the official split with an accuracy-invariance check",
+    "M14": "conformal, now reporting the empty-set rate rather than the guaranteed coverage"
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "evaluation_level": "patient",
+    "split_method": "patient_independent_official_60_40 (train split further into fit/calibration)",
+    "n_fit": 42,
+    "n_calibration": 19,
+    "n_test": 43,
+    "n_unknown": 19
+  },
+  "calibration": {
+    "before": {
+      "temperature": 1.0,
+      "accuracy": 0.5116,
+      "ece": 0.4049,
+      "mce": 0.743,
+      "brier": 0.8081,
+      "nll": 2.0927
+    },
+    "after_temperature_scaling": {
+      "temperature": 4.8946,
+      "accuracy": 0.5116,
+      "ece": 0.1771,
+      "mce": 0.4826,
+      "brier": 0.5693,
+      "nll": 0.885
+    },
+    "temperature": 4.8946,
+    "accuracy_invariant": true,
+    "sanity_note": "Temperature scaling is monotone, so accuracy MUST be unchanged. M11 reported accuracy moving 0.3573 -> 0.6595 under calibration, which means the comparison there was not like-for-like."
+  },
+  "selective_prediction": {
+    "aurc": 0.3424,
+    "selective_accuracy": {
+      "coverage_100": 0.5116,
+      "coverage_90": 0.5789,
+      "coverage_80": 0.6176,
+      "coverage_70": 0.6,
+      "coverage_50": 0.619
+    },
+    "note": "AURC lower is better; no other model in the repo reports one."
+  },
+  "clinical_operating_point": {
+    "threshold_selected_on": "calibration split (never on test)",
+    "target_sensitivity": 0.9,
+    "threshold": 0.702842,
+    "test_sensitivity": 0.8966,
+    "test_sensitivity_ci95": [
+      0.7586,
+      1.0
+    ],
+    "test_specificity": 0.5714,
+    "ppv": 0.8125,
+    "npv": 0.7273,
+    "referral_rate": 0.7442,
+    "confusion": {
+      "tp": 26,
+      "fp": 6,
+      "fn": 3,
+      "tn": 8
+    },
+    "fn_fp_cost_ratio": 10.0,
+    "expected_cost_per_patient": 0.8372,
+    "target_met_on_test": false,
+    "note": "Sensitivity on test may fall below target - that gap is the honest result. A threshold re-tuned on test to hit the target would be the exact error the corrected protocol forbids."
+  },
+  "conformal": {
+    "alpha": 0.1,
+    "target_coverage": 0.9,
+    "conformal_quantile": 0.772322,
+    "mean_set_size_test": 1.6977,
+    "empty_set_rate_test_known": 0.0,
+    "empty_set_rate_unknown": 0.0,
+    "mean_set_size_unknown": 1.8421,
+    "reading": "Empty-set rate on unknown patients is the detection number. If it is ~0 the wrapper detects nothing, no matter how good the coverage looks - this is the M14 conformal paradox stated correctly."
+  },
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.14.6",
+    "numpy_version": "2.4.6",
+    "run_utc": "2026-08-28T22:11:53+00:00"
+  }
+}

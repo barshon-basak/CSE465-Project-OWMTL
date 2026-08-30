@@ -50,6 +50,7 @@ project had never been able to run.
 | 7 | Clinician Concept Intervention | 🟡 mechanism only | ✅ **complete** — 2 modes + curve, **REAL clinician** | `N7_clinician_intervention.py` |
 | 8 | Pediatric Physics-Fragility | 🔴 12-line MMD stub | ✅ **complete** — 2 arms, pre-registered | `N8_pediatric_fragility.py` |
 | 9 | *(support)* Clinician Label Reliability | 🔴 nothing | ✅ **complete** — real labels scored | `N9_clinician_reliability.py` |
+| 11 | *(support)* **Supervised ceiling — is 0.65 reachable at all?** | 🔴 the open question | ✅ **complete — answers it: YES** | `N11_supervised_ceiling.py` |
 | 10 | *(support)* Gate G2 vs an independent reference | 🔴 impossible before now | ✅ **complete** — the G2 ambiguity finally measured | `N10_gate_vs_clinician.py` |
 
 ### Inputs that were acquired to get here
@@ -614,6 +615,17 @@ is now the fourth independent line of evidence against that concept.
 > information. Given the option to bypass the concept layer entirely, the bottleneck does: N7's
 > leaky mode drops per-concept sensitivity 20×.
 
+**A late fourth result overturns the framing of all of them (2026-08-30):**
+
+> **N11 — the labels are learnable, so the ceiling argument is retracted.** A logistic probe on the
+> frozen AudioSet AST embedding, fit on train patients and scored on the same 2,636 test cycles G2
+> failed on, reaches **AUROC 0.7115 (crackle) / 0.7621 (wheeze)** — well above the 0.65 gate, from a
+> network that never saw a respiratory corpus. The 14 DSP concepts *as a vector* reach 0.6608 on
+> crackle, above the threshold the single G2 scalar failed. Reading (b) of the pivot document — "0.65
+> may be unreachable here" — is dead. Our extractors were weak, and the paper now says so. What
+> replaces the ceiling claim is sharper: **machines reproduce these labels far better than a trained
+> physician agrees with them** (κ 0.035 crackle, Se 23.1%). See `../DECISION_2026-08-30_CONSOLIDATION.md`.
+
 **A third, mechanistic result stands on its own:**
 
 > **3. The frequency concepts shift with airway size as the physics predicts — but the mechanism is
@@ -646,7 +658,7 @@ genuinely new, positive, and mechanistic, which the pivot did not anticipate.
 | # | Task | Effort | Why |
 |---|---|---|---|
 | 1 | Fold N6's non-replication into the paper | writing | a committed claim that does not survive seed variance must not ship |
-| 2 | **Get the clinician to fill in the sheet** | their time | the only simulated component left. `N9` then runs in seconds, writes `clinician_corrections.csv`, and N7 picks it up automatically |
+| 2 | ~~Get a second clinician~~ | — | **dropped 2026-08-30.** N11 bounds the reference standard directly, which is the only job the second rater had. Single-rater is a stated limitation now, not a blocker |
 | 3 | Raise N8's pre-registered predictions above 4 | design | with 4 predictions the binomial sign test floors at p = 0.0625 and can never reach significance; more named predictions would fix the power, not just the phrasing |
 | 4 | N5 null at `--n_perm` ≥ 20 | ~2 h CPU | the null *mean* is solid at 5; only quote a null *interval* after this |
 | 5 | Re-run N1's LoRA at other ranks / epochs | ~1 h each on the 4050 | tests whether concept destruction scales with adaptation strength — the obvious follow-up to the headline |
@@ -682,6 +694,10 @@ genuinely new, positive, and mechanistic, which the pivot did not anticipate.
 | 2026-08-29 | — | synthetic-data audit of all scripts | one substitution found: N7's clinician oracle. All other randomness is controls, bootstraps or nulls on real data |
 | 2026-08-29 | — | built `N9_clinician_reliability.py`, `--selftest` | 90%-agreeing synthetic rater → κ 0.758; random rater → κ −0.160. Statistics validated |
 | 2026-08-29 | — | N9 against the real sheet | **BLOCKED: 0/132 clips answered** — `labels.csv`/`.xlsx` are the blank template. No result invented |
+
+| 2026-08-30 | — | repo consolidation | 8 superseded run folders archived; concept engine un-nested; M28 now skips `Archive_Files` |
+| 2026-08-30 | — | **N11 built + `--selftest` + full run** | planted-signal 1.000 / noise 0.511 PASS. **AST frozen 0.7115 crackle / 0.7621 wheeze**, M2 0.7451 / 0.8673, 14-concept vector 0.6608 / 0.5815. Pre-registered **NO CEILING** branch fired |
+| 2026-08-30 | — | N9 / N10 re-run after the ceiling retraction | conflated G2 pairs separated (9-concept M39 gate vs 14-concept engine); N9's ceiling reading rewritten |
 
 > Append a row every time you run something. A number without a row here is a number nobody can
 > reproduce.

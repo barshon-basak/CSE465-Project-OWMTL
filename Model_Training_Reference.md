@@ -14,7 +14,8 @@
 
 1. **Two metrics exist.** `icbhi_score` (macro, project-internal) runs **~0.11 higher** than the official ICBHI `(Se+Sp)/2`. Only the **official** number is comparable to published work. Where both are known, the official is shown and the macro is struck through.
 2. **Two splits exist and are not comparable.** M1–M4, M12, M22 use the **official 60/40** split; M30–M37 use an easier **70/30** split. A 70/30 number cannot be ranked against a 60/40 number.
-3. **Open-set AUROCs are statistically tied to chance.** At n=19 unknown patients, every open-set detector (M6/M14/M15/M29) has a 95% CI spanning ~0.3 AUROC points and crossing 0.5. The honest phrasing is "not shown to beat a coin flip yet," **not** "mechanism X beats/loses to Y."
+3. **One canonical run per model.** `DECISION_2026-08-30_CONSOLIDATION.md` §3 is the register; superseded duplicates live in `Archive_Files (v4)/` and must not be cited. The two G2 pairs (9-concept M39 gate vs 14-concept engine) are different implementations — do not mix them.
+4. **Open-set AUROCs are statistically tied to chance.** At n=19 unknown patients, every open-set detector (M6/M14/M15/M29) has a 95% CI spanning ~0.3 AUROC points and crossing 0.5. The honest phrasing is "not shown to beat a coin flip yet," **not** "mechanism X beats/loses to Y."
 
 ---
 
@@ -25,13 +26,13 @@
 | M1 | Provisional CNN backbone | Barshon | ✅ real | Official ICBHI 0.6143 (throwaway ref) |
 | M2 | Tuned CNN backbone (**selected**) | Asif | ✅ real, clean | **Official ICBHI 0.6138** — the trustworthy anchor |
 | M3 | MobileNetV2 lightweight backbone | Asif | ✅ real | Official 0.5895 |
-| M4 | AST transformer backbone | Asif/Barshon | ✅ real | Macro 0.6359; ⚠️ no committed JSON |
+| M4 | AST transformer backbone | Asif/Barshon | ⛔ **dropped 2026-08-30** | no committed JSON; M43 replaces it |
 | M12 | Backbone selection audit | Asif | ✅ real, clean | Selected M2 |
 | M22 | M3 + SpecAugment | Asif | ✅ real, clean | **Official 0.6495 — best on the official split** |
 | M23 | AST + SpecAugment | Farhana | ⚠️ not established | — |
 | M6 | OpenMax + Weibull open-set baseline | Barshon | ✅ real (negative) | AUROC 0.4516 (below chance) |
 | M29 | Post-hoc OOD suite (MSP/Energy/Maha) | Asif | ✅ real, clean | Energy AUROC 0.6466 — the bar |
-| M38 | Large-N open-set | Asif | ⚠️ not established (new) | — |
+| M38 | Large-N open-set | Asif | ⛔ **dropped 2026-08-30** | never run; n=19 is structural — consolidation §5 |
 | M13 | Prototypical disease head | Barshon | ✅ real (v4); earlier broken | Patient-F1 0.6061 |
 | M15 | Cross-task consistency scorer | Barshon | 🔴 core mechanism failed | AUROC 0.5747 < Energy 0.6466 |
 | M17 | OWL Stage-2 forgetting curve | Barshon | ✅ real (v2) | Forgetting −15.34% |
@@ -53,12 +54,16 @@
 | M35 | Physics-informed loss | Barshon | ✅ real | **Official 0.6864 — best verified** |
 | M35_v2 | Physics loss (re-run) | Barshon | 🔴 broken (best epoch 1) | Official 0.6719, regressed |
 | M36 | Multistage distillation | Barshon | 🔴 collapsed (Se=0.09) | Official 0.5052 |
-| M37 | Audio LoRA (PEFT on CNN) | Barshon | ✅ real | Official 0.6753, 0.23% params |
-| M37_v2 | LoRA — **on the M2 CNN, not on an AST** | Barshon | ⚠️ not established; title misleading | — |
+| M37 | Audio LoRA (PEFT on CNN) — notebook only, no committed JSON | Barshon | ⚠️ result lives in M37_v2 | — |
+| M37_v2 | LoRA — **on the M2 CNN, not on an AST** (title misleading) | Barshon | ✅ real | Official 0.6753 (70/30), 0.23% params |
 | M40 | ViT-B/16 transformer backbone | Barshon | 🔴 collapsed to all-Normal (Se=0) | 0.4994/0.5000 is the degenerate 0.5; real epochs peaked ~0.42 |
 | M41 | Swin-T transformer backbone (supersedes M23) | Farhana | ✅ real (below baseline) | Official 0.5304 clean / 0.5291 SpecAug — best transformer |
 | M42 | DeiT-S transformer backbone | Sami | ✅ real (below baseline) | Official 0.5149 clean / 0.4981 SpecAug |
 | M43 | AST transformer backbone (closes the M4 hole) | Asif | 🟡 notebook ready, not run | `M40_M43_transformers/M43_AST_kaggle.ipynb` (Kaggle: 1212 patches need 16 GB) |
+| M44 | XAI pack (Grad-CAM + occlusion) on M22_v2 | Asif | ✅ real | Attends *less* to the wheeze band when a wheeze is present |
+| M45 | Component + preprocessing ablation, 9 rows | Asif | ✅ real | A0 0.5602 → A4 frozen-backbone 0.4595 |
+| M46 | Preprocessing ablation P1–P3 | — | 🔴 stages never implemented | band-pass / denoise / amplitude-norm absent from the pipeline |
+| N11 | Supervised ceiling on ICBHI cycle labels | — | ✅ real | **AST frozen 0.7115 crackle / 0.7621 wheeze — the ceiling claim is retracted** |
 | M24-CB | Class-balancing augmentation | Barshon | ✅ real | SpecAug on Healthy/URTI |
 | M21 | Curriculum (SNR pacing) | Barshon | 🔴 implausible (metrics=1.0) | train/test leak suspected |
 | M28 | Master experiment merge | Barshon | 🟡 tooling | merges audit-clean JSONs |
@@ -166,7 +171,7 @@
 - **Key findings — the pivotal negative result:** (1) Joint MTL forces the two heads to *agree* on unknowns (signal destroyed → 0.4073); (2) sequential MTL makes the disease head a linear echo of the sound head (no divergent representation). The mechanism has no headroom on this data. **Statistically, v6 vs Energy is not significant** (SIGNIFICANCE_REPORT: diff +0.072, p=0.525) — the honest claim is "tied at chance," not "loses." The mechanism is also a published method (Zamir et al. 2020 "Consistency Energy").
 - **Limitations:** Earliest versions synthetic (`torch.randn`); v6 has no committed matrix; the 22-vs-19 patient discrepancy in v4; n=19 makes all comparisons underpowered (CI ≈ ±0.12).
 - **Relationship:** Built on M13/M2; compared against M6/M29; conformally wrapped by M14; **retired as the thesis** in the 2026-08 pivot — now demoted to "one scored baseline detector."
-- **Reproduction:** `Barshon's/M15/v4|v5|v6/`.
+- **Reproduction:** `Barshon's/Archive_Files (v4)/M15_v4_superseded|v5|v6/`.
 
 ### M17 — OWL Stage-2 forgetting curve  ·  ✅ real (v2)
 - **What it does:** The staged open-world-learning demo — adds a new disease class (Pneumonia, 6 patients) to the prototypical head with a 50/50 replay buffer, measures catastrophic forgetting of Stage-0.

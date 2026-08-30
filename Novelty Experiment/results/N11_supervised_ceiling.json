@@ -1,0 +1,138 @@
+{
+  "experiment": "N11_supervised_ceiling",
+  "status": "OK",
+  "question": "Gate G2 failed at 0.5506-0.5818. Is 0.65 reachable against these labels by a model that is allowed to see them?",
+  "why_not_a_third_gate_run": "The gate asked whether OUR extractors reproduce the labels and is closed at two test-split reads. This estimates the best achievable value with label supervision. No extractor is revised or re-thresholded here, and nothing feeds back into extractor design.",
+  "prereg": {
+    "fixed_utc": "2026-08-30",
+    "before_running": true,
+    "readings": {
+      ">=0.80": "NO CEILING - the labels support a strong detector; our extractors are weak and the paper says so",
+      "0.65-0.80": "PARTIAL - usable but hard; report the headroom",
+      "<0.65": "CEILING CONFIRMED - the gate threshold is unreachable on this reference standard even with supervision"
+    }
+  },
+  "gate_threshold": 0.65,
+  "g2_reference": {
+    "pre_registered_gate_runs_M39": {
+      "run1": {
+        "crackle": 0.5506,
+        "wheeze": 0.5729
+      },
+      "run2": {
+        "crackle": 0.558,
+        "wheeze": 0.534
+      }
+    },
+    "concept_engine_14concept_validation": {
+      "crackle": 0.5556,
+      "wheeze": 0.5818
+    },
+    "note": "These are DIFFERENT extractor implementations (9-concept M39 gate vs the later 14-concept engine), not two exports of one run. Do not mix them in one table."
+  },
+  "split": "official_60_40_patient_independent (from concepts_all.npz)",
+  "estimator": "logistic regression, standardised, class_weight=balanced, fit on TRAIN patients, scored on TEST patients, patient-level bootstrap CI",
+  "arms_skipped": {},
+  "results": {
+    "crackle": {
+      "dsp_concepts": {
+        "arm": "dsp_concepts",
+        "auroc": 0.6608,
+        "auroc_ci95_patient_bootstrap": [
+          0.6013,
+          0.7129
+        ],
+        "n_train_cycles": 4262,
+        "n_test_cycles": 2636,
+        "n_test_positive": 703,
+        "prevalence_test": 0.2667,
+        "clears_gate_0.65": true,
+        "verdict_vs_chance": "ABOVE CHANCE (CI excludes chance)"
+      },
+      "ast_frozen": {
+        "arm": "ast_frozen",
+        "auroc": 0.7115,
+        "auroc_ci95_patient_bootstrap": [
+          0.6381,
+          0.7705
+        ],
+        "n_train_cycles": 4262,
+        "n_test_cycles": 2636,
+        "n_test_positive": 703,
+        "prevalence_test": 0.2667,
+        "clears_gate_0.65": true,
+        "verdict_vs_chance": "ABOVE CHANCE (CI excludes chance)"
+      },
+      "m2_encoder": {
+        "arm": "m2_encoder",
+        "auroc": 0.7451,
+        "auroc_ci95_patient_bootstrap": [
+          0.6939,
+          0.7951
+        ],
+        "n_train_cycles": 4262,
+        "n_test_cycles": 2636,
+        "n_test_positive": 703,
+        "prevalence_test": 0.2667,
+        "clears_gate_0.65": true,
+        "verdict_vs_chance": "ABOVE CHANCE (CI excludes chance)"
+      }
+    },
+    "wheeze": {
+      "dsp_concepts": {
+        "arm": "dsp_concepts",
+        "auroc": 0.5815,
+        "auroc_ci95_patient_bootstrap": [
+          0.4921,
+          0.675
+        ],
+        "n_train_cycles": 4262,
+        "n_test_cycles": 2636,
+        "n_test_positive": 459,
+        "prevalence_test": 0.1741,
+        "clears_gate_0.65": false,
+        "verdict_vs_chance": "NOT SHOWN TO BEAT CHANCE (CI spans chance) - do not write 'beats'"
+      },
+      "ast_frozen": {
+        "arm": "ast_frozen",
+        "auroc": 0.7621,
+        "auroc_ci95_patient_bootstrap": [
+          0.7024,
+          0.8148
+        ],
+        "n_train_cycles": 4262,
+        "n_test_cycles": 2636,
+        "n_test_positive": 459,
+        "prevalence_test": 0.1741,
+        "clears_gate_0.65": true,
+        "verdict_vs_chance": "ABOVE CHANCE (CI excludes chance)"
+      },
+      "m2_encoder": {
+        "arm": "m2_encoder",
+        "auroc": 0.8673,
+        "auroc_ci95_patient_bootstrap": [
+          0.8064,
+          0.9184
+        ],
+        "n_train_cycles": 4262,
+        "n_test_cycles": 2636,
+        "n_test_positive": 459,
+        "prevalence_test": 0.1741,
+        "clears_gate_0.65": true,
+        "verdict_vs_chance": "ABOVE CHANCE (CI excludes chance)"
+      }
+    }
+  },
+  "ceiling": {
+    "best_supervised_auroc": 0.8673,
+    "achieved_by": "wheeze/m2_encoder",
+    "prereg_reading_fired": ">=0.80",
+    "verdict": "NO CEILING - the labels support a strong detector; our extractors are weak and the paper says so"
+  },
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.14.6",
+    "numpy_version": "2.4.6",
+    "run_utc": "2026-08-30T05:52:15+00:00"
+  }
+}

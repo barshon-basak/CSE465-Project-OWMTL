@@ -1,0 +1,144 @@
+{
+  "experiment": "N5_leakage_audit",
+  "reproduces": {
+    "source": "owmtl_concept_engine/.../03_concept_leakage_measurement/leakage_report.json",
+    "committed_leakage_bits": 0.2209,
+    "committed_verdict": "MODERATE leakage"
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "level": "cycle, patient-grouped CV",
+    "n_rows": 6311,
+    "n_patients": 104,
+    "classes": [
+      "COPD",
+      "Healthy",
+      "URTI"
+    ]
+  },
+  "headline": {
+    "leakage_bits": 0.2025,
+    "leakage_frac_of_base": 0.1277,
+    "logprob_bits": {
+      "concepts_only": -0.498,
+      "concepts_plus_features": -0.2955,
+      "features_only": -0.3008
+    },
+    "accuracy": {
+      "concepts_only": 0.9086,
+      "concepts_plus_features": 0.9303,
+      "features_only": 0.9287
+    },
+    "accuracy_gain_from_features": 0.0217,
+    "uniform_baseline_bits": -1.585,
+    "n_rows": 6311,
+    "rows_per_feature": 8.1,
+    "patient_grouped_cv": true,
+    "estimator_valid": true,
+    "interpretation": "MODERATE leakage: features add some signal beyond concepts; report and consider a leakage penalty.",
+    "method": "held-out CV log-likelihood; leakage = I(y;f|c) in bits (arXiv:2504.09459 view)"
+  },
+  "leakage_ci": {
+    "point_bits": 0.2023,
+    "ci95_bits": [
+      0.1096,
+      0.3292
+    ],
+    "excludes_zero": true,
+    "n_boot": 2000,
+    "resampled_unit": "patient"
+  },
+  "permutation_null": {
+    "n_perm": 5,
+    "null_mean_bits": -0.0086,
+    "null_ci95_bits": [
+      -0.0149,
+      -0.0013
+    ],
+    "note": "This is the estimator's positive bias from adding hundreds of uninformative dimensions. Compare the observed leakage against THIS, not against zero."
+  },
+  "leakage_vs_null": {
+    "observed_bits": 0.2025,
+    "null_ci95_bits": [
+      -0.0149,
+      -0.0013
+    ],
+    "verdict": "leakage exceeds the estimator's own bias"
+  },
+  "status": "OK",
+  "concept_importance": {
+    "per_concept": [
+      {
+        "concept": "rhonchi_presence",
+        "bits_lost_if_removed": 0.0293
+      },
+      {
+        "concept": "wheeze_presence",
+        "bits_lost_if_removed": 0.0049
+      },
+      {
+        "concept": "crackle_presence",
+        "bits_lost_if_removed": 0.0036
+      },
+      {
+        "concept": "papr_db",
+        "bits_lost_if_removed": 0.0033
+      },
+      {
+        "concept": "dominant_freq_hz",
+        "bits_lost_if_removed": 0.0029
+      },
+      {
+        "concept": "inspiratory_energy_fraction",
+        "bits_lost_if_removed": 0.0018
+      },
+      {
+        "concept": "spectral_flatness",
+        "bits_lost_if_removed": 0.0016
+      },
+      {
+        "concept": "coarse_crackle_ratio",
+        "bits_lost_if_removed": 0.0015
+      },
+      {
+        "concept": "low_high_freq_ratio",
+        "bits_lost_if_removed": 0.0015
+      },
+      {
+        "concept": "crackle_rate_hz",
+        "bits_lost_if_removed": 0.0005
+      },
+      {
+        "concept": "fine_crackle_ratio",
+        "bits_lost_if_removed": 0.0004
+      },
+      {
+        "concept": "wheeze_dominant_freq_hz",
+        "bits_lost_if_removed": -0.0001
+      },
+      {
+        "concept": "transient_timing_centroid",
+        "bits_lost_if_removed": -0.0003
+      },
+      {
+        "concept": "wheeze_duration_ratio",
+        "bits_lost_if_removed": -0.0039
+      }
+    ],
+    "base_logprob_bits": -0.498,
+    "dead_concepts": [
+      "crackle_rate_hz",
+      "fine_crackle_ratio",
+      "wheeze_dominant_freq_hz",
+      "transient_timing_centroid",
+      "wheeze_duration_ratio"
+    ],
+    "note": "A concept at or below 0 bits contributes nothing the other 13 do not already carry. Report it; do not quietly keep it in the bottleneck."
+  },
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.14.6",
+    "numpy_version": "2.4.6",
+    "run_utc": "2026-08-29T00:48:00+00:00"
+  }
+}

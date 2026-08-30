@@ -1,5 +1,20 @@
 # Decision record — 2026-08-16: Gate G2 failed, project pivots to the reliability branch
 
+> ## 🔴 PARTLY SUPERSEDED — 2026-08-30, see `DECISION_2026-08-30_CONSOLIDATION.md`
+>
+> N11 (supervised ceiling) shows a probe on a **frozen AudioSet embedding — a network that never
+> saw a respiratory corpus — reaches AUROC 0.71 (crackle) / 0.76 (wheeze)** on the same test cycles
+> G2 failed on. The labels are learnable well above the 0.65 gate.
+>
+> **The label-reliability *ceiling* argument is retracted.** Our extractors were weak; the reference
+> standard was not the binding constraint. The clinician κ numbers stand as a *finding* — machines
+> reproduce these labels better than trained listeners agree with them — not as a bound.
+>
+> Everything else here (the three evaluation errors, the corrected baselines, the two-run gate and
+> its failure, the released tooling) is unaffected.
+
+---
+
 **Status:** DECIDED · **Gate:** G2 (`OWMTL_Decision_Roadmap (v3).md`) · **Branch taken:** *if not
 satisfied (b)* — the reliability-only paper.
 
