@@ -78,6 +78,15 @@ ROWS = {
     "A0_s2":  dict(seed=2,  _desc="A0 baseline, seed 2 (replicate)"),
     "A24":    dict(pretrained=False, freeze=True,
                    _desc="A2+A4: random initialisation AND frozen backbone"),
+    # --- the three rungs of the CUMULATIVE ladder that do not already exist -------------
+    # Rungs S3-S5 are already on disk: M45's A3 (0.5497), M22_v2 (0.5602) and M45's P3
+    # (0.5764). Only the bottom three have never been run. See cumulative_table.py.
+    "S0": dict(pretrained=False, freeze=True, class_weighted=False, specaug=False,
+               _desc="cumulative S0: random init, frozen backbone, plain CE, no SpecAugment"),
+    "S1": dict(freeze=True, class_weighted=False, specaug=False,
+               _desc="cumulative S1: + ImageNet pre-training (still frozen)"),
+    "S2": dict(class_weighted=False, specaug=False,
+               _desc="cumulative S2: + full fine-tuning"),
 }
 
 
@@ -310,6 +319,9 @@ def summarise():
               "delta": d["selection"]["A7_delta_score_minus_loss"]}
           for r, d in docs.items()}
 
+    ladder = {r: docs[r]["best_metrics"]["icbhi_score_official"]
+              for r in ("S0", "S1", "S2") if r in docs}
+
     a24 = None
     if "A24" in docs:
         a24 = {"score": docs["A24"]["best_metrics"]["icbhi_score_official"],
@@ -326,6 +338,9 @@ def summarise():
                "%Y-%m-%dT%H:%M:%SZ"),
            "rows_completed": sorted(docs), "seed_band": band,
            "A7_selection_criterion": a7, "A24_feature_extractor_null": a24,
+           "cumulative_ladder_rungs_run_here": ladder,
+           "cumulative_ladder_note": ("S3-S5 are reused from M45 (A3, M22_v2, P3). Run "
+                                      "cumulative_table.py to assemble both orderings."),
            "selection_caveat": (next(iter(docs.values()))["selection_caveat"]
                                 if docs else None)}
     json.dump(out, open(os.path.join(HERE, "M48_tier_A_table.json"), "w"), indent=2)
@@ -340,6 +355,8 @@ def summarise():
     for r, v in sorted(a7.items()):
         print(f"  A7 {r:<8} by score {v['by_score']:.4f}  by loss {v['by_loss']:.4f}  "
               f"delta {v['delta']:+.4f}  ({v['epochs_apart']} epochs apart)")
+    for r, v in sorted(ladder.items()):
+        print(f"  LADDER {r:<5} {v:.4f}  ({docs[r]['meta']['variable_changed']})")
     if a24:
         print(f"  A2+A4       {a24['score']:.4f}  vs A0 {a24['vs_A0_m45']:+.4f}  "
               f"(A2 alone {a24['m45_A2_random_init']}, A4 alone {a24['m45_A4_frozen_pretrained']})")

@@ -9,8 +9,9 @@ run-to-run noise that ten of M45's eleven "not shown to differ" verdicts rest on
 closes both gaps and adds the one clinician experiment the consolidation record flagged as
 "worth more than the rest".
 
-Three tiers, one per layer of the pipeline. **Tiers E and C are done and committed.
-Tier A needs a GPU** and ships as a Kaggle notebook.
+Four tiers, one per layer of the pipeline. **E, C and A are done and committed.**
+**Tier B (the cumulative ladder) needs three more GPU rows** — already wired into the same
+Kaggle notebook, sharing the same spectrogram cache.
 
 ---
 
@@ -93,7 +94,47 @@ python C4_probe_vs_clinician.py
 
 ---
 
-## Tier A — seed band, selection criterion, feature-extractor null 🔴 needs a GPU
+## Tier B — cumulative ladder 🟡 3 of 6 rungs exist
+
+`cumulative_table.py` → `M48_cumulative_table.{json,md,tex}`
+
+M45 is **leave-one-out** (full pipeline minus one). Your ablation template asks for a
+**cumulative** ladder (baseline, +C1, +C1+C2, …). They answer different questions and only
+agree when components do not interact, so both belong in the paper.
+
+| rung | pretrain | fine-tune | class-wt | SpecAug | amp-norm | source |
+|---|:---:|:---:|:---:|:---:|:---:|---|
+| S0 | ✗ | ✗ | ✗ | ✗ | ✗ | **new** |
+| S1 | ✓ | ✗ | ✗ | ✗ | ✗ | **new** |
+| S2 | ✓ | ✓ | ✗ | ✗ | ✗ | **new** |
+| S3 | ✓ | ✓ | order-dependent | order-dependent | ✗ | M45 `A3` 0.5497 / `A1` 0.5200 |
+| S4 | ✓ | ✓ | ✓ | ✓ | ✗ | `M22_v2` **0.5602** |
+| S5 | ✓ | ✓ | ✓ | ✓ | ✓ | M45 `P3` **0.5764** |
+
+**Only three rungs need the GPU.** They are rows in `m48_gpu_rows.py`, so the Kaggle notebook
+produces them alongside the seed band, sharing the same spectrogram cache.
+
+### The order effect is measured, not caveated
+
+A cumulative table silently claims its ordering is the natural one. It is not: the delta
+credited to a component depends on what preceded it. Because M45 contains **both**
+intermediate configurations — `A3` (SpecAugment before class weighting) and `A1` (the
+reverse) — the same three new runs populate **two complete orderings**. The gap between what
+each credits to the same component is the order effect in real numbers, which is worth more
+than a sentence of hedging.
+
+**No rung is invented.** A run that does not exist is written `pending`, never filled with a
+plausible value. Filling it would be exactly the fault this paper is about, with the authors'
+knowledge.
+
+```
+python cumulative_table.py --selftest   # ladder monotonicity + source-config agreement
+python cumulative_table.py              # assemble; pending rows stay pending
+```
+
+---
+
+## Tier A — seed band, selection criterion, feature-extractor null ✅ done
 
 `M48_kaggle_tier_A.ipynb` (run this) · `m48_gpu_rows.py` (what it calls)
 
@@ -101,7 +142,8 @@ python C4_probe_vs_clinician.py
 |---|---|---|
 | `A0_s42` `A0_s1` `A0_s2` | the same config, three seeds | **The noise floor.** M45 ran one seed per row; ten of eleven rows are "not shown to differ from A0", including P3, the table's top score. Their spread says which deltas are real. |
 | `A7` | checkpoint by official score **vs** by minimum loss | The paper argues the selection criterion matters and reports a 33-epoch disagreement but never prices it. Both criteria are tracked in one loop, so this is free on every row. |
-| `A24` | random init **and** frozen backbone | A4 froze a *pretrained* backbone, so its −0.1007 mixes "fine-tuning helps" with "pretraining helps". This separates them. |
+| `A24` | random init **and** frozen backbone | A4 froze a *pretrained* backbone, so its −0.1007 mixes "fine-tuning helps" with "pretraining helps". This separates them at the full-pipeline operating point. |
+| `S0` `S1` `S2` | the bottom three rungs of the cumulative ladder | See Tier B above. Same harness, same cache. |
 
 Everything for data, preprocessing, caching and metrics is imported from
 `../Asif's/M45/m45_ablation.py` **unmodified** — if the two scripts disagreed about a mel
@@ -109,8 +151,63 @@ parameter or a cache key, the seed band would be measuring the difference betwee
 rather than between two seeds. All four rows share one cache key, so the spectrogram cache is
 built once.
 
-**How to run:** open the notebook on Kaggle, enable GPU, attach the *Respiratory Sound
-Database* dataset, turn Internet on, Run All. ~90 minutes. Download `M48_results.zip` from the
+### Results
+
+**Seed band** — three runs of the identical configuration:
+
+| seed | 42 | 1 | 2 | mean | sd | range |
+|---|---:|---:|---:|---:|---:|---:|
+| ICBHI | 0.5540 | 0.5681 | 0.5657 | 0.5626 | **0.0075** | **0.0141** |
+
+M22-v2's published 0.5602 sits inside that band, which is also a reproducibility check: two
+independent implementations of the same recipe agree to within run-to-run noise. Reading M45's
+eleven deltas against the range, **three do not clear it** — `A3` (−0.0105), `P1` (−0.0089)
+and `P5` (−0.0063) are indistinguishable from seed noise. `A5` (−0.0175) and `P3` (+0.0162)
+clear it by less than 1.25×, so neither is safe alone. The other six clear it by 2.2× or more.
+
+> **This does not contradict the patient-level paired test, and the pair of results is worth
+> more than either.** The paired test says the 47-patient test set is too small to certify
+> the deltas; the seed band says run-to-run noise is too small to explain them. Together:
+> most of the effects are real, and this test set cannot certify them. Report both.
+
+**A7 — the selection criterion, and it is the project's second-largest effect:**
+
+| row | by official score | by min loss | Δ | epochs apart |
+|---|---:|---:|---:|---:|
+| A0 seed 42 | 0.5540 | 0.4788 | **+0.0752** | 15 |
+| A0 seed 1 | 0.5681 | 0.4666 | **+0.1015** | 19 |
+| A0 seed 2 | 0.5657 | 0.4665 | **+0.0992** | 17 |
+| A24 | 0.4979 | 0.4979 | 0.0000 | 0 |
+
+Selecting the checkpoint on minimum loss instead of the official score costs **0.075–0.102**,
+consistently across three seeds, and lands the model near chance. That is larger than ImageNet
+pre-training (0.0603) and larger than SpecAugment (0.0402); only freezing the backbone
+(−0.1007) is comparable. **The selection criterion is a first-class pipeline component and
+belongs in the ablation table, not in a footnote.** It is the direct consequence of the metric
+correction: cross-entropy on a 59 %-Normal corpus and balanced (Se+Sp)/2 do not optimise the
+same thing, and the paper's 33-epoch disagreement now has a price.
+
+**A24 — and an unplanned negative-transfer result:**
+
+| config | ICBHI |
+|---|---:|
+| A0 — pretrained, fine-tuned | 0.5602 |
+| A2 — random init, fine-tuned | 0.4999 |
+| **A24 — random init, frozen** | **0.4979** |
+| A4 — **pretrained**, frozen | 0.4595 |
+
+Freezing a *random* backbone costs nothing over fine-tuning it (0.4979 vs 0.4999, inside the
+seed band): with no pretrained features there is nothing to adapt. But **frozen ImageNet
+features score 0.038 *below* frozen random features** — 2.7× the seed range. Frozen ImageNet
+representations are actively worse than random projections on log-mel spectrograms; the
+transfer only pays once the backbone is allowed to move. That decomposes A4's −0.1007 into
+"pretraining is worthless frozen" plus "adaptation is what the 0.10 buys", and it is a
+reportable finding neither M45 row could produce alone.
+
+**How it was run:** Kaggle, GPU on, *Respiratory Sound Database* attached, Internet on,
+Run All. Executed copy with outputs: `M48_kaggle_tier_A.executed.ipynb`. **Re-run the notebook
+to add the three Tier B rows (`S0`, `S1`, `S2`)** — about 55 minutes; completed rows are
+skipped automatically. Download `M48_results.zip` from the
 Output panel and unzip it into this folder.
 
 The notebook self-tests the wiring and verifies the split (2,636 test cycles, zero patient
@@ -135,9 +232,14 @@ Write that sentence into the paper next to the number.
 | `M48_tier_E_table.{json,md,tex}` | ✅ output | the protocol ablation, LaTeX ready to paste |
 | `C4_probe_vs_clinician.py` | ✅ run | Tier C: probe vs physician on the same clips |
 | `results_M48_C4.json` | ✅ output | C4 result, with the pre-registered readings |
-| `M48_kaggle_tier_A.ipynb` | 🔴 to run | the GPU notebook |
-| `m48_gpu_rows.py` | 🔴 to run | the four Tier A rows; `--selftest` needs no GPU |
-| `M48_tier_A_table.json` | ⏳ pending | written by the notebook |
+| `cumulative_table.py` | ✅ run | Tier B assembler; completes itself after the GPU rows land |
+| `M48_cumulative_table.{json,md,tex}` | 🟡 partial | 3 of 6 rungs filled, 3 marked `pending` |
+| `M48_kaggle_tier_A.ipynb` | 🟡 re-run | the GPU notebook, 7 rows; 4 done, `S0`/`S1`/`S2` left |
+| `M48_kaggle_tier_A.executed.ipynb` | ✅ output | the executed copy, with outputs |
+| `m48_gpu_rows.py` | ✅ partial | 4 of 7 rows run; `--selftest` needs no GPU |
+| `M48_tier_A_table.json` | ✅ output | seed band, A7 deltas, A24 |
+| `results_M48_A*.json` · `preds_M48_A*.npy` | ✅ output | four completed rows + per-cycle predictions |
+| `M48_selection_curves.png` | ✅ output | both selection criteria per row |
 
 ## What this folder does not do
 

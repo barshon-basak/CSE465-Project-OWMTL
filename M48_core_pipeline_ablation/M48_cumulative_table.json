@@ -1,0 +1,490 @@
+{
+  "table": "M48 cumulative ablation ladder",
+  "split": "official_60_40_patient_independent_corrected",
+  "n_test_cycles": 2636,
+  "n_test_patients": 47,
+  "generated_utc": "2026-08-30T14:30:27Z",
+  "provenance_rule": "every score recomputed from the source run's committed confusion_matrix_raw; a missing run is 'pending', never an estimate",
+  "components": [
+    {
+      "key": "pretrain",
+      "name": "ImageNet pre-training"
+    },
+    {
+      "key": "finetune",
+      "name": "Full backbone fine-tuning"
+    },
+    {
+      "key": "classweight",
+      "name": "Inverse-frequency class-weighted CE"
+    },
+    {
+      "key": "specaug",
+      "name": "SpecAugment (training split only)"
+    },
+    {
+      "key": "ampnorm",
+      "name": "Per-cycle peak amplitude normalisation"
+    }
+  ],
+  "orders": [
+    {
+      "order": "A",
+      "label": "SpecAugment before class weighting",
+      "rungs": [
+        {
+          "rung": "S0",
+          "label": "Baseline \u2014 MobileNetV2, random init, frozen, plain CE",
+          "toggles": {
+            "pretrain": 0,
+            "finetune": 0,
+            "classweight": 0,
+            "specaug": 0,
+            "ampnorm": 0
+          },
+          "expected_path": "M48_core_pipeline_ablation/results_M48_S0.json",
+          "status": "pending",
+          "note": "run not on disk yet"
+        },
+        {
+          "rung": "S1",
+          "label": "+ ImageNet pre-training",
+          "toggles": {
+            "pretrain": 1,
+            "finetune": 0,
+            "classweight": 0,
+            "specaug": 0,
+            "ampnorm": 0
+          },
+          "expected_path": "M48_core_pipeline_ablation/results_M48_S1.json",
+          "status": "pending",
+          "note": "run not on disk yet"
+        },
+        {
+          "rung": "S2",
+          "label": "+ full fine-tuning",
+          "toggles": {
+            "pretrain": 1,
+            "finetune": 1,
+            "classweight": 0,
+            "specaug": 0,
+            "ampnorm": 0
+          },
+          "expected_path": "M48_core_pipeline_ablation/results_M48_S2.json",
+          "status": "pending",
+          "note": "run not on disk yet"
+        },
+        {
+          "rung": "S3",
+          "label": "+ SpecAugment",
+          "toggles": {
+            "pretrain": 1,
+            "finetune": 1,
+            "classweight": 0,
+            "specaug": 1,
+            "ampnorm": 0
+          },
+          "expected_path": "Asif's/M45/results_M45_A3.json",
+          "status": "ok",
+          "icbhi_score_official": 0.5497,
+          "se": 0.4275,
+          "sp": 0.6718,
+          "f1_macro": 0.4294,
+          "accuracy": 0.5721,
+          "ci95": [
+            0.5016,
+            0.5932
+          ],
+          "params": 2263160,
+          "trainable_params": 2228996,
+          "source": "Asif's/M45/results_M45_A3.json"
+        },
+        {
+          "rung": "S4",
+          "label": "+ Inverse-frequency class-weighted CE",
+          "toggles": {
+            "pretrain": 1,
+            "finetune": 1,
+            "classweight": 1,
+            "specaug": 1,
+            "ampnorm": 0
+          },
+          "expected_path": "Asif's/M22_v2/Results/results_M22_v2.json",
+          "status": "ok",
+          "icbhi_score_official": 0.5602,
+          "se": 0.4089,
+          "sp": 0.7115,
+          "f1_macro": 0.4141,
+          "accuracy": 0.588,
+          "ci95": [
+            0.5081,
+            0.6137
+          ],
+          "params": 2228996,
+          "trainable_params": 2228996,
+          "source": "Asif's/M22_v2/Results/results_M22_v2.json",
+          "delta_vs_previous": 0.0105
+        },
+        {
+          "rung": "S5",
+          "label": "+ amplitude normalisation \u2014 FULL PIPELINE",
+          "toggles": {
+            "pretrain": 1,
+            "finetune": 1,
+            "classweight": 1,
+            "specaug": 1,
+            "ampnorm": 1
+          },
+          "expected_path": "Asif's/M45/results_M45_P3.json",
+          "status": "ok",
+          "icbhi_score_official": 0.5764,
+          "se": 0.3996,
+          "sp": 0.7532,
+          "f1_macro": 0.4217,
+          "accuracy": 0.6089,
+          "ci95": [
+            0.5138,
+            0.6324
+          ],
+          "params": 2263160,
+          "trainable_params": 2228996,
+          "source": "Asif's/M45/results_M45_P3.json",
+          "delta_vs_previous": 0.0162
+        }
+      ]
+    },
+    {
+      "order": "B",
+      "label": "class weighting before SpecAugment",
+      "rungs": [
+        {
+          "rung": "S0",
+          "label": "Baseline \u2014 MobileNetV2, random init, frozen, plain CE",
+          "toggles": {
+            "pretrain": 0,
+            "finetune": 0,
+            "classweight": 0,
+            "specaug": 0,
+            "ampnorm": 0
+          },
+          "expected_path": "M48_core_pipeline_ablation/results_M48_S0.json",
+          "status": "pending",
+          "note": "run not on disk yet"
+        },
+        {
+          "rung": "S1",
+          "label": "+ ImageNet pre-training",
+          "toggles": {
+            "pretrain": 1,
+            "finetune": 0,
+            "classweight": 0,
+            "specaug": 0,
+            "ampnorm": 0
+          },
+          "expected_path": "M48_core_pipeline_ablation/results_M48_S1.json",
+          "status": "pending",
+          "note": "run not on disk yet"
+        },
+        {
+          "rung": "S2",
+          "label": "+ full fine-tuning",
+          "toggles": {
+            "pretrain": 1,
+            "finetune": 1,
+            "classweight": 0,
+            "specaug": 0,
+            "ampnorm": 0
+          },
+          "expected_path": "M48_core_pipeline_ablation/results_M48_S2.json",
+          "status": "pending",
+          "note": "run not on disk yet"
+        },
+        {
+          "rung": "S3",
+          "label": "+ class-weighted CE",
+          "toggles": {
+            "pretrain": 1,
+            "finetune": 1,
+            "classweight": 1,
+            "specaug": 0,
+            "ampnorm": 0
+          },
+          "expected_path": "Asif's/M3_v2/Results/results_M3_v2.json",
+          "status": "ok",
+          "icbhi_score_official": 0.52,
+          "se": 0.4266,
+          "sp": 0.6135,
+          "f1_macro": 0.3985,
+          "accuracy": 0.5372,
+          "ci95": [
+            0.4629,
+            0.5748
+          ],
+          "params": 2228996,
+          "trainable_params": 2228996,
+          "source": "Asif's/M3_v2/Results/results_M3_v2.json"
+        },
+        {
+          "rung": "S4",
+          "label": "+ SpecAugment",
+          "toggles": {
+            "pretrain": 1,
+            "finetune": 1,
+            "classweight": 1,
+            "specaug": 1,
+            "ampnorm": 0
+          },
+          "expected_path": "Asif's/M22_v2/Results/results_M22_v2.json",
+          "status": "ok",
+          "icbhi_score_official": 0.5602,
+          "se": 0.4089,
+          "sp": 0.7115,
+          "f1_macro": 0.4141,
+          "accuracy": 0.588,
+          "ci95": [
+            0.5081,
+            0.6137
+          ],
+          "params": 2228996,
+          "trainable_params": 2228996,
+          "source": "Asif's/M22_v2/Results/results_M22_v2.json",
+          "delta_vs_previous": 0.0402
+        },
+        {
+          "rung": "S5",
+          "label": "+ amplitude normalisation \u2014 FULL PIPELINE",
+          "toggles": {
+            "pretrain": 1,
+            "finetune": 1,
+            "classweight": 1,
+            "specaug": 1,
+            "ampnorm": 1
+          },
+          "expected_path": "Asif's/M45/results_M45_P3.json",
+          "status": "ok",
+          "icbhi_score_official": 0.5764,
+          "se": 0.3996,
+          "sp": 0.7532,
+          "f1_macro": 0.4217,
+          "accuracy": 0.6089,
+          "ci95": [
+            0.5138,
+            0.6324
+          ],
+          "params": 2263160,
+          "trainable_params": 2228996,
+          "source": "Asif's/M45/results_M45_P3.json",
+          "delta_vs_previous": 0.0162
+        }
+      ]
+    }
+  ],
+  "order_effect": {
+    "specaug": {
+      "label": "SpecAugment (training split only)",
+      "order_A": null,
+      "order_B": 0.0402,
+      "shift": null
+    },
+    "classweight": {
+      "label": "Inverse-frequency class-weighted CE",
+      "order_A": 0.0105,
+      "order_B": null,
+      "shift": null
+    }
+  },
+  "seed_band": {
+    "n_seeds": 3,
+    "seeds": [
+      42,
+      1,
+      2
+    ],
+    "scores": [
+      0.554,
+      0.5681,
+      0.5657
+    ],
+    "mean": 0.5626,
+    "sd": 0.0075,
+    "range": 0.0141,
+    "m45_A0_reference": 0.5602,
+    "reading": "Any M45 delta smaller than this spread is not distinguishable from run-to-run noise, whatever its sign."
+  },
+  "leave_one_out": {
+    "baseline": "A0 (M22_v2)",
+    "split": "official_60_40_patient_independent_corrected",
+    "rows": [
+      {
+        "row": "A0",
+        "variable_changed": "baseline (M22_v2): MobileNetV2 + SpecAugment",
+        "icbhi_score_official": 0.5602,
+        "ci95": [
+          0.5081,
+          0.6137
+        ],
+        "se": 0.4089,
+        "sp": 0.7115,
+        "f1_macro": 0.4141,
+        "delta_vs_A0": null,
+        "direction": "remove"
+      },
+      {
+        "row": "A1",
+        "variable_changed": "- SpecAugment (M3_v2)",
+        "icbhi_score_official": 0.52,
+        "ci95": [
+          0.4629,
+          0.5748
+        ],
+        "se": 0.4266,
+        "sp": 0.6135,
+        "f1_macro": 0.3985,
+        "delta_vs_A0": -0.0402,
+        "direction": "remove"
+      },
+      {
+        "row": "A2",
+        "variable_changed": "- ImageNet pre-training (random init)",
+        "icbhi_score_official": 0.4999,
+        "ci95": [
+          0.4384,
+          0.5508
+        ],
+        "se": 0.3736,
+        "sp": 0.6263,
+        "f1_macro": 0.3784,
+        "delta_vs_A0": -0.0603,
+        "direction": "remove"
+      },
+      {
+        "row": "A3",
+        "variable_changed": "- class-weighted loss (plain CE)",
+        "icbhi_score_official": 0.5497,
+        "ci95": [
+          0.5016,
+          0.5932
+        ],
+        "se": 0.4275,
+        "sp": 0.6718,
+        "f1_macro": 0.4294,
+        "delta_vs_A0": -0.0105,
+        "direction": "remove"
+      },
+      {
+        "row": "A4",
+        "variable_changed": "frozen backbone, classifier only",
+        "icbhi_score_official": 0.4595,
+        "ci95": [
+          0.3995,
+          0.5206
+        ],
+        "se": 0.4349,
+        "sp": 0.484,
+        "f1_macro": 0.3374,
+        "delta_vs_A0": -0.1007,
+        "direction": "remove"
+      },
+      {
+        "row": "A5",
+        "variable_changed": "64 mels instead of 128",
+        "icbhi_score_official": 0.5427,
+        "ci95": [
+          0.4924,
+          0.5874
+        ],
+        "se": 0.4238,
+        "sp": 0.6615,
+        "f1_macro": 0.4043,
+        "delta_vs_A0": -0.0175,
+        "direction": "remove"
+      },
+      {
+        "row": "A6",
+        "variable_changed": "4 s cycles instead of 8 s",
+        "icbhi_score_official": 0.5224,
+        "ci95": [
+          0.4626,
+          0.5736
+        ],
+        "se": 0.4954,
+        "sp": 0.5494,
+        "f1_macro": 0.4058,
+        "delta_vs_A0": -0.0378,
+        "direction": "remove"
+      },
+      {
+        "row": "P1",
+        "variable_changed": "+ band-pass filter (50-2000 Hz Butterworth)",
+        "icbhi_score_official": 0.5513,
+        "ci95": [
+          0.4922,
+          0.6011
+        ],
+        "se": 0.4442,
+        "sp": 0.6583,
+        "f1_macro": 0.4077,
+        "delta_vs_A0": -0.0089,
+        "direction": "add"
+      },
+      {
+        "row": "P2",
+        "variable_changed": "+ spectral-gating denoising",
+        "icbhi_score_official": 0.5248,
+        "ci95": [
+          0.458,
+          0.5876
+        ],
+        "se": 0.4572,
+        "sp": 0.5923,
+        "f1_macro": 0.3983,
+        "delta_vs_A0": -0.0354,
+        "direction": "add"
+      },
+      {
+        "row": "P3",
+        "variable_changed": "+ per-cycle peak amplitude normalisation",
+        "icbhi_score_official": 0.5764,
+        "ci95": [
+          0.5138,
+          0.6324
+        ],
+        "se": 0.3996,
+        "sp": 0.7532,
+        "f1_macro": 0.4217,
+        "delta_vs_A0": 0.0162,
+        "direction": "add"
+      },
+      {
+        "row": "P4",
+        "variable_changed": "zero-padding instead of cyclic tiling",
+        "icbhi_score_official": 0.5291,
+        "ci95": [
+          0.4775,
+          0.5812
+        ],
+        "se": 0.4684,
+        "sp": 0.5897,
+        "f1_macro": 0.3841,
+        "delta_vs_A0": -0.0311,
+        "direction": "remove"
+      },
+      {
+        "row": "P5",
+        "variable_changed": "- per-spectrogram min-max normalisation",
+        "icbhi_score_official": 0.5539,
+        "ci95": [
+          0.5005,
+          0.6039
+        ],
+        "se": 0.4136,
+        "sp": 0.6942,
+        "f1_macro": 0.4128,
+        "delta_vs_A0": -0.0063,
+        "direction": "remove"
+      }
+    ],
+    "row_direction_note": "P1-P3 ADD a stage that BASE does not have; every other row REMOVES or replaces one. Their deltas read in opposite directions.",
+    "not_applicable": {}
+  }
+}
