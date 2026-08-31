@@ -14,9 +14,11 @@
 %   with a plausible value.  Source files for each table are named in the
 %   table notes.
 %
-% FIGURES: see FIGURES_SPEC.md.  Four figures already exist in figures/;
-%   the remaining ones are specified there and are commented out below
-%   until they are generated.
+% FIGURES: see FIGURES_SPEC.md.  All figures referenced below exist in figures/.
+%   The four data figures (inflation scatter, confusion matrix, curves, XAI
+%   panels) come from the generators named in that file; the five block
+%   diagrams come from `python Final_Draft/make_diagrams.py`, which reads its
+%   numbers from the committed results_M*.json and never from this file.
 %=======================================================================
 \documentclass[journal,onecolumn]{IEEEtran}
 
@@ -34,7 +36,7 @@
 \newcommand{\best}[1]{\textbf{#1}}
 \newcommand{\notrun}{\textsc{not run}}
 
-% This report carries 33 tables and 5 figures.  LaTeX holds at most 18 unprocessed
+% This report carries 33 tables and 9 figures.  LaTeX holds at most 18 unprocessed
 % floats at once, so the defaults below are loosened to make placement eager and
 % keep the queue short.  If Overleaf ever still reports "Too many unprocessed
 % floats", add \usepackage{placeins} and a \FloatBarrier at the end of the
@@ -235,6 +237,28 @@ withdraw two further claims of our own---an ``interpretability cost'' that
 reverses sign across five random seeds, and a mechanism verdict produced by a sign
 test whose design floor made it incapable of ever supporting the hypothesis.
 
+Fig.~\ref{fig:motivation} states the problem in one picture and is the reason the
+project changed direction. It holds one architecture, one corpus and one seed
+fixed and varies nothing but the measurement apparatus. The resulting spread,
+0.4788 to 0.7077, is wider than the entire published literature on this benchmark,
+and the top of it would have placed first in a table it has no business
+appearing in.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=0.98\linewidth]{figures/fig_motivation.pdf}
+\caption{Why this paper is about measurement. \emph{Top:} published ICBHI 2017
+systems on the official partition under the official metric, from
+Table~\ref{tab:comparison}. \emph{Bottom:} one model of ours---the same
+MobileNetV2, the same corpus, the same seed---scored four ways, differing only in
+the evaluation protocol. Every one of the four values is recomputed from a
+committed confusion matrix (Tables~\ref{tab:protocol} and~\ref{tab:selection}).
+The unaudited combination of a fallback partition and a macro-averaged metric
+reports 0.7077, above every published system in the panel above; the corrected
+protocol reports 0.5602 for the identical network.}
+\label{fig:motivation}
+\end{figure}
+
 Section~\ref{sec:proposed} describes the proposed system: the dataset and its
 three partitions, the preprocessing chain and its equations, the applied models,
 and the corrected evaluation protocol. Section~\ref{sec:results} reports all
@@ -258,18 +282,31 @@ apparatus wrapped around a standard model, not about the model.
 
 \begin{figure}[!t]
 \centering
-% Replace the placeholder box below with the line above once the flowchart is drawn.
-% \includegraphics[width=0.92\linewidth]{figures/fig_flowchart.pdf}
-\framebox[0.92\linewidth]{%
-  \parbox[c][5.5cm][c]{0.85\linewidth}{\centering
-  \textsc{[Fig.~1 placeholder --- system flowchart.}\\[2pt]
-  \textsc{Content, layout and caption are specified in} \texttt{FIGURES\_SPEC.md}, \textsc{item F1.]}}}
+\includegraphics[width=0.92\linewidth]{figures/fig_flowchart.pdf}
 \caption{Flowchart of the complete proposed system. Raw ICBHI recordings and
-their cycle annotations enter at the left; the audited split loader and the
+their cycle annotations enter at the top; the audited split loader and the
 official scoring module (heavy blocks) are the components this paper contributes.
 Every trained model emits a results record containing the raw confusion matrix, so
-every score in Section~\ref{sec:results} is recomputable.}
+every score in Section~\ref{sec:results} is recomputable. The counts shown in the
+partition blocks are read from the committed
+\texttt{results\_M22\_v2.json}, not transcribed.}
 \label{fig:flowchart}
+\end{figure}
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=0.99\linewidth]{figures/fig_modules.pdf}
+\caption{The two contributed blocks of Fig.~\ref{fig:flowchart}, in detail.
+(a)~The split loader raises rather than falling back, joins on the device-suffix-safe
+key so that no recording is dropped in silence, and refuses to return until the
+train and test patient sets are provably disjoint --- the three faults of
+Section~\ref{subsec:splitaudit} are each closed by one of those steps. (b)~The
+scoring module writes the raw $4\times4$ matrix \emph{before} computing anything,
+then fans it out into the official score, the macro variant under its own name,
+a patient-level interval and a paired test. The same official score is the
+checkpoint-selection criterion, which is why Fault~5 belongs to this module and
+not to a footnote.}
+\label{fig:modules}
 \end{figure}
 
 \subsection{Dataset}
@@ -562,6 +599,24 @@ The classifier head is identical across the convolutional models: global average
 pooling, dropout at rate 0.3, and a single linear layer to four logits. The
 transformer models replace their ImageNet classification head with the same
 four-way linear layer and are otherwise unmodified.
+Fig.~\ref{fig:architecture} draws the whole model, tensor shape by tensor shape,
+and shows how little of it changes between the four rows of
+Table~\ref{tab:models}: the front end, the head and the objective are one
+implementation, and only the block in the middle is swapped.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=0.99\linewidth]{figures/fig_architecture.pdf}
+\caption{Model architecture. (a)~The front end every backbone shares, with the
+tensor shape after each stage. (b)~The four interchangeable backbones; parameter
+counts and scores are read from each run's committed results record, and the
+shaded row is the best model. The right-hand column expands the MobileNetV2 path
+and marks the $4\times26$ grid at which the attribution maps of
+Section~\ref{subsec:xai} are taken, which is why those maps cannot resolve fine
+structure. (c)~The head and objective, also shared, so that the only variable
+across the four rows of Table~\ref{tab:main} is the backbone itself.}
+\label{fig:architecture}
+\end{figure}
 Algorithm~\ref{alg:pipeline} states the training and evaluation procedure that all
 runs share; the only lines that change between rows of the ablation of
 Section~\ref{subsec:ablation} are marked.
@@ -718,6 +773,29 @@ detecting under 2\% of abnormal events. Both read as mediocre-but-working under
 the macro metric and as broken under the official one. This is the single
 strongest practical argument for reporting $Se$ and $Sp$ separately in every
 table, which we do throughout.
+
+Fig.~\ref{fig:metricanatomy} shows the mechanism on the best model's own
+committed matrix, which is the clearest way to see why the two quantities differ
+and why the difference grows with imbalance. Under~(\ref{eq:official}) the three
+abnormal classes are pooled into a single sensitivity, so a class the model
+almost never finds drags that term down in proportion to its support.
+Under~(\ref{eq:macro}) each class instead contributes a \emph{per-class}
+specificity, whose true-negative count is supplied by the other three classes; for
+the Both class, 86 of 2{,}636 test cycles, that term reads 0.960 while the model
+recovers 10 of the 86. Averaging four such terms is what buys the $+0.0538$.
+
+\begin{figure}[!t]
+\centering
+\includegraphics[width=0.99\linewidth]{figures/fig_metric_anatomy.pdf}
+\caption{Anatomy of the two metrics on the best model's committed confusion
+matrix. (a)~The official score of~(\ref{eq:official}) pools the three abnormal
+rows into one sensitivity term. (b)~The macro variant of~(\ref{eq:macro}) averages
+four per-class recalls against four per-class specificities; the specificity of a
+rare class is near unity whether or not the model detects it, which is where the
+inflation comes from. Both panels are computed here from the same raw matrix, so
+the figure cannot disagree with Table~\ref{tab:metricaudit}.}
+\label{fig:metricanatomy}
+\end{figure}
 
 \begin{figure}[!t]
 \centering
