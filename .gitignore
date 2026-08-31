@@ -98,6 +98,7 @@ ehthumbs.db
 Thumbs.db
 desktop.ini
 
+<<<<<<< HEAD
 # ─── Novelty Experiment results are EVIDENCE, not scratch ────────────
 # The blanket `results/` rule above was hiding every N1-N11 result JSON: the numbers
 # quoted in NOVELTY_STATUS.md and the paper existed only on one laptop. Track them.
@@ -134,3 +135,6 @@ Barshon's/M28/M28_master_results_bundle.zip
 !M48_core_pipeline_ablation/preds_M48_*.npy
 M48_core_pipeline_ablation/cache/
 M48_core_pipeline_ablation/*.pth
+=======
+*.pth
+>>>>>>> 46798765c0fc827d2539b234a0f5e374d75278b9
