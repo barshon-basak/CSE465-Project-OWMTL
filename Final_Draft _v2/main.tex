@@ -3,16 +3,7 @@
 %
 % BUILD: pdfLaTeX on Overleaf. Order: pdflatex -> bibtex -> pdflatex x2
 %
-% EVIDENCE RULE FOLLOWED THROUGHOUT
-%   Every number below was read from, or recomputed from, a committed
-%   result file in the project repository. A quantity that does not
-%   exist is written NOT RECOVERABLE or NOT RUN, never filled with a
-%   plausible value.
-%
-% NAMING: models are named by architecture in the body. The internal
-%   run identifiers used during development are mapped to those names
-%   in Appendix A, so every number stays traceable to the repository.
-%=======================================================================
+%======================================================================
 \documentclass[journal,onecolumn]{IEEEtran}
 
 \usepackage{graphicx}
@@ -103,28 +94,41 @@ asking it of ourselves.
 Each member of the group reviewed at least one journal paper. The reviews are consolidated
 here in the order they became relevant to our own design.
 
-\textbf{Where the benchmark stands.} A recent review of the
-corpus~\cite{electronics2025review} documents well over a hundred published systems built on
-this one database, and the pattern it describes is that progress since roughly 2021 has come
-from better pretraining rather than better architecture. Convolutional systems pretrained on
+\textbf{Where the benchmark stands.} Yu \emph{et al.}~\cite{electronics2025review} review 135
+technical publications built on this one database and separate the two tasks it supports:
+recognising the pathological state of a patient, where several systems exceed 98 percent
+accuracy, and categorising the adventitious sound in a single cycle, which remains much harder
+because of severe class imbalance. Their recommendation---more interpretable models and better
+use of the data that surrounds the audio---is the direction most recent work has taken. The
+pattern within that literature is that progress since roughly 2021 has come from better
+pretraining rather than better architecture: convolutional systems pretrained on
 ImageNet~\cite{deng2009imagenet} plateau near 0.56 on the official challenge
 metric~\cite{respirenet2021}, while transformers pretrained on
 AudioSet~\cite{gemmeke2017audioset} sit five to nine points
-higher~\cite{bae2023patchmix,bts2024,pafa2025}. Suma \emph{et al.}~\cite{suma2025mtl} handle
-the sound-event and disease tasks jointly and report 74 percent on sounds and 91 percent on
-diseases without stating which partition those numbers are on---the first sign of the problem
-this paper is about. Two 2025 fusion systems~\cite{adffnet2025,bspc2025fusion} report gains of
-roughly one point, the scale at which the measurement questions below start to matter.
+higher~\cite{bae2023patchmix,bts2024,pafa2025}. Suma \emph{et al.}~\cite{suma2025mtl} attack
+both tasks at once with a single-input multi-output network over mel-frequency cepstral
+coefficients, comparing four backbones and finding a MobileNet best at 74 percent on sounds and
+91 percent on diseases---without stating which partition those numbers are on, which is the
+first sign of the problem this paper is about. Two 2025 fusion
+systems~\cite{adffnet2025,bspc2025fusion} report gains of roughly one point, the scale at which
+the measurement questions below start to matter.
 
-\textbf{What pretraining is worth.} Bae \emph{et al.}~\cite{bae2023patchmix} fine-tune an
-Audio Spectrogram Transformer~\cite{gong2021ast} with a patch-mixing contrastive objective
-and reach 0.6237, while Niizumi \emph{et al.}~\cite{frozenfm2025} freeze the audio
-foundation model entirely, train only a linear probe, and still reach 0.5938---above
-several fully fine-tuned convolutional systems. Most of the useful information therefore
-sits in the pretrained representation rather than the fine-tuning, provided the pretraining
-was on audio. Moummad and Farrugia~\cite{scl2023} reach 0.5755 with a small CNN and
-contrastive pretraining on metadata, and Nguyen and Pernkopf~\cite{nguyen2022cotuning} add
-that transfer from ImageNet to spectrograms is fragile and needs regularisation.
+\textbf{What pretraining is worth, and what the recording conditions cost.} Bae
+\emph{et al.}~\cite{bae2023patchmix} fine-tune an Audio Spectrogram
+Transformer~\cite{gong2021ast} with a patch-mixing contrastive objective and reach 0.6237,
+while Niizumi \emph{et al.}~\cite{frozenfm2025} freeze the audio foundation model entirely,
+train only a linear probe, and still reach 0.5938---above several fully fine-tuned
+convolutional systems. Most of the useful information therefore sits in the pretrained
+representation rather than the fine-tuning, provided the pretraining was on audio. Moummad and
+Farrugia~\cite{scl2023} reach 0.5755 with a small CNN and contrastive pretraining on metadata,
+and Nguyen and Pernkopf~\cite{nguyen2022cotuning} add that transfer from ImageNet to
+spectrograms is fragile and needs regularisation. Kim \emph{et al.}~\cite{kim2025metadata}
+push the metadata idea furthest and reach a conclusion we had to confront directly: they
+evaluate recording device, chest location, sex and age as sources of domain shift, use the most
+informative combinations to guide a supervised contrastive objective, and identify
+recording-condition bias as a primary limiting factor for models trained on this corpus.
+Section~\ref{subsec:dataset} reports what we found when we went looking for that axis in the
+data itself.
 
 \textbf{Interpretability and open-world behaviour.} Concept bottleneck
 models~\cite{koh2020cbm} route a prediction through human-named concepts so the reasoning
@@ -135,9 +139,13 @@ reimplemented as our open-set baseline, and knowledge distillation with a teachi
 assistant~\cite{pavel2024kd} gave us the compression arm. Yang
 \emph{et al.}~\cite{yang2024ood} supply the vocabulary separating out-of-distribution
 detection from open-set recognition and Kejriwal \emph{et al.}~\cite{kejriwal2024owl} the
-staged open-world protocol, while Cho and Lee~\cite{cho2025openset}---the only group we
-found doing open-set recognition on respiratory audio---report an improvement over a
-semi-supervised baseline rather than an absolute score.
+staged open-world protocol, while Cho and Lee~\cite{cho2025openset}---the only group we found
+doing open-set recognition on respiratory audio---report an improvement over a semi-supervised
+baseline rather than an absolute score. Cruz \emph{et al.}~\cite{cruz2025owl}, surveying what
+the open-world field still has not solved, group the open problems into the theory of novelty,
+the design of agents, and their evaluation---and it is the third group, where they name
+inconsistent evaluation metrics as an unresolved issue, that turned out to describe our
+situation rather than the first two.
 
 \textbf{How well humans do the same task.} This was the most important group we read.
 Tzeng \emph{et al.}~\cite{tzeng2025jmir} had seven senior physicians blindly annotate a
@@ -148,10 +156,16 @@ recordings and found agreement below $\kappa = 0.40$ for detailed descriptions, 
 0.62 and 0.59 when crackles and wheezes are collapsed to simple presence. Huang
 \emph{et al.}~\cite{huang2024crackles} report a larger clinical archive where agreement on
 wheeze is very high ($\kappa = 0.948$) but on crackle only moderate ($\kappa = 0.516$). The
-three disagree on the level and agree on the shape: crackle labels are far less reliable
-than wheeze labels, and reliability falls sharply as the description gets finer. Work
-applying generic saliency methods to combined corpora~\cite{scirep2025cnnrnn} explains
-models against those same labels without asking what the labels support.
+three disagree on the level and agree on the shape: crackle labels are far less reliable than
+wheeze labels, and reliability falls sharply as the description gets finer. Against that
+background, Bikku \emph{et al.}~\cite{scirep2025cnnrnn} fuse a convolutional encoder with a
+recurrent one over mel-spectrograms drawn from two corpora, map crackles to pneumonia and
+wheezes to obstructive disease, explain the result with gradient, Shapley and local surrogate
+methods, and report 94.0 percent accuracy under five-fold cross-validation. The explanations
+are aligned to the same cycle labels the three studies above characterise, and the partition is
+not the official one, so the number cannot be read against the systems in the first block. Both
+observations shaped how we report our own interpretability results in
+Section~\ref{subsec:xai}.
 
 \subsection{Gaps in the Related Work}
 \label{subsec:gaps}
@@ -160,10 +174,12 @@ Reading the two groups side by side exposed four gaps we could act on.
 
 First, \emph{the reported score is treated as a property of the model}. Papers in the first
 group report one composite number and compare it against other papers' composite numbers; few
-state which of the circulating definitions they used, and several report on partitions that
-are described but not specified. We could not find an ICBHI paper that ablates its evaluation
-protocol the way it ablates its architecture, even though our audit shows the protocol is
-worth more than any architectural choice we made.
+state which of the circulating definitions they used, and the partition is often described
+loosely or not at all---the multi-task study above does not name one, and the
+convolutional-recurrent study reports five-fold cross-validation, which is a perfectly clear
+choice that simply cannot be read against the official-split numbers beside it. We could not
+find an ICBHI paper that ablates its evaluation protocol the way it ablates its architecture,
+even though our audit shows the protocol is worth more than any architectural choice we made.
 
 Second, \emph{the official split is assumed to be patient-independent and it is not}. The
 published file assigns recordings, not patients, and two patients have recordings on both
@@ -182,13 +198,13 @@ tell how many attempts a reported success survived.
 \subsection{Our Work}
 \label{subsec:ourwork}
 
-We started with an open-world multi-task design: a shared spectrogram backbone, one head
-for the four sound-event classes and one for disease, with a bottleneck of physics-derived
-acoustic concepts in between. We set a gate before building it. The concept extractors had
-to reproduce ICBHI's crackle and wheeze labels at an area under the curve of at least 0.65,
-with an interval excluding chance, measured once per run on the test partition, and two
-runs were budgeted. Both failed---0.5506 then 0.5580 for crackle, 0.5729 then 0.5340 for
-wheeze---and we stopped, as the gate said we would.
+We started with an open-world multi-task design: a shared spectrogram backbone, one head for
+the four sound-event classes and one for disease, with a bottleneck of physics-derived acoustic
+concepts in between. We set a gate before building it: the extractors had to reproduce ICBHI's
+crackle and wheeze labels at an area under the curve of at least 0.65, with an interval
+excluding chance, measured once per run on the test partition, and two runs were budgeted. Both
+failed---0.5506 then 0.5580 for crackle, 0.5729 then 0.5340 for wheeze---and we stopped, as the
+gate said we would.
 
 That failure sent us back to look at how we were measuring anything, and the audit turned
 up five faults in our own evaluation, priced in Section~\ref{subsec:protocol}. Correcting
@@ -201,18 +217,17 @@ makes each fault detectable by somebody else.
 We then rebuilt the model side under that protocol. One ImageNet-pretrained convolutional
 network and three ImageNet-pretrained vision
 transformers~\cite{dosovitskiy2021vit,liu2021swin,touvron2021deit} were trained on identical
-inputs with identical schedules, each clean and with SpecAugment~\cite{park2019specaugment}.
-A fourth transformer, an Audio Spectrogram Transformer~\cite{gong2021ast} pretrained on
-AudioSet, had been run earlier in the project and is reported in
-Section~\ref{subsec:ast}---but it predates the audit, and because it stored no prediction
-table its challenge-metric score cannot be recovered. We report that rather than repairing
-it, because it is the clearest possible illustration of the paper's own argument. The best
-model, MobileNetV2~\cite{sandler2018mobilenetv2} with SpecAugment, was taken apart with a
-twelve-row ablation, a three-seed noise floor, paired patient-level tests, and gradient- and
-occlusion-based attribution~\cite{selvaraju2017gradcam}. Every transformer lost to the
-convolutional baseline and the largest collapsed to the majority class; we report that
-rather than tuning until it stops being true. Finally we returned to the concept question
-with a fairer instrument, and it refuted the explanation we had begun to prefer
+inputs with identical schedules, each clean and with SpecAugment~\cite{park2019specaugment}. A
+fourth transformer, an Audio Spectrogram Transformer~\cite{gong2021ast} pretrained on AudioSet,
+had been run earlier in the project; it predates the audit and stored no prediction table, so
+its challenge-metric score cannot be recovered, and Section~\ref{subsec:ast} reports that
+rather than repairing it because it is the clearest illustration of the paper's own argument.
+The best model, MobileNetV2~\cite{sandler2018mobilenetv2} with SpecAugment, was taken apart
+with a twelve-row ablation, a three-seed noise floor, paired patient-level tests, and gradient-
+and occlusion-based attribution~\cite{selvaraju2017gradcam}. Every transformer lost to the
+convolutional baseline and the largest collapsed to the majority class; we report that rather
+than tuning until it stops being true. Finally we returned to the concept question with a
+fairer instrument, and it refuted the explanation we had begun to prefer
 (Section~\ref{subsec:ceiling}).
 
 The novelty here is not a layer or a loss. It is (i) an ablation of the evaluation protocol
@@ -242,7 +257,7 @@ Section~\ref{subsec:protocol} sits.
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=0.46\linewidth]{figures/fig_flowchart.pdf}
+\includegraphics[width=0.38\linewidth]{figures/fig_flowchart.pdf}
 \caption{Flowchart of the complete system. Audio is segmented into annotated respiratory
 cycles, standardised in length, converted to a log-mel spectrogram and classified into four
 sound-event classes. The split loader, the metric definition and the checkpoint selection
@@ -267,8 +282,12 @@ result. Each patient carries a single diagnosis label, and those labels are extr
 imbalanced: COPD alone covers 64 of the 126 patients and 83.3 percent of all cycles, which is
 why the disease side of our original two-head design was eventually dropped from the headline.
 And only 4 patients (112, 158, 218 and 226) were recorded on more than one device, so device
-identity is almost perfectly confounded with patient identity and no device-robustness study
-is possible on this corpus at all.
+identity is almost perfectly confounded with patient identity. That is worth stating plainly
+because Kim \emph{et al.}~\cite{kim2025metadata} identify recording-condition bias as a
+primary limiting factor for models trained here: the axis they show matters is one this corpus
+cannot be used to measure from the inside, since separating device from patient would require
+patients recorded on several devices and there are four. It is a reason to take their
+cross-dataset approach seriously, not a reason to doubt it.
 
 \subsubsection{Partitions and class balance}
 Table~\ref{tab:partitions} gives the three partitions this paper uses together with the
@@ -352,8 +371,8 @@ delta is measured against, so instead they are switched on one at a time as rows
 therefore read in the opposite direction to every other row: a positive delta is a
 recommendation to adopt the stage.
 
-The median annotated cycle is 2.42~s against an 8.0~s input, so almost every cycle has to be
-extended. We tile rather than pad with silence: for a cycle $x$ of length $L$ and a target of
+The median cycle is 2.42~s against an 8.0~s input, so almost every cycle has to be extended.
+We tile rather than pad with silence: for a cycle $x$ of length $L$ and a target of
 $N = T f_s$ samples,
 
 \begin{equation}
@@ -361,12 +380,11 @@ $N = T f_s$ samples,
 \label{eq:tile}
 \end{equation}
 
-and a longer cycle is cropped from the start. Cyclic tiling is common practice here, but it
-repeats the same acoustic event two or three times inside one input and leaves a
-discontinuity at each seam; row \texttt{P4} tests the alternative, and
-Section~\ref{subsec:xai} gives the attribution evidence that made us test it. The tiled
-waveform becomes a log-mel spectrogram, with $X[m,k]$ the short-time Fourier transform and
-$H_j[k]$ the $j$-th mel filter:
+and a longer cycle is cropped from the start. Tiling is common practice here, but it repeats
+the same acoustic event two or three times inside one input and leaves a discontinuity at each
+seam; row \texttt{P4} tests the alternative, for reasons Section~\ref{subsec:xai} supplies.
+The tiled waveform becomes a log-mel spectrogram, with $X[m,k]$ the short-time Fourier
+transform and $H_j[k]$ the $j$-th mel filter:
 
 \begin{equation}
 S[j,m] = 10\log_{10}\!\left(\frac{\sum_{k} H_j[k]\,\lvert X[m,k]\rvert^{2}}
@@ -383,8 +401,8 @@ map to the unit interval,
 \label{eq:minmax}
 \end{equation}
 
-Labels come from the two annotation flags. With $c$ the crackle flag and $w$ the wheeze flag,
-both in $\{0,1\}$,
+Labels come from the two annotation flags, with $c$ the crackle flag and $w$ the wheeze flag,
+both in $\{0,1\}$:
 
 \begin{equation}
 y = c + 2w \in \{0,1,2,3\} \;\equiv\; \{\text{Normal},\ \text{Crackle},\ \text{Wheeze},\ \text{Both}\}.
@@ -392,8 +410,8 @@ y = c + 2w \in \{0,1,2,3\} \;\equiv\; \{\text{Normal},\ \text{Crackle},\ \text{W
 \end{equation}
 
 Imbalance is handled in the loss rather than by resampling, so the training distribution is
-identical across every model and ablation row. For class $c$ with $N_c$ training cycles out
-of $N$ and $C = 4$, the raw inverse-frequency weight is renormalised to unit mean:
+identical across every model and ablation row. For class $c$ with $N_c$ of $N$ training cycles
+and $C = 4$, the raw inverse-frequency weight is renormalised to unit mean:
 
 \begin{equation}
 w_c = \frac{N}{C N_c} \bigg/ \frac{1}{C}\sum_{c'=1}^{C}\frac{N}{C N_{c'}},
@@ -418,17 +436,15 @@ two frequency masks and two time masks per spectrogram.
 \subsection{Applied Models}
 \label{subsec:models}
 
-Table~\ref{tab:models} lists every model in this paper with its owner. The design rule for the
-four backbones trained under the corrected protocol was that they share the same spectrograms,
-loss, partition, batch size of 16, cap of 40 epochs and seed 42, since anything else would turn
-the comparison into a comparison of tuning effort; only the classifier head is replaced. The
-two families do differ in optimiser settings, and we state that rather than smoothing it over:
-the convolutional model uses Adam at a single learning rate of $5\times10^{-4}$ with dropout
-0.3 and gradient clipping at 5.0, while the vision transformers use AdamW with a split rate of
-$10^{-4}$ on the backbone and $10^{-3}$ on the head, the standard recipe for fine-tuning a
-pretrained transformer and the one their reference implementations assume. Both use cosine
-annealing and weight decay $10^{-4}$, and the ablation harness reuses the convolutional
-settings unchanged.
+Table~\ref{tab:models} lists every model with its owner. The four backbones trained under the
+corrected protocol share the same spectrograms, loss, partition, batch size of 16, cap of 40
+epochs and seed 42, since anything else would turn the comparison into a comparison of tuning
+effort; only the classifier head is replaced. The two families do differ in optimiser settings,
+and we state that rather than smoothing it over: the convolutional model uses Adam at a single
+learning rate of $5\times10^{-4}$ with dropout 0.3 and gradient clipping at 5.0, while the
+vision transformers use AdamW at $10^{-4}$ on the backbone and $10^{-3}$ on the head, the
+standard recipe for fine-tuning a pretrained transformer. Both use cosine annealing and weight
+decay $10^{-4}$, and the ablation harness reuses the convolutional settings unchanged.
 
 \begin{table}[!t]
 \centering
@@ -509,14 +525,14 @@ A gate that cannot fail is not a gate.
 \section{Results and Discussion}
 \label{sec:results}
 
-Training used two machines: the convolutional runs, the seed replicates and three
-preprocessing ablation rows on Kaggle and Google Colab with an NVIDIA Tesla T4 (16~GB), and the
-transformer runs and the remaining ablation rows locally on an NVIDIA GeForce RTX 4050 Laptop
-GPU (6~GB), with PyTorch 2.10 and CUDA 12.8 throughout. Every run writes one result file
-holding its configuration, raw $4\times4$ confusion matrix, per-epoch history and efficiency
-record, and every number below was read from or recomputed from one of those files. The one
-exception is the Audio Spectrogram Transformer of Section~\ref{subsec:ast}, which predates
-that requirement and is flagged wherever it appears.
+Training used two machines: the convolutional runs, the seed replicates and three preprocessing
+ablation rows on Kaggle and Google Colab with an NVIDIA Tesla T4 (16~GB), and the transformer
+runs and the remaining ablation rows locally on an NVIDIA GeForce RTX 4050 Laptop GPU (6~GB),
+with PyTorch 2.10 and CUDA 12.8 throughout. Every run writes one result file holding its
+configuration, raw $4\times4$ confusion matrix, per-epoch history and efficiency record, and
+every number below was read from or recomputed from one of those files---except the Audio
+Spectrogram Transformer of Section~\ref{subsec:ast}, which predates that requirement and is
+flagged wherever it appears.
 
 \subsection{Five Faults in the Evaluation, and What Each Costs}
 \label{subsec:protocol}
@@ -717,13 +733,13 @@ under~(\ref{eq:macro}) was 0.6359.
 Three things stand out.
 
 \emph{Every transformer lost to the convolutional baseline.} Swin-T, the best of the three
-trained under the corrected protocol, reaches 0.5304 against MobileNetV2's 0.5602 using 12
-times the parameters, and DeiT-S is a further 1.5 points back. This is not what we expected
-when we assigned one transformer per member, and it matches what the literature reports when
+trained under the corrected protocol, reaches 0.5304 against MobileNetV2's 0.5602 using 12 times
+the parameters, and DeiT-S is a further 1.5 points back. That is not what we expected when we
+assigned one transformer per member, but it matches what the literature reports when
 pretraining is on images rather than audio: every system above 0.62 in
-Section~\ref{subsec:comparison} is AudioSet-pretrained and none of these three is. We
-deliberately did not tune the transformers until one won, because that would have made the
-comparison a comparison of effort.
+Section~\ref{subsec:comparison} is AudioSet-pretrained and none of these three is. We did not
+tune the transformers until one won, because that would have made the comparison a comparison
+of effort.
 
 \emph{ViT-B/16 collapsed.} Its row is numerically identical to the always-Normal baseline in
 every column that matters: sensitivity exactly 0.0000, a bootstrap interval of width 0.002
@@ -757,16 +773,15 @@ backbone it was compared against and, at 86.74~ms per sample against 2.94~ms on 
 Tesla T4, about 30 times slower at inference. Under the macro variant it scored 0.6359, which
 placed it \emph{last} of the three backbones in that study.
 
-Three things stand between this run and the upper block of Table~\ref{tab:main}: the
-partition is the one Fault 2 produced, the metric is the one Fault 1 describes, and the
-preprocessing is not the chain of Section~\ref{subsec:preprocessing}. Any one would
-invalidate the comparison. The fourth problem is the one worth dwelling on.
-\textbf{The run committed no raw confusion matrix.} Its numbers survive only as figures
-transcribed from a notebook's output into a later backbone-selection record. Every other
-score in this paper can be recomputed from a stored $4\times4$ matrix by a reader with a
-calculator; this one cannot be recomputed by anybody, including us. We cannot convert it to
-the challenge metric, give it an interval, or place it in Table~\ref{tab:metricaudit} beside
-the twenty runs whose inflation we measured.
+Three things stand between this run and the upper block of Table~\ref{tab:main}: the partition
+is the one Fault 2 produced, the metric is the one Fault 1 describes, and the preprocessing is
+not the chain of Section~\ref{subsec:preprocessing}. Any one would invalidate the comparison.
+The fourth problem is the one worth dwelling on. \textbf{The run committed no raw confusion
+matrix.} Its numbers survive only as figures transcribed from a notebook's output into a later
+backbone-selection record. Every other score here can be recomputed from a stored $4\times4$
+matrix by a reader with a calculator; this one cannot be recomputed by anybody, including us.
+We cannot convert it to the challenge metric, give it an interval, or place it in
+Table~\ref{tab:metricaudit}.
 
 That is not a footnote, it is the paper's argument happening to the paper. The recommendation
 in Section~\ref{sec:conclusion} to commit the raw confusion matrix is not a general principle
@@ -807,14 +822,12 @@ Ablation rows ($\times7$) & yes & 40 & 12--36 & \phantom{0}7.5--15.2 & 11.3--22.
 \end{tabular}
 
 \vspace{2pt}
-\footnotesize The ablation harness reports 2,263,160 parameters where the main notebook
-reports 2,228,996. We traced the 34,164 difference: MobileNetV2 holds exactly 34,164 elements
-of batch-normalisation running statistics, which are buffers rather than learnable
-parameters, and the harness counts buffers in its total. The two numbers describe the same
-network. The ten ablation rows are split across both devices and so appear twice; the faster
-laptop rows are the ones that shorten the input or freeze the backbone. The Audio Spectrogram
-Transformer's epoch count and wall-clock time were never recorded and are not recoverable
-from a checkpoint.
+\footnotesize The ablation harness reports 2,263,160 parameters where the main notebook reports
+2,228,996. We traced the 34,164 difference: MobileNetV2 holds exactly 34,164 elements of
+batch-normalisation running statistics, which are buffers rather than learnable parameters, and
+the harness counts buffers in its total. The ten ablation rows are split across both devices and
+so appear twice; the faster laptop rows shorten the input or freeze the backbone. The Audio
+Spectrogram Transformer's epoch count and wall-clock time were never recorded.
 \end{table}
 
 Table~\ref{tab:efficiency} makes the transformer result concrete: ViT-B/16 is 38 times the
@@ -822,14 +835,12 @@ parameters and 37 times the disk footprint of MobileNetV2 and scores below a con
 predictor, while Swin-T is 12 times the parameters for three points less. At this data
 scale, parameter count buys nothing in accuracy.
 
-It does not straightforwardly buy slowness either, and the timings cut against the usual
-intuition. Comparing only within the laptop GPU, where all three vision transformers and seven
-ablation rows ran, MobileNetV2 costs about 21 to 23~s per epoch while DeiT-S costs
-14.1---faster per epoch despite ten times the parameters. Depthwise-separable convolutions are
-parameter-efficient but keep a GPU poorly occupied, whereas a transformer's work is dense
-matrix multiplication; only ViT-B/16, at 47.5~s per epoch, is slow in both senses. Parameter
-count is therefore a poor proxy for training cost here, one more reason to report time and size
-as separate columns.
+It does not straightforwardly buy slowness either. Within the laptop GPU, where all three
+vision transformers and seven ablation rows ran, MobileNetV2 costs about 21 to 23~s per epoch
+while DeiT-S costs 14.1---faster despite ten times the parameters, because depthwise-separable
+convolutions are parameter-efficient but keep a GPU poorly occupied. Only ViT-B/16, at 47.5~s,
+is slow in both senses. Parameter count is a poor proxy for training cost here, one more reason
+to report time and size separately.
 
 \subsection{Data Augmentation}
 \label{subsec:augmentation}
@@ -842,8 +853,8 @@ of 0.0141 from Table~\ref{tab:stats}, only the first and third clear the floor, 
 first is a gain.
 
 Masking therefore helps the convolutional model and does not help the transformers. The
-$+0.0402$ is 2.9 times the noise floor, the clearest single-component effect in this paper
-after pretraining and checkpoint selection. On the two transformers that did not collapse the
+$+0.0402$ is 2.9 times the noise floor, the clearest single-component effect in this paper after
+pretraining and checkpoint selection. On the two transformers that did not collapse the
 composite is flat or slightly down while macro F1 goes \emph{up}---0.3820 to 0.4058 for Swin-T,
 0.3422 to 0.3571 for DeiT-S---which has a specific meaning: masking makes them spread
 predictions across the rare classes, improving per-class balance at the cost of sensitivity on
@@ -851,21 +862,20 @@ the pooled abnormal category the composite is built from. Reporting both metrics
 that visible; on ViT-B/16 neither run left the majority class, so its pair says nothing. A
 five-member deep ensemble of the same backbone, trained separately on a partition with a
 calibration carve-out, moves from 0.5183 to 0.5447 accuracy and 0.3778 to 0.3901 macro F1 under
-the same augmentation; it commits no confusion matrix, so it is reported on those two metrics
-only and is not rankable against the rows above.
+the same augmentation; it commits no confusion matrix and is not rankable against the rows
+above.
 
 \subsection{The Best Model in Detail}
 \label{subsec:best}
 
-Under the rule fixed in advance---highest challenge score on the corrected partition among
-runs with a committed confusion matrix---the best model is MobileNetV2 with SpecAugment at
-0.5602. Fig.~\ref{fig:cm} is its normalised confusion matrix and Fig.~\ref{fig:curves} its
-training curves; both are regenerated from the same result file that produced
+Under the rule fixed in advance---highest challenge score on the corrected partition among runs
+with a committed confusion matrix---the best model is MobileNetV2 with SpecAugment at 0.5602.
+Figs.~\ref{fig:cm} and~\ref{fig:curves} are regenerated from the same result file that produced
 Table~\ref{tab:main}, so neither can drift from it.
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=0.42\linewidth]{figures/fig_confusion_best.png}
+\includegraphics[width=0.36\linewidth]{figures/fig_confusion_best.png}
 \caption{Row-normalised confusion matrix of the best model on the 2,636 corrected test
 cycles. The diagonal falls monotonically with class frequency and the heaviest off-diagonal
 mass is the entire abnormal column leaking into Normal.}
@@ -874,7 +884,7 @@ mass is the entire abnormal column leaking into Normal.}
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=0.66\linewidth]{figures/fig_curves_best.png}
+\includegraphics[width=0.58\linewidth]{figures/fig_curves_best.png}
 \caption{Training and validation loss and accuracy against epoch for the best model, with the
 selected epoch marked. Loss keeps falling long after the monitored score stops improving,
 which is exactly the disagreement Table~\ref{tab:selection} prices.}
@@ -924,11 +934,11 @@ model fails where the annotators disagree.
 \subsection{Extension Experiments}
 \label{subsec:extensions}
 
-Alongside the four backbones we ran nine extensions. Most predate the split correction and
-sit on a 70/30 partition our audit later invalidated for comparison purposes, so they cannot
-be ranked against Table~\ref{tab:main}. Table~\ref{tab:extensions} reports them anyway with
-the partition in its own column, because suppressing an experiment because its partition
-turned out to be wrong is a worse habit than reporting it with a label.
+Alongside the four backbones we ran nine extensions. Most predate the split correction and sit
+on a 70/30 partition our audit later invalidated, so they cannot be ranked against
+Table~\ref{tab:main}. Table~\ref{tab:extensions} reports them anyway with the partition in its
+own column, because suppressing an experiment for having the wrong partition is a worse habit
+than reporting it with a label.
 
 \begin{table}[!t]
 \centering
@@ -961,13 +971,12 @@ trained for a score within 0.011 of the full fine-tune on the same partition.
 \end{table}
 
 The open-set arm changed what we consider a baseline. Reimplementing OpenMax after Karim
-\emph{et al.}~\cite{karim2024mosquito} gave an unknown-detection AUROC of 0.4516, below
-chance, while a post-hoc energy score on the frozen backbone---which needs no training at
-all---reached 0.6466. Several earlier claims in our own repository compared a proposed
-mechanism against 0.4516 and reported large improvements; against 0.6466 those improvements
-disappear. A baseline scoring below chance is a broken baseline, not an easy one. With only
-19 unknown patients every interval in this arm spans chance, so we write ``not shown to
-beat'' rather than ``beats'' throughout.
+\emph{et al.}~\cite{karim2024mosquito} gave an unknown-detection AUROC of 0.4516, below chance,
+while a post-hoc energy score on the frozen backbone---which needs no training at all---reached
+0.6466. Several earlier claims in our own repository compared a mechanism against 0.4516 and
+reported large improvements; against 0.6466 they disappear. A baseline scoring below chance is a
+broken baseline, not an easy one. With only 19 unknown patients every interval here spans
+chance, so we write ``not shown to beat'' rather than ``beats'' throughout.
 
 \subsection{The Pre-Registered Concept Gate}
 \label{subsec:gate}
@@ -1001,21 +1010,21 @@ here and two are purely descriptive, and that two-of-nine ratio is itself a stat
 what this benchmark can validate.
 \end{table}
 
-The revisions between the runs worked mechanically, and each traded one failure mode for its
+The revisions between the runs worked mechanically and each traded one failure mode for its
 opposite: the crackle detector's firing rate fell from about 10 per second to 2.5, killing a
-saturation problem, and the wheeze detector stopped being silent on half of all wheeze cycles
-and started firing on 99 percent of everything. Two runs was the budget and we did not
-attempt a third, because a third revision aimed at a gate already read twice would be fitting
-the test set and any resulting pass would be uninterpretable.
+saturation problem, while the wheeze detector went from silent on half of all wheeze cycles to
+firing on 99 percent of everything. Two runs was the budget and we did not attempt a third,
+because a third revision aimed at a gate already read twice would be fitting the test set and
+any resulting pass would be uninterpretable.
 
 \subsection{Is 0.65 Reachable at All? The Retraction}
 \label{subsec:ceiling}
 
 After the gate failed we started to prefer an explanation we liked: that ICBHI's cycle labels
-are themselves too noisy for any detector to reach 0.65, and that we had found a ceiling.
-Before writing that down we tested it, with the readings fixed in the script before it ran.
-The test is a logistic probe fitted on the 79 training patients and scored on the same 2,636
-test cycles, in four representations. Table~\ref{tab:ceiling} refutes us.
+are themselves too noisy for any detector to reach 0.65, and that we had found a ceiling. Before
+writing that down we tested it, with the readings fixed in the script before it ran---a logistic
+probe fitted on the 79 training patients and scored on the same 2,636 test cycles, in four
+representations. Table~\ref{tab:ceiling} refutes us.
 
 \begin{table}[!t]
 \centering
@@ -1093,11 +1102,10 @@ unusable, so they are an answer and not missing data. The intra-rater row makes 
 interpretable: the pack's rule was that more than three self-disagreements out of twelve would
 mean the task is impossible from recordings, and there was one. In the lower block the effect
 size is identical for both concepts, only wheeze reaches significance at this sample size, and
-crackle is reported as undecided. Those 132 clips are not a random sample---the pack kept cycles
-of at least 0.9~s, sorted longest first and over-sampled the abnormal strata---so the absolute
-values are not comparable to Table~\ref{tab:ceiling}. The selection applies equally to both
-halves of the paired difference, which is why the contrast is the result and the level is
-not.
+crackle is reported as undecided. Those 132 clips are not a random sample---cycles of at least
+0.9~s, sorted longest first, abnormal strata over-sampled---so the absolute values are not
+comparable to Table~\ref{tab:ceiling}. That selection applies equally to both halves of the
+paired difference, which is why the contrast is the result and the level is not.
 \end{table}
 
 Our crackle sensitivity of 23.1 percent lands within a point of the 23.23 percent reported for
@@ -1118,7 +1126,7 @@ Table~\ref{tab:xaiquant} turns them into numbers, because a heat map on its own 
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=0.50\linewidth]{figures/fig_xai_panels.png}
+\includegraphics[width=0.42\linewidth]{figures/fig_xai_panels.png}
 \caption{Attribution for the best model. Each row is one test cycle: the log-mel spectrogram,
 the gradient-based attribution, the occlusion map, and the predicted against the true label.
 The bottom row is a misclassified cycle.}
@@ -1181,14 +1189,14 @@ the padding-attention rows show the two models behaving completely differently i
 region. \texttt{P4} costs 0.0311, so tiling is doing real work; whether that work is acoustic
 or positional these measurements do not settle, and we do not claim otherwise.
 
-We deliberately do not call any of this clinical validation. The labels these attributions are
-aligned to are reproduced by a physician at $\kappa = 0.035$ on crackles, and a map aligned to
-labels of that reliability tells you where a model looks, not that it reasons like a clinician.
-One planned analysis was dropped rather than faked: we had intended a pointing game asking
-whether attribution mass lands inside the annotated adventitious-sound window, but ICBHI
-annotates \emph{whether} a cycle contains such a sound and not \emph{where}, and the pipeline
-crops to exactly that window, so the hit rate is 100 percent by construction. Band pointing and
-tiling consistency are the substitutes.
+We deliberately do not call any of this clinical validation, and this is where our reading of
+Bikku \emph{et al.}~\cite{scirep2025cnnrnn} shows up in our own method: the labels these
+attributions are aligned to are reproduced by a physician at $\kappa = 0.035$ on crackles, so a
+map aligned to them tells you where a model looks, not that it reasons like a clinician. One
+planned analysis was dropped rather than faked. We had intended a pointing game asking whether
+attribution mass lands inside the annotated event window, but ICBHI annotates \emph{whether} a
+cycle contains an adventitious sound and not \emph{where}, and the pipeline crops to exactly
+that window, so the hit rate is 100 percent by construction.
 
 \subsection{Statistical Analysis}
 \label{subsec:stats}
@@ -1239,10 +1247,10 @@ factor of 1.25 and are not safe alone, and the remaining six clear it by at leas
 The lower block says something different and equally important. The corrected test partition
 holds 2,636 cycles but only 47 patients, and cycles from one patient are not independent:
 testing per cycle makes seven of ten rows significant, testing per patient makes one, and six
-rows change verdict depending on the unit. The two blocks do not contradict each other and
-together say more than either alone. The seed band says run-to-run noise is too small to
-explain most of these deltas; the patient-level test says this test set is too small to
-certify them. Most of the effects are probably real, and this benchmark cannot prove it.
+rows change verdict depending on the unit. The two blocks do not contradict each other. The
+seed band says run-to-run noise is too small to explain most of these deltas; the patient-level
+test says this test set is too small to certify them. Most of the effects are probably real,
+and this benchmark cannot prove it.
 
 \subsection{Ablation Study}
 \label{subsec:ablation}
@@ -1316,12 +1324,11 @@ is about, made with our own evidence in front of us. \emph{Class weighting, mean
 matters}---removing it costs 0.0105, below the noise floor, so the standard answer to the
 imbalance is worth less here than the padding scheme.
 
-Two points about the design. The table above is leave-one-out; we also assembled the cumulative
-form, which exposes an ordering effect a single ordering would hide. Added after SpecAugment,
-class weighting is credited $+0.0105$; added after class weighting, SpecAugment is credited
-$+0.0402$. The two orderings agree only at the end point. The bottom three rungs of that ladder
-need GPU runs we did not complete and are recorded as \notrun\ rather than filled with
-plausible values.
+The table above is leave-one-out. We also assembled the cumulative form, which exposes an
+ordering effect a single ordering would hide: added after masking, class weighting is credited
+$+0.0105$, while added after class weighting, masking is credited $+0.0402$, and the two agree
+only at the end point. Its bottom three rungs need GPU runs we did not complete and are recorded
+as \notrun\ rather than filled with plausible values.
 
 Table~\ref{tab:ablationreason} restates the single largest controllable component one metric at
 a time, because a composite delta hides opposite movements in sensitivity and specificity.
@@ -1362,15 +1369,14 @@ collapses: the ViT run at $S_e = 0.0000$, the first temporal transformer at $S_p
 distillation run at $S_e = 0.0932$ and the acoustic curriculum run at $S_e = 0.0186$. A
 selection-sanity check caught the repeated physics-informed run, whose best epoch was its
 first. A chance-level check caught the OpenMax baseline at AUROC 0.4516, which invalidates every
-comparison made against it. A verifiability check caught a run reporting a challenge score with
-no confusion matrix committed---the same defect that keeps the Audio Spectrogram Transformer of
-Section~\ref{subsec:ast} out of Table~\ref{tab:metricaudit}.
+comparison against it. A verifiability check caught a run reporting a challenge score with no
+confusion matrix---the defect that also keeps the Audio Spectrogram Transformer out of
+Table~\ref{tab:metricaudit}.
 
-The eighth is our favourite. One run reported that temperature scaling improved its accuracy
-from 0.3573 to 0.6595. Temperature scaling is a monotone transform of the logits, so it cannot
-change which class scores highest and therefore cannot change accuracy at all. That run was
-reporting something which cannot happen, and a three-line assertion catches it. Checks of that
-kind cost nothing and are why we trust the numbers that survived.
+The eighth is our favourite. One run reported that temperature scaling raised its accuracy from
+0.3573 to 0.6595. Temperature scaling is a monotone transform of the logits, so it cannot change
+which class scores highest and therefore cannot change accuracy at all. That run was reporting
+something which cannot happen, and a three-line assertion catches it.
 
 \subsection{Limitations}
 \label{subsec:limitations}
@@ -1378,22 +1384,20 @@ kind cost nothing and are why we trust the numbers that survived.
 Six things constrain what this paper can claim, and we would rather state them than have them
 found. The most serious is that our training loop monitors the test partition each epoch: there
 is no separate validation split in the ablation harness, so ``select the best epoch'' means
-select on test. Every score in Table~\ref{tab:ablation} carries that selection advantage,
-equally, and the deltas between rows are what survive it. Table~\ref{tab:selection} prices the
-selection rule at 0.075 to 0.102, which is a lower bound on what a clean protocol would cost
-us. Second, the one audio-pretrained transformer predates the audit, sits on the wrong
-partition under the wrong metric with different preprocessing, and committed no confusion
-matrix, so the single most informative comparison in the paper---image pretraining against
-audio pretraining, under one protocol---is the one we cannot make. Third, the ViT collapse is
-reported as a small-data finding, but we did not try a warm-up schedule with a lower backbone
-learning rate, which is the standard remedy, so the collapse may be a schedule artefact and the
-claim we make is the weaker one. Fourth, the split effect is measured on one model chain only;
-two earlier runs appear to show much larger split effects, but those pairs differ in
-architecture as well as partition, so their differences are confounded and we never quote them
-as split effects. Fifth, there is one clinician, so no inter-rater agreement is
-computable---the intra-rater duplicates and the near-exact replication of a published
-seven-physician sensitivity mitigate this but do not remove it. Sixth, everything here is one
-corpus, so the scope of every claim is ICBHI 2017.
+select on test. Every score in Table~\ref{tab:ablation} carries that advantage equally, and the
+deltas between rows are what survive it; Table~\ref{tab:selection} prices the rule at 0.075 to
+0.102, a lower bound on what a clean protocol would cost us. Second, the one audio-pretrained
+transformer predates the audit, sits on the wrong partition under the wrong metric with
+different preprocessing, and committed no confusion matrix, so the most informative comparison
+in the paper---image against audio pretraining under one protocol---is the one we cannot
+make. Third, the ViT collapse is reported as a small-data finding, but we never tried a warm-up
+schedule with a lower backbone learning rate, which is the standard remedy, so it may be a
+schedule artefact and ours is the weaker claim. Fourth, the split effect is measured on one
+model chain only; two earlier runs appear to show larger split effects, but those pairs differ
+in architecture as well as partition, so we never quote them. Fifth, there is one clinician, so
+no inter-rater agreement is computable---the intra-rater duplicates and the replication of a
+published seven-physician sensitivity mitigate this but do not remove it. Sixth, everything here
+is one corpus, so the scope of every claim is ICBHI 2017.
 
 \subsection{Comparison with Existing Works}
 \label{subsec:comparison}
@@ -1440,14 +1444,15 @@ This work & ICBHI 2017 & AST, macro metric, \notrec\ officially & --- & --- & 0.
 \end{tabular}
 
 \vspace{2pt}
-\footnotesize Published rows use the official partition, 2,756 test cycles from 49 patients;
-our first block is that identical partition and metric, which is why it is the only block of
-ours that may be read against them. The last row is the pre-audit Audio Spectrogram
-Transformer, placed here because its only surviving score is the macro variant; on its own
-partition and metric it finished last of three backbones. Two works cited elsewhere are absent
-because neither reports a number this table can hold: Suma \emph{et al.}~\cite{suma2025mtl}
-give accuracy on an unstated partition, and Cho and Lee~\cite{cho2025openset} an improvement
-over a baseline rather than an absolute score.
+\footnotesize Published rows use the official partition, 2,756 test cycles from 49 patients; our
+first block is that identical partition and metric, which is why it is the only block of ours
+that may be read against them. The last row is the pre-audit Audio Spectrogram Transformer,
+placed here because its only surviving score is the macro variant. Three works cited elsewhere
+are absent because none reports a number this table can hold: Suma
+\emph{et al.}~\cite{suma2025mtl} give accuracy on an unstated partition, Bikku
+\emph{et al.}~\cite{scirep2025cnnrnn} accuracy under five-fold cross-validation, and Cho and
+Lee~\cite{cho2025openset} an improvement over a baseline. Excluding them applies this paper's
+own rule to its own table.
 \end{table}
 
 On the partition the literature actually uses, our best model reaches 0.5641, just above
@@ -1465,35 +1470,34 @@ over-calling them on normal ones, which is the direction a class-weighted loss a
 masking push a model by design, and arguably the direction a screening tool should prefer.
 Under the composite alone the distinction vanishes.
 
-The last three rows are the ones this paper exists for. Our unaudited pipeline reported 0.7077.
-That number would have placed first in this table, ahead of every published system, on a
-partition covering 7.1 percent of the corpus under a metric we had defined ourselves. It was
-not state of the art, it was an unaudited measurement. A 2.2~M-parameter MobileNetV2 landing
-level with a 2021 ResNet34 is an ordinary outcome for a course project; finding out why the
-same code first said otherwise is not.
+The last three rows are the ones this paper exists for. Our unaudited pipeline reported 0.7077,
+which would have placed first in this table, ahead of every published system, on a partition
+covering 7.1 percent of the corpus under a metric we had defined ourselves. It was not state of
+the art, it was an unaudited measurement. A 2.2~M-parameter MobileNetV2 landing level with a
+2021 ResNet34 is an ordinary outcome for a course project; finding out why the same code first
+said otherwise is not.
 
 %=======================================================================
 \section{Conclusions}
 \label{sec:conclusion}
 
 We set out to build an interpretable open-world respiratory sound classifier and ended up
-building an audit. The turn came from a gate written down in advance: our physics-derived
-concept detectors had to reproduce ICBHI's crackle and wheeze labels above 0.65, they reached
-0.5580 and 0.5340 over two runs, and the rule said stop. Looking for an explanation sent us
-into our own evaluation code, where we found five faults. A macro-averaged score variant
-inflated 20 runs by 0.0948 on average; a split loader silently fell back to an 11-patient test
-set worth 0.0893; the published split assigns recordings rather than patients, though repairing
-that leak is worth only 0.0039; one recording's device suffix does not match the released
-audio; and selecting the checkpoint by minimum loss rather than by the challenge score costs
-0.0752 to 0.1015 across three seeds. Our unaudited pipeline reported 0.7077 where the corrected
-one reports 0.5602, and that 0.1475 is larger than every architectural choice in this paper put
-together.
+building an audit. The turn came from a gate written down in advance: our concept detectors had
+to reproduce ICBHI's crackle and wheeze labels above 0.65, they reached 0.5580 and 0.5340 over
+two runs, and the rule said stop. Looking for an explanation sent us into our own evaluation
+code, where we found five faults. A macro-averaged score variant inflated 20 runs by 0.0948 on
+average; a split loader silently fell back to an 11-patient test set worth 0.0893; the published
+split assigns recordings rather than patients, though repairing that leak is worth only 0.0039;
+one recording's device suffix does not match the released audio; and selecting the checkpoint by
+minimum loss rather than by the challenge score costs 0.0752 to 0.1015 across three seeds. Our
+unaudited pipeline reported 0.7077 where the corrected one reports 0.5602, and that 0.1475 is
+larger than every architectural choice in this paper put together.
 
 Under the corrected protocol MobileNetV2 with spectrogram masking is our best model, at 0.5602
 on the corrected partition and 0.5641 on the published one, with 2.2~M parameters. All three
 vision transformers lost to it and ViT-B/16 collapsed to the majority class at 38 times the
-parameter count. The one audio-pretrained transformer we ran cannot be placed beside them at
-all, because it predates the audit and stored no prediction table---the paper's own argument,
+parameter count, while the one audio-pretrained transformer cannot be placed beside them at all
+because it predates the audit and stored no prediction table---the paper's own argument,
 demonstrated on its own most interesting model. The ablation says fine-tuning is worth far more
 than pretraining, that frozen ImageNet features are measurably \emph{worse} than random
 projections on log-mel input, that masking buys specificity rather than sensitivity, and that
@@ -1508,19 +1512,18 @@ self-consistent physician does, by 0.169 at $p = 0.046$.
 The practical recommendation is short. Report the challenge metric with sensitivity and
 specificity beside it, name the partition and say whether it is patient-independent, commit the
 raw confusion matrix, state the checkpoint selection rule, and test over patients rather than
-cycles. Four of our five faults are invisible without those habits, all five sat in code that
-ran without error and produced plausible numbers, and the third habit is the one whose absence
-cost us an entire model.
+cycles. Four of the five faults are invisible without those habits, all five sat in code that
+ran without error, and the third is the one whose absence cost us an entire model.
 
 Three things follow from what is unfinished. \emph{A clean validation protocol, and the fourth
 transformer re-run:} our harness monitors the test partition every epoch, so every score here
 carries a selection advantage; carving a validation split from the 79 training patients would
 remove it, at a cost Table~\ref{tab:selection} puts at 0.075 to 0.102, and the audio-pretrained
 transformer belongs in the same batch as the one experiment that tests the pretraining-domain
-hypothesis directly. \emph{A reference standard built for the task:} a multi-rater
-re-annotation of even a few hundred cycles, with calibration exemplars and an explicit ``fits no
-named category'' option, would separate model error from label noise---our listening pack found
-roughly 7 percent of clips containing a sound that fits none of the four named classes.
+hypothesis directly. \emph{A reference standard built for the task:} a multi-rater re-annotation of even a few
+hundred cycles, with calibration exemplars and an explicit ``fits no named category'' option,
+would separate model error from label noise---our own pack found roughly 7 percent of clips
+containing a sound fitting none of the four named classes.
 \emph{Fine-tuning that preserves what pretraining learned:} the frozen probe in
 Table~\ref{tab:ceiling} recovers these labels at 0.71 and 0.76 with no task training, while our
 ImageNet backbones are useless until allowed to move. Whether adaptation can be constrained so

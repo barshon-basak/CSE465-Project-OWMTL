@@ -153,7 +153,7 @@ def aspect(p):
 
 
 body = s[s.index('\\begin{document}'):]
-tot = 16 + 33 * 2.9
+tot = 16 + len(re.findall(r'@\w+\{', bib)) * 2.9
 for t in re.findall(r'\\begin\{table\}(.*?)\\end\{table\}', body, re.S):
     rows = sum(b.count('\\\\') for b in re.findall(r'\\begin\{tabular\}.*?\\end\{tabular\}', t, re.S))
     cap = re.search(r'\\caption\{(.*?)\}\s*\n\s*\\label', t, re.S)

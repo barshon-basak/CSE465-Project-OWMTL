@@ -16,6 +16,14 @@ support.
 > tables merged, and so did the two human-comparison tables;
 > (d) **ablation rows were relabelled** `REF`, `C1`–`C7`, `P1`–`P5`.
 > The paper now carries **17 tables in the body, 1 in the appendix, and 4 figures**.
+>
+> **Revision note (v3).** The Literature Review was then rebuilt from the four group members'
+> own reviews. Six papers survived selection and **two new citations were added** —
+> `cruz2025owl` (open-world learning, Person A) and `kim2025metadata` (metadata-guided domain
+> adaptation, Person D) — taking the bibliography to **35 entries**. Four sections downstream
+> were changed to stay consistent with them: the gaps paragraph, the dataset device sentence,
+> the XAI interpretation guard, and the comparison table's exclusion note. Roughly 500 words
+> were trimmed elsewhere to absorb the additions, and the figure widths shrank again.
 
 **How to read it.** Part 1 gives the project history — you need this, because several
 choices in the paper only make sense once you know what the project originally was.
@@ -309,34 +317,47 @@ not in a separate Related Works section (the supervisor's slide 8 says so explic
 ordered by when they became relevant to the project's own design, which is stated in the
 one-line preamble.
 
-### Block A — "Where the benchmark stands" (lines 111–125)
-- `electronics2025review` — the survey. Cited for "well over a hundred published systems"
-  and for the pattern that progress since ~2021 came from pretraining, not architecture.
+### Block A — "Where the benchmark stands"
+**Person A's first review.**
+- `electronics2025review` — Yu *et al.*, a review of **135 technical publications** on this
+  database. Cited for two things now: the split between the pathological-state task (several
+  systems above 98 % accuracy) and the adventitious-sound task (much harder, severe class
+  imbalance), and their recommendation of more interpretable models and better use of the data
+  surrounding the audio.
 - The two-tier picture: ImageNet-pretrained CNNs plateau near 0.56 (`respirenet2021`);
   AudioSet-pretrained transformers sit 5–9 points higher
   (`bae2023patchmix`, `bts2024`, `pafa2025`).
-- `suma2025mtl` — the multi-task paper closest to the project's original design. It is
-  cited **and criticised in the same breath**: it reports 74 % and 91 % without saying
-  which partition. That criticism is the paper's first foreshadowing of its own theme.
-- `adffnet2025`, `bspc2025fusion` — two 2025 fusion systems, cited for reporting gains of
-  roughly one point, "which is the scale at which the measurement questions below start
-  to matter."
+- `suma2025mtl` — Person C's review. A single-input multi-output network over MFCCs, four
+  backbones compared, MobileNet best at 74 % on sounds and 91 % on diseases. Cited **and
+  criticised in the same breath**: the partition is never stated. That criticism is the paper's
+  first foreshadowing of its own theme.
+- `adffnet2025`, `bspc2025fusion` — two 2025 fusion systems, cited for gains of roughly one
+  point, "the scale at which the measurement questions below start to matter."
 
-**The rhetorical move:** the review is not a list, it sets up the argument. Note how the
-last clause of the block ties the literature to the paper's thesis. Keep that move.
+**The rhetorical move:** the review is not a list, it sets up the argument. Note how the last
+clause of the block ties the literature to the paper's thesis. Keep that move.
 
-### Block B — "What pretraining is worth" (lines 127–138)
-- `bae2023patchmix` at 0.6237 (fine-tuned AST) versus `frozenfm2025` at 0.5938
-  (frozen model, linear probe only).
-- The synthesis: most of the useful information is in the pretrained representation, not
-  the fine-tuning, **provided the pretraining was on audio**.
+### Block B — "What pretraining is worth, and what the recording conditions cost"
+**Retitled in v3**, because it now carries a second idea.
+- `bae2023patchmix` at 0.6237 (fine-tuned AST) versus `frozenfm2025` at 0.5938 (frozen model,
+  linear probe only).
+- The synthesis: most of the useful information is in the pretrained representation, not the
+  fine-tuning, **provided the pretraining was on audio**.
 - `scl2023` shows the same at a smaller parameter budget; `nguyen2022cotuning` warns that
   ImageNet→spectrogram transfer is fragile.
+- **`kim2025metadata` — new in v3, Person D's review, and the best of the additions.** They
+  evaluate recording device, chest location, sex and age as sources of domain shift, use the
+  most informative combinations to guide a supervised contrastive objective, and identify
+  **recording-condition bias as a primary limiting factor for models trained on this corpus**.
+  The block ends by pointing forward to §II-A.
 
-**Why this block exists.** It predicts the paper's own transformer result before it is
-reported. When Section III shows all three ImageNet-pretrained transformers losing, the
-reader has already been told why. Do not delete this block — it converts a disappointing
-result into a confirmed prediction.
+**Why this block exists.** Two reasons now. It predicts the paper's own transformer result
+before it is reported — when Section III shows all three ImageNet-pretrained transformers
+losing, the reader has already been told why. And it sets up the device-confound finding: Kim
+*et al.* show the axis matters, and §II-A reports that this corpus cannot measure it, because
+only 4 of 126 patients were recorded on more than one device. **That pairing is a v3 addition
+and both halves must survive together** — the citation without the follow-through is decoration,
+and the follow-through without the citation looks like an aside.
 
 ### Block C — "Interpretability and open-world behaviour" (lines 140–153)
 - `koh2020cbm` — the concept bottleneck idea, and the sentence "this was our original
@@ -347,9 +368,15 @@ result into a confirmed prediction.
 - `pavel2024kd` — knowledge distillation with a teaching assistant; the compression arm.
 - `yang2024ood` — the taxonomy separating OOD detection from open-set recognition.
 - `kejriwal2024owl` — the staged open-world protocol.
-- `cho2025openset` — the only open-set work on respiratory audio, and it reports a
-  relative improvement rather than an absolute score (which is why it is later excluded
-  from the comparison table).
+- `cho2025openset` — the only open-set work on respiratory audio, and it reports a relative
+  improvement rather than an absolute score (which is why it is later excluded from the
+  comparison table).
+- **`cruz2025owl` — new in v3, Person A's second review.** Cited for one specific thing, not
+  for general framing: they sort the field's open problems into the theory of novelty, the
+  design of agents, and **their evaluation** — and name inconsistent evaluation metrics as an
+  unresolved issue. That is this paper's thesis appearing in a neighbouring subfield. If you
+  rewrite the sentence, keep the evaluation half; the other two categories are not why it is
+  cited.
 
 ### Block D — "How well humans do the same task" (lines 155–165)
 Opens with "This was the most important group we read", which flags it.
@@ -362,16 +389,35 @@ Opens with "This was the most important group we read", which flags it.
 - The synthesis sentence: *the three disagree on the level and agree on the shape —
   crackle labels are far less reliable than wheeze labels, and reliability falls sharply
   as the description gets finer.*
-- `scirep2025cnnrnn` — applies generic saliency to combined corpora without asking what
-  the labels support; this is the gap the paper's XAI section is careful about.
+- **`scirep2025cnnrnn` — expanded in v3, Person B's review.** Bikku *et al.* fuse a
+  convolutional encoder with a recurrent one over mel-spectrograms from two corpora, map
+  crackles to pneumonia and wheezes to obstructive disease, explain the result with gradient,
+  Shapley and local surrogate methods, and report **94.0 % accuracy under five-fold
+  cross-validation**. It now does two jobs: the explanations are aligned to the same cycle
+  labels the three studies above characterise (which is what the paper's XAI guard reacts to),
+  and the partition is clear but not the official one, so the number cannot be read against the
+  first block's systems (which is a second example for gap 1).
+
+**Tone warning on that last point.** The paper says five-fold cross-validation "is a perfectly
+clear choice that simply cannot be read against the official-split numbers beside it." That is
+a statement about comparability, **not** an accusation of error. Keep it that way — the paper's
+framing discipline is that every fault named is one we made ourselves.
 
 **Citation trap.** This paper is cited project-wide in older documents as
 "Aviles-Solis et al. 2016". **The first author is Melbye.** Aviles-Solis is a co-author on
 other lung-sound papers from the same Tromsø group. The `.bib` entry is correct; do not
 "fix" it back.
 
-**If you rewrite this section:** keep the four-block structure and keep the synthesis
-sentence at the end of Block D — the whole of Section III-G depends on it.
+**If you rewrite this section:** keep the four-block structure and keep the synthesis sentence
+in Block D — the whole of Section III-G depends on it. Also keep the three forward pointers
+added in v3: Block B → §II-A (the device axis), Block D → §III-K (the XAI guard), and Suma and
+Bikku → the gaps paragraph. They are what stop the review from being a list.
+
+**Whose review is where.** Person A: `electronics2025review` (Block A) and `cruz2025owl`
+(Block C). Person B: `scirep2025cnnrnn` (Block D) and `tzeng2025jmir` (Block D). Person C:
+`suma2025mtl` (Block A) and `tzeng2025jmir`, which B also reviewed and which is cited once.
+Person D: `kim2025metadata` (Block B). All four members are represented, which the rubric
+requires.
 
 ---
 
@@ -386,9 +432,13 @@ its evidence:**
 | # | Gap | What the paper does about it |
 |---|---|---|
 | 1 | The reported score is treated as a property of the model. No ICBHI paper ablates its evaluation protocol the way it ablates its architecture. | `tab:protocol` — the protocol ablation |
-| 2 | The official split is assumed patient-independent and is not. | `tab:corpus`, the corrected partition, and row `E3` |
-| 3 | The reference standard is never characterised. | `tab:human`, `tab:ceiling`, `tab:sameclips` |
+| 2 | The official split is assumed patient-independent and is not. | `tab:partitions`, the corrected partition, and row `E3` |
+| 3 | The reference standard is never characterised. | `tab:human` (both blocks), `tab:ceiling` |
 | 4 | Negative results are missing. Nobody fixes a validity threshold in advance and reports the failure. | `tab:gate` |
+
+**Changed in v3:** gap 1 now names **two** concrete examples instead of one — the multi-task
+study that does not name a partition, and the convolutional-recurrent study that reports
+five-fold cross-validation. Two examples make the gap look observed rather than asserted.
 
 **This mapping is the design of the paper.** Each gap has a table that closes it. If you
 rewrite the gaps, check that each still points at its table.
@@ -479,8 +529,16 @@ load-bearing facts moved into a short paragraph:
 - **COPD covers 64 of 126 patients and 83.3 % of all cycles** — which is why the disease head
   was dropped from the headline;
 - **only 4 patients (112, 158, 218, 226) were recorded on more than one device** — so device
-  identity is almost perfectly confounded with patient identity and no device-robustness
-  study is possible on this corpus.
+  identity is almost perfectly confounded with patient identity and no device-robustness study
+  is possible on this corpus.
+
+**Expanded in v3.** The device sentence now cites `kim2025metadata` and explains why the count
+matters: Kim *et al.* identify recording-condition bias as a primary limiting factor here, and
+the axis they show matters is one this corpus cannot measure from the inside, because
+separating device from patient would need patients recorded on several devices and there are
+four. The paper closes that with *"It is a reason to take their cross-dataset approach
+seriously, not a reason to doubt it."* Keep that last clause — without it the passage reads as
+a criticism of their work, which is not what is meant.
 
 Keep both facts if you rewrite the paragraph. Everything else in that table (920 recordings,
 126 patients, 6,898 cycles, 4 classes, 16 kHz, median 2.42 s, 8.0 s input) is already stated
@@ -1272,8 +1330,12 @@ does not support it.
 ### The interpretation guard
 *"We deliberately do not call any of this clinical validation."* The labels these
 attributions are aligned to are reproduced by a physician at κ = 0.035 on crackles, so a
-map aligned to labels of that reliability tells you **where a model looks**, not that it
-reasons like a clinician.
+map aligned to them tells you **where a model looks**, not that it reasons like a clinician.
+
+**Changed in v3:** the guard now names `scirep2025cnnrnn` explicitly — *"this is where our
+reading of Bikku et al. shows up in our own method."* That closes the loop opened in Block D of
+the literature review, and turns a defensive caveat into a stated methodological choice. Keep
+the attribution; it is what makes the guard look considered rather than nervous.
 
 ### The dropped analysis, reported rather than faked
 The team had planned a **pointing game** — does attribution mass land inside the annotated
@@ -1537,10 +1599,11 @@ patch-mix AST 0.6237, BTS/CLAP 0.6354, PAFA/BEATs 0.6484, and seven senior physi
 measured on the same partition and metric, and it is the most useful reference point in the
 table.
 
-**The exclusion footnote is the paper's argument turned on itself:** Suma et al. report
-accuracy on an unstated partition and Cho & Lee report an improvement over a baseline
-rather than an absolute score, so neither can be placed in this table. Both are cited
-elsewhere in the paper.
+**The exclusion footnote is the paper's argument turned on itself, and in v3 it names three
+works, not two:** Suma *et al.* report accuracy on an unstated partition, Bikku *et al.*
+accuracy under five-fold cross-validation, and Cho & Lee an improvement over a baseline rather
+than an absolute score. None can be placed in this table; all three are cited elsewhere in the
+paper. Three examples make the exclusion rule look principled rather than convenient.
 
 ### The three discussion paragraphs
 
@@ -1654,6 +1717,7 @@ into `tab:human`.
 | Figure | File | Source | What it must show | Caption's substantive point |
 |---|---|---|---|---|
 | `fig:flowchart` | `fig_flowchart.pdf` | `make_diagrams.py`, reading committed JSONs | the complete system, raw audio → reported score | the split loader, metric and selection rule are drawn as **components with ablation rows**, not infrastructure |
+| *(current widths)* | flowchart 0.38, confusion 0.36, curves 0.58, XAI 0.42 `\linewidth` | — | these were shrunk twice to hold the page limit | enlarging any of them costs page budget; check `verify.py` after |
 | `fig:cm` | `fig_confusion_best.png` | `make_paper_figures.py` from `results_M22_v2.json` | row-normalised 4×4 for the **best model only** | diagonal falls monotonically with class frequency; abnormal column leaks into Normal |
 | `fig:curves` | `fig_curves_best.png` | same generator | train/validation loss and accuracy vs epoch, best epoch marked | loss keeps falling after the monitored score stops improving — Fault 5 in a picture |
 | `fig:xai` | `fig_xai_panels.png` | `m44_xai_best_model.py` | spectrogram · attribution · occlusion · predicted vs true, including a misclassified example | it is evidence about where the model looks, not clinical validation |
@@ -1779,6 +1843,13 @@ the paper breaks its own rule.
 | open-set | OpenMax 0.4516, energy 0.6466, 19 unknown patients |
 | error analysis | 479/597/440 of 1,076; detect-only 0.6332; sub-typing cost 0.0730 |
 
+### Bibliography
+35 entries, all cited. Two were added in v3 — `cruz2025owl` and `kim2025metadata` — and both
+carry a `VERIFY BEFORE SUBMISSION` block in `references.bib`: their author lists, volume and
+page fields come from the group's own literature reviews and were not re-read from the
+publisher record. `kim2025metadata` deliberately carries **no DOI** rather than a guessed one.
+Confirm both before submitting.
+
 ### Published comparison rows
 RespireNet 0.401/0.723/0.5620 · SCL 0.392/0.760/0.5755 · frozen M2D 0.466/0.722/0.5938 ·
 patch-mix AST 0.431/0.817/0.6237 · BTS 0.457/0.814/0.6354 · PAFA 0.476/0.821/0.6484 ·
@@ -1849,14 +1920,18 @@ language model writes. Preserve that:
 | Minimum 6 pages, and your 18-page ceiling | `verify.py` estimates |
 
 ## 9.4 Page budget
-Currently estimated **17.9 pages** against an 18-page limit — tight, and the estimate is
-approximate (it over-charges the bibliography by roughly 0.4 of a page, so the true figure is
-probably nearer 17.5). If a compile runs over, the cheapest levers in order:
+Currently estimated **18.0 pages** against an 18-page limit — no margin left in the estimate,
+though it over-charges the bibliography by roughly 0.4 of a page (35 references at 2.9 lines
+each, where IEEE onecolumn entries usually run about 2.2), so the true figure is probably
+nearer 17.5. **Confirm on Overleaf before assuming either number.** If a compile runs over, the
+cheapest levers in order:
 
-1. Reduce `fig:flowchart` and `fig:xai` widths (currently 0.46 and 0.50 `\linewidth`).
+1. Reduce `fig:xai` and `fig:flowchart` widths again (now 0.42 and 0.38 `\linewidth`).
 2. Shorten the notes under `tab:partitions`, `tab:human` and `tab:comparison`.
-3. Cut `tab:ablationreason` and put its reason column into the ablation prose — this is the
-   last resort, because the supervisor's slide asks for that exact format.
+3. Trim the second paragraph of §III-E (the DeiT-faster-than-MobileNetV2 observation) — a good
+   observation, but the only genuinely optional paragraph left.
+4. Cut `tab:ablationreason` and put its reason column into the ablation prose — last resort,
+   because the supervisor's slide asks for that exact format.
 
 If a compile comes in short, the cheapest additions in order: restore
 `fig_metric_inflation.png`, restore the cumulative-ladder table, restore the failure
@@ -1885,6 +1960,13 @@ Run first: `python verify.py` (no LaTeX needed). Then, by hand:
 - [ ] No model nickname has crept back into the body (the only `M`-token that belongs there is
       `M2D`, which is a published model's real name).
 - [ ] The Audio Spectrogram Transformer is still marked NOT RECOVERABLE everywhere.
+- [ ] All four members' reviewed papers are still cited: `electronics2025review` and
+      `cruz2025owl` (A), `scirep2025cnnrnn` and `tzeng2025jmir` (B), `suma2025mtl` (C),
+      `kim2025metadata` (D).
+- [ ] The three v3 forward pointers survive: Block B → §II-A, Block D → §III-K, and gap 1's
+      two examples.
+- [ ] `cruz2025owl` and `kim2025metadata` bibliographic fields confirmed against the
+      publisher record.
 - [ ] The selection-criterion caveat survives, both under `tab:selection` and as the first
       limitation.
 - [ ] The XAI resolution caveat survives.
