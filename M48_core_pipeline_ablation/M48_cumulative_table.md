@@ -8,10 +8,10 @@ Baseline first, one component added per row, on the **corrected official 60/40 p
 
 | Config | pretrain | finetune | classweight | specaug | ampnorm | ICBHI | Se | Sp | F1<sub>macro</sub> | Δ vs prev |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|
-| **S0** Baseline — MobileNetV2, random init, frozen, plain CE | ✗ | ✗ | ✗ | ✗ | ✗ | `pending` | — | — | — | — |
-| **S1** + ImageNet pre-training | ✓ | ✗ | ✗ | ✗ | ✗ | `pending` | — | — | — | — |
-| **S2** + full fine-tuning | ✓ | ✓ | ✗ | ✗ | ✗ | `pending` | — | — | — | — |
-| **S3** + SpecAugment | ✓ | ✓ | ✗ | ✓ | ✗ | 0.5497 | 0.4275 | 0.6718 | 0.4294 | — |
+| **S0** Baseline — MobileNetV2, random init, frozen, plain CE | ✗ | ✗ | ✗ | ✗ | ✗ | 0.5040 | 0.0567 | 0.9513 | 0.2231 | — |
+| **S1** + ImageNet pre-training | ✓ | ✗ | ✗ | ✗ | ✗ | 0.4911 | 0.1822 | 0.8000 | 0.2928 | -0.0129 ⚠ |
+| **S2** + full fine-tuning | ✓ | ✓ | ✗ | ✗ | ✗ | 0.5478 | 0.4405 | 0.6551 | 0.4176 | +0.0567 |
+| **S3** + SpecAugment | ✓ | ✓ | ✗ | ✓ | ✗ | 0.5497 | 0.4275 | 0.6718 | 0.4294 | +0.0019 ⚠ |
 | **S4** + Inverse-frequency class-weighted CE | ✓ | ✓ | ✓ | ✓ | ✗ | 0.5602 | 0.4089 | 0.7115 | 0.4141 | +0.0105 ⚠ |
 | **S5** + amplitude normalisation — FULL PIPELINE | ✓ | ✓ | ✓ | ✓ | ✓ | **0.5764** | 0.3996 | 0.7532 | 0.4217 | +0.0162 |
 
@@ -19,10 +19,10 @@ Baseline first, one component added per row, on the **corrected official 60/40 p
 
 | Config | pretrain | finetune | classweight | specaug | ampnorm | ICBHI | Se | Sp | F1<sub>macro</sub> | Δ vs prev |
 |---|---|---|---|---|---|---:|---:|---:|---:|---:|
-| **S0** Baseline — MobileNetV2, random init, frozen, plain CE | ✗ | ✗ | ✗ | ✗ | ✗ | `pending` | — | — | — | — |
-| **S1** + ImageNet pre-training | ✓ | ✗ | ✗ | ✗ | ✗ | `pending` | — | — | — | — |
-| **S2** + full fine-tuning | ✓ | ✓ | ✗ | ✗ | ✗ | `pending` | — | — | — | — |
-| **S3** + class-weighted CE | ✓ | ✓ | ✓ | ✗ | ✗ | 0.5200 | 0.4266 | 0.6135 | 0.3985 | — |
+| **S0** Baseline — MobileNetV2, random init, frozen, plain CE | ✗ | ✗ | ✗ | ✗ | ✗ | 0.5040 | 0.0567 | 0.9513 | 0.2231 | — |
+| **S1** + ImageNet pre-training | ✓ | ✗ | ✗ | ✗ | ✗ | 0.4911 | 0.1822 | 0.8000 | 0.2928 | -0.0129 ⚠ |
+| **S2** + full fine-tuning | ✓ | ✓ | ✗ | ✗ | ✗ | 0.5478 | 0.4405 | 0.6551 | 0.4176 | +0.0567 |
+| **S3** + class-weighted CE | ✓ | ✓ | ✓ | ✗ | ✗ | 0.5200 | 0.4266 | 0.6135 | 0.3985 | -0.0278 |
 | **S4** + SpecAugment | ✓ | ✓ | ✓ | ✓ | ✗ | 0.5602 | 0.4089 | 0.7115 | 0.4141 | +0.0402 |
 | **S5** + amplitude normalisation — FULL PIPELINE | ✓ | ✓ | ✓ | ✓ | ✓ | **0.5764** | 0.3996 | 0.7532 | 0.4217 | +0.0162 |
 
@@ -32,8 +32,8 @@ Both orderings above are built from the same runs and differ only in which of th
 
 | Component | credited in order A | credited in order B | shift |
 |---|---:|---:|---:|
-| SpecAugment (training split only) | pending | +0.0402 | — |
-| Inverse-frequency class-weighted CE | +0.0105 | pending | — |
+| SpecAugment (training split only) | +0.0019 | +0.0402 | -0.0383 |
+| Inverse-frequency class-weighted CE | +0.0105 | -0.0278 | +0.0383 |
 
 ### Leave-one-out companion (M45, already complete)
 
@@ -55,8 +55,4 @@ Full pipeline minus one component. Reported beside the ladder because the two an
 | `P5` | - per-spectrogram min-max normalisation | 0.5539 | -0.0063 |
 
 Rows P1–P3 **add** a stage the baseline does not have, so their sign reads the other way: a positive delta is a recommendation to adopt.
-
-### Still to run
-
-`S0`, `S1`, `S2` — rows in `m48_gpu_rows.py`, produced by `M48_kaggle_tier_A.ipynb` alongside the seed band. About 18 minutes each; they share the spectrogram cache with every other row, so they add no cache time.
 

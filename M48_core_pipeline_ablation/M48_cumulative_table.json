@@ -3,7 +3,7 @@
   "split": "official_60_40_patient_independent_corrected",
   "n_test_cycles": 2636,
   "n_test_patients": 47,
-  "generated_utc": "2026-08-30T14:30:27Z",
+  "generated_utc": "2026-09-05T18:02:50Z",
   "provenance_rule": "every score recomputed from the source run's committed confusion_matrix_raw; a missing run is 'pending', never an estimate",
   "components": [
     {
@@ -43,8 +43,19 @@
             "ampnorm": 0
           },
           "expected_path": "M48_core_pipeline_ablation/results_M48_S0.json",
-          "status": "pending",
-          "note": "run not on disk yet"
+          "status": "ok",
+          "icbhi_score_official": 0.504,
+          "se": 0.0567,
+          "sp": 0.9513,
+          "f1_macro": 0.2231,
+          "accuracy": 0.5861,
+          "ci95": [
+            0.4864,
+            0.5211
+          ],
+          "params": 2228996,
+          "trainable_params": 5124,
+          "source": "M48_core_pipeline_ablation/results_M48_S0.json"
         },
         {
           "rung": "S1",
@@ -57,8 +68,20 @@
             "ampnorm": 0
           },
           "expected_path": "M48_core_pipeline_ablation/results_M48_S1.json",
-          "status": "pending",
-          "note": "run not on disk yet"
+          "status": "ok",
+          "icbhi_score_official": 0.4911,
+          "se": 0.1822,
+          "sp": 0.8,
+          "f1_macro": 0.2928,
+          "accuracy": 0.5478,
+          "ci95": [
+            0.4508,
+            0.5303
+          ],
+          "params": 2228996,
+          "trainable_params": 5124,
+          "source": "M48_core_pipeline_ablation/results_M48_S1.json",
+          "delta_vs_previous": -0.0129
         },
         {
           "rung": "S2",
@@ -71,8 +94,20 @@
             "ampnorm": 0
           },
           "expected_path": "M48_core_pipeline_ablation/results_M48_S2.json",
-          "status": "pending",
-          "note": "run not on disk yet"
+          "status": "ok",
+          "icbhi_score_official": 0.5478,
+          "se": 0.4405,
+          "sp": 0.6551,
+          "f1_macro": 0.4176,
+          "accuracy": 0.5675,
+          "ci95": [
+            0.5015,
+            0.5919
+          ],
+          "params": 2228996,
+          "trainable_params": 2228996,
+          "source": "M48_core_pipeline_ablation/results_M48_S2.json",
+          "delta_vs_previous": 0.0567
         },
         {
           "rung": "S3",
@@ -97,7 +132,8 @@
           ],
           "params": 2263160,
           "trainable_params": 2228996,
-          "source": "Asif's/M45/results_M45_A3.json"
+          "source": "Asif's/M45/results_M45_A3.json",
+          "delta_vs_previous": 0.0019
         },
         {
           "rung": "S4",
@@ -168,8 +204,19 @@
             "ampnorm": 0
           },
           "expected_path": "M48_core_pipeline_ablation/results_M48_S0.json",
-          "status": "pending",
-          "note": "run not on disk yet"
+          "status": "ok",
+          "icbhi_score_official": 0.504,
+          "se": 0.0567,
+          "sp": 0.9513,
+          "f1_macro": 0.2231,
+          "accuracy": 0.5861,
+          "ci95": [
+            0.4864,
+            0.5211
+          ],
+          "params": 2228996,
+          "trainable_params": 5124,
+          "source": "M48_core_pipeline_ablation/results_M48_S0.json"
         },
         {
           "rung": "S1",
@@ -182,8 +229,20 @@
             "ampnorm": 0
           },
           "expected_path": "M48_core_pipeline_ablation/results_M48_S1.json",
-          "status": "pending",
-          "note": "run not on disk yet"
+          "status": "ok",
+          "icbhi_score_official": 0.4911,
+          "se": 0.1822,
+          "sp": 0.8,
+          "f1_macro": 0.2928,
+          "accuracy": 0.5478,
+          "ci95": [
+            0.4508,
+            0.5303
+          ],
+          "params": 2228996,
+          "trainable_params": 5124,
+          "source": "M48_core_pipeline_ablation/results_M48_S1.json",
+          "delta_vs_previous": -0.0129
         },
         {
           "rung": "S2",
@@ -196,8 +255,20 @@
             "ampnorm": 0
           },
           "expected_path": "M48_core_pipeline_ablation/results_M48_S2.json",
-          "status": "pending",
-          "note": "run not on disk yet"
+          "status": "ok",
+          "icbhi_score_official": 0.5478,
+          "se": 0.4405,
+          "sp": 0.6551,
+          "f1_macro": 0.4176,
+          "accuracy": 0.5675,
+          "ci95": [
+            0.5015,
+            0.5919
+          ],
+          "params": 2228996,
+          "trainable_params": 2228996,
+          "source": "M48_core_pipeline_ablation/results_M48_S2.json",
+          "delta_vs_previous": 0.0567
         },
         {
           "rung": "S3",
@@ -222,7 +293,8 @@
           ],
           "params": 2228996,
           "trainable_params": 2228996,
-          "source": "Asif's/M3_v2/Results/results_M3_v2.json"
+          "source": "Asif's/M3_v2/Results/results_M3_v2.json",
+          "delta_vs_previous": -0.0278
         },
         {
           "rung": "S4",
@@ -282,15 +354,15 @@
   "order_effect": {
     "specaug": {
       "label": "SpecAugment (training split only)",
-      "order_A": null,
+      "order_A": 0.0019,
       "order_B": 0.0402,
-      "shift": null
+      "shift": -0.0383
     },
     "classweight": {
       "label": "Inverse-frequency class-weighted CE",
       "order_A": 0.0105,
-      "order_B": null,
-      "shift": null
+      "order_B": -0.0278,
+      "shift": 0.0383
     }
   },
   "seed_band": {

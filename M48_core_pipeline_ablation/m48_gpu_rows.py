@@ -296,10 +296,15 @@ def run_row(row_id, rows, m45, cache_dir=None):
 
 # --------------------------------------------------------------- summary
 def summarise():
+    # Load by row id, not by glob. A glob over results_M48_*.json also matches
+    # results_M48_C4.json, the Tier C probe-vs-clinician result, which is a different
+    # schema and has no "meta" key. Globbing results_M48_A*.json avoided that but also
+    # dropped S0/S1/S2, so the cumulative ladder came back empty after they were run.
     docs = {}
-    for f in sorted(glob.glob(os.path.join(HERE, "results_M48_A*.json"))):
-        d = json.load(open(f, encoding="utf-8"))
-        docs[d["meta"]["row"]] = d
+    for r in ROWS:
+        f = os.path.join(HERE, f"results_M48_{r}.json")
+        if os.path.exists(f):
+            docs[r] = json.load(open(f, encoding="utf-8"))
 
     seeds = [docs[r] for r in ("A0_s42", "A0_s1", "A0_s2") if r in docs]
     band = None

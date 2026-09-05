@@ -1,7 +1,7 @@
 {
   "table": "M48 Tier A \u2014 seed band, selection criterion, feature-extractor null",
   "baseline": "M45 A0 (M22_v2) = 0.5602 on the corrected official 60/40 split",
-  "generated_utc": "2026-08-30T14:30:22Z",
+  "generated_utc": "2026-09-05T17:33:21Z",
   "rows_completed": [
     "A0_s1",
     "A0_s2",

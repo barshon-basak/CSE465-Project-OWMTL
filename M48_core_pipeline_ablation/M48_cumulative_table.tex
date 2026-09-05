@@ -6,10 +6,10 @@
 \toprule
 Config & Added & pretrain & finetune & classweight & specaug & ampnorm & ICBHI & $Se$ & $Sp$ & $\Delta$ \\
 \midrule
-S0 & Baseline — MobileNetV2, random init, frozen, plain CE & \xmark & \xmark & \xmark & \xmark & \xmark & \pending{} & --- & --- & --- \\
-S1 & + ImageNet pre-training & \cmark & \xmark & \xmark & \xmark & \xmark & \pending{} & --- & --- & --- \\
-S2 & + full fine-tuning & \cmark & \cmark & \xmark & \xmark & \xmark & \pending{} & --- & --- & --- \\
-S3 & + SpecAugment & \cmark & \cmark & \xmark & \cmark & \xmark & 0.5497 & 0.4275 & 0.6718 & --- \\
+S0 & Baseline — MobileNetV2, random init, frozen, plain CE & \xmark & \xmark & \xmark & \xmark & \xmark & 0.5040 & 0.0567 & 0.9513 & --- \\
+S1 & + ImageNet pre-training & \cmark & \xmark & \xmark & \xmark & \xmark & 0.4911 & 0.1822 & 0.8000 & $-0.0129$ \\
+S2 & + full fine-tuning & \cmark & \cmark & \xmark & \xmark & \xmark & 0.5478 & 0.4405 & 0.6551 & $+0.0567$ \\
+S3 & + SpecAugment & \cmark & \cmark & \xmark & \cmark & \xmark & 0.5497 & 0.4275 & 0.6718 & $+0.0019$ \\
 S4 & + Inverse-frequency class-weighted CE & \cmark & \cmark & \cmark & \cmark & \xmark & 0.5602 & 0.4089 & 0.7115 & $+0.0105$ \\
 S5 & + amplitude normalisation — FULL PIPELINE & \cmark & \cmark & \cmark & \cmark & \cmark & \best{0.5764} & 0.3996 & 0.7532 & $+0.0162$ \\
 \bottomrule

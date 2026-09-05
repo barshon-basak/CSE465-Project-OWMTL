@@ -1,0 +1,496 @@
+{
+  "meta": {
+    "model_id": "M48_S0",
+    "row": "S0",
+    "variable_changed": "cumulative S0: random init, frozen backbone, plain CE, no SpecAugment",
+    "baseline_model_id": "M22_v2",
+    "date_completed": "2026-09-05",
+    "is_augmented": false,
+    "notes": "M48 Tier A row. Harness reuses Asif's/M45/m45_ablation.py for data, preprocessing, caching and metrics without modification."
+  },
+  "config": {
+    "n_mels": 128,
+    "duration_s": 8.0,
+    "padding": "wrap",
+    "minmax": true,
+    "bandpass": false,
+    "denoise": false,
+    "ampnorm": false,
+    "pretrained": false,
+    "freeze": true,
+    "class_weighted": false,
+    "specaug": false,
+    "lr": 0.0005,
+    "batch_size": 16,
+    "epochs": 40,
+    "dropout": 0.3,
+    "seed": 42
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "data_source": "real_audio",
+    "split_method": "official_60_40_patient_independent_corrected",
+    "train_samples": 4251,
+    "test_samples": 2636,
+    "test_patients": 47
+  },
+  "selection_caveat": "m45_ablation.py monitors the TEST set each epoch; there is no separate validation split. 'select on loss' therefore means test loss. Optimistic, and equally so for every row, so the seed band and the A2+A4 delta are unaffected \u2014 but A7 must be reported as two criteria on one monitoring set, never as a clean train/val/test result.",
+  "best_epoch": {
+    "epoch": 15,
+    "primary_metric": "icbhi_score_official",
+    "primary_metric_value": 0.504
+  },
+  "best_metrics": {
+    "epoch": 15,
+    "icbhi_score_official": 0.504,
+    "icbhi_score_official_ci95": [
+      0.4864,
+      0.5211
+    ],
+    "icbhi_se_official": 0.0567,
+    "icbhi_sp_official": 0.9513,
+    "accuracy": 0.5861,
+    "f1_macro": 0.2231,
+    "confusion_matrix_raw": [
+      [
+        1484,
+        76,
+        0,
+        0
+      ],
+      [
+        556,
+        61,
+        0,
+        0
+      ],
+      [
+        361,
+        12,
+        0,
+        0
+      ],
+      [
+        80,
+        6,
+        0,
+        0
+      ]
+    ]
+  },
+  "selection": {
+    "by_official_score": {
+      "epoch": 15,
+      "icbhi_score_official": 0.504,
+      "icbhi_score_official_ci95": [
+        0.4864,
+        0.5211
+      ],
+      "icbhi_se_official": 0.0567,
+      "icbhi_sp_official": 0.9513,
+      "accuracy": 0.5861,
+      "f1_macro": 0.2231,
+      "confusion_matrix_raw": [
+        [
+          1484,
+          76,
+          0,
+          0
+        ],
+        [
+          556,
+          61,
+          0,
+          0
+        ],
+        [
+          361,
+          12,
+          0,
+          0
+        ],
+        [
+          80,
+          6,
+          0,
+          0
+        ]
+      ]
+    },
+    "by_min_eval_loss": {
+      "epoch": 9,
+      "icbhi_score_official": 0.5,
+      "icbhi_score_official_ci95": [
+        0.5,
+        0.5
+      ],
+      "icbhi_se_official": 0.0,
+      "icbhi_sp_official": 1.0,
+      "accuracy": 0.5918,
+      "f1_macro": 0.1859,
+      "confusion_matrix_raw": [
+        [
+          1560,
+          0,
+          0,
+          0
+        ],
+        [
+          617,
+          0,
+          0,
+          0
+        ],
+        [
+          373,
+          0,
+          0,
+          0
+        ],
+        [
+          86,
+          0,
+          0,
+          0
+        ]
+      ]
+    },
+    "epochs_apart": 6,
+    "A7_delta_score_minus_loss": 0.004
+  },
+  "training_history": [
+    {
+      "epoch": 1,
+      "train_loss": 1.22217,
+      "train_accuracy_augmented": 0.46366,
+      "eval_loss": 1.11641,
+      "eval_accuracy": 0.5846,
+      "icbhi_score_official": 0.49578
+    },
+    {
+      "epoch": 2,
+      "train_loss": 1.20907,
+      "train_accuracy_augmented": 0.46977,
+      "eval_loss": 1.1068,
+      "eval_accuracy": 0.59181,
+      "icbhi_score_official": 0.5
+    },
+    {
+      "epoch": 3,
+      "train_loss": 1.21439,
+      "train_accuracy_augmented": 0.46883,
+      "eval_loss": 1.08264,
+      "eval_accuracy": 0.59181,
+      "icbhi_score_official": 0.5
+    },
+    {
+      "epoch": 4,
+      "train_loss": 1.20844,
+      "train_accuracy_augmented": 0.47354,
+      "eval_loss": 1.1131,
+      "eval_accuracy": 0.5827,
+      "icbhi_score_official": 0.49606
+    },
+    {
+      "epoch": 5,
+      "train_loss": 1.20036,
+      "train_accuracy_augmented": 0.47636,
+      "eval_loss": 1.06238,
+      "eval_accuracy": 0.59181,
+      "icbhi_score_official": 0.5
+    },
+    {
+      "epoch": 6,
+      "train_loss": 1.19833,
+      "train_accuracy_augmented": 0.486,
+      "eval_loss": 1.06374,
+      "eval_accuracy": 0.59219,
+      "icbhi_score_official": 0.50061
+    },
+    {
+      "epoch": 7,
+      "train_loss": 1.20984,
+      "train_accuracy_augmented": 0.47001,
+      "eval_loss": 1.05483,
+      "eval_accuracy": 0.59105,
+      "icbhi_score_official": 0.49936
+    },
+    {
+      "epoch": 8,
+      "train_loss": 1.19987,
+      "train_accuracy_augmented": 0.48271,
+      "eval_loss": 1.06463,
+      "eval_accuracy": 0.59181,
+      "icbhi_score_official": 0.5
+    },
+    {
+      "epoch": 9,
+      "train_loss": 1.21038,
+      "train_accuracy_augmented": 0.46954,
+      "eval_loss": 1.03597,
+      "eval_accuracy": 0.59181,
+      "icbhi_score_official": 0.5
+    },
+    {
+      "epoch": 10,
+      "train_loss": 1.19167,
+      "train_accuracy_augmented": 0.48389,
+      "eval_loss": 1.08361,
+      "eval_accuracy": 0.58194,
+      "icbhi_score_official": 0.49599
+    },
+    {
+      "epoch": 11,
+      "train_loss": 1.19707,
+      "train_accuracy_augmented": 0.48106,
+      "eval_loss": 1.08863,
+      "eval_accuracy": 0.58156,
+      "icbhi_score_official": 0.50014
+    },
+    {
+      "epoch": 12,
+      "train_loss": 1.19119,
+      "train_accuracy_augmented": 0.47683,
+      "eval_loss": 1.09005,
+      "eval_accuracy": 0.59181,
+      "icbhi_score_official": 0.5
+    },
+    {
+      "epoch": 13,
+      "train_loss": 1.19533,
+      "train_accuracy_augmented": 0.47824,
+      "eval_loss": 1.1124,
+      "eval_accuracy": 0.51252,
+      "icbhi_score_official": 0.4754
+    },
+    {
+      "epoch": 14,
+      "train_loss": 1.19166,
+      "train_accuracy_augmented": 0.48106,
+      "eval_loss": 1.05605,
+      "eval_accuracy": 0.59067,
+      "icbhi_score_official": 0.49933
+    },
+    {
+      "epoch": 15,
+      "train_loss": 1.1957,
+      "train_accuracy_augmented": 0.47989,
+      "eval_loss": 1.08343,
+      "eval_accuracy": 0.58612,
+      "icbhi_score_official": 0.50399
+    },
+    {
+      "epoch": 16,
+      "train_loss": 1.19117,
+      "train_accuracy_augmented": 0.48224,
+      "eval_loss": 1.11827,
+      "eval_accuracy": 0.47193,
+      "icbhi_score_official": 0.45567
+    },
+    {
+      "epoch": 17,
+      "train_loss": 1.19255,
+      "train_accuracy_augmented": 0.47448,
+      "eval_loss": 1.09904,
+      "eval_accuracy": 0.58801,
+      "icbhi_score_official": 0.49795
+    },
+    {
+      "epoch": 18,
+      "train_loss": 1.19371,
+      "train_accuracy_augmented": 0.48483,
+      "eval_loss": 1.0674,
+      "eval_accuracy": 0.59181,
+      "icbhi_score_official": 0.50072
+    },
+    {
+      "epoch": 19,
+      "train_loss": 1.18986,
+      "train_accuracy_augmented": 0.48389,
+      "eval_loss": 1.1218,
+      "eval_accuracy": 0.54249,
+      "icbhi_score_official": 0.48212
+    },
+    {
+      "epoch": 20,
+      "train_loss": 1.19333,
+      "train_accuracy_augmented": 0.47965,
+      "eval_loss": 1.11417,
+      "eval_accuracy": 0.54932,
+      "icbhi_score_official": 0.4889
+    },
+    {
+      "epoch": 21,
+      "train_loss": 1.19106,
+      "train_accuracy_augmented": 0.47989,
+      "eval_loss": 1.08773,
+      "eval_accuracy": 0.58877,
+      "icbhi_score_official": 0.49859
+    },
+    {
+      "epoch": 22,
+      "train_loss": 1.19095,
+      "train_accuracy_augmented": 0.47683,
+      "eval_loss": 1.0816,
+      "eval_accuracy": 0.59105,
+      "icbhi_score_official": 0.4995
+    },
+    {
+      "epoch": 23,
+      "train_loss": 1.18952,
+      "train_accuracy_augmented": 0.48271,
+      "eval_loss": 1.06977,
+      "eval_accuracy": 0.58763,
+      "icbhi_score_official": 0.49878
+    },
+    {
+      "epoch": 24,
+      "train_loss": 1.18919,
+      "train_accuracy_augmented": 0.47659,
+      "eval_loss": 1.05432,
+      "eval_accuracy": 0.59143,
+      "icbhi_score_official": 0.49982
+    },
+    {
+      "epoch": 25,
+      "train_loss": 1.18772,
+      "train_accuracy_augmented": 0.48224,
+      "eval_loss": 1.08197,
+      "eval_accuracy": 0.57625,
+      "icbhi_score_official": 0.49753
+    },
+    {
+      "epoch": 26,
+      "train_loss": 1.18771,
+      "train_accuracy_augmented": 0.47589,
+      "eval_loss": 1.11855,
+      "eval_accuracy": 0.54097,
+      "icbhi_score_official": 0.48862
+    },
+    {
+      "epoch": 27,
+      "train_loss": 1.18269,
+      "train_accuracy_augmented": 0.48083,
+      "eval_loss": 1.06804,
+      "eval_accuracy": 0.59181,
+      "icbhi_score_official": 0.5
+    },
+    {
+      "epoch": 28,
+      "train_loss": 1.18477,
+      "train_accuracy_augmented": 0.48389,
+      "eval_loss": 1.0853,
+      "eval_accuracy": 0.5808,
+      "icbhi_score_official": 0.49748
+    },
+    {
+      "epoch": 29,
+      "train_loss": 1.18101,
+      "train_accuracy_augmented": 0.48836,
+      "eval_loss": 1.09969,
+      "eval_accuracy": 0.58346,
+      "icbhi_score_official": 0.50232
+    },
+    {
+      "epoch": 30,
+      "train_loss": 1.18399,
+      "train_accuracy_augmented": 0.48671,
+      "eval_loss": 1.08558,
+      "eval_accuracy": 0.58801,
+      "icbhi_score_official": 0.50256
+    },
+    {
+      "epoch": 31,
+      "train_loss": 1.18031,
+      "train_accuracy_augmented": 0.48342,
+      "eval_loss": 1.07938,
+      "eval_accuracy": 0.59143,
+      "icbhi_score_official": 0.49968
+    },
+    {
+      "epoch": 32,
+      "train_loss": 1.1786,
+      "train_accuracy_augmented": 0.49165,
+      "eval_loss": 1.06983,
+      "eval_accuracy": 0.58915,
+      "icbhi_score_official": 0.49848
+    },
+    {
+      "epoch": 33,
+      "train_loss": 1.17988,
+      "train_accuracy_augmented": 0.48812,
+      "eval_loss": 1.09125,
+      "eval_accuracy": 0.5698,
+      "icbhi_score_official": 0.49395
+    },
+    {
+      "epoch": 34,
+      "train_loss": 1.18034,
+      "train_accuracy_augmented": 0.48647,
+      "eval_loss": 1.08528,
+      "eval_accuracy": 0.5717,
+      "icbhi_score_official": 0.49483
+    },
+    {
+      "epoch": 35,
+      "train_loss": 1.17823,
+      "train_accuracy_augmented": 0.48624,
+      "eval_loss": 1.06838,
+      "eval_accuracy": 0.58801,
+      "icbhi_score_official": 0.49838
+    },
+    {
+      "epoch": 36,
+      "train_loss": 1.17785,
+      "train_accuracy_augmented": 0.49024,
+      "eval_loss": 1.07148,
+      "eval_accuracy": 0.58877,
+      "icbhi_score_official": 0.49902
+    },
+    {
+      "epoch": 37,
+      "train_loss": 1.18002,
+      "train_accuracy_augmented": 0.48859,
+      "eval_loss": 1.07027,
+      "eval_accuracy": 0.58953,
+      "icbhi_score_official": 0.49894
+    },
+    {
+      "epoch": 38,
+      "train_loss": 1.17858,
+      "train_accuracy_augmented": 0.48765,
+      "eval_loss": 1.07244,
+      "eval_accuracy": 0.58953,
+      "icbhi_score_official": 0.5001
+    },
+    {
+      "epoch": 39,
+      "train_loss": 1.18097,
+      "train_accuracy_augmented": 0.47895,
+      "eval_loss": 1.07433,
+      "eval_accuracy": 0.58763,
+      "icbhi_score_official": 0.49907
+    },
+    {
+      "epoch": 40,
+      "train_loss": 1.1785,
+      "train_accuracy_augmented": 0.49188,
+      "eval_loss": 1.07696,
+      "eval_accuracy": 0.58536,
+      "icbhi_score_official": 0.49686
+    }
+  ],
+  "efficiency": {
+    "total_params": 2228996,
+    "trainable_params": 5124,
+    "training_time_total_s": 542.1,
+    "s_per_epoch": 13.55,
+    "gpu_name": "Tesla T4"
+  },
+  "ablation": {
+    "ablation_group": "M48_seed_band_and_selection_criterion",
+    "ablation_role": "variant",
+    "baseline_model_id": "M22_v2",
+    "variable_changed": "cumulative S0: random init, frozen backbone, plain CE, no SpecAugment"
+  }
+}

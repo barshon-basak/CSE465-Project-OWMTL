@@ -1,0 +1,496 @@
+{
+  "meta": {
+    "model_id": "M48_S2",
+    "row": "S2",
+    "variable_changed": "cumulative S2: + full fine-tuning",
+    "baseline_model_id": "M22_v2",
+    "date_completed": "2026-09-05",
+    "is_augmented": false,
+    "notes": "M48 Tier A row. Harness reuses Asif's/M45/m45_ablation.py for data, preprocessing, caching and metrics without modification."
+  },
+  "config": {
+    "n_mels": 128,
+    "duration_s": 8.0,
+    "padding": "wrap",
+    "minmax": true,
+    "bandpass": false,
+    "denoise": false,
+    "ampnorm": false,
+    "pretrained": true,
+    "freeze": false,
+    "class_weighted": false,
+    "specaug": false,
+    "lr": 0.0005,
+    "batch_size": 16,
+    "epochs": 40,
+    "dropout": 0.3,
+    "seed": 42
+  },
+  "dataset_info": {
+    "dataset": "ICBHI_2017",
+    "data_source": "real_audio",
+    "split_method": "official_60_40_patient_independent_corrected",
+    "train_samples": 4251,
+    "test_samples": 2636,
+    "test_patients": 47
+  },
+  "selection_caveat": "m45_ablation.py monitors the TEST set each epoch; there is no separate validation split. 'select on loss' therefore means test loss. Optimistic, and equally so for every row, so the seed band and the A2+A4 delta are unaffected \u2014 but A7 must be reported as two criteria on one monitoring set, never as a clean train/val/test result.",
+  "best_epoch": {
+    "epoch": 30,
+    "primary_metric": "icbhi_score_official",
+    "primary_metric_value": 0.5478
+  },
+  "best_metrics": {
+    "epoch": 30,
+    "icbhi_score_official": 0.5478,
+    "icbhi_score_official_ci95": [
+      0.5015,
+      0.5919
+    ],
+    "icbhi_se_official": 0.4405,
+    "icbhi_sp_official": 0.6551,
+    "accuracy": 0.5675,
+    "f1_macro": 0.4176,
+    "confusion_matrix_raw": [
+      [
+        1022,
+        321,
+        158,
+        59
+      ],
+      [
+        262,
+        324,
+        14,
+        17
+      ],
+      [
+        139,
+        52,
+        137,
+        45
+      ],
+      [
+        29,
+        18,
+        26,
+        13
+      ]
+    ]
+  },
+  "selection": {
+    "by_official_score": {
+      "epoch": 30,
+      "icbhi_score_official": 0.5478,
+      "icbhi_score_official_ci95": [
+        0.5015,
+        0.5919
+      ],
+      "icbhi_se_official": 0.4405,
+      "icbhi_sp_official": 0.6551,
+      "accuracy": 0.5675,
+      "f1_macro": 0.4176,
+      "confusion_matrix_raw": [
+        [
+          1022,
+          321,
+          158,
+          59
+        ],
+        [
+          262,
+          324,
+          14,
+          17
+        ],
+        [
+          139,
+          52,
+          137,
+          45
+        ],
+        [
+          29,
+          18,
+          26,
+          13
+        ]
+      ]
+    },
+    "by_min_eval_loss": {
+      "epoch": 1,
+      "icbhi_score_official": 0.4824,
+      "icbhi_score_official_ci95": [
+        0.418,
+        0.5398
+      ],
+      "icbhi_se_official": 0.5372,
+      "icbhi_sp_official": 0.4276,
+      "accuracy": 0.4723,
+      "f1_macro": 0.3601,
+      "confusion_matrix_raw": [
+        [
+          667,
+          640,
+          233,
+          20
+        ],
+        [
+          135,
+          454,
+          17,
+          11
+        ],
+        [
+          140,
+          86,
+          115,
+          32
+        ],
+        [
+          17,
+          35,
+          25,
+          9
+        ]
+      ]
+    },
+    "epochs_apart": 29,
+    "A7_delta_score_minus_loss": 0.0654
+  },
+  "training_history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.98707,
+      "train_accuracy_augmented": 0.56434,
+      "eval_loss": 1.08608,
+      "eval_accuracy": 0.47231,
+      "icbhi_score_official": 0.48237
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.81948,
+      "train_accuracy_augmented": 0.6375,
+      "eval_loss": 1.15457,
+      "eval_accuracy": 0.52504,
+      "icbhi_score_official": 0.4792
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.75095,
+      "train_accuracy_augmented": 0.68102,
+      "eval_loss": 1.2934,
+      "eval_accuracy": 0.47648,
+      "icbhi_score_official": 0.47292
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.6639,
+      "train_accuracy_augmented": 0.72971,
+      "eval_loss": 1.40021,
+      "eval_accuracy": 0.48596,
+      "icbhi_score_official": 0.4831
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.58488,
+      "train_accuracy_augmented": 0.76688,
+      "eval_loss": 1.46139,
+      "eval_accuracy": 0.49924,
+      "icbhi_score_official": 0.49431
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.46524,
+      "train_accuracy_augmented": 0.82216,
+      "eval_loss": 1.46005,
+      "eval_accuracy": 0.53149,
+      "icbhi_score_official": 0.52011
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.36437,
+      "train_accuracy_augmented": 0.86144,
+      "eval_loss": 1.86469,
+      "eval_accuracy": 0.52504,
+      "icbhi_score_official": 0.51265
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.27872,
+      "train_accuracy_augmented": 0.89391,
+      "eval_loss": 2.18017,
+      "eval_accuracy": 0.52011,
+      "icbhi_score_official": 0.49651
+    },
+    {
+      "epoch": 9,
+      "train_loss": 0.2208,
+      "train_accuracy_augmented": 0.92002,
+      "eval_loss": 2.18659,
+      "eval_accuracy": 0.533,
+      "icbhi_score_official": 0.50381
+    },
+    {
+      "epoch": 10,
+      "train_loss": 0.15547,
+      "train_accuracy_augmented": 0.94425,
+      "eval_loss": 2.37226,
+      "eval_accuracy": 0.52466,
+      "icbhi_score_official": 0.51334
+    },
+    {
+      "epoch": 11,
+      "train_loss": 0.13093,
+      "train_accuracy_augmented": 0.95601,
+      "eval_loss": 2.69411,
+      "eval_accuracy": 0.50948,
+      "icbhi_score_official": 0.50268
+    },
+    {
+      "epoch": 12,
+      "train_loss": 0.11894,
+      "train_accuracy_augmented": 0.96024,
+      "eval_loss": 2.4938,
+      "eval_accuracy": 0.54097,
+      "icbhi_score_official": 0.50823
+    },
+    {
+      "epoch": 13,
+      "train_loss": 0.1047,
+      "train_accuracy_augmented": 0.9666,
+      "eval_loss": 2.89091,
+      "eval_accuracy": 0.49659,
+      "icbhi_score_official": 0.49452
+    },
+    {
+      "epoch": 14,
+      "train_loss": 0.09485,
+      "train_accuracy_augmented": 0.96307,
+      "eval_loss": 2.71492,
+      "eval_accuracy": 0.55577,
+      "icbhi_score_official": 0.52967
+    },
+    {
+      "epoch": 15,
+      "train_loss": 0.06499,
+      "train_accuracy_augmented": 0.97836,
+      "eval_loss": 2.86602,
+      "eval_accuracy": 0.55311,
+      "icbhi_score_official": 0.53233
+    },
+    {
+      "epoch": 16,
+      "train_loss": 0.06634,
+      "train_accuracy_augmented": 0.97789,
+      "eval_loss": 3.77628,
+      "eval_accuracy": 0.49241,
+      "icbhi_score_official": 0.49748
+    },
+    {
+      "epoch": 17,
+      "train_loss": 0.06021,
+      "train_accuracy_augmented": 0.97765,
+      "eval_loss": 3.08378,
+      "eval_accuracy": 0.54135,
+      "icbhi_score_official": 0.5211
+    },
+    {
+      "epoch": 18,
+      "train_loss": 0.04525,
+      "train_accuracy_augmented": 0.98283,
+      "eval_loss": 3.21909,
+      "eval_accuracy": 0.53414,
+      "icbhi_score_official": 0.52337
+    },
+    {
+      "epoch": 19,
+      "train_loss": 0.04547,
+      "train_accuracy_augmented": 0.98589,
+      "eval_loss": 2.91051,
+      "eval_accuracy": 0.52845,
+      "icbhi_score_official": 0.51092
+    },
+    {
+      "epoch": 20,
+      "train_loss": 0.03093,
+      "train_accuracy_augmented": 0.99012,
+      "eval_loss": 2.98204,
+      "eval_accuracy": 0.53263,
+      "icbhi_score_official": 0.52007
+    },
+    {
+      "epoch": 21,
+      "train_loss": 0.02099,
+      "train_accuracy_augmented": 0.99341,
+      "eval_loss": 2.89416,
+      "eval_accuracy": 0.55501,
+      "icbhi_score_official": 0.53638
+    },
+    {
+      "epoch": 22,
+      "train_loss": 0.02275,
+      "train_accuracy_augmented": 0.99294,
+      "eval_loss": 3.46008,
+      "eval_accuracy": 0.522,
+      "icbhi_score_official": 0.50965
+    },
+    {
+      "epoch": 23,
+      "train_loss": 0.0211,
+      "train_accuracy_augmented": 0.99224,
+      "eval_loss": 3.13781,
+      "eval_accuracy": 0.54742,
+      "icbhi_score_official": 0.52089
+    },
+    {
+      "epoch": 24,
+      "train_loss": 0.01282,
+      "train_accuracy_augmented": 0.99577,
+      "eval_loss": 3.12215,
+      "eval_accuracy": 0.52769,
+      "icbhi_score_official": 0.51042
+    },
+    {
+      "epoch": 25,
+      "train_loss": 0.01505,
+      "train_accuracy_augmented": 0.99506,
+      "eval_loss": 3.27664,
+      "eval_accuracy": 0.5478,
+      "icbhi_score_official": 0.53173
+    },
+    {
+      "epoch": 26,
+      "train_loss": 0.01698,
+      "train_accuracy_augmented": 0.99553,
+      "eval_loss": 3.06583,
+      "eval_accuracy": 0.51442,
+      "icbhi_score_official": 0.50987
+    },
+    {
+      "epoch": 27,
+      "train_loss": 0.00799,
+      "train_accuracy_augmented": 0.99812,
+      "eval_loss": 3.0325,
+      "eval_accuracy": 0.56335,
+      "icbhi_score_official": 0.54185
+    },
+    {
+      "epoch": 28,
+      "train_loss": 0.00902,
+      "train_accuracy_augmented": 0.99765,
+      "eval_loss": 2.96571,
+      "eval_accuracy": 0.56449,
+      "icbhi_score_official": 0.53647
+    },
+    {
+      "epoch": 29,
+      "train_loss": 0.00447,
+      "train_accuracy_augmented": 0.99882,
+      "eval_loss": 3.23509,
+      "eval_accuracy": 0.5368,
+      "icbhi_score_official": 0.52489
+    },
+    {
+      "epoch": 30,
+      "train_loss": 0.00508,
+      "train_accuracy_augmented": 0.99882,
+      "eval_loss": 3.17672,
+      "eval_accuracy": 0.56753,
+      "icbhi_score_official": 0.54782
+    },
+    {
+      "epoch": 31,
+      "train_loss": 0.00381,
+      "train_accuracy_augmented": 0.99906,
+      "eval_loss": 3.01746,
+      "eval_accuracy": 0.53832,
+      "icbhi_score_official": 0.52401
+    },
+    {
+      "epoch": 32,
+      "train_loss": 0.00157,
+      "train_accuracy_augmented": 0.99976,
+      "eval_loss": 3.07339,
+      "eval_accuracy": 0.56373,
+      "icbhi_score_official": 0.53799
+    },
+    {
+      "epoch": 33,
+      "train_loss": 0.00167,
+      "train_accuracy_augmented": 0.99976,
+      "eval_loss": 3.24807,
+      "eval_accuracy": 0.56184,
+      "icbhi_score_official": 0.53682
+    },
+    {
+      "epoch": 34,
+      "train_loss": 0.00241,
+      "train_accuracy_augmented": 0.99929,
+      "eval_loss": 3.13213,
+      "eval_accuracy": 0.57018,
+      "icbhi_score_official": 0.54243
+    },
+    {
+      "epoch": 35,
+      "train_loss": 0.00257,
+      "train_accuracy_augmented": 0.99906,
+      "eval_loss": 3.46319,
+      "eval_accuracy": 0.53983,
+      "icbhi_score_official": 0.53149
+    },
+    {
+      "epoch": 36,
+      "train_loss": 0.00103,
+      "train_accuracy_augmented": 1.0,
+      "eval_loss": 3.13648,
+      "eval_accuracy": 0.56032,
+      "icbhi_score_official": 0.54332
+    },
+    {
+      "epoch": 37,
+      "train_loss": 0.00126,
+      "train_accuracy_augmented": 0.99976,
+      "eval_loss": 3.13431,
+      "eval_accuracy": 0.56297,
+      "icbhi_score_official": 0.5398
+    },
+    {
+      "epoch": 38,
+      "train_loss": 0.00156,
+      "train_accuracy_augmented": 0.99976,
+      "eval_loss": 3.16158,
+      "eval_accuracy": 0.55387,
+      "icbhi_score_official": 0.536
+    },
+    {
+      "epoch": 39,
+      "train_loss": 0.00081,
+      "train_accuracy_augmented": 0.99976,
+      "eval_loss": 3.16097,
+      "eval_accuracy": 0.55463,
+      "icbhi_score_official": 0.53621
+    },
+    {
+      "epoch": 40,
+      "train_loss": 0.00194,
+      "train_accuracy_augmented": 0.99953,
+      "eval_loss": 3.14652,
+      "eval_accuracy": 0.55615,
+      "icbhi_score_official": 0.53403
+    }
+  ],
+  "efficiency": {
+    "total_params": 2228996,
+    "trainable_params": 2228996,
+    "training_time_total_s": 1041.1,
+    "s_per_epoch": 26.03,
+    "gpu_name": "Tesla T4"
+  },
+  "ablation": {
+    "ablation_group": "M48_seed_band_and_selection_criterion",
+    "ablation_role": "variant",
+    "baseline_model_id": "M22_v2",
+    "variable_changed": "cumulative S2: + full fine-tuning"
+  }
+}
