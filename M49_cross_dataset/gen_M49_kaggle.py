@@ -90,12 +90,13 @@ rather than as a bug in the harness. A mismatch aborts the notebook.
 Commit them into `M49_cross_dataset/`.
 """
 
-SETUP = """!pip -q install librosa==0.10.2 soundfile
+SETUP = """!pip -q install librosa soundfile
 import glob, json, os, subprocess, sys, time
 import numpy as np
 print(sys.version)
-import torch
-print("torch", torch.__version__, "| cuda:", torch.cuda.is_available(),
+import torch, librosa
+print("torch", torch.__version__, "| librosa", librosa.__version__, "| cuda:",
+      torch.cuda.is_available(),
       torch.cuda.get_device_name(0) if torch.cuda.is_available() else "")
 
 WORK = "/kaggle/working/M49"
@@ -183,7 +184,12 @@ print("preprocessing:", {k: cfg[k] for k in
       ("n_mels", "duration_s", "padding", "minmax", "bandpass", "denoise", "ampnorm",
        "pretrained")})
 
-ICBHI_REF = X.verify_on_icbhi(model, cfg, meta, ICBHI_AUDIO, ICBHI_SPLIT, batch_size=64)
+# return_details keeps the 2,636-cycle pass this cell just made. The evaluation below reuses
+# it for the calibration comparison and for ICBHI's own class prior, so those come from the
+# verified forward pass rather than a second one that could differ.
+GATE = X.verify_on_icbhi(model, cfg, meta, ICBHI_AUDIO, ICBHI_SPLIT,
+                         tol=0.005, return_details=True, batch_size=64)
+ICBHI_REF = GATE["score"]
 """
 
 COLLECT_MD = """## Collect
@@ -300,7 +306,7 @@ Read the printed label vocabulary before the score. It is the audit that the map
 what the corpus actually contains --- and any string it does not cover has already raised."""
 
 SPR_EVAL = """doc_event = X.run("sprsound", SPR_ROOT, CKPT, WORK, level="event",
-                  icbhi_ref=ICBHI_REF, limit=SMOKE, batch_size=64, probe=RUN_PROBE)
+                  icbhi_gate=GATE, limit=SMOKE, batch_size=64, probe=RUN_PROBE)
 """
 
 SPR_REC_MD = """## 7. Record level --- secondary, and on a different unit
@@ -311,7 +317,7 @@ BioCAS 2022 challenge scored, **not** because it is comparable to the event-leve
 Different unit, different number."""
 
 SPR_REC = """doc_record = X.run("sprsound", SPR_ROOT, CKPT, WORK, level="record",
-                   icbhi_ref=ICBHI_REF, limit=SMOKE, batch_size=64, probe=False)
+                   icbhi_gate=GATE, limit=SMOKE, batch_size=64, probe=False)
 """
 
 
@@ -410,7 +416,7 @@ the drop counts before the score: they are the audit that the cycle builder saw 
 corpus actually contains."""
 
 HFL_EVAL = """doc_cycle = X.run("hflung", HFL_ROOT, CKPT, WORK,
-                  icbhi_ref=ICBHI_REF, limit=SMOKE, batch_size=64, probe=RUN_PROBE)
+                  icbhi_gate=GATE, limit=SMOKE, batch_size=64, probe=RUN_PROBE)
 """
 
 

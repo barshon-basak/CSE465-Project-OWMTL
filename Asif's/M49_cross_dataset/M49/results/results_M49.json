@@ -1,0 +1,913 @@
+{
+  "meta": {
+    "model_id": "M49",
+    "model_name": "Zero-shot cross-dataset transfer, M22_v2 -> SPRSound 2022",
+    "contributor": "OWMTL team",
+    "date_completed": "2026-09-08",
+    "is_augmented": false,
+    "augmentation_method": "none (inference only; SpecAugment is training-time)",
+    "notes": "Zero-shot cross-dataset transfer. No training, no fine-tuning, no threshold fitting. The M22_v2 checkpoint is loaded frozen and scored on SPRSound 2022. The headline arm is zeroshot_4class_broad. prior_corrected_4class_broad uses the target class prior and is a diagnostic decomposition, not a zero-shot result. Comparison against the ICBHI source score is unpaired (different corpora, different patients), so bootstrap intervals are reported and no McNemar test is claimed."
+  },
+  "config": {
+    "sample_rate": 16000,
+    "n_mels": 128,
+    "n_fft": 1024,
+    "hop_length": 160,
+    "win_length": 400,
+    "f_min": 50,
+    "f_max": 2000,
+    "duration_s": 8.0,
+    "n_frames": 801,
+    "arch": "mobilenet_v2",
+    "batch_size": 32,
+    "seed": 42,
+    "num_classes": 4,
+    "training": "none \u2014 inference only",
+    "checkpoint_path": "/content/drive/MyDrive/OWMTL/M22_v2/checkpoints/best_model.pth",
+    "checkpoint_epoch": 36,
+    "checkpoint_best_score": 0.5648
+  },
+  "environment": {
+    "platform": "Colab",
+    "gpu_name": "cpu",
+    "pytorch_version": "2.11.0+cpu",
+    "python_version": "3.13.15",
+    "librosa_version": "0.11.0"
+  },
+  "dataset_info": {
+    "dataset": "SPRSound_2022",
+    "source_dataset": "ICBHI_2017",
+    "source_model_id": "M22_v2",
+    "split_method": "external_corpus_zero_shot_no_split",
+    "test_samples": 24578,
+    "test_patients": 860,
+    "test_recordings": 6337,
+    "native_sample_rate_note": "SPRSound is distributed at 8 kHz and resampled to 16 kHz; f_max is 2000 Hz, below the 4 kHz source Nyquist, so no band is fabricated",
+    "events_dropped_poor_quality": 0,
+    "event_types_observed": {
+      "Normal": 18772,
+      "Fine Crackle": 3530,
+      "Wheeze": 1505,
+      "Wheeze+Crackle": 303,
+      "Rhonchi": 217,
+      "Coarse Crackle": 177,
+      "Stridor": 74
+    },
+    "event_types_unmapped": []
+  },
+  "efficiency": {
+    "total_params": 2228996,
+    "trainable_params": 0,
+    "training_time_total_s": 0,
+    "inference_time_ms_per_sample": 317.782,
+    "gpu_name": "cpu"
+  },
+  "best_epoch": {
+    "epoch": 36,
+    "primary_metric": "icbhi_score_official",
+    "primary_metric_value": 0.3926
+  },
+  "best_metrics": {
+    "accuracy": 0.24794531695011798,
+    "precision_macro": 0.4078838293201439,
+    "recall_macro": 0.3643681318713917,
+    "f1_macro": 0.2578899489675393,
+    "specificity_macro": 0.7499815192964046,
+    "icbhi_score": 0.5571748255838982,
+    "icbhi_score_official": 0.3926,
+    "sensitivity_official": 0.6667,
+    "specificity_official": 0.1184,
+    "per_class": {
+      "Normal": {
+        "precision": 0.6986,
+        "recall": 0.1184,
+        "f1": 0.2025,
+        "specificity": 0.8348,
+        "support": 18772
+      },
+      "Crackle": {
+        "precision": 0.1602,
+        "recall": 0.86,
+        "f1": 0.2701,
+        "specificity": 0.1995,
+        "support": 3707
+      },
+      "Wheeze": {
+        "precision": 0.7118,
+        "recall": 0.3602,
+        "f1": 0.4784,
+        "specificity": 0.9885,
+        "support": 1796
+      },
+      "Both": {
+        "precision": 0.0609,
+        "recall": 0.1188,
+        "f1": 0.0805,
+        "specificity": 0.9771,
+        "support": 303
+      }
+    },
+    "confusion_matrix_raw": [
+      [
+        2223,
+        16048,
+        178,
+        323
+      ],
+      [
+        412,
+        3188,
+        43,
+        64
+      ],
+      [
+        534,
+        447,
+        647,
+        168
+      ],
+      [
+        13,
+        213,
+        41,
+        36
+      ]
+    ],
+    "confusion_matrix_normalized": [
+      [
+        0.1184,
+        0.8549,
+        0.0095,
+        0.0172
+      ],
+      [
+        0.1111,
+        0.86,
+        0.0116,
+        0.0173
+      ],
+      [
+        0.2973,
+        0.2489,
+        0.3602,
+        0.0935
+      ],
+      [
+        0.0429,
+        0.703,
+        0.1353,
+        0.1188
+      ]
+    ],
+    "ci95": [
+      0.3715,
+      0.415
+    ],
+    "n_events": 24578,
+    "n_patients": 860,
+    "icbhi_score_official_ci95": [
+      0.3715,
+      0.415
+    ]
+  },
+  "verification": {
+    "verified_against_source": true,
+    "source_score_expected": 0.5602,
+    "source_score_reproduced": 0.5639,
+    "source_score_delta": 0.0037,
+    "source_reference_metrics": {
+      "accuracy": 0.5940819423368741,
+      "precision_macro": 0.42163021457089234,
+      "recall_macro": 0.4059818997120629,
+      "f1_macro": 0.4108229322844662,
+      "specificity_macro": 0.8177719531013047,
+      "icbhi_score": 0.6118769264066838,
+      "icbhi_score_official": 0.5639,
+      "sensitivity_official": 0.3996,
+      "specificity_official": 0.7282,
+      "per_class": {
+        "Normal": {
+          "precision": 0.6948,
+          "recall": 0.7282,
+          "f1": 0.7111,
+          "specificity": 0.5362,
+          "support": 1560
+        },
+        "Crackle": {
+          "precision": 0.4867,
+          "recall": 0.5024,
+          "f1": 0.4944,
+          "specificity": 0.838,
+          "support": 617
+        },
+        "Wheeze": {
+          "precision": 0.4259,
+          "recall": 0.3003,
+          "f1": 0.3522,
+          "specificity": 0.9333,
+          "support": 373
+        },
+        "Both": {
+          "precision": 0.0792,
+          "recall": 0.093,
+          "f1": 0.0856,
+          "specificity": 0.9635,
+          "support": 86
+        }
+      },
+      "confusion_matrix_raw": [
+        [
+          1136,
+          274,
+          117,
+          33
+        ],
+        [
+          288,
+          310,
+          8,
+          11
+        ],
+        [
+          170,
+          42,
+          112,
+          49
+        ],
+        [
+          41,
+          11,
+          26,
+          8
+        ]
+      ],
+      "confusion_matrix_normalized": [
+        [
+          0.7282,
+          0.1756,
+          0.075,
+          0.0212
+        ],
+        [
+          0.4668,
+          0.5024,
+          0.013,
+          0.0178
+        ],
+        [
+          0.4558,
+          0.1126,
+          0.3003,
+          0.1314
+        ],
+        [
+          0.4767,
+          0.1279,
+          0.3023,
+          0.093
+        ]
+      ],
+      "ci95": [
+        0.5061,
+        0.6182
+      ],
+      "ece": 0.2987,
+      "mean_max_softmax": 0.8927,
+      "n_cycles": 2636,
+      "n_patients": 47,
+      "class_prior": [
+        0.5918,
+        0.2341,
+        0.1415,
+        0.0326
+      ]
+    },
+    "source_binary_reference": {
+      "accuracy": 0.6498482549317147,
+      "precision_macro": 0.6356123998325833,
+      "recall_macro": 0.6322252406824898,
+      "f1_macro": 0.6333600813138608,
+      "specificity_macro": 0.6322252406824898,
+      "icbhi_score": 0.6322252406824898,
+      "icbhi_score_official": 0.6322,
+      "sensitivity_official": 0.5362,
+      "specificity_official": 0.7282,
+      "per_class": {
+        "Normal": {
+          "precision": 0.6948,
+          "recall": 0.7282,
+          "f1": 0.7111,
+          "specificity": 0.5362,
+          "support": 1560
+        },
+        "Adventitious": {
+          "precision": 0.5764,
+          "recall": 0.5362,
+          "f1": 0.5556,
+          "specificity": 0.7282,
+          "support": 1076
+        }
+      },
+      "confusion_matrix_raw": [
+        [
+          1136,
+          424
+        ],
+        [
+          499,
+          577
+        ]
+      ],
+      "confusion_matrix_normalized": [
+        [
+          0.7282,
+          0.2718
+        ],
+        [
+          0.4638,
+          0.5362
+        ]
+      ],
+      "ci95": [
+        0.5916,
+        0.6709
+      ]
+    }
+  },
+  "transfer": {
+    "arms": {
+      "zeroshot_4class_strict": {
+        "accuracy": 0.2452340758430436,
+        "precision_macro": 0.39814090250775674,
+        "recall_macro": 0.35885837967196743,
+        "f1_macro": 0.2510603771319091,
+        "specificity_macro": 0.7480777106938797,
+        "icbhi_score": 0.5534680451829236,
+        "icbhi_score_official": 0.3977,
+        "sensitivity_official": 0.6769,
+        "specificity_official": 0.1184,
+        "per_class": {
+          "Normal": {
+            "precision": 0.7077,
+            "recall": 0.1184,
+            "f1": 0.2029,
+            "specificity": 0.8335,
+            "support": 18772
+          },
+          "Crackle": {
+            "precision": 0.1609,
+            "recall": 0.86,
+            "f1": 0.2711,
+            "specificity": 0.1923,
+            "support": 3707
+          },
+          "Wheeze": {
+            "precision": 0.6602,
+            "recall": 0.3382,
+            "f1": 0.4473,
+            "specificity": 0.9885,
+            "support": 1505
+          },
+          "Both": {
+            "precision": 0.0637,
+            "recall": 0.1188,
+            "f1": 0.0829,
+            "specificity": 0.9779,
+            "support": 303
+          }
+        },
+        "confusion_matrix_raw": [
+          [
+            2223,
+            16048,
+            178,
+            323
+          ],
+          [
+            412,
+            3188,
+            43,
+            64
+          ],
+          [
+            493,
+            361,
+            509,
+            142
+          ],
+          [
+            13,
+            213,
+            41,
+            36
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.1184,
+            0.8549,
+            0.0095,
+            0.0172
+          ],
+          [
+            0.1111,
+            0.86,
+            0.0116,
+            0.0173
+          ],
+          [
+            0.3276,
+            0.2399,
+            0.3382,
+            0.0944
+          ],
+          [
+            0.0429,
+            0.703,
+            0.1353,
+            0.1188
+          ]
+        ],
+        "ci95": [
+          0.3739,
+          0.4208
+        ],
+        "n_events": 24287,
+        "n_patients": 855,
+        "note": "unambiguous event types only; rhonchi and stridor excluded"
+      },
+      "zeroshot_4class_broad": {
+        "accuracy": 0.24794531695011798,
+        "precision_macro": 0.4078838293201439,
+        "recall_macro": 0.3643681318713917,
+        "f1_macro": 0.2578899489675393,
+        "specificity_macro": 0.7499815192964046,
+        "icbhi_score": 0.5571748255838982,
+        "icbhi_score_official": 0.3926,
+        "sensitivity_official": 0.6667,
+        "specificity_official": 0.1184,
+        "per_class": {
+          "Normal": {
+            "precision": 0.6986,
+            "recall": 0.1184,
+            "f1": 0.2025,
+            "specificity": 0.8348,
+            "support": 18772
+          },
+          "Crackle": {
+            "precision": 0.1602,
+            "recall": 0.86,
+            "f1": 0.2701,
+            "specificity": 0.1995,
+            "support": 3707
+          },
+          "Wheeze": {
+            "precision": 0.7118,
+            "recall": 0.3602,
+            "f1": 0.4784,
+            "specificity": 0.9885,
+            "support": 1796
+          },
+          "Both": {
+            "precision": 0.0609,
+            "recall": 0.1188,
+            "f1": 0.0805,
+            "specificity": 0.9771,
+            "support": 303
+          }
+        },
+        "confusion_matrix_raw": [
+          [
+            2223,
+            16048,
+            178,
+            323
+          ],
+          [
+            412,
+            3188,
+            43,
+            64
+          ],
+          [
+            534,
+            447,
+            647,
+            168
+          ],
+          [
+            13,
+            213,
+            41,
+            36
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.1184,
+            0.8549,
+            0.0095,
+            0.0172
+          ],
+          [
+            0.1111,
+            0.86,
+            0.0116,
+            0.0173
+          ],
+          [
+            0.2973,
+            0.2489,
+            0.3602,
+            0.0935
+          ],
+          [
+            0.0429,
+            0.703,
+            0.1353,
+            0.1188
+          ]
+        ],
+        "ci95": [
+          0.3715,
+          0.415
+        ],
+        "n_events": 24578,
+        "n_patients": 860,
+        "note": "rhonchi and stridor folded into Wheeze as continuous adventitious sounds"
+      },
+      "zeroshot_binary_strict": {
+        "accuracy": 0.2808086630707786,
+        "precision_macro": 0.46256487506561694,
+        "recall_macro": 0.4759829651190533,
+        "f1_macro": 0.2738707699842019,
+        "specificity_macro": 0.4759829651190533,
+        "icbhi_score": 0.4759829651190533,
+        "icbhi_score_official": 0.476,
+        "sensitivity_official": 0.8335,
+        "specificity_official": 0.1184,
+        "per_class": {
+          "Normal": {
+            "precision": 0.7077,
+            "recall": 0.1184,
+            "f1": 0.2029,
+            "specificity": 0.8335,
+            "support": 18772
+          },
+          "Adventitious": {
+            "precision": 0.2174,
+            "recall": 0.8335,
+            "f1": 0.3448,
+            "specificity": 0.1184,
+            "support": 5515
+          }
+        },
+        "confusion_matrix_raw": [
+          [
+            2223,
+            16549
+          ],
+          [
+            918,
+            4597
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.1184,
+            0.8816
+          ],
+          [
+            0.1665,
+            0.8335
+          ]
+        ],
+        "ci95": [
+          0.4581,
+          0.4941
+        ],
+        "n_events": 24287,
+        "n_patients": 855,
+        "note": "Normal vs any adventitious sound, strict event set"
+      },
+      "zeroshot_binary_broad": {
+        "accuracy": 0.2876556269834812,
+        "precision_macro": 0.46257744623283503,
+        "recall_macro": 0.4766235473285349,
+        "f1_macro": 0.27944260163337425,
+        "specificity_macro": 0.4766235473285349,
+        "icbhi_score": 0.4766235473285349,
+        "icbhi_score_official": 0.4766,
+        "sensitivity_official": 0.8348,
+        "specificity_official": 0.1184,
+        "per_class": {
+          "Normal": {
+            "precision": 0.6986,
+            "recall": 0.1184,
+            "f1": 0.2025,
+            "specificity": 0.8348,
+            "support": 18772
+          },
+          "Adventitious": {
+            "precision": 0.2265,
+            "recall": 0.8348,
+            "f1": 0.3564,
+            "specificity": 0.1184,
+            "support": 5806
+          }
+        },
+        "confusion_matrix_raw": [
+          [
+            2223,
+            16549
+          ],
+          [
+            959,
+            4847
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.1184,
+            0.8816
+          ],
+          [
+            0.1652,
+            0.8348
+          ]
+        ],
+        "ci95": [
+          0.4586,
+          0.4954
+        ],
+        "n_events": 24578,
+        "n_patients": 860,
+        "note": "Normal vs any adventitious sound, broad event set"
+      },
+      "prior_corrected_4class_broad": {
+        "accuracy": 0.2614126454552852,
+        "precision_macro": 0.4120946159561548,
+        "recall_macro": 0.35658321691771655,
+        "f1_macro": 0.260070851010776,
+        "specificity_macro": 0.7481139320946931,
+        "icbhi_score": 0.5523485745062049,
+        "icbhi_score_official": 0.3953,
+        "sensitivity_official": 0.649,
+        "specificity_official": 0.1415,
+        "per_class": {
+          "Normal": {
+            "precision": 0.6994,
+            "recall": 0.1415,
+            "f1": 0.2354,
+            "specificity": 0.8033,
+            "support": 18772
+          },
+          "Crackle": {
+            "precision": 0.1615,
+            "recall": 0.8468,
+            "f1": 0.2713,
+            "specificity": 0.2193,
+            "support": 3707
+          },
+          "Wheeze": {
+            "precision": 0.7263,
+            "recall": 0.3324,
+            "f1": 0.4561,
+            "specificity": 0.9901,
+            "support": 1796
+          },
+          "Both": {
+            "precision": 0.0612,
+            "recall": 0.1056,
+            "f1": 0.0775,
+            "specificity": 0.9798,
+            "support": 303
+          }
+        },
+        "confusion_matrix_raw": [
+          [
+            2657,
+            15676,
+            153,
+            286
+          ],
+          [
+            476,
+            3139,
+            36,
+            56
+          ],
+          [
+            639,
+            411,
+            597,
+            149
+          ],
+          [
+            27,
+            208,
+            36,
+            32
+          ]
+        ],
+        "confusion_matrix_normalized": [
+          [
+            0.1415,
+            0.8351,
+            0.0082,
+            0.0152
+          ],
+          [
+            0.1284,
+            0.8468,
+            0.0097,
+            0.0151
+          ],
+          [
+            0.3558,
+            0.2288,
+            0.3324,
+            0.083
+          ],
+          [
+            0.0891,
+            0.6865,
+            0.1188,
+            0.1056
+          ]
+        ],
+        "ci95": [
+          0.3736,
+          0.4182
+        ],
+        "n_events": 24578,
+        "n_patients": 860,
+        "note": "DIAGNOSTIC ONLY \u2014 uses the target class prior, so it is not a zero-shot number"
+      }
+    },
+    "baselines_on_target": {
+      "always Normal": {
+        "icbhi_score_official": 0.5,
+        "sensitivity_official": 0.0,
+        "specificity_official": 1.0,
+        "accuracy": 0.7638
+      },
+      "always majority class": {
+        "icbhi_score_official": 0.5,
+        "sensitivity_official": 0.0,
+        "specificity_official": 1.0,
+        "accuracy": 0.7638
+      },
+      "uniform random": {
+        "icbhi_score_official": 0.2497,
+        "sensitivity_official": 0.2466,
+        "specificity_official": 0.2528,
+        "accuracy": 0.2513
+      },
+      "prior-matched random": {
+        "icbhi_score_official": 0.4407,
+        "sensitivity_official": 0.1192,
+        "specificity_official": 0.7622,
+        "accuracy": 0.6103
+      },
+      "our model (broad)": {
+        "icbhi_score_official": 0.3926,
+        "sensitivity_official": 0.6667,
+        "specificity_official": 0.1184,
+        "accuracy": 0.2479
+      }
+    },
+    "generalization_gap_icbhi_minus_sprsound": 0.1713,
+    "calibration": {
+      "sprsound": {
+        "ece": 0.6956,
+        "mean_max_softmax": 0.9435,
+        "median_max_softmax": 0.9978,
+        "mean_entropy": 0.1408,
+        "accuracy": 0.2479,
+        "overconfidence": 0.6955
+      },
+      "icbhi": {
+        "ece": 0.2987,
+        "mean_max_softmax": 0.8927,
+        "median_max_softmax": 0.9705,
+        "mean_entropy": 0.2624,
+        "accuracy": 0.5941,
+        "overconfidence": 0.2987
+      },
+      "delta_ece": 0.3969,
+      "delta_overconfidence": 0.3968
+    },
+    "age_strata": [
+      {
+        "band": "under 1",
+        "n_events": 1916,
+        "n_patients": 59,
+        "icbhi_score_official": 0.3948,
+        "sensitivity_official": 0.4453,
+        "specificity_official": 0.3443
+      },
+      {
+        "band": "1-3",
+        "n_events": 3964,
+        "n_patients": 113,
+        "icbhi_score_official": 0.3691,
+        "sensitivity_official": 0.5133,
+        "specificity_official": 0.2248
+      },
+      {
+        "band": "3-6",
+        "n_events": 10461,
+        "n_patients": 370,
+        "icbhi_score_official": 0.4343,
+        "sensitivity_official": 0.7796,
+        "specificity_official": 0.089
+      },
+      {
+        "band": "6-12",
+        "n_events": 7810,
+        "n_patients": 292,
+        "icbhi_score_official": 0.4453,
+        "sensitivity_official": 0.809,
+        "specificity_official": 0.0816
+      },
+      {
+        "band": "12+",
+        "n_events": 427,
+        "n_patients": 33,
+        "icbhi_score_official": 0.3935,
+        "sensitivity_official": 0.7143,
+        "specificity_official": 0.0727
+      }
+    ],
+    "target_class_prior": [
+      0.7638,
+      0.1508,
+      0.0731,
+      0.0123
+    ],
+    "source_class_prior": [
+      0.5918,
+      0.2341,
+      0.1415,
+      0.0326
+    ],
+    "label_mapping_strict": {
+      "normal": 0,
+      "finecrackle": 1,
+      "coarsecrackle": 1,
+      "crackle": 1,
+      "wheeze": 2,
+      "wheezecrackle": 3,
+      "wheezeandcrackle": 3,
+      "crackleandwheeze": 3
+    },
+    "label_mapping_broad": {
+      "normal": 0,
+      "finecrackle": 1,
+      "coarsecrackle": 1,
+      "crackle": 1,
+      "wheeze": 2,
+      "wheezecrackle": 3,
+      "wheezeandcrackle": 3,
+      "crackleandwheeze": 3,
+      "rhonchi": 2,
+      "stridor": 2
+    }
+  },
+  "ablation": {
+    "ablation_group": "ood_generalization",
+    "ablation_role": "variant",
+    "baseline_model_id": "M22_v2",
+    "variable_changed": "evaluation corpus: ICBHI 2017 -> SPRSound 2022 (weights frozen)",
+    "variables_held_constant": [
+      "checkpoint: M22_v2 best_model.pth",
+      "architecture: mobilenet_v2 + ImageNet normalisation",
+      "preprocessing: 128 mel / 16 kHz / 8 s / 50-2000 Hz / wrap-pad",
+      "metric: icbhi_score_official",
+      "seed: 42"
+    ],
+    "component_flags": {
+      "has_sound_event_head": true,
+      "has_disease_head": false,
+      "has_cross_task_consistency": false,
+      "has_cqkd_regularization": false,
+      "has_openmax_rejection": false,
+      "owl_stage": 0,
+      "compression_clusters": null,
+      "has_concept_bottleneck": false,
+      "bottleneck_type": null,
+      "concept_source": null,
+      "has_leakage_measurement": false,
+      "has_concept_intervention": false,
+      "concept_space_ood": false,
+      "fm_backbone": "none"
+    },
+    "loss_weights": {
+      "sound_event_weight": 1.0,
+      "disease_weight": null,
+      "consistency_weight": null
+    }
+  },
+  "training_history": []
+}

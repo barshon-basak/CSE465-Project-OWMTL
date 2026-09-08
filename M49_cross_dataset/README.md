@@ -169,6 +169,47 @@ Per run, following `Model_Training_Protocol.md` §3–§4:
 A slice with no Normal rows or no abnormal rows makes the official score undefined. It is
 written as `null`, never as `NaN` (not valid JSON) and never as a fabricated interval.
 
+### The four analysis arms
+
+A single zero-shot score cannot survive a review. Each of these pre-answers a question that
+would otherwise be met with "we did not check". All four are computed from the **same forward
+pass** as the headline number, so they cannot disagree with it about anything else.
+
+**`baselines_on_target`** — what the corpus scores with no model at all: always-Normal,
+always-majority, uniform random, and prior-matched random. Always-Normal is exactly 0.50 by
+construction (Se 0, Sp 1) and is the floor any transfer number must clear. Prior-matched
+random is the harder floor: it draws from the *target* class distribution, so beating it means
+the model carries information about which cycle is which and not merely about how common each
+class is. Without these rows the headline number floats in space.
+
+**`calibration`** — ECE, mean and median max-softmax, the fraction above 0.90, entropy,
+accuracy, and `overconfidence` (mean confidence minus accuracy), on the target corpus **and**
+on ICBHI, with the deltas. A model that fails while staying confident is worse than one that
+fails loudly, and for a paper about trustworthy evaluation that distinction is the point. The
+ICBHI half comes from the gate's own pass, carried over by `icbhi_gate=GATE`.
+
+**`arms.prior_corrected_4class_broad`** — the predictions re-decided after subtracting the
+training prior and adding the target's. This answers the first objection anyone raises: *"the
+corpora have different class balance, so of course the score dropped."* If the corrected score
+barely moves, they are wrong. It **uses the target labels** to build the target prior, so it is
+a diagnostic and never a zero-shot number, and it says so in its own `note`.
+`source_class_prior_provenance` records whether the source prior was measured from the ICBHI
+train split (when the gate was carried over) or taken from the committed constant — a prior
+correction against a guessed source prior would be a fabricated diagnostic.
+
+**`arms.zeroshot_4class_strict` vs `..._broad`** — the taxonomy has exactly one judgement call:
+rhonchi and stridor mapped to Wheeze. `broad` keeps those rows, `strict` drops every row whose
+label depends on one of the two tokens, because ICBHI never annotated a low-pitched continuous
+sound or an upper-airway inspiratory one. Every indexed row carries `strict_ok`, set at index
+time, so both arms come from one pass. For HF_Lung a cycle is strict-unsafe only when its
+Wheeze bit rests *entirely* on a stridor or rhonchi span — one that also overlaps a real Wheeze
+span never depended on the judgement call. At SPRSound record level the annotators already
+pooled everything into CAS/DAS, so no row can be dropped and the arm reports
+`identical_to_broad` rather than a silently duplicated number.
+
+Where strict and broad disagree, the disagreement is the finding. Where they do not, the
+judgement call is priced at zero and the objection is closed.
+
 ---
 
 ## Running it

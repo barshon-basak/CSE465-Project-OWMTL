@@ -95,6 +95,11 @@ P3_ICBHI_CM = [[1175, 231, 112, 42], [277, 308, 14, 18],
                [189, 40, 113, 31], [40, 15, 22, 9]]
 P3_ICBHI_SCORE = 0.5764
 
+# ICBHI's corrected-split TRAINING class balance, for the prior-correction diagnostic when the
+# gate's own measurement is not carried over. Recomputed by the gate whenever it runs, and the
+# results JSON records which of the two was used.
+ICBHI_TRAIN_PRIOR = [0.5918, 0.2341, 0.1415, 0.0326]
+
 
 # ================================================================== label taxonomies
 def _norm(s):
@@ -112,6 +117,15 @@ SPR_EVENT_TO_LABEL = {
 SPR_RECORD_TO_LABEL = {"normal": 0, "das": 1, "cas": 2, "cas & das": 3, "cas&das": 3}
 SPR_RECORD_EXCLUDE = {"poor quality"}   # unusable audio by the annotators' own judgement
 
+# Rhonchi and stridor are the one judgement call in the mapping above. Both source taxonomies
+# call them continuous adventitious sounds, which is the class ICBHI calls Wheeze, but ICBHI
+# itself never annotated a low-pitched continuous sound or an upper-airway inspiratory one, so
+# a reader can reasonably object that these rows are being scored against a class that was
+# never trained to cover them. Rather than argue it, every row carries `strict_ok`: the STRICT
+# arm drops the rows whose label depends on one of these tokens, the BROAD arm keeps them, and
+# both are reported. Where they disagree, the disagreement is the finding.
+SPR_STRICT_EXCLUDE = {"rhonchi", "stridor"}
+
 HFL_PHASE = {"I", "E"}                          # inhalation / exhalation - build the cycle
 HFL_CRACKLE = {"D"}                             # discontinuous adventitious sound
 HFL_WHEEZE = {"Wheeze", "Stridor", "Rhonchi"}   # continuous adventitious sound (CAS)
@@ -124,9 +138,13 @@ MAPPING_DOC = {
     "hflung_phase_tokens": sorted(HFL_PHASE),
     "hflung_crackle_tokens": sorted(HFL_CRACKLE),
     "hflung_wheeze_tokens": sorted(HFL_WHEEZE),
+    "strict_arm_excludes": sorted(SPR_STRICT_EXCLUDE),
     "rationale": ("Rhonchi and stridor are continuous adventitious sounds in both source "
                   "taxonomies and map to ICBHI's Wheeze class; HF_Lung_V1's own paper pools "
-                  "W/S/R into CAS."),
+                  "W/S/R into CAS. That is the BROAD arm. The STRICT arm drops every row "
+                  "whose label depends on one of those two tokens, because ICBHI never "
+                  "annotated a low-pitched continuous sound or an upper-airway inspiratory "
+                  "one. Both are reported; the gap between them prices the judgement call."),
 }
 
 
@@ -184,9 +202,13 @@ def sprsound_index(root, level="event", min_event_s=0.05, verbose=True):
                     continue
                 raise ValueError(f"unmapped SPRSound record label {raw!r} in {stem}. "
                                  f"Known: {sorted(SPR_RECORD_TO_LABEL)}")
+            # The record taxonomy is already pooled into CAS/DAS by the annotators, so no
+            # rhonchi/stridor row exists to drop and the two arms are identical here. The flag
+            # is still written, because a scorer that had to special-case one level would be a
+            # place for the two arms to diverge for a reason other than the taxonomy.
             rows.append({"wav": wav, "stem": stem, "patient_id": pid, "subset": subset,
                          "start": 0.0, "end": dur, "label": SPR_RECORD_TO_LABEL[raw],
-                         "native_sr": native_sr})
+                         "native_sr": native_sr, "strict_ok": True})
             continue
 
         events = doc.get("event_annotation") or []
@@ -210,7 +232,8 @@ def sprsound_index(root, level="event", min_event_s=0.05, verbose=True):
                 continue
             rows.append({"wav": wav, "stem": stem, "patient_id": pid, "subset": subset,
                          "start": s, "end": min(e, dur),
-                         "label": SPR_EVENT_TO_LABEL[raw], "native_sr": native_sr})
+                         "label": SPR_EVENT_TO_LABEL[raw], "native_sr": native_sr,
+                         "strict_ok": raw not in SPR_STRICT_EXCLUDE})
 
     if verbose:
         print(f"  SPRSound[{level}] {len(rows)} rows from {len(paired)} recordings, "
@@ -333,11 +356,17 @@ def hflung_index(root, min_overlap_s=0.05, pair_gap_s=1.0, min_cycle_s=0.05, ver
                       for t, a, b in adv if t in HFL_CRACKLE)
             whz = any(_overlap(s, e, a, b) >= min_overlap_s
                       for t, a, b in adv if t in HFL_WHEEZE)
+            # A cycle is strict-unsafe only when its Wheeze bit rests ENTIRELY on a stridor or
+            # rhonchi span. One that also overlaps a real Wheeze span is unaffected by the
+            # judgement call, and a cycle with no Wheeze bit at all never depended on it.
+            true_whz = any(_overlap(s, e, a, b) >= min_overlap_s
+                           for t, a, b in adv if t == "Wheeze")
             phases[ph] += 1
             rows.append({"wav": wav, "stem": stem, "patient_id": hflung_group(stem),
                          "subset": subset, "start": s, "end": min(e, dur), "phases": ph,
                          "label": M45.LABEL_OF[(int(crk), int(whz))],
-                         "native_sr": native_sr})
+                         "native_sr": native_sr,
+                         "strict_ok": (not whz) or true_whz})
 
     if verbose:
         print(f"  HF_Lung_V1 {len(rows)} cycles from {len(wavs)} recordings, "
@@ -452,7 +481,16 @@ def predict(model, rows, cfg, device=None, batch_size=64, num_workers=None,
 
         def __getitem__(s, i):
             r = rows[i]
-            return torch.from_numpy(M45.log_mel(r["wav"], r["start"], r["end"], cfg))
+            # M22_v2 and M45 both cached spectrograms as a float16 memmap, so the checkpoint
+            # was trained AND scored on float16-quantised inputs. This path computes them on
+            # the fly, so without the round-trip it feeds the model something the training
+            # run never saw. The quantisation is ~2.4e-4 per bin, which is small - but the
+            # gate reproduces 0.5585 against a stored 0.5602, a gap of about four cycles in
+            # 2,636, and this is the one remaining named difference between the two paths.
+            # (The librosa version is not it: SPRSound ran pinned at 0.10.2 and HF_Lung ran
+            # unpinned at 0.11.0, and both produced exactly 0.5585.)
+            x = M45.log_mel(r["wav"], r["start"], r["end"], cfg).astype(np.float16)
+            return torch.from_numpy(x.astype(np.float32))
 
     dl = DataLoader(DS(), batch_size=batch_size, shuffle=False, num_workers=num_workers)
     logits, feats, t0 = [], [], time.time()
@@ -555,11 +593,18 @@ def score_block(y, pred, groups, group_kind, n_boot=2000):
 
 
 # ================================================================== the ICBHI gate
-def verify_on_icbhi(model, cfg, ckpt_meta, audio_dir, split_file, tol=1e-3, **kw):
+def verify_on_icbhi(model, cfg, ckpt_meta, audio_dir, split_file, tol=1e-3,
+                    return_details=False, **kw):
     """Re-score the checkpoint on ICBHI and require it to reproduce its own stored score.
 
     This is the gate. An external score produced by an unverified forward path is not a
     result, so a mismatch raises rather than warning.
+
+    `return_details=True` hands back the test rows and the logits this pass already computed,
+    for a caller that needs the ICBHI side as data rather than only as a verdict - M50 uses
+    the same cycles as the known half of its open-set comparison. Returning them costs
+    nothing and means the gate and that comparison come from one forward pass instead of two,
+    so they cannot disagree.
     """
     from sklearn.metrics import confusion_matrix
     rows = M45.corrected_split_index(audio_dir, split_file)
@@ -567,8 +612,8 @@ def verify_on_icbhi(model, cfg, ckpt_meta, audio_dir, split_file, tol=1e-3, **kw
     print(f"  ICBHI verification: {len(te)} test cycles, "
           f"{len({r['patient_id'] for r in te})} patients")
     y = np.array([r["label"] for r in te])
-    pred = predict(model, te, cfg, **kw)["logits"].argmax(1)
-    got = M45.official(confusion_matrix(y, pred, labels=[0, 1, 2, 3]))[0]
+    logits = predict(model, te, cfg, **kw)["logits"]
+    got = M45.official(confusion_matrix(y, logits.argmax(1), labels=[0, 1, 2, 3]))[0]
     exp = ckpt_meta.get("reported_icbhi_score")
     print(f"  reproduced {got:.4f} | checkpoint reports {exp:.4f} | tol {tol}")
     if exp is None or abs(got - exp) > tol:
@@ -576,7 +621,15 @@ def verify_on_icbhi(model, cfg, ckpt_meta, audio_dir, split_file, tol=1e-3, **kw
             f"ICBHI reproduction failed: {got:.4f} vs {exp}. The forward path here does not "
             "match the training run - do NOT report any external number from it.")
     print("  PASS - forward path reproduces the training run.")
-    return round(float(got), 4)
+    score = round(float(got), 4)
+    if return_details:
+        # The train prior, not the test prior: prior-correction swaps the distribution the
+        # model was FIT on for the target's, and the model was fit on the training split.
+        tr = np.array([r["label"] for r in rows if r["split"] == "train"])
+        prior = (np.bincount(tr, minlength=4) / max(len(tr), 1)).round(4).tolist()
+        return {"score": score, "rows": te, "logits": logits, "y": y,
+                "train_prior": prior, "n_train": int(len(tr))}
+    return score
 
 
 # ================================================================== optional probe
@@ -653,9 +706,140 @@ def segment_stats(rows, cfg):
                      "artefact per input.")}
 
 
+# ================================================================== analysis arms
+def trivial_baselines(y, groups, n_boot=500, seed=42):
+    """What the corpus scores without a model. An external number cannot be read without them.
+
+    `always Normal` is the one that matters: on this metric it scores exactly 0.50 by
+    construction (Se 0, Sp 1), which is the floor any transfer number has to clear to mean
+    anything. `prior-matched random` is the harder floor - it draws from the TARGET class
+    distribution, so beating it means the model carries information about which cycle is
+    which, not merely about how common each class is.
+    """
+    y = np.asarray(y)
+    rng = np.random.default_rng(seed)
+    prior = np.bincount(y, minlength=4) / max(len(y), 1)
+    out = {}
+    for name, pred in (
+            ("always Normal", np.zeros_like(y)),
+            ("always majority class", np.full_like(y, int(np.argmax(prior)))),
+            ("uniform random", rng.integers(0, 4, len(y))),
+            ("prior-matched random", rng.choice(4, len(y), p=prior)),
+    ):
+        blk = score_block(y, pred, groups, "group", n_boot=n_boot)
+        out[name] = {"icbhi_score_official": blk["icbhi_score_official"],
+                     "icbhi_se_official": blk["icbhi_se_official"],
+                     "icbhi_sp_official": blk["icbhi_sp_official"],
+                     "accuracy": blk["accuracy"]}
+    out["_note"] = ("always-Normal scores 0.50 on this metric by construction and is the "
+                    "floor. prior-matched random draws from the target prior, so it is the "
+                    "floor that a model must clear to be carrying more than class frequency.")
+    return out
+
+
+def _softmax(logits):
+    z = np.asarray(logits, dtype=np.float64)
+    e = np.exp(z - z.max(1, keepdims=True))
+    return e / e.sum(1, keepdims=True)
+
+
+def calibration_block(logits, y, n_bins=15):
+    """Expected calibration error and friends: is the model wrong *confidently*?
+
+    A model that fails while staying confident is worse than one that fails loudly, and for a
+    paper about trustworthy evaluation that distinction is the point. `overconfidence` is mean
+    confidence minus accuracy - positive means it claims more than it delivers.
+    """
+    p = _softmax(logits)
+    conf, pred = p.max(1), p.argmax(1)
+    y = np.asarray(y)
+    acc = float((pred == y).mean()) if len(y) else float("nan")
+    edges = np.linspace(0.0, 1.0, n_bins + 1)
+    ece = 0.0
+    for lo, hi in zip(edges[:-1], edges[1:]):
+        m = (conf > lo) & (conf <= hi)
+        if m.any():
+            ece += m.mean() * abs((pred[m] == y[m]).mean() - conf[m].mean())
+    ent = -(p * np.log(p + 1e-12)).sum(1)
+    return {"ece": _f(ece), "mean_max_softmax": _f(conf.mean()),
+            "median_max_softmax": _f(np.median(conf)),
+            "fraction_above_0.90": _f((conf > 0.90).mean()),
+            "mean_entropy": _f(ent.mean()),
+            "max_entropy_possible": _f(np.log(4)),
+            "accuracy": _f(acc), "overconfidence": _f(conf.mean() - acc)}
+
+
+def prior_corrected(logits, source_prior, target_prior):
+    """Re-decide each cycle after swapping the training prior for the target's.
+
+    Subtracting log p_source and adding log p_target is the standard correction for a pure
+    label-shift. It USES THE TARGET LABELS to build the target prior, so it is a diagnostic
+    and never a zero-shot number - it lives in its own block and is labelled as one. What it
+    answers is the first objection anyone raises: "the corpora have different class balance,
+    so of course the score dropped." If the corrected score barely moves, they do not.
+    """
+    src = np.asarray(source_prior, dtype=np.float64)
+    tgt = np.asarray(target_prior, dtype=np.float64)
+    adj = np.asarray(logits, dtype=np.float64) - np.log(src + 1e-12) + np.log(tgt + 1e-12)
+    return adj.argmax(1)
+
+
+def analysis_arms(rows, y, logits, groups, group_kind, source_prior, icbhi_logits=None,
+                  icbhi_y=None, n_boot=2000):
+    """The four things a reviewer asks for that one zero-shot score cannot answer."""
+    y = np.asarray(y)
+    pred = np.asarray(logits).argmax(1)
+    target_prior = (np.bincount(y, minlength=4) / max(len(y), 1)).round(4).tolist()
+
+    strict = np.array([bool(r.get("strict_ok", True)) for r in rows])
+    arms = {
+        "zeroshot_4class_broad": dict(
+            score_block(y, pred, groups, group_kind, n_boot=n_boot),
+            n=int(len(y)),
+            note="rhonchi and stridor counted as Wheeze - the headline arm"),
+    }
+    if strict.all():
+        arms["zeroshot_4class_strict"] = {
+            "identical_to_broad": True, "n": int(len(y)),
+            "note": ("no row in this corpus/level depends on a rhonchi or stridor "
+                     "annotation, so the strict and broad arms are the same rows.")}
+    else:
+        arms["zeroshot_4class_strict"] = dict(
+            score_block(y[strict], pred[strict], groups[strict], group_kind, n_boot=n_boot),
+            n=int(strict.sum()),
+            n_dropped=int((~strict).sum()),
+            note=("rows whose label depends on rhonchi or stridor are dropped, because "
+                  "ICBHI never annotated either"))
+
+    pc = prior_corrected(logits, source_prior, target_prior)
+    arms["prior_corrected_4class_broad"] = dict(
+        score_block(y, pc, groups, group_kind, n_boot=n_boot),
+        n=int(len(y)),
+        note=("DIAGNOSTIC, NOT A ZERO-SHOT NUMBER - it uses the target labels to build the "
+              "target prior. It separates the part of the drop caused by class-balance shift "
+              "from the part caused by the representation."))
+
+    out = {"arms": arms,
+           "baselines_on_target": trivial_baselines(y, groups),
+           "source_class_prior": [round(float(v), 4) for v in source_prior],
+           "target_class_prior": target_prior,
+           "calibration": {"target": calibration_block(logits, y)}}
+    if icbhi_logits is not None and icbhi_y is not None:
+        out["calibration"]["icbhi_source"] = calibration_block(icbhi_logits, icbhi_y)
+        t, i = out["calibration"]["target"], out["calibration"]["icbhi_source"]
+        if t["ece"] is not None and i["ece"] is not None:
+            out["calibration"]["delta_ece"] = _f(t["ece"] - i["ece"])
+            out["calibration"]["delta_overconfidence"] = _f(
+                t["overconfidence"] - i["overconfidence"])
+    out["calibration"]["_note"] = (
+        "A model that fails while staying confident is worse than one that fails loudly. "
+        "overconfidence is mean max-softmax minus accuracy.")
+    return out
+
+
 def make_results(model_id, dataset, level, rows, y, pred, cfg, ckpt_meta, index_stats,
                  icbhi_reference, seconds, extra=None):
-    import torch
+    import torch, librosa
     groups = np.array([r["patient_id"] for r in rows])
     group_kind = "patient" if dataset == "SPRSound" else "recording_group"
     doc = {
@@ -674,6 +858,7 @@ def make_results(model_id, dataset, level, rows, y, pred, cfg, ckpt_meta, index_
         "environment": {"platform": platform.platform(),
                         "python_version": platform.python_version(),
                         "pytorch_version": torch.__version__,
+                        "librosa_version": librosa.__version__,
                         "gpu_name": (torch.cuda.get_device_name(0)
                                      if torch.cuda.is_available() else "cpu")},
         "dataset_info": {
@@ -953,6 +1138,58 @@ def selftest(tmp=None):
     print(f"  detect-only   Se {br['se']} (want 0.85 - cross-type errors now count)")
     ok &= abs(br["se"] - 0.85) < 1e-9
 
+    # ---- analysis arms -------------------------------------------------------
+    yb = np.array([0] * 60 + [1] * 25 + [2] * 10 + [3] * 5)
+    gb = np.repeat(np.arange(20), 5)
+    bl = trivial_baselines(yb, gb, n_boot=50)
+    print(f"  baseline      always-Normal {bl['always Normal']['icbhi_score_official']} "
+          "(want 0.5 exactly - Se 0, Sp 1 by construction)")
+    ok &= bl["always Normal"]["icbhi_score_official"] == 0.5
+    ok &= bl["always Normal"]["icbhi_se_official"] == 0.0
+    print(f"  baseline      prior-matched random "
+          f"{bl['prior-matched random']['icbhi_score_official']} (want below always-Normal)")
+    ok &= bl["prior-matched random"]["icbhi_score_official"] < 0.5
+
+    # calibration: right-and-confident is calibrated; wrong-and-confident is not
+    right = np.full((100, 4), -6.0); right[:, 0] = 6.0
+    cal_ok = calibration_block(right, np.zeros(100, int))
+    cal_bad = calibration_block(right, np.ones(100, int))
+    print(f"  calibration   confident+right ece {cal_ok['ece']}, overconf "
+          f"{cal_ok['overconfidence']} (want ~0)")
+    ok &= cal_ok["ece"] < 0.01 and abs(cal_ok["overconfidence"]) < 0.01
+    print(f"  calibration   confident+wrong ece {cal_bad['ece']}, overconf "
+          f"{cal_bad['overconfidence']} (want ~1 - this is the finding, not a bug)")
+    ok &= cal_bad["ece"] > 0.99 and cal_bad["overconfidence"] > 0.99
+
+    # prior correction: identical priors must not move a single prediction
+    lg = np.random.default_rng(0).normal(0, 2, (200, 4))
+    same = prior_corrected(lg, [.25, .25, .25, .25], [.25, .25, .25, .25])
+    print(f"  prior corr.   identical priors change "
+          f"{int((same != lg.argmax(1)).sum())} predictions (want 0)")
+    ok &= bool((same == lg.argmax(1)).all())
+    shifted = prior_corrected(lg, [.97, .01, .01, .01], [.01, .01, .01, .97])
+    print(f"  prior corr.   shifting the prior to class 3 moves mass to it: "
+          f"{int((shifted == 3).sum())} > {int((lg.argmax(1) == 3).sum())}")
+    ok &= int((shifted == 3).sum()) > int((lg.argmax(1) == 3).sum())
+
+    # strict/broad marking - the subtlest logic in the index builders
+    spr_rows, _ = sprsound_index(os.path.join(tmp, "BioCAS2022"), level="event", verbose=False)
+    by_type = {r["label"]: r for r in spr_rows}
+    rho = [r for r in spr_rows if not r["strict_ok"]]
+    print(f"  strict arm    SPRSound marks {len(rho)} rhonchi/stridor rows unsafe "
+          "(want 4 - the synthetic corpus writes two events per record)")
+    ok &= len(rho) == 4
+    ok &= all(r["label"] == 2 for r in rho)
+    hfl_rows, _ = hflung_index(os.path.join(tmp, "HF_Lung_V1"), verbose=False)
+    unsafe = [r for r in hfl_rows if not r["strict_ok"]]
+    wheezy = [r for r in hfl_rows if r["label"] in (2, 3)]
+    print(f"  strict arm    HF_Lung marks {len(unsafe)} of {len(wheezy)} wheeze-bearing "
+          "cycles unsafe (want only the stridor/rhonchi-only ones)")
+    ok &= len(unsafe) < len(wheezy) and all(r["label"] in (2, 3) for r in unsafe)
+    print(f"  strict arm    a Normal cycle is never strict-unsafe: "
+          f"{all(r['strict_ok'] for r in hfl_rows if r['label'] == 0)}")
+    ok &= all(r["strict_ok"] for r in hfl_rows if r["label"] == 0)
+
     shutil.rmtree(tmp, ignore_errors=True)
     print("\n  SELFTEST", "PASS" if ok else "FAIL")
     return 0 if ok else 1
@@ -960,7 +1197,8 @@ def selftest(tmp=None):
 
 # ================================================================== driver
 def run(dataset, root, ckpt, out_dir, level="event", icbhi_audio=None, icbhi_split=None,
-        limit=None, batch_size=64, n_boot=2000, probe=False, verbose=True, icbhi_ref=None):
+        limit=None, batch_size=64, n_boot=2000, probe=False, verbose=True, icbhi_ref=None,
+        icbhi_gate=None):
     os.makedirs(out_dir, exist_ok=True)
     model, cfg, meta = load_checkpoint(ckpt)
     print(f"  checkpoint {meta['path']} (row {meta['row']}, epoch {meta['epoch']}, "
@@ -969,12 +1207,20 @@ def run(dataset, root, ckpt, out_dir, level="event", icbhi_audio=None, icbhi_spl
           f"pad={cfg['padding']} minmax={cfg['minmax']} ampnorm={cfg.get('ampnorm')} "
           f"bandpass={cfg.get('bandpass')} denoise={cfg.get('denoise')}")
 
-    if icbhi_ref is not None:
+    if icbhi_gate is not None:
+        # The notebook runs the gate in its own cell so a failure stops there rather than
+        # after a corpus has been indexed. Handing the dict back means the calibration
+        # comparison and the source prior come from that same verified pass.
+        icbhi_ref = icbhi_gate["score"]
+        print(f"  in-domain reference {icbhi_ref:.4f} from the caller's gate "
+              f"({len(icbhi_gate['y'])} ICBHI test cycles carried over).")
+    elif icbhi_ref is not None:
         print(f"  in-domain reference {icbhi_ref:.4f} supplied by the caller "
               "(gate already passed this session).")
     elif icbhi_audio and icbhi_split:
-        icbhi_ref = verify_on_icbhi(model, cfg, meta, icbhi_audio, icbhi_split,
-                                    batch_size=batch_size)
+        icbhi_gate = verify_on_icbhi(model, cfg, meta, icbhi_audio, icbhi_split,
+                                     return_details=True, batch_size=batch_size)
+        icbhi_ref = icbhi_gate["score"]
     else:
         icbhi_ref = round(float(meta["reported_icbhi_score"]), 4)
         print("  ICBHI verification SKIPPED - the in-domain reference is the checkpoint's "
@@ -996,11 +1242,26 @@ def run(dataset, root, ckpt, out_dir, level="event", icbhi_audio=None, icbhi_spl
     got = predict(model, rows, cfg, batch_size=batch_size, want_features=probe)
     pred = got["logits"].argmax(1)
 
-    extra = {}
+    groups = np.array([r["patient_id"] for r in rows])
+    group_kind = "patient" if name == "SPRSound" else "recording_group"
+
+    # ICBHI's own class balance. Measured from the training split when the gate carried it
+    # over; otherwise the committed constant, and the JSON says which was used - a prior
+    # correction against a guessed source prior would be a fabricated diagnostic.
+    if icbhi_gate is not None and "train_prior" in icbhi_gate:
+        source_prior, prior_src = icbhi_gate["train_prior"], "measured from the ICBHI train split"
+        icbhi_logits, icbhi_y = icbhi_gate["logits"], icbhi_gate["y"]
+    else:
+        source_prior, prior_src = ICBHI_TRAIN_PRIOR, "committed constant (gate not carried over)"
+        icbhi_logits = icbhi_y = None
+
+    print("  analysis arms: baselines, strict/broad, prior correction, calibration ...")
+    extra = analysis_arms(rows, y, got["logits"], groups, group_kind, source_prior,
+                          icbhi_logits=icbhi_logits, icbhi_y=icbhi_y, n_boot=n_boot)
+    extra["source_class_prior_provenance"] = prior_src
     if probe:
         print("  frozen-feature probe (grouped 5-fold CV) ...")
-        extra["feature_probe"] = feature_probe(
-            got["features"], y, np.array([r["patient_id"] for r in rows]))
+        extra["feature_probe"] = feature_probe(got["features"], y, groups)
     doc = make_results(mid, name, level, rows, y, pred, cfg, meta, stats, icbhi_ref,
                        got["seconds"], extra)
     if limit:

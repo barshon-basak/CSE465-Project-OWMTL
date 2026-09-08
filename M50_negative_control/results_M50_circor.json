@@ -1,0 +1,195 @@
+{
+  "meta": {
+    "model_id": "M50_CirCor_negative_control",
+    "model_name": "far-OOD negative control of best_model.pth on CirCor DigiScope",
+    "contributor": "OWMTL team",
+    "date_completed": "2026-09-08",
+    "is_augmented": false,
+    "augmentation_method": "none (inference only)",
+    "notes": "NOT a transfer test and NOT a generalization number. No CirCor label is read; the corpus enters as unlabelled audio from an organ the model was never trained on. Reports rejection (open-set AUROC) and abstention (confidence), nothing else. The checkpoint passed the ICBHI gate first: reproduced 0.5585 against a stored 0.5602."
+  },
+  "config": {
+    "n_mels": 128,
+    "duration_s": 8.0,
+    "padding": "wrap",
+    "minmax": true,
+    "bandpass": false,
+    "denoise": false,
+    "ampnorm": false,
+    "pretrained": true,
+    "freeze": false,
+    "class_weighted": true,
+    "specaug": true,
+    "lr": 0.0005,
+    "batch_size": 16,
+    "epochs": 40,
+    "dropout": 0.3,
+    "seed": 42,
+    "sample_rate": 16000,
+    "n_fft": 1024,
+    "hop_length": 160,
+    "win_length": 400,
+    "f_min": 50,
+    "f_max": 2000,
+    "n_samples": 128000,
+    "n_frames": 801,
+    "arch": "mobilenet_v2",
+    "freeze_features": false,
+    "scheduler": "cosine",
+    "num_epochs": 40,
+    "weight_decay": 0.0001,
+    "grad_clip": 5.0,
+    "use_amp": true,
+    "num_workers": 2,
+    "imagenet_normalize": true,
+    "use_specaugment": true,
+    "specaug_freq_mask_param": 24,
+    "specaug_time_mask_param": 80,
+    "specaug_num_freq_masks": 2,
+    "specaug_num_time_masks": 2,
+    "specaug_mask_value": 0.0,
+    "split_policy": "reassign_to_train",
+    "split_method": "official_60_40_patient_independent_corrected",
+    "num_classes": 4,
+    "model_id": "M22_v2",
+    "model_name": "MobileNetV2 + SpecAugment (corrected official split)",
+    "variant": "augmented",
+    "contributor": "OWMTL team",
+    "use_cache": true,
+    "eval_only": false,
+    "n_bootstrap": 1000,
+    "ckpt_dir": "/kaggle/working/checkpoints_M22_v2",
+    "results_dir": "/kaggle/working/results_M22_v2",
+    "cache_dir": "/kaggle/working/cache",
+    "window_seconds": 8.0
+  },
+  "environment": {
+    "platform": "Linux-6.12.90+-x86_64-with-glibc2.35",
+    "python_version": "3.12.13",
+    "pytorch_version": "2.10.0+cu128",
+    "librosa_version": "0.11.0"
+  },
+  "dataset_info": {
+    "dataset": "CirCor_DigiScope",
+    "role": "far_out_of_distribution_negative_control",
+    "unit_of_analysis": "8s window",
+    "split_method": "no split - every available recording is unknown by construction",
+    "known_side": "ICBHI 2017 corrected official 60/40 test partition",
+    "test_samples": 10172,
+    "test_groups": 942,
+    "test_group_kind": "patient",
+    "known_samples": 2636,
+    "known_groups": 47,
+    "native_sample_rates_hz": [
+      4000
+    ],
+    "resampled_to_hz": 16000,
+    "bandwidth_note": "CirCor is 4 kHz, so its Nyquist is 2,000 Hz - exactly the model's mel fmax. The top of the band arrives attenuated. For a rejection experiment this cuts the safe way: it makes the audio look more alien, so the AUROC is an upper bound rather than an understatement.",
+    "index_stats": {
+      "recordings_seen": 3163,
+      "recordings_used": 3163,
+      "windows": 10172,
+      "patients": 942,
+      "windows_per_recording_median": 3.0,
+      "window_seconds": 8.0,
+      "native_sample_rates_hz": [
+        4000
+      ],
+      "dropped": {
+        "short_recording": 0,
+        "tail_fragment": 236
+      },
+      "labels_read": "none - CirCor enters as unlabelled out-of-domain audio"
+    }
+  },
+  "source_model": {
+    "checkpoint": "best_model.pth",
+    "epoch": 38,
+    "reported_icbhi_score": 0.5602301973119816,
+    "icbhi_score_reproduced_here": 0.5585
+  },
+  "openset": {
+    "energy": {
+      "auroc_unknown_vs_known": 0.4942,
+      "auroc_ci95": [
+        0.4493,
+        0.544
+      ],
+      "auroc_ci95_unit": "patient",
+      "orientation": "higher = more OOD",
+      "mean_known": -5.9956,
+      "mean_unknown": -5.9748
+    },
+    "msp": {
+      "auroc_unknown_vs_known": 0.4809,
+      "auroc_ci95": [
+        0.448,
+        0.517
+      ],
+      "auroc_ci95_unit": "patient",
+      "orientation": "lower = more OOD",
+      "mean_known": -0.8905,
+      "mean_unknown": -0.9051
+    },
+    "entropy": {
+      "auroc_unknown_vs_known": 0.4778,
+      "auroc_ci95": [
+        0.4434,
+        0.5155
+      ],
+      "auroc_ci95_unit": "patient",
+      "orientation": "higher = more OOD",
+      "mean_known": 0.264,
+      "mean_unknown": 0.2286
+    },
+    "difficulty_note": "CirCor is FAR-OOD: a different organ. The paper's existing open-set arm reports AUROC 0.6466 on NEAR-OOD unknowns - held-out lung disease classes, 19 patients. Rejecting a heartbeat is an easier task than rejecting an unseen lung pathology, so this number does not replace, upgrade or supersede that one. It is a second, easier point on a difficulty axis, and it shows the detector functions at all, which n=19 could not.",
+    "near_ood_reference": {
+      "auroc": 0.6466,
+      "unknown_patients": 19,
+      "source": "Asif's/M29 + final paper, extensions section",
+      "unknown_set": "held-out ICBHI disease classes"
+    }
+  },
+  "confidence": {
+    "circor": {
+      "mean_max_softmax": 0.9051,
+      "median_max_softmax": 0.9783,
+      "fraction_above_0.90": 0.7001,
+      "fraction_above_0.99": 0.4036,
+      "mean_entropy": 0.2286,
+      "max_entropy_possible": 1.3863,
+      "predicted_class_histogram": {
+        "Normal": 7815,
+        "Crackle": 1805,
+        "Wheeze": 413,
+        "Both": 139
+      },
+      "predicted_class_fraction": {
+        "Normal": 0.7683,
+        "Crackle": 0.1774,
+        "Wheeze": 0.0406,
+        "Both": 0.0137
+      }
+    },
+    "icbhi_test": {
+      "mean_max_softmax": 0.8905,
+      "median_max_softmax": 0.97,
+      "fraction_above_0.90": 0.6624,
+      "fraction_above_0.99": 0.3748,
+      "mean_entropy": 0.264,
+      "max_entropy_possible": 1.3863,
+      "predicted_class_histogram": {
+        "Normal": 1589,
+        "Crackle": 711,
+        "Wheeze": 225,
+        "Both": 111
+      },
+      "predicted_class_fraction": {
+        "Normal": 0.6028,
+        "Crackle": 0.2697,
+        "Wheeze": 0.0854,
+        "Both": 0.0421
+      }
+    }
+  }
+}
