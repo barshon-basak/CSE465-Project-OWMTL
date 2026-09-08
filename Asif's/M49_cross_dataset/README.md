@@ -3,7 +3,8 @@
 **Review comment being answered (Dr. Khan):** *"Test your best trained model with another dataset,
 i.e., SPRSound (2022, open access) or HF Lung or the CirCor DigiScope."*
 
-**Status:** notebook built and statically verified. **Blocked on one prerequisite — see §1.**
+**Status:** notebook built and statically verified. Checkpoint present and verified — **not
+blocked**. Ready to run.
 
 ---
 
@@ -41,39 +42,60 @@ loosely — which is the same argument this project already makes about novelty 
 
 ---
 
-## 1. Prerequisite: the checkpoint is missing
+## 1. The checkpoint — present, and which one
 
-The paper's best model is **MobileNetV2 + SpecAugment (M22_v2)**, ICBHI challenge score **0.5602**
-on the corrected 60/40 patient-independent partition, best epoch 38.
+**Use `Asif's/M22_v2/Results/best_model.pth`.** It is committed and was verified by loading it:
+epoch 38, `best_score` 0.5602301973, `cfg.split_method =
+official_60_40_patient_independent_corrected`, `cfg.split_policy = reassign_to_train`. That is
+the paper's best model — MobileNetV2 + SpecAugment, 0.5602 on the corrected 60/40
+patient-independent partition — and the one the review comment is asking about.
 
-**That checkpoint is not in the repository.** `Asif's/M22_v2/Results/` holds the results JSON,
-per-cycle predictions and plots, but no `best_model.pth`. `.gitignore` excludes `checkpoints/`,
-and the file was never committed.
+> This section previously said the checkpoint was missing and that M22_v2 had to be retrained
+> for ~2 h. That is no longer true; the file was committed on 2026-09-08.
 
-Two checkpoints on disk look like it and are **not** it:
+### Three checkpoints look like it. Two are wrong.
 
-| File | What it actually is | Why it must not be used |
+| File | Score | Why not |
 |---|---|---|
-| `Asif's/M22/result_M22/best_model.pth` | the original M22 | trained under the silent `patient_id <= 111` fallback split — 11 test patients, 492 cycles. Score 0.6495. |
-| `Archive_Files (v4)/M22_v2_duplicate_folders_20260830/m22-official-updated-raw/best_model.pth` | `M22_v2_official` | trained on the **published verbatim split**, which leaks patients 156 and 218. Score 0.5641. Its stored config records `official_60_40_published_verbatim_NOT_patient_independent`. |
+| **`Asif's/M22_v2/Results/best_model.pth`** | **0.5602** | **this one** — corrected patient-independent split |
+| `Asif's/M22_v2/Results/best_model_official.pth` | 0.5641 | published split **verbatim** — patients 156 and 218 on both sides |
+| `Asif's/M22/result_M22/best_model.pth` | 0.6495 | the silent `patient_id <= 111` fallback split — 11 test patients |
+| `Asif's/M45/best_M45_P3.pth` | 0.5764 | highest in the repo, and the paper declines it — see below |
 
 Testing generalization with a checkpoint trained on a leaking split would undercut the paper's
-central argument in the one section meant to defend it. Cell 4 of the notebook reads the config
-stored inside the checkpoint and **raises** on either of these.
+central argument in the one section meant to defend it. `M49_cross_dataset/m49_xval.py`
+`load_checkpoint` now reads `split_method` out of every checkpoint's own cfg and **raises** on
+anything but the corrected partition, so the wrong file cannot be loaded by accident.
 
-### Recovering it
+### Why not M45 P3, which scores higher
 
-Re-run the training notebook. Nothing needs to be uploaded or attached.
+`best_M45_P3.pth` reaches 0.5764 — the highest score in the repository — by adding per-cycle peak
+amplitude normalisation. The paper names it and rejects it, in `final paper/main.tex:831` and
+`Final_Draft_v3/main.tex:1064`: *"Row P3 gives the highest score in the table at 0.5764, and we do
+not adopt it as our reported model, because its delta is only 1.1 times the noise range and its
+patient-level interval spans zero."*
 
-```
-open   Asif's/M22_v2/m22-official-notebook.ipynb
-check  cell 2:  VARIANT = "augmented"   and   SPLIT_MODE = "corrected"
-run    Runtime → Run all
-```
+| Check | Value |
+|---|---|
+| Three-seed noise range (same configuration) | 0.0141 — 0.5540 / 0.5681 / 0.5657 |
+| P3 delta vs the reference | +0.0162 = **1.1×** noise |
+| Patient-paired bootstrap CI | **[−0.017, +0.046]**, p = 0.367 |
+| `M45_paired_tests.json` verdict | `"NOT shown to differ from A0"` |
 
-### The `SPLIT_MODE` trap, now defused
+P3 is the argmax of twelve rows scored on the same test partition with no multiplicity
+correction — selection on the test set, which is the practice this paper's faults section is
+about. That selection also biases 0.5764 upward, and the transfer delta is
+`in-domain − external`, so an inflated baseline would inflate the headline drop. Its gain is
+specificity-driven as well (Sp 0.7532 vs 0.7115, Se *down* 0.4089 → 0.3996), so a cross-corpus
+number from it would describe a preprocessing quirk rather than the model.
 
-That notebook has **two** switches, and the second one used to default to the wrong value:
+Running M49 on P3 would put the Generalization section in direct contradiction with the Ablation
+section three pages earlier. If P3 is ever to be the reported model, the paper changes first.
+
+### The `SPLIT_MODE` trap in the training notebook
+
+Only relevant if `m22-official-notebook.ipynb` is ever re-run. It has **two** switches, and the
+second one used to default to the wrong value:
 
 | `SPLIT_MODE` | Partition | Reportable? |
 |---|---|---|
@@ -81,34 +103,14 @@ That notebook has **two** switches, and the second one used to default to the wr
 | `"official"` | 539/381 recs, 2,756 test cycles, 49 patients | no — the published file verbatim, patients 156 and 218 on both sides |
 
 `"official"` does not mean *the correct one*. It means *the published file, leak included*. It has
-one legitimate use — comparing against published ICBHI work, where every other paper is on the same
-leaky partition, which is where the 0.5641 in the comparison table comes from. It is not the model
-M49 can use.
+one legitimate use — comparing against published ICBHI work, where every other paper is on the
+same leaky partition, which is where the 0.5641 in the comparison table comes from.
 
 The committed default was `SPLIT_MODE = "official"`, sitting twelve lines below `VARIANT`, so
 setting `VARIANT = "augmented"` and running produced a checkpoint labelled `M22_v2_official` that
 loads cleanly, scores sensibly, and is not reportable. That default is now `"corrected"`, the two
-switches sit together with the trap spelled out, and the cell prints a verdict banner at the end of
-its config dump saying whether the active partition is reportable.
-
-M49 no longer trusts filenames either: it reads the `split_method` out of every candidate
-checkpoint and skips the verbatim ones, so if both runs are on Drive it picks the right one on its
-own.
-
-Seed 42, ~40 epochs, roughly 2 hours on a T4, plus a one-off spectrogram cache build. The run is
-deterministic in its configuration, so M49's sanity gate will confirm whether it landed back on
-0.5602.
-
-It saves itself to Drive now. `best_model.pth`, `latest.pth`, the results JSON, the predictions CSV
-and every plot go to:
-
-```
-/content/drive/MyDrive/OWMTL/M22_v2/checkpoints/best_model.pth
-/content/drive/MyDrive/OWMTL/M22_v2/results/
-```
-
-which is one of the paths M49 searches by default. `latest.pth` is rewritten every epoch, so a
-Colab disconnect costs one epoch rather than the whole run — re-run the notebook and it resumes.
+switches sit together with the trap spelled out, and the cell prints a verdict banner saying
+whether the active partition is reportable.
 
 ---
 
@@ -116,10 +118,10 @@ Colab disconnect costs one epoch rather than the whole run — re-run the notebo
 
 | Step | Notebook | GPU time | Repeatable? |
 |---|---|---|---|
-| 1 | `Asif's/M22_v2/m22-official-notebook.ipynb` (augmented + corrected) | ~2 h | resumable |
-| 2 | `M49_SPRSound_transfer.ipynb` | ~25 min | yes, cheaply |
+| 1 | `M49_SPRSound_transfer.ipynb` | ~25 min | yes, cheaply |
 
-Step 2 breaks down as: SPRSound clone ~5 min, ICBHI sanity-gate inference ~5 min (cached after the
+No training step. The checkpoint is committed (§1), so this is inference only.
+The run breaks down as: SPRSound clone ~5 min, ICBHI sanity-gate inference ~5 min (cached after the
 first run), SPRSound mel cache ~10 min, inference ~2 min, the rest seconds. Once the caches exist a
 re-run takes about 3 minutes, so the analysis arms can be iterated on freely.
 

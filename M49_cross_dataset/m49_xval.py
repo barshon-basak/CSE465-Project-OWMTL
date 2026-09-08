@@ -18,7 +18,7 @@ WHY IT IMPORTS m45_ablation INSTEAD OF RE-IMPLEMENTING THE PIPELINE
 
 THE CHECK THAT MAKES THE REST BELIEVABLE
     `verify_on_icbhi()` re-scores the checkpoint on the 2,636 ICBHI test cycles and asserts
-    the result equals the score stored inside the checkpoint (P3: 0.5764, M22_v2: 0.5602).
+    the result equals the score stored inside the checkpoint (M22_v2: 0.5602, P3: 0.5764).
     That proves this file's preprocessing, channel expansion and ImageNet normalisation are
     the training run's, so a low external score reads as domain shift rather than as a bug
     in the harness. It runs BEFORE any external number is computed, and a mismatch aborts.
@@ -55,8 +55,8 @@ CONFIDENCE INTERVALS
 
 USAGE
     python m49_xval.py --selftest                       # synthetic corpora, no real data
-    python m49_xval.py --dataset sprsound --root .../BioCAS2022 --ckpt .../best_M45_P3.pth
-    python m49_xval.py --dataset hflung   --root .../HF_Lung_V1 --ckpt .../best_M45_P3.pth
+    python m49_xval.py --dataset sprsound --root .../BioCAS2022   # --ckpt defaults to M22_v2
+    python m49_xval.py --dataset hflung   --root .../HF_Lung_V1
 """
 from __future__ import annotations
 
@@ -72,7 +72,11 @@ import time
 
 import numpy as np
 
-HERE = os.path.dirname(os.path.abspath(__file__))
+# `__file__` is undefined when this source is exec'd in a notebook cell instead of being
+# imported. On Kaggle the notebook writes this module into /kaggle/working, which is also
+# the working directory, so cwd is the right answer there rather than merely a safe one.
+HERE = (os.path.dirname(os.path.abspath(__file__)) if "__file__" in globals()
+        else os.getcwd())
 
 # m45_ablation is the module that trained the checkpoint. On Kaggle the notebook writes it
 # next to this file; locally it lives in the repo. Both are tried, and failing to find it is
@@ -402,6 +406,18 @@ def load_checkpoint(path, device=None):
         raise ValueError(f"{path} has keys {list(ck)} - expected a dict with 'model_state'")
     cfg = dict(M45.BASE)
     cfg.update(ck.get("cfg", {}))
+    # A checkpoint trained on the published split verbatim leaks patients 156 and 218 across
+    # train and test, so its ICBHI score is not comparable and an external delta measured
+    # against it means nothing. The gate below cannot catch this on its own: it holds each
+    # checkpoint to the score stored inside IT, and a leaking checkpoint reproduces its own
+    # leaking score perfectly. M45 rows carry no split_method and are corrected by
+    # construction, so an absent key passes.
+    split = cfg.get("split_method")
+    if split is not None and split != "official_60_40_patient_independent_corrected":
+        raise ValueError(
+            f"{os.path.basename(path)} was trained on split {split!r}, not the corrected "
+            "patient-independent partition. Use Asif's/M22_v2/Results/best_model.pth "
+            "(0.5602), not best_model_official.pth (0.5641, leaks patients 156 and 218).")
     model = build_model(cfg, device)
     model.load_state_dict(ck["model_state"], strict=True)
     model.eval()
@@ -1011,8 +1027,12 @@ def main():
     ap.add_argument("--selftest", action="store_true")
     ap.add_argument("--dataset", choices=["sprsound", "hflung"])
     ap.add_argument("--root")
+    # M22_v2 (0.5602) is the model the paper reports as best. M45 P3 scores higher
+    # (0.5764) but the paper declines it: the delta is 1.1x the seed noise range and
+    # its patient-level interval spans zero. Do not swap this to P3 without changing
+    # the paper too.
     ap.add_argument("--ckpt", default=os.path.abspath(
-        os.path.join(HERE, "..", "Asif's", "M45", "best_M45_P3.pth")))
+        os.path.join(HERE, "..", "Asif's", "M22_v2", "Results", "best_model.pth")))
     ap.add_argument("--level", default="event", choices=["event", "record"])
     ap.add_argument("--out_dir", default=HERE)
     ap.add_argument("--icbhi_audio")

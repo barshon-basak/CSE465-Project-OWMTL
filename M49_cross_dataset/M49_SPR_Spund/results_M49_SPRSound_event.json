@@ -1,0 +1,374 @@
+{
+  "meta": {
+    "model_id": "M49_SPRSound_event",
+    "model_name": "external validation of best_model.pth on SPRSound",
+    "contributor": "OWMTL team",
+    "date_completed": "2026-09-08",
+    "is_augmented": false,
+    "augmentation_method": "none (inference only)",
+    "notes": "Zero-shot cross-dataset evaluation. No fine-tuning, no threshold tuning, no target label used to fit anything in best_metrics. The checkpoint reproduced its own ICBHI score before this ran."
+  },
+  "config": {
+    "n_mels": 128,
+    "duration_s": 8.0,
+    "padding": "wrap",
+    "minmax": true,
+    "bandpass": false,
+    "denoise": false,
+    "ampnorm": false,
+    "pretrained": true,
+    "freeze": false,
+    "class_weighted": true,
+    "specaug": true,
+    "lr": 0.0005,
+    "batch_size": 16,
+    "epochs": 40,
+    "dropout": 0.3,
+    "seed": 42,
+    "sample_rate": 16000,
+    "n_fft": 1024,
+    "hop_length": 160,
+    "win_length": 400,
+    "f_min": 50,
+    "f_max": 2000,
+    "n_samples": 128000,
+    "n_frames": 801,
+    "arch": "mobilenet_v2",
+    "freeze_features": false,
+    "scheduler": "cosine",
+    "num_epochs": 40,
+    "weight_decay": 0.0001,
+    "grad_clip": 5.0,
+    "use_amp": true,
+    "num_workers": 2,
+    "imagenet_normalize": true,
+    "use_specaugment": true,
+    "specaug_freq_mask_param": 24,
+    "specaug_time_mask_param": 80,
+    "specaug_num_freq_masks": 2,
+    "specaug_num_time_masks": 2,
+    "specaug_mask_value": 0.0,
+    "split_policy": "reassign_to_train",
+    "split_method": "official_60_40_patient_independent_corrected",
+    "num_classes": 4,
+    "model_id": "M22_v2",
+    "model_name": "MobileNetV2 + SpecAugment (corrected official split)",
+    "variant": "augmented",
+    "contributor": "OWMTL team",
+    "use_cache": true,
+    "eval_only": false,
+    "n_bootstrap": 1000,
+    "ckpt_dir": "/kaggle/working/checkpoints_M22_v2",
+    "results_dir": "/kaggle/working/results_M22_v2",
+    "cache_dir": "/kaggle/working/cache"
+  },
+  "environment": {
+    "platform": "Linux-6.12.90+-x86_64-with-glibc2.35",
+    "python_version": "3.12.13",
+    "pytorch_version": "2.10.0+cu128",
+    "gpu_name": "Tesla T4"
+  },
+  "dataset_info": {
+    "dataset": "SPRSound",
+    "unit_of_analysis": "event",
+    "split_method": "external_validation_zero_shot_all_available_data",
+    "train_samples": 0,
+    "test_samples": 9089,
+    "test_groups": 288,
+    "test_group_kind": "patient",
+    "subset_counts": {
+      "inter_test": 1429,
+      "intra_test": 1004,
+      "train": 6656
+    },
+    "native_sample_rates_hz": [
+      8000
+    ],
+    "resampled_to_hz": 16000,
+    "index_stats": {
+      "recordings_paired": 2683,
+      "label_vocabulary": {
+        "normal": 6887,
+        "fine crackle": 1167,
+        "wheeze": 865,
+        "coarse crackle": 66,
+        "wheeze+crackle": 34,
+        "rhonchi": 53,
+        "stridor": 17
+      },
+      "dropped": {
+        "short_or_reversed": 0,
+        "past_eof": 0,
+        "excluded_record_label": 0,
+        "no_annotation": 187
+      }
+    },
+    "segment_stats": {
+      "segment_seconds_median": 1.22,
+      "segment_seconds_p5_p95": [
+        0.467,
+        2.446
+      ],
+      "segment_seconds_min_max": [
+        0.126,
+        7.152
+      ],
+      "model_window_seconds": 8.0,
+      "tiling_factor_median": 6.56,
+      "fraction_longer_than_window": 0.0,
+      "icbhi_reference_median_seconds": 2.42,
+      "note": "segments shorter than the window are cyclically tiled; a larger tiling factor than ICBHI's ~3.3x means proportionally more seam artefact per input."
+    },
+    "label_mapping": {
+      "sprsound_event": {
+        "normal": "Normal",
+        "fine crackle": "Crackle",
+        "coarse crackle": "Crackle",
+        "crackle": "Crackle",
+        "wheeze": "Wheeze",
+        "rhonchi": "Wheeze",
+        "stridor": "Wheeze",
+        "wheeze+crackle": "Both",
+        "wheeze + crackle": "Both",
+        "wheeze & crackle": "Both",
+        "wheeze and crackle": "Both",
+        "wheeze&crackle": "Both"
+      },
+      "sprsound_record": {
+        "normal": "Normal",
+        "das": "Crackle",
+        "cas": "Wheeze",
+        "cas & das": "Both",
+        "cas&das": "Both"
+      },
+      "sprsound_record_excluded": [
+        "poor quality"
+      ],
+      "hflung_phase_tokens": [
+        "E",
+        "I"
+      ],
+      "hflung_crackle_tokens": [
+        "D"
+      ],
+      "hflung_wheeze_tokens": [
+        "Rhonchi",
+        "Stridor",
+        "Wheeze"
+      ],
+      "rationale": "Rhonchi and stridor are continuous adventitious sounds in both source taxonomies and map to ICBHI's Wheeze class; HF_Lung_V1's own paper pools W/S/R into CAS."
+    }
+  },
+  "source_model": {
+    "checkpoint": "best_model.pth",
+    "ablation_row": null,
+    "selected_epoch": 38,
+    "icbhi_score_official_in_domain": 0.5585,
+    "trained_on": "ICBHI_2017, official_60_40_patient_independent_corrected"
+  },
+  "best_epoch": {
+    "epoch": 38,
+    "primary_metric": "icbhi_score_official",
+    "primary_metric_value": 0.4005
+  },
+  "best_metrics": {
+    "icbhi_score_official": 0.4005,
+    "icbhi_score_official_ci95": [
+      0.3737,
+      0.4263
+    ],
+    "icbhi_score_official_ci95_unit": "patient",
+    "icbhi_se_official": 0.555,
+    "icbhi_sp_official": 0.2461,
+    "accuracy": 0.3209,
+    "precision_macro": 0.4426,
+    "recall_macro": 0.3846,
+    "f1_macro": 0.3118,
+    "per_class": {
+      "Normal": {
+        "precision": 0.6721,
+        "recall": 0.2461,
+        "f1": 0.3603,
+        "support": 6887,
+        "predicted": 2522
+      },
+      "Crackle": {
+        "precision": 0.1372,
+        "recall": 0.6691,
+        "f1": 0.2278,
+        "support": 1233,
+        "predicted": 6011
+      },
+      "Wheeze": {
+        "precision": 0.9049,
+        "recall": 0.4171,
+        "f1": 0.571,
+        "support": 935,
+        "predicted": 431
+      },
+      "Both": {
+        "precision": 0.056,
+        "recall": 0.2059,
+        "f1": 0.0881,
+        "support": 34,
+        "predicted": 125
+      }
+    },
+    "confusion_matrix_raw": [
+      [
+        1695,
+        5094,
+        28,
+        70
+      ],
+      [
+        396,
+        825,
+        8,
+        4
+      ],
+      [
+        419,
+        82,
+        390,
+        44
+      ],
+      [
+        12,
+        10,
+        5,
+        7
+      ]
+    ],
+    "confusion_matrix_normalized": [
+      [
+        0.2461,
+        0.7397,
+        0.0041,
+        0.0102
+      ],
+      [
+        0.3212,
+        0.6691,
+        0.0065,
+        0.0032
+      ],
+      [
+        0.4481,
+        0.0877,
+        0.4171,
+        0.0471
+      ],
+      [
+        0.3529,
+        0.2941,
+        0.1471,
+        0.2059
+      ]
+    ],
+    "label_distribution_true": [
+      6887,
+      1233,
+      935,
+      34
+    ],
+    "label_distribution_pred": [
+      2522,
+      6011,
+      431,
+      125
+    ],
+    "binary_detection": {
+      "se": 0.6244,
+      "sp": 0.2461,
+      "icbhi_score_official": 0.4353
+    }
+  },
+  "efficiency": {
+    "total_params": 2263160,
+    "trainable_params": 0,
+    "model_size_mb": 9.053,
+    "training_time_total_s": 0,
+    "inference_time_total_s": 227.1,
+    "inference_time_ms_per_sample": 24.986,
+    "gpu_name": "Tesla T4"
+  },
+  "ablation": {
+    "ablation_group": "external_validation",
+    "ablation_role": "variant",
+    "baseline_model_id": "M22_v2",
+    "variable_changed": "evaluation corpus: ICBHI_2017 -> SPRSound",
+    "variables_held_constant": [
+      "weights",
+      "preprocessing",
+      "official metric",
+      "decision rule: argmax"
+    ],
+    "component_flags": {
+      "has_sound_event_head": true,
+      "has_disease_head": false,
+      "has_cross_task_consistency": false,
+      "has_cqkd_regularization": false,
+      "has_openmax_rejection": false,
+      "owl_stage": 0,
+      "compression_clusters": null
+    },
+    "loss_weights": {
+      "sound_event_weight": 1.0,
+      "disease_weight": null,
+      "consistency_weight": null
+    }
+  },
+  "training_history": [],
+  "transfer": {
+    "icbhi_in_domain": 0.5585,
+    "external": 0.4005,
+    "delta": -0.158,
+    "chance_reference": 0.5,
+    "note": "0.50 is what a constant always-Normal predictor scores on this metric, so it is the floor an external number has to clear to mean anything."
+  },
+  "feature_probe": {
+    "icbhi_score_official": 0.7358,
+    "icbhi_score_official_ci95": [
+      0.7135,
+      0.7554
+    ],
+    "icbhi_se_official": 0.7171,
+    "icbhi_sp_official": 0.7545,
+    "confusion_matrix_raw": [
+      [
+        5196,
+        1294,
+        253,
+        144
+      ],
+      [
+        305,
+        816,
+        75,
+        37
+      ],
+      [
+        31,
+        70,
+        758,
+        76
+      ],
+      [
+        4,
+        4,
+        21,
+        5
+      ]
+    ],
+    "class_support": {
+      "Normal": 6887,
+      "Crackle": 1233,
+      "Wheeze": 935,
+      "Both": 34
+    },
+    "min_class_support": 34,
+    "stratification_ok": true,
+    "note": "frozen-backbone logistic probe, grouped 5-fold CV. Uses target labels - not a zero-shot result, and not comparable to the headline number. If stratification_ok is false, the rarest class has fewer members than folds and its per-fold estimate is unstable."
+  }
+}

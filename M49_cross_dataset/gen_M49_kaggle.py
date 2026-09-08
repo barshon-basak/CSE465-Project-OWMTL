@@ -15,6 +15,8 @@ OUTPUT
 """
 from __future__ import annotations
 
+import base64
+import gzip
 import io
 import json
 import os
@@ -34,12 +36,25 @@ def code(text):
 
 
 def embed(path, name):
-    """Embed a module as a raw string literal the notebook writes to /kaggle/working."""
-    src = io.open(path, encoding="utf-8").read().replace("'''", "\\'\\'\\'")
-    return (f"{name.upper().replace('.PY','')}_SRC = r'''" + src + "'''\n"
-            f"\nwith open('/kaggle/working/{name}', 'w', encoding='utf-8') as fh:\n"
-            f"    fh.write({name.upper().replace('.PY','')}_SRC)\n"
-            f"print('wrote {name}', len({name.upper().replace('.PY','')}_SRC), 'chars')\n")
+    """Embed a module as gzip+base64, written to /kaggle/working byte-identical to the repo.
+
+    It used to be a raw triple-quoted literal holding the module verbatim. That form sits one
+    stray quote sequence away from ending early, and when it ends early the rest of the module
+    runs as *cell* code - which is how `__file__` came to be evaluated at notebook scope and
+    raised NameError. The base64 alphabet has no quotes and no newlines, so the literal cannot
+    be terminated by its own contents, and reading in binary keeps the bytes exact rather than
+    at the mercy of newline translation.
+    """
+    var = name.upper().replace(".PY", "") + "_B64"
+    blob = base64.b64encode(gzip.compress(io.open(path, "rb").read())).decode("ascii")
+    q = chr(39) * 3      # written this way so this line cannot end the literal it builds
+    wrapped = "\n".join(blob[i:i + 76] for i in range(0, len(blob), 76))
+    return (f"{var} = (\n{q}{wrapped}{q})\n\n"
+            "import base64, gzip\n"
+            f"_src = gzip.decompress(base64.b64decode({var}))\n"
+            f"with open('/kaggle/working/{name}', 'wb') as fh:\n"
+            "    fh.write(_src)\n"
+            f"print('wrote {name}', len(_src), 'bytes')\n")
 
 
 # ------------------------------------------------------------------ shared cells
@@ -58,14 +73,14 @@ no threshold tuning, no target label used to fit anything in the headline number
 | **Accelerator** | GPU T4 (CPU works but the pass is slower) |
 | **Internet** | **ON** --- {net} |
 | **Add Data** | `vbookshelf/respiratory-sound-database` (ICBHI --- needed for the verification gate) |
-| **Add Data** | the checkpoint: upload `Asif's/M45/best_M45_P3.pth` as a private Kaggle dataset |
+| **Add Data** | the checkpoint: upload `Asif's/M22_v2/Results/best_model.pth` as a private Kaggle dataset |
 | **Runtime** | roughly {runtime} |
 
 ### The gate
 
 Before a single external number is computed, the notebook re-scores the checkpoint on the
 2,636 ICBHI test cycles and **asserts it reproduces the score stored inside the checkpoint**
-(P3: 0.5764). That proves this notebook's preprocessing, channel expansion and ImageNet
+(M22_v2: 0.5602). That proves this notebook's preprocessing, channel expansion and ImageNet
 normalisation are the training run's --- so a low external score can be read as domain shift
 rather than as a bug in the harness. A mismatch aborts the notebook.
 
@@ -101,13 +116,19 @@ def find_one(pattern, what, hint=""):
         raise FileNotFoundError(f"could not find {what} with {pattern!r}. {hint}")
     return hits[0]
 
-# Change this to evaluate a different checkpoint. Any M45 / M22_v2 checkpoint works: the
-# loader reads the preprocessing flags out of the checkpoint's own cfg, and the ICBHI gate
-# then holds it to the score IT reports, not to a hard-coded one.
-CKPT_NAME = "best_M45_P3.pth"
+# M22_v2 (0.5602) is the model the paper reports as best, so it is the one this external
+# validation is about. M45 P3 scores higher (0.5764) and the paper explicitly declines it:
+# the delta is 1.1x the seed noise range (0.0141) and its patient-level interval spans zero.
+# Any M45 / M22_v2 checkpoint loads here -- the loader reads the preprocessing flags out of
+# the checkpoint's own cfg and the gate holds it to the score IT reports -- but swapping this
+# to P3 puts the notebook at odds with the paper's ablation section.
+#
+# NOT best_model_official.pth: same folder, 0.5641, trained on the published split verbatim,
+# which leaks patients 156 and 218 across train and test.
+CKPT_NAME = "best_model.pth"
 CKPT = find_one(f"/kaggle/input/**/{CKPT_NAME}", "the checkpoint",
-                f"Upload Asif's/M45/{CKPT_NAME} as a private Kaggle dataset and attach it, "
-                "or set CKPT_NAME to whichever checkpoint you attached.")
+                f"Upload Asif's/M22_v2/Results/{CKPT_NAME} as a private Kaggle dataset and "
+                "attach it, or set CKPT_NAME to whichever checkpoint you attached.")
 ICBHI_AUDIO = os.path.dirname(find_one(
     "/kaggle/input/**/audio_and_txt_files/*.wav", "the ICBHI audio",
     "Add Data -> vbookshelf/respiratory-sound-database."))
@@ -126,7 +147,13 @@ MODULES_MD = """## 3. The two modules
 and it supplies the mel parameters, the official metric and the corrected-split loader.
 `m49_xval.py` imports it rather than re-implementing any of it, because a second
 implementation of the mel parameters would make every cross-dataset delta a measurement of
-the gap between two scripts."""
+the gap between two scripts.
+
+Both are carried as gzip+base64 and decoded to /kaggle/working, byte-identical to the repo.
+The two cells below therefore look like blobs rather than source. That is deliberate: they
+used to be triple-quoted literals holding the modules verbatim, and a literal that ends one
+character early runs the rest of the module as *cell* code, which surfaces as a NameError on
+`__file__`. Base64 has no quotes and no newlines, so it cannot end early."""
 
 SELFTEST_MD = """## 4. Self-test on synthetic corpora --- runs before any real data
 

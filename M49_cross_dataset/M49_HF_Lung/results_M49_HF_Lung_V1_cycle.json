@@ -1,0 +1,378 @@
+{
+  "meta": {
+    "model_id": "M49_HF_Lung_V1_cycle",
+    "model_name": "external validation of best_model.pth on HF_Lung_V1",
+    "contributor": "OWMTL team",
+    "date_completed": "2026-09-08",
+    "is_augmented": false,
+    "augmentation_method": "none (inference only)",
+    "notes": "Zero-shot cross-dataset evaluation. No fine-tuning, no threshold tuning, no target label used to fit anything in best_metrics. The checkpoint reproduced its own ICBHI score before this ran."
+  },
+  "config": {
+    "n_mels": 128,
+    "duration_s": 8.0,
+    "padding": "wrap",
+    "minmax": true,
+    "bandpass": false,
+    "denoise": false,
+    "ampnorm": false,
+    "pretrained": true,
+    "freeze": false,
+    "class_weighted": true,
+    "specaug": true,
+    "lr": 0.0005,
+    "batch_size": 16,
+    "epochs": 40,
+    "dropout": 0.3,
+    "seed": 42,
+    "sample_rate": 16000,
+    "n_fft": 1024,
+    "hop_length": 160,
+    "win_length": 400,
+    "f_min": 50,
+    "f_max": 2000,
+    "n_samples": 128000,
+    "n_frames": 801,
+    "arch": "mobilenet_v2",
+    "freeze_features": false,
+    "scheduler": "cosine",
+    "num_epochs": 40,
+    "weight_decay": 0.0001,
+    "grad_clip": 5.0,
+    "use_amp": true,
+    "num_workers": 2,
+    "imagenet_normalize": true,
+    "use_specaugment": true,
+    "specaug_freq_mask_param": 24,
+    "specaug_time_mask_param": 80,
+    "specaug_num_freq_masks": 2,
+    "specaug_num_time_masks": 2,
+    "specaug_mask_value": 0.0,
+    "split_policy": "reassign_to_train",
+    "split_method": "official_60_40_patient_independent_corrected",
+    "num_classes": 4,
+    "model_id": "M22_v2",
+    "model_name": "MobileNetV2 + SpecAugment (corrected official split)",
+    "variant": "augmented",
+    "contributor": "OWMTL team",
+    "use_cache": true,
+    "eval_only": false,
+    "n_bootstrap": 1000,
+    "ckpt_dir": "/kaggle/working/checkpoints_M22_v2",
+    "results_dir": "/kaggle/working/results_M22_v2",
+    "cache_dir": "/kaggle/working/cache"
+  },
+  "environment": {
+    "platform": "Linux-6.12.90+-x86_64-with-glibc2.35",
+    "python_version": "3.12.13",
+    "pytorch_version": "2.10.0+cu128",
+    "gpu_name": "Tesla T4"
+  },
+  "dataset_info": {
+    "dataset": "HF_Lung_V1",
+    "unit_of_analysis": "respiratory_cycle (I+E)",
+    "split_method": "external_validation_zero_shot_all_available_data",
+    "train_samples": 0,
+    "test_samples": 35368,
+    "test_groups": 4530,
+    "test_group_kind": "recording_group",
+    "subset_counts": {
+      "test": 7092,
+      "train": 28276
+    },
+    "native_sample_rates_hz": [
+      4000
+    ],
+    "resampled_to_hz": 16000,
+    "index_stats": {
+      "recordings_seen": 9765,
+      "label_vocabulary": {
+        "I": 34095,
+        "D": 15606,
+        "E": 18349,
+        "Rhonchi": 4740,
+        "Wheeze": 8457,
+        "Stridor": 686
+      },
+      "phase_composition": {
+        "I+E": 17067,
+        "I": 17020,
+        "E": 1281
+      },
+      "phase_composition_note": "HF_Lung_V1 annotates far more inhalations than exhalations, so most rows are a single phase rather than a whole I+E cycle. A single-phase row is roughly half the duration of the ICBHI cycle the model was trained on; see dataset_info.segment_stats for the tiling this implies.",
+      "dropped": {
+        "no_label_file": 0,
+        "no_phase_labels": 266,
+        "short_or_reversed": 9,
+        "past_eof": 0
+      }
+    },
+    "segment_stats": {
+      "segment_seconds_median": 1.325,
+      "segment_seconds_p5_p95": [
+        0.599,
+        2.763
+      ],
+      "segment_seconds_min_max": [
+        0.05,
+        9.02
+      ],
+      "model_window_seconds": 8.0,
+      "tiling_factor_median": 6.04,
+      "fraction_longer_than_window": 0.0,
+      "icbhi_reference_median_seconds": 2.42,
+      "note": "segments shorter than the window are cyclically tiled; a larger tiling factor than ICBHI's ~3.3x means proportionally more seam artefact per input."
+    },
+    "label_mapping": {
+      "sprsound_event": {
+        "normal": "Normal",
+        "fine crackle": "Crackle",
+        "coarse crackle": "Crackle",
+        "crackle": "Crackle",
+        "wheeze": "Wheeze",
+        "rhonchi": "Wheeze",
+        "stridor": "Wheeze",
+        "wheeze+crackle": "Both",
+        "wheeze + crackle": "Both",
+        "wheeze & crackle": "Both",
+        "wheeze and crackle": "Both",
+        "wheeze&crackle": "Both"
+      },
+      "sprsound_record": {
+        "normal": "Normal",
+        "das": "Crackle",
+        "cas": "Wheeze",
+        "cas & das": "Both",
+        "cas&das": "Both"
+      },
+      "sprsound_record_excluded": [
+        "poor quality"
+      ],
+      "hflung_phase_tokens": [
+        "E",
+        "I"
+      ],
+      "hflung_crackle_tokens": [
+        "D"
+      ],
+      "hflung_wheeze_tokens": [
+        "Rhonchi",
+        "Stridor",
+        "Wheeze"
+      ],
+      "rationale": "Rhonchi and stridor are continuous adventitious sounds in both source taxonomies and map to ICBHI's Wheeze class; HF_Lung_V1's own paper pools W/S/R into CAS."
+    }
+  },
+  "source_model": {
+    "checkpoint": "best_model.pth",
+    "ablation_row": null,
+    "selected_epoch": 38,
+    "icbhi_score_official_in_domain": 0.5585,
+    "trained_on": "ICBHI_2017, official_60_40_patient_independent_corrected"
+  },
+  "best_epoch": {
+    "epoch": 38,
+    "primary_metric": "icbhi_score_official",
+    "primary_metric_value": 0.4933
+  },
+  "best_metrics": {
+    "icbhi_score_official": 0.4933,
+    "icbhi_score_official_ci95": [
+      0.4773,
+      0.5113
+    ],
+    "icbhi_score_official_ci95_unit": "recording_group",
+    "icbhi_se_official": 0.3372,
+    "icbhi_sp_official": 0.6494,
+    "accuracy": 0.4774,
+    "precision_macro": 0.3832,
+    "recall_macro": 0.3964,
+    "f1_macro": 0.3704,
+    "per_class": {
+      "Normal": {
+        "precision": 0.5652,
+        "recall": 0.6494,
+        "f1": 0.6044,
+        "support": 15879,
+        "predicted": 18246
+      },
+      "Crackle": {
+        "precision": 0.3994,
+        "recall": 0.1668,
+        "f1": 0.2354,
+        "support": 10142,
+        "predicted": 4236
+      },
+      "Wheeze": {
+        "precision": 0.4915,
+        "recall": 0.5836,
+        "f1": 0.5336,
+        "support": 7903,
+        "predicted": 9384
+      },
+      "Both": {
+        "precision": 0.0765,
+        "recall": 0.1856,
+        "f1": 0.1084,
+        "support": 1444,
+        "predicted": 3502
+      }
+    },
+    "confusion_matrix_raw": [
+      [
+        10312,
+        2068,
+        2313,
+        1186
+      ],
+      [
+        5593,
+        1692,
+        1771,
+        1086
+      ],
+      [
+        1966,
+        363,
+        4612,
+        962
+      ],
+      [
+        375,
+        113,
+        688,
+        268
+      ]
+    ],
+    "confusion_matrix_normalized": [
+      [
+        0.6494,
+        0.1302,
+        0.1457,
+        0.0747
+      ],
+      [
+        0.5515,
+        0.1668,
+        0.1746,
+        0.1071
+      ],
+      [
+        0.2488,
+        0.0459,
+        0.5836,
+        0.1217
+      ],
+      [
+        0.2597,
+        0.0783,
+        0.4765,
+        0.1856
+      ]
+    ],
+    "label_distribution_true": [
+      15879,
+      10142,
+      7903,
+      1444
+    ],
+    "label_distribution_pred": [
+      18246,
+      4236,
+      9384,
+      3502
+    ],
+    "binary_detection": {
+      "se": 0.5929,
+      "sp": 0.6494,
+      "icbhi_score_official": 0.6212
+    }
+  },
+  "efficiency": {
+    "total_params": 2263160,
+    "trainable_params": 0,
+    "model_size_mb": 9.053,
+    "training_time_total_s": 0,
+    "inference_time_total_s": 751.9,
+    "inference_time_ms_per_sample": 21.259,
+    "gpu_name": "Tesla T4"
+  },
+  "ablation": {
+    "ablation_group": "external_validation",
+    "ablation_role": "variant",
+    "baseline_model_id": "M22_v2",
+    "variable_changed": "evaluation corpus: ICBHI_2017 -> HF_Lung_V1",
+    "variables_held_constant": [
+      "weights",
+      "preprocessing",
+      "official metric",
+      "decision rule: argmax"
+    ],
+    "component_flags": {
+      "has_sound_event_head": true,
+      "has_disease_head": false,
+      "has_cross_task_consistency": false,
+      "has_cqkd_regularization": false,
+      "has_openmax_rejection": false,
+      "owl_stage": 0,
+      "compression_clusters": null
+    },
+    "loss_weights": {
+      "sound_event_weight": 1.0,
+      "disease_weight": null,
+      "consistency_weight": null
+    }
+  },
+  "training_history": [],
+  "transfer": {
+    "icbhi_in_domain": 0.5585,
+    "external": 0.4933,
+    "delta": -0.0652,
+    "chance_reference": 0.5,
+    "note": "0.50 is what a constant always-Normal predictor scores on this metric, so it is the floor an external number has to clear to mean anything."
+  },
+  "feature_probe": {
+    "icbhi_score_official": 0.4886,
+    "icbhi_score_official_ci95": [
+      0.4689,
+      0.5074
+    ],
+    "icbhi_se_official": 0.4421,
+    "icbhi_sp_official": 0.5351,
+    "confusion_matrix_raw": [
+      [
+        8497,
+        3854,
+        1996,
+        1532
+      ],
+      [
+        3213,
+        3788,
+        1454,
+        1687
+      ],
+      [
+        924,
+        878,
+        4129,
+        1972
+      ],
+      [
+        121,
+        222,
+        402,
+        699
+      ]
+    ],
+    "class_support": {
+      "Normal": 15879,
+      "Crackle": 10142,
+      "Wheeze": 7903,
+      "Both": 1444
+    },
+    "min_class_support": 1444,
+    "stratification_ok": true,
+    "note": "frozen-backbone logistic probe, grouped 5-fold CV. Uses target labels - not a zero-shot result, and not comparable to the headline number. If stratification_ok is false, the rarest class has fewer members than folds and its per-fold estimate is unstable."
+  }
+}

@@ -15,26 +15,50 @@ the headline block.
 
 ## Which checkpoint is "the best model"
 
-Both notebooks default to **`Asif's/M45/best_M45_P3.pth`** — MobileNetV2 + SpecAugment **+
-per-cycle peak amplitude normalisation**, official ICBHI **0.5764**. Scanning every committed
-`results_M*.json` on the corrected split, that is the highest score in the repository, and the
-cumulative ladder calls the same configuration `S5` / FULL PIPELINE.
+Both notebooks default to **`Asif's/M22_v2/Results/best_model.pth`** — MobileNetV2 +
+SpecAugment, official ICBHI **0.5602**, epoch 38, trained on the corrected
+patient-independent partition. That is the model the paper reports as best, in
+Table `tab:main`, Table `tab:errors`, Fig. `fig:best`, the comparison table, the Conclusion and
+the model registry. The faculty comment asks for the best *trained model*, so this is the one
+the external validation has to be about.
 
-**This is not the run the paper currently calls best.** §"Performance of the Best Model" names
-`M22_v2` at 0.5602, because P3 arrived later as an ADD row in the M45 ablation. The paper's own
-stated selection rule — highest challenge score on the corrected partition among runs with a
-committed confusion matrix — actually selects P3, so the two disagree and **that is a decision
-to make deliberately, not to inherit from this folder's default.**
+**`Asif's/M45/best_M45_P3.pth` scores higher — 0.5764 — and is deliberately not used.** The
+paper names it and declines it, in `final paper/main.tex:831` and
+`Final_Draft_v3/main.tex:1064`: *"Row P3 gives the highest score in the table at 0.5764, and we
+do not adopt it as our reported model, because its delta is only 1.1 times the noise range and
+its patient-level interval spans zero."* The supporting numbers:
 
-Either way the notebooks work unchanged: set `CKPT_NAME` in the checkpoint cell to
-`best_model.pth` to evaluate M22_v2 instead. The gate adapts on its own — it holds each
-checkpoint to the score stored inside *it* (0.5764 or 0.5602), not to a hard-coded constant.
+| Check | Value | Reading |
+|---|---|---|
+| Three-seed noise range | 0.0141 | 0.5540 / 0.5681 / 0.5657, same configuration |
+| P3 delta vs the reference | +0.0162 = **1.1×** noise | inside run-to-run wobble |
+| Patient-paired bootstrap | **[−0.017, +0.046]**, p = 0.367 | spans zero |
+| `M45_paired_tests.json` verdict | `"NOT shown to differ from A0"` | our own harness said it |
+
+P3 is also the argmax of twelve rows scored on the same test partition with no multiplicity
+correction — which is the practice this paper's own faults section is about — and its gain is
+specificity-driven (Sp 0.7532 vs 0.7115, Se *down* 0.4089 → 0.3996), so a cross-corpus number
+from it would be reporting a preprocessing quirk. Selecting on the test set also biases 0.5764
+upward, and the transfer delta is `in-domain − external`, so an inflated baseline inflates the
+headline drop.
+
+Swapping `CKPT_NAME` to `best_M45_P3.pth` still works — the loader reads the preprocessing flags
+out of each checkpoint's own cfg and the gate holds it to the score stored inside *it* — but it
+puts this folder at odds with the paper's ablation section, so it is a paper edit, not a
+notebook setting.
+
+**Never `best_model_official.pth`.** It sits in the same directory, scores 0.5641, and its cfg
+records `official_60_40_published_verbatim_NOT_patient_independent` — the published split
+verbatim, with patients 156 and 218 on both sides. `load_checkpoint` now reads `split_method`
+out of the cfg and **raises** on anything but the corrected partition, because the gate below
+cannot catch this on its own: it holds each checkpoint to its own stored score, and a leaking
+checkpoint reproduces its own leaking score perfectly.
 
 ## The gate
 
 Before any external number is computed, both notebooks re-score the checkpoint on the 2,636
 ICBHI test cycles and **assert it reproduces the score stored inside the checkpoint**
-(`best_M45_P3.pth` → 0.5764; `M22_v2/Results/best_model.pth` → 0.5602). A mismatch aborts.
+(`M22_v2/Results/best_model.pth` → 0.5602; `best_M45_P3.pth` → 0.5764). A mismatch aborts.
 
 That check is the reason the external numbers can be read at all. `m49_xval.py` copies the
 `Net` class out of `m45_ablation.run_row` — it is a closure and cannot be imported — and a
@@ -150,8 +174,8 @@ written as `null`, never as `NaN` (not valid JSON) and never as a fabricated int
 ## Running it
 
 **On Kaggle** — GPU T4, **Internet ON**, and Add Data:
-`vbookshelf/respiratory-sound-database` *plus* `Asif's/M45/best_M45_P3.pth` uploaded as a
-private dataset. Then Run All. Each notebook fetches its own corpus, self-tests, passes the
+`vbookshelf/respiratory-sound-database` *plus* `Asif's/M22_v2/Results/best_model.pth` uploaded
+as a private dataset. Then Run All. Each notebook fetches its own corpus, self-tests, passes the
 ICBHI gate, evaluates, and zips `M49_results.zip` into the Output panel. Unzip it here and
 commit.
 
@@ -167,8 +191,8 @@ carries `SMOKE RUN … NOT reportable` in `meta.notes`.
 
 ```
 python m49_xval.py --selftest
-python m49_xval.py --dataset sprsound --root .../BioCAS2022  --ckpt ../Asif's/M45/best_M45_P3.pth
-python m49_xval.py --dataset hflung   --root .../HF_Lung_V1  --ckpt ../Asif's/M45/best_M45_P3.pth
+python m49_xval.py --dataset sprsound --root .../BioCAS2022   # --ckpt defaults to M22_v2
+python m49_xval.py --dataset hflung   --root .../HF_Lung_V1
 ```
 
 Add `--icbhi_audio <dir>` to run the gate locally too; without it the in-domain reference is

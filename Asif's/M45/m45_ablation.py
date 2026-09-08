@@ -65,7 +65,11 @@ import time
 
 import numpy as np
 
-HERE = os.path.dirname(os.path.abspath(__file__))
+# `__file__` is undefined when this source is exec'd in a notebook cell instead of being
+# imported. On Kaggle the notebook writes this module into /kaggle/working, which is also
+# the working directory, so cwd is the right answer there rather than merely a safe one.
+HERE = (os.path.dirname(os.path.abspath(__file__)) if "__file__" in globals()
+        else os.getcwd())
 REPO = os.path.abspath(os.path.join(HERE, "..", ".."))
 CLASSES = ["Normal", "Crackle", "Wheeze", "Both"]
 LABEL_OF = {(0, 0): 0, (1, 0): 1, (0, 1): 2, (1, 1): 3}
