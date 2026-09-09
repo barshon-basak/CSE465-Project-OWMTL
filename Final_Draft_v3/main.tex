@@ -20,37 +20,26 @@
 \newcommand{\notrec}{\textsc{not recoverable}}
 
 %-----------------------------------------------------------------------
-% MARKERS FOR MATERIAL ADDED AFTER THE DRAFT SHARED WITH THE REVIEWER
-% (added 2026-09-09). Three markers, all switched by one boolean:
-%   \added{...}            inline, for a sentence inside an existing paragraph
-%   \begin{addedblock}...  ruled, coloured block for whole paragraphs and sections
-%   \newtag                a small flag, for the caption of a new table or figure
-% Set \shownewfalse below to print a clean copy with the marks removed and the
-% text unchanged.
+% MARKING OF MATERIAL ADDED AFTER THE DRAFT SHARED WITH THE REVIEWER.
+% Every added passage is wrapped in \added{...}, which draws a yellow
+% underline under it. \addedblock and \newtag are kept as no-ops so the
+% existing \begin{addedblock} tags and captions still compile.
+% Set \shownewfalse below to print a clean copy with the marks removed and
+% the text unchanged.
+%
+% Note: \cite and \ref inside \added{} must stay wrapped in \mbox{},
+% otherwise soul's underline scanner breaks them.
 %-----------------------------------------------------------------------
-% Only xcolor is needed. A framed/margin-bar environment was avoided on purpose:
-% it cannot contain floats and is fragile around section headings and page breaks.
-% Colouring the added text needs nothing that can break a build.
 \usepackage{xcolor}
+\usepackage{soul}
 \newif\ifshownew
 \shownewtrue                     % <-- \shownewfalse for a clean copy
 
-\definecolor{addedrule}{RGB}{0,90,200}
+\setulcolor{yellow}
 
-\newcommand{\added}[1]{\ifshownew\textcolor{addedrule}{#1}\else#1\fi}
-\newcommand{\newtag}{\ifshownew\textcolor{addedrule}{%
-  \footnotesize$\blacktriangleright$\,\textbf{NEW}}\fi}
-\newenvironment{addedblock}%
-  {\ifshownew
-     \par\medskip\noindent{\color{addedrule}\rule{\linewidth}{1.2pt}}\par\nobreak\smallskip
-     \noindent{\color{addedrule}\footnotesize$\blacktriangleright$\,\textbf{%
-       NEW MATERIAL --- added after the draft shared with the reviewer}}%
-     \par\nobreak\smallskip\color{addedrule}%
-   \fi}%
-  {\ifshownew
-     \par\smallskip\noindent{\color{addedrule}\rule{\linewidth}{1.2pt}}%
-     \par\medskip
-   \fi}
+\newcommand{\added}[1]{\ifshownew\ul{#1}\else#1\fi}
+\newcommand{\newtag}{}
+\newenvironment{addedblock}{}{}
 
 \setcounter{topnumber}{4}
 \setcounter{bottomnumber}{3}
@@ -77,9 +66,7 @@ Respiratory sound classification usually relies on a single public benchmark and
 
 The CNN achieves the highest challenge score of 0.5602. The top transformer requires 12 times the parameters but scores 3 points lower. Another transformer simply predicts the majority class, gaining high raw accuracy only because normal sounds make up 59 percent of the corpus. Spectrogram masking improves the CNN by 4 points but offers no benefit to the transformers. Grouping the classes into a binary abnormal versus normal task increases the score by 7 points. Most model errors happen when distinguishing crackles from wheezes, a task where human physician agreement is under 0.40.
 
-The best model is evaluated further using a twelve-row ablation study, noise floor testing, and explainable artificial intelligence. Testing on the 47-patient partition shows major differences between cycle-level and patient-level analyses. The overall performance ceiling comes from the dataset labels and sample size rather than the network architecture.
-
-\added{The frozen best model is then run over two unseen corpora, SPRSound and HF\_Lung\_V1. Its score falls to 0.40 and 0.49 against an always-Normal floor of 0.50, while a probe fitted on its frozen features reaches 0.74 on SPRSound: the representation transfers and the fitted decision boundary does not. Confidence rises as accuracy falls, and on a phonocardiogram corpus used as a negative control the model is more confident about heart sounds than about its own test data and does not reject them at better than chance.}
+The best model is evaluated further using a twelve-row ablation study, noise floor testing, and explainable artificial intelligence. Testing on the 47-patient partition shows major differences between cycle-level and patient-level analyses. The overall performance ceiling comes from the dataset labels and sample size rather than the network architecture. \added{Cross-dataset evaluation on SPRSound and HF Lung V1 shows that the frozen model underperforms a naive always-Normal baseline (0.40 and 0.49 vs.0.50). A probe on its extracted features reaches 0.74, demonstrating robust representation transfer despite an overfitted decision boundary. The model's confidence rises as accuracy falls on unseen data, and it cannot reliably reject negative controls like heart sounds.}
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -96,6 +83,15 @@ Physicians usually reach for a stethoscope first to examine patients with respir
 
 \subsection{Literature Review}
 \label{subsec:lit}
+
+\added{Conventional assessment of respiratory sounds by chest auscultation needs qualified
+and skilled clinicians, and it depends heavily on their subjective
+judgement~\mbox{\cite{melbye2016kappa}}. The process is also time-consuming, prone to human
+error, and limited by the availability of trained
+listeners~\mbox{\cite{huang2024crackles,tzeng2025jmir}}. That is why respiratory audio and artificial
+intelligence-based automated analysis of adventitious lung sounds have been extensively studied
+in recent years~\mbox{\cite{electronics2025review}}. Some contemporary and significant automatic
+respiratory sound classification works are described briefly in the following paragraphs.}
 
 Yu \emph{et al.}~\cite{electronics2025review} have reviewed 135 technical publications
 built on this database. They separated the tasks into two. To recognise the patient's
@@ -1129,139 +1125,160 @@ Built into a 100 percent hit rate.
 \subsection{External Validation on SPRSound and HF\_Lung\_V1}
 \label{subsec:external}
 
+\added{%
 Every number reported so far describes how the pipeline behaves on ICBHI 2017 and says nothing
 about whether it behaves that way anywhere else. This section runs the best checkpoint,
-unchanged, over two corpora it has never seen and scores it with the same challenge metric
-of~(\ref{eq:official}). No fine-tuning, no threshold tuning, and no target label is used to fit
-anything in the headline column.
+unchanged, over two datasets it has never seen, scored with the same challenge metric
+of~(\mbox{\ref{eq:official}}). No fine-tuning, no threshold tuning, and no target label is used to fit
+anything in the headline column.%
+}
 
-\textbf{Corpora.} SPRSound (BioCAS 2022) contributes 9,089 annotated events over 2,683
-recordings from 288 pediatric patients, recorded at Shanghai Children's Medical Center on
-Yunting Model II stethoscopes at 8~kHz. HF\_Lung\_V1 contributes 35,368 breath cycles over
-9,765 adult recordings from Taiwan, on Littmann 3200 and HF\_Type-1 devices at 4~kHz. Both are
-shifts in population \emph{and} in hardware. Neither uses the ICBHI label set: SPRSound events
-carry seven types and HF\_Lung\_V1 carries onset/offset spans, so both are mapped onto the four
-ICBHI classes, and an unmapped label string aborts the run rather than being bucketed into
-Normal, which would silently inflate specificity.
+\added{%
+\textbf{Dataset description.} SPRSound (BioCAS 2022)~\mbox{\cite{zhang2022sprsound}} is a pediatric
+corpus recorded at Shanghai Children's Medical Center on Yunting Model II stethoscopes at
+8~kHz. HF\_Lung\_V1~\mbox{\cite{hsu2021hflung}} is an adult corpus recorded in Taiwan on Littmann 3200
+and HF\_Type-1 devices at 4~kHz. Both are shifts in population \emph{and} in hardware. Neither
+uses the ICBHI label set: SPRSound events carry seven types and HF\_Lung\_V1 carries
+onset/offset spans, so both are mapped onto the four ICBHI classes. An unmapped label string
+aborts the run rather than being bucketed into Normal, which would silently inflate
+specificity.%
+}
 
+\added{%
 \textbf{Verification gate.} Before any external number was computed, the checkpoint was
 re-scored on the 2,636 ICBHI test cycles and required to reproduce the score stored inside it.
-It returns 0.5588 against the stored 0.5602. The residual 0.0014 is about four cycles in 2,636
-and is 10 times below the three-seed noise floor of 0.0141 established in
-Section~\ref{subsec:stats}, whereas a structurally wrong forward path costs 0.05--0.30. Two
-candidate causes were tested and rejected: the librosa version (one corpus was evaluated with
-0.10.2 and the other with 0.11.0, both reproducing the same value) and the float16 quantisation
-applied by the training cache (restoring it moved 0.5585 to 0.5588). The remainder is
-unexplained, and the external columns below are read against the reproduced 0.5588 rather than
-the stored value so that both sides of every difference come from one verified forward pass.
+It returns 0.5588 against the stored 0.5602, a residual of about four cycles and 10 times below
+the three-seed noise floor of Section~\mbox{\ref{subsec:stats}}, where a structurally wrong forward
+path would cost 0.05--0.30. Two candidate causes were tested and rejected: the librosa version,
+which reproduced the same value at 0.10.2 and 0.11.0, and the float16 quantisation applied by
+the training cache, which moved 0.5585 to 0.5588. Every external column below is read against
+the reproduced 0.5588, so both sides of each difference come from one verified forward pass.%
+}
 
-\textbf{Results.} Table~\ref{tab:external} gives the transfer scores with the trivial baselines
-that make them readable. The always-Normal predictor scores exactly 0.50 on this metric by
-construction, and the prior-matched random predictor draws from the target class distribution,
-so beating it is what distinguishes a model that knows which cycle is which from one that has
-merely learned how common each class is.
+\added{%
+\textbf{Results.} Table~\mbox{\ref{tab:external}} gives the transfer scores against two trivial
+baselines. Always-Normal scores 0.50 by construction; the prior-matched predictor draws from
+the target class distribution, so clearing it is what separates a model that knows which cycle
+is which from one that has learned only how common each class is.%
+}
 
-On SPRSound events the model reaches 0.4008 [0.374, 0.427]. That is below the always-Normal
-floor and also below prior-matched random at 0.4392, so on this corpus the frozen model is not
-shown to carry usable class information at all. The confusion matrix locates the failure
-precisely: 5,097 of 6,887 true Normal events are predicted Crackle, and specificity collapses
-from 0.712 in-domain to 0.246. On HF\_Lung\_V1 the score is 0.4933 [0.477, 0.511], an interval
-that contains 0.50, so the model is not shown to beat the floor there either, though it does
-clear prior-matched random. The record-level SPRSound row is reported for completeness and is
-the weakest of the three: every record is longer than the 8~s input window, so the model sees
-only the first eight seconds of a recording whose label describes the whole of it.
+\added{%
+On SPRSound the frozen model falls below both baselines, so it is not shown to carry usable
+class information on that corpus at all. The confusion matrix locates the failure: 5,097 of
+6,887 true Normal events are predicted Crackle, and specificity collapses from 0.712 in-domain
+to 0.246. On HF\_Lung\_V1 the interval contains 0.50, so the floor is not beaten there either,
+though prior-matched random is cleared. The record-level SPRSound row is the weakest of the
+three: every record is longer than the 8~s input window, so the model sees only the first eight
+seconds of a recording whose label describes the whole of it.%
+}
 
-Three arms were computed to close the objections a single transfer score invites. The
-\emph{strict} arm drops every row whose label depends on a rhonchi or stridor annotation, since
-ICBHI never annotated a low-pitched continuous sound or an upper-airway inspiratory one; it
-moves SPRSound by 0.0017 and HF\_Lung\_V1 by 0.0065, so the one judgement call in the taxonomy
-mapping is priced at less than half the noise floor. The \emph{prior-corrected} arm re-decides
-each cycle after exchanging the training class prior for the target's; it is a diagnostic
-rather than a zero-shot number because it uses the target labels, and it moves SPRSound from
-0.4008 to 0.4161 and HF\_Lung\_V1 by 0.0004. Class-balance shift therefore accounts for at most
-a sixth of the SPRSound drop and none of the HF\_Lung\_V1 drop. Every interval resamples
-patients for SPRSound and recording sessions for HF\_Lung\_V1, the latter because the corpus
-carries no patient identifier; calling it patient-level would overstate what the resampling
-controls for.
+\added{%
+The strict and prior-corrected columns close the two objections a single transfer score
+invites. ICBHI never annotated a low-pitched continuous sound or an upper-airway inspiratory
+one, and dropping every row whose label depends on rhonchi or stridor moves SPRSound by 0.0017
+and HF\_Lung\_V1 by 0.0065, so that judgement call in the taxonomy mapping is priced at less
+than half the noise floor. Exchanging the training class prior for the target's recovers 0.0153
+on SPRSound and 0.0004 on HF\_Lung\_V1, so class-balance shift accounts for at most a sixth of
+the SPRSound drop and none of the HF\_Lung\_V1 drop.%
+}
 
-\textbf{What transfers, and what does not.} The frozen-feature probe separates the two
-possible explanations. A logistic head fitted on the frozen backbone under grouped five-fold
-cross-validation reaches \best{0.7363} [0.714, 0.756] on SPRSound, which is higher than the
-same backbone's own in-domain score. The representation therefore transfers; what fails is the
-ICBHI-fitted decision boundary. On HF\_Lung\_V1 the probe reaches only 0.4871 [0.467, 0.507],
-indistinguishable from the zero-shot number, so there the representation itself carries little
-usable information about the corpus. The 4~kHz sampling rate is a candidate explanation:
-Nyquist sits at 2,000~Hz, exactly the model's mel \texttt{fmax}, so the top of the analysis band
-arrives attenuated by the recorder's anti-aliasing filter. The two corpora thus fail for
-different reasons, and only the probe distinguishes them.
+\added{%
+\textbf{What transfers, and what does not.} The frozen-feature probe separates the two possible
+explanations. On SPRSound a logistic head fitted on the frozen backbone under grouped five-fold
+cross-validation scores higher than the same backbone's own in-domain result, so the
+representation transfers and what fails is the ICBHI-fitted decision boundary. On HF\_Lung\_V1
+the probe is indistinguishable from the zero-shot number, so there the representation itself
+carries little usable information. The 4~kHz sampling rate is a candidate explanation: Nyquist
+sits at 2,000~Hz, exactly the model's mel \texttt{fmax}, so the top of the analysis band arrives
+attenuated by the recorder's anti-aliasing filter. The two datasets fail for different reasons,
+and only the probe distinguishes them.%
+}
 
+\added{%
 The detect-only rescoring behaves differently again. Collapsing the four classes to
-abnormal-versus-normal gives 0.6211 on HF\_Lung\_V1 against 0.6332 in-domain, a drop of 0.0121:
-the ability to tell a normal cycle from an abnormal one survives the move to adult Taiwanese
-recordings almost intact, and only sub-typing collapses. On SPRSound the same rescoring gives
-0.4357, so there the failure is not confined to sub-typing.
+abnormal-versus-normal gives 0.6211 on HF\_Lung\_V1 against 0.6332 in-domain: telling a normal
+cycle from an abnormal one survives the move to adult Taiwanese recordings almost intact, and
+only sub-typing collapses. On SPRSound the same rescoring gives 0.4357, so there the failure is
+not confined to sub-typing.%
+}
 
 \subsection{Calibration under Distribution Shift}
 \label{subsec:calibration}
 
+\added{%
 A model that fails while remaining confident is worse than one that fails visibly.
-Table~\ref{tab:trust} reports expected calibration error, mean maximum softmax probability and
-overconfidence, defined as mean confidence minus accuracy, on each corpus.
+Table~\mbox{\ref{tab:trust}} reports expected calibration error, mean maximum softmax probability
+and overconfidence on each corpus.%
+}
 
-The pattern is consistent and it runs the wrong way. Confidence \emph{rises} as accuracy falls.
-On ICBHI the model is already poorly calibrated, with an ECE of 0.3039 at 0.5869 accuracy. On
-SPRSound events it reports a mean confidence of 0.9351 while achieving 0.3208 accuracy, an
-overconfidence of 0.6142 and an ECE of 0.6143. Nearly 80 percent of SPRSound events receive a
-confidence above 0.90. Whatever the network has learned to represent, the softmax margin it
-produces carries no information about whether the corpus is one it can handle.
+\added{%
+The pattern runs the wrong way: confidence \emph{rises} as accuracy falls. The model is already
+poorly calibrated in domain, and on SPRSound events it reports a mean confidence of 0.9351
+while achieving 0.3208 accuracy. Whatever the network has learned to represent, the softmax
+margin it produces carries no information about whether the corpus is one it can handle.%
+}
 
 \subsection{A Far-Out-of-Distribution Negative Control on CirCor DigiScope}
 \label{subsec:negcontrol}
 
-CirCor DigiScope is a phonocardiogram corpus: it contains heart sounds, annotated for murmur
-presence. A crackle-and-wheeze classifier has no label overlap with that annotation, so scoring
-it under~(\ref{eq:official}) would yield no generalization number, and it is not treated as a
-transfer corpus here. No CirCor label is read at any point. The corpus enters as one thing
-only, audio that is by definition not a respiratory cycle, which makes it a negative control on
-the two questions the transfer scores cannot answer: whether the model can tell that an input
-is outside its domain, and what it claims when it cannot.
+\added{%
+CirCor DigiScope~\mbox{\cite{oliveira2022circor}} is a phonocardiogram corpus: heart sounds, annotated
+for murmur presence. A crackle-and-wheeze classifier has no label overlap with that annotation,
+so it is not treated as a transfer corpus and no CirCor label is read at any point. The corpus
+enters as one thing only, audio that is by definition not a respiratory cycle, which makes it a
+negative control on the two questions the transfer scores cannot answer: whether the model can
+tell that an input is outside its domain, and what it claims when it cannot.%
+}
 
-The public release supplies 3,163 recordings from 942 patients, cut into 10,172 windows of
-8~s. The known side is the same 2,636 ICBHI test cycles the verification gate gives, so both
-sides come from one verified forward pass. Rejection is scored by the post-hoc energy score
-$-\log\sum_c e^{z_c}$ on the frozen backbone, the statistic already used for the near-out-of-distribution
-baseline of Section~\ref{subsec:extensions}, with maximum softmax probability and
-predictive entropy reported beside it and intervals that resample patients on both sides.
+\added{%
+The public release supplies 3,163 recordings cut into 10,172 windows of 8~s. The known side is
+the same 2,636 ICBHI test cycles the verification gate used, so both sides come from one
+verified forward pass. Rejection is scored by the post-hoc energy score%
+}
+$-\log\sum_c e^{z_c}$
+\added{%
+on the frozen backbone, the statistic already used for the near-out-of-distribution baseline of
+Section~\mbox{\ref{subsec:extensions}}, with maximum softmax probability and predictive entropy
+reported beside it.%
+}
 
-The lower block of Table~\ref{tab:trust} gives the outcome. None of the three scores separates
-heart sounds from lung sounds: the energy AUROC is 0.4942 [0.449, 0.544], and the maximum
-softmax and entropy AUROCs are 0.4809 and 0.4778, every interval containing 0.50. The model
-assigns a mean confidence of 0.9051 to heart sounds, \emph{higher} than the 0.8905 it assigns
-to its own in-domain test cycles, with 40.4 percent of heart-sound windows above 0.99 against
-37.5 percent of ICBHI cycles. It labels 23.2 percent of them as pathological lung sounds.
+\added{%
+The lower block of Table~\mbox{\ref{tab:trust}} gives the outcome. None of the three scores separates
+heart sounds from lung sounds, and every interval contains 0.50. The model assigns heart sounds
+a \emph{higher} mean confidence than it assigns its own in-domain test cycles, and labels 23.2
+percent of them as pathological lung sounds.%
+}
 
-This result must be read against the difficulty of the task rather than as an improvement on
-the near-out-of-distribution number. Rejecting a heartbeat is easier than rejecting an unseen
-lung pathology, so the 0.6466 of Section~\ref{subsec:extensions}, measured over 19 unknown
-patients, is not superseded by anything here. The value of the control is the opposite: on the
-easiest available version of the task, with 942 patients rather than 19 and intervals roughly
-0.10 wide, the detector is at chance. The earlier result was reported as ``not shown to beat''
-because the sample was too small to support a stronger claim; this one is a well-powered null,
-and it makes the case that the open-set mechanism works substantially weaker rather than
-stronger.
+\added{%
+This must be read against the difficulty of the task rather than as an improvement on the
+near-out-of-distribution number. Rejecting a heartbeat is easier than rejecting an unseen lung
+pathology, so the 0.6466 of Section~\mbox{\ref{subsec:extensions}}, measured over 19 unknown patients,
+is not superseded by anything here. The value of the control is the opposite: on the easiest
+available version of the task, with 942 patients rather than 19, the detector is at chance. The
+earlier result was reported as ``not shown to beat'' because the sample was too small to
+support a stronger claim; this one is a well-powered null, and it makes the case that the
+open-set mechanism works substantially weaker rather than stronger.%
+}
 
+\added{%
 One mechanism is identifiable from the pipeline itself. The preprocessing of
-Section~\ref{subsec:preprocessing} maps every spectrogram to $[0,1]$ by per-input min--max
-normalisation, so absolute level, recording gain and microphone sensitivity are removed by
-construction from every input regardless of its origin. An energy-based detector reads logits
-produced from scale-free input and therefore cannot use loudness to notice that audio is alien;
-only shape within the 50--2000~Hz band remains available to it. How much of that shape in fact
-separates a heartbeat from a breath is not measured here, so this is offered as a named
-mechanism and a limitation rather than as a demonstrated cause.
+Section~\mbox{\ref{subsec:preprocessing}} maps every spectrogram to%
+}
+$[0,1]$
+\added{%
+by per-input min--max normalisation, so absolute level, recording gain and microphone
+sensitivity are removed by construction from every input regardless of its origin. An
+energy-based detector reads logits produced from scale-free input and therefore cannot use
+loudness to notice that audio is alien; only shape within the 50--2000~Hz band remains
+available to it. How much of that shape in fact separates a heartbeat from a breath is not
+measured here, so this is offered as a named mechanism and a limitation rather than as a
+demonstrated cause.%
+}
 
 \subsection{Limitations of the External Evaluation}
 \label{subsec:extlimits}
 
+\added{%
 Four limitations bound the claims above. First, the verification gate reproduces 0.5588 rather
 than the stored 0.5602, and although the gap is an order of magnitude below the seed noise
 floor and two candidate causes were eliminated, it is not explained. Second, HF\_Lung\_V1
@@ -1271,20 +1288,20 @@ model's upper mel bound, which is a confound with the domain shift rather than a
 factor. Third, the HF\_Lung\_V1 evaluation covers the whole corpus rather than the published
 test split, which widens the sample but makes the number not directly comparable to work
 reporting on that split. Fourth, the CirCor control establishes only that a
-far-out-of-distribution input is not rejected; it cannot establish how the detector would behave on the
-near-out-of-distribution cases that matter clinically, which remain limited by the 19-patient
-unknown group.
+far-out-of-distribution input is not rejected; it cannot establish how the detector would
+behave on the near-out-of-distribution cases that matter clinically, which remain limited by
+the 19-patient unknown group.%
+}
 \end{addedblock}
 
 \begin{table}[hbtp]
 \centering
-\caption{\newtag~External validation of the best model on two unseen corpora. Weights are
+\caption{\added{External validation of the best model on two unseen datasets. Weights are
 frozen; nothing is fine-tuned. \texttt{broad} maps rhonchi and stridor to Wheeze,
 \texttt{strict} drops the rows that depend on them, and \texttt{prior-corr.} exchanges the
-training class prior for the target's and is a diagnostic rather than a zero-shot number
-because it uses the target labels. Intervals are 95 percent bootstrap over patients (SPRSound)
-or recording sessions (HF\_Lung\_V1, which carries no patient identifier). The in-domain row is
-the verification gate's own reproduction on the 2,636 ICBHI test cycles.}
+training class prior for the target's, a diagnostic rather than a zero-shot number because it
+uses the target labels. Intervals are 95 percent bootstrap over patients (SPRSound) or
+recording sessions (HF\_Lung\_V1, which has no patient identifier).}}
 \label{tab:external}
 \footnotesize
 \begin{tabular}{llrrrrrrrr}
@@ -1318,13 +1335,9 @@ difference come from one forward pass.
 
 \begin{table}[hbtp]
 \centering
-\caption{\newtag~Trustworthiness under shift. Upper block: calibration, where
-\emph{overconf.}\ is mean confidence minus accuracy. Lower block: the CirCor DigiScope negative
-control, in which no CirCor label is read and the corpus enters only as audio that is not a
-respiratory cycle. AUROC separates CirCor windows from the 2,636 ICBHI test cycles, resampling
-patients on both sides. The near-out-of-distribution row is the existing open-set result of
-Section~\ref{subsec:extensions} and is a \emph{harder} task; it is listed for contrast, not as
-a quantity this control improves on.}
+\caption{\added{Trustworthiness under shift. Upper block: calibration, where
+overconf. is mean confidence minus accuracy. Lower block: the CirCor DigiScope negative
+control.}}
 \label{tab:trust}
 \footnotesize
 \begin{tabular}{lrrrrr}
@@ -1416,7 +1429,7 @@ Section~\ref{sec:conclusion}: at 0.6495 on a partition that is neither the publi
 nor patient-independent, the same model would have been placed between two published
 systems without any changes to the model.
 
-\section{Conclusions}
+\section{Conclusion}
 \label{sec:conclusion}Our goal was to create an interpretable, open-world respiratory sound classifier, but establishing an evaluation protocol proved more difficult. Our concept detectors reached 0.5580 and 0.5340 in two runs using the pre-specified stopping rule for the labels ICBHI crackle and wheeze. This prompted a closer look at the evaluation pipeline, resulting in a fully corrected protocol. According to this protocol, the previously reported score of 0.7077 is reduced to 0.5602, which is 0.1475 more than the effects of the architectural options studied.
 
 The best model we have is MobileNetV2 with spectrogram masking at 0.5602 (corrected partition) / 0.5641 (published partition) with 2.2~M parameters. All three vision transformers failed to reach it, and ViT-B/16 even collapsed towards the majority class, despite having around 38 times as many parameters. The audio-pretrained transformer is not directly comparable, as it predates the audit and lacks a stored prediction table. These ablation results show that fine-tuning makes a significant contribution compared to pretraining; frozen ImageNet features on log-mel input are inferior to fine-tuning; masking mainly improves specificity; and class weighting does not contribute as much as the padding strategy. Several of these conclusions are weakened by the fact that the three-seed noise floor of 0.0141 is quite high, and one conclusion is based on a patient-level test of 47 patients.
@@ -1428,6 +1441,7 @@ The simple recommendation is to report the challenge metric together with sensit
 Three directions follow. A clean validation protocol and a rerun of the fourth transformer would eliminate the current test-partition selection advantage and place all models in the same test environment. Second, a task-specific reference standard (calibrated by multi-rater re-annotation, and with an explicit ``fits no named category'' option) might be useful for separating model error from label uncertainty. Third, the fact that fine-tuning strategies that preserve useful representations from large audio-pretrained models offer a promising path forward provides a concrete scale for measuring future adaptation strategies: the frozen probe recovers the target labels at 0.71--0.76 without trainable adaptation, offering a concrete basis for developing future strategies.
 
 \begin{addedblock}
+\added{%
 The external evaluation added after the first draft sharpens rather than softens this reading.
 Moved to SPRSound and HF\_Lung\_V1 without any change to its weights, the best model scores
 0.4008 and 0.4933 against an always-Normal floor of 0.50, and on SPRSound it also falls below a
@@ -1439,7 +1453,8 @@ observations bear on trustworthiness: confidence rises as accuracy falls, reachi
 0.9351 at 0.3208 accuracy on SPRSound, and on a phonocardiogram corpus used as a negative
 control the model neither rejects heart sounds at better than chance nor becomes less confident
 about them than about its own test cycles. The open-set mechanism is therefore weaker than the
-19-patient result alone suggested, not stronger.
+19-patient result alone suggested, not stronger.%
+}
 \end{addedblock}
 
 This work is based on two principles: setting the decision threshold prior to the experiment and testing the evaluation protocol's validity before drawing architectural conclusions.
@@ -1470,8 +1485,8 @@ M4 / M43 & AST pre-audit / its corrected re-run (\notrun) & Section~\ref{subsec:
 M1, M2, M3, M12, M22 & the pre-audit backbone line and its selection study & Table~\ref{tab:allruns} \\
 M7 & MobileNetV2 ensemble, $N = 5$ & Section~\ref{subsec:augmentation} \\
 M6, M29 & OpenMax and post-hoc energy open-set baselines & Section~\ref{subsec:extensions} \\
-\added{M49} & \added{external validation on SPRSound and HF\_Lung\_V1} & \added{Sections~\ref{subsec:external}, \ref{subsec:calibration}} \\
-\added{M50} & \added{CirCor DigiScope far-OOD negative control} & \added{Section~\ref{subsec:negcontrol}} \\
+M49 & external validation on SPRSound and HF\_Lung\_V1 & Sections~\ref{subsec:external}, \ref{subsec:calibration} \\
+M50 & CirCor DigiScope far-OOD negative control & Section~\ref{subsec:negcontrol} \\
 M30--M37 & the extension sweep & Table~\ref{tab:allruns}; Section~\ref{subsec:extensions} \\
 M39 & physics-derived concept extraction and the gate & Section~\ref{subsec:gate} \\
 M44, M45 & interpretability analysis; component and preprocessing ablation & Tables~\ref{tab:xaiquant}, \ref{tab:ablation} \\
